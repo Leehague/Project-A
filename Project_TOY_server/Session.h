@@ -1,11 +1,14 @@
 #pragma once
+#include <memory>
 #include <winsock2.h>
+#include <queue>
+#include <mutex>
 #include "RecvBuffer.h"
 #include "SendBuffer.h"
 #include "Protocol.h"
 #include "GameSessionManager.h"
-#include <queue>
-#include <mutex>
+#include "Types.h"
+
 enum class IO_TYPE { RECV, SEND };
 
 struct OverlappedEx {
@@ -14,11 +17,12 @@ struct OverlappedEx {
     void* owner;              // 이 작업을 요청한 Session 객체 주소
 };
 
-class Session
+class Session :public std::enable_shared_from_this<Session>
 {
 public:
+    Session();
     Session(SOCKET socket);
-    ~Session();
+    ~Session(); 
 
     // 외부에서 호출하는 송수신 명령
     void Send(SendBufferRef sendBuffer);
@@ -29,10 +33,20 @@ public:
     void OnSend(int bytesTransferred);
     void OnDisconnected();
 
+    // 자기 자신을 SessionPtr로 반환하는 헬퍼 함수
+    SessionPtr GetSessionPtr() { return shared_from_this(); }
+
+    uint64 GetGuid() { return static_cast<uint64>(_socket); }
+
+    // 소켓 설정 및 게터
+    void SetSocket(SOCKET socket) { _socket = socket; }
     SOCKET GetSocket() { return _socket; }
 
+    // 접속 완료 처리
+    void OnConnected();
+
 private:
-    SOCKET      _socket;
+    SOCKET      _socket= INVALID_SOCKET;
     RecvBuffer  _recvBuffer;
 
     
@@ -47,4 +61,5 @@ private:
     void HandlePacket(PacketHeader* header);
     void Handle_CS_LOGIN(PacketHeader* header);
     void Handle_CS_CHAT(PacketHeader* header);
+    void Handle_CS_WHISPER(PacketHeader* header);
 };

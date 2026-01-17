@@ -1,11 +1,13 @@
 #include "Session.h"
 #include <iostream>
 
-
+Session::Session()
+{
+}
 
 Session::Session(SOCKET socket) : _socket(socket), _recvBuffer(1024 * 10) // 10KB 버퍼
 {
-    GSessionManager.Add(this);
+    
 }
 
 Session::~Session()
@@ -128,7 +130,7 @@ void Session::OnDisconnected()
 {
     
     // 2. 연결 종료 시 매니저에서 삭제 (필수!)
-    GSessionManager.Remove(this);
+    GSessionManager.Remove(shared_from_this());
     std::cout << "Client Disconnected" << std::endl;
     
 }
@@ -202,4 +204,32 @@ void Session::OnSend(int bytesTransferred)
     {
         RegisterSend();
     }
+}
+
+void Session::Handle_CS_WHISPER(PacketHeader* header) {
+    PKT_CS_WHISPER_DATA* pkt = reinterpret_cast<PKT_CS_WHISPER_DATA*>(header);
+
+    // 전달할 패킷 생성
+    SendBufferRef sendBuffer = std::make_shared<SendBuffer>(sizeof(PKT_SC_WHISPER_DATA));
+
+    PKT_SC_WHISPER_DATA res;
+    res.header.size = sizeof(res);
+    res.header.type = PKT_SC_WHISPER;
+    res.fromId = this->GetGuid(); // 보낸 사람 (나)
+    strcpy_s(res.chatMsg, pkt->chatMsg);
+
+    sendBuffer->CopyData(res);
+
+    // 매니저를 통해 특정 타겟에게만 발송
+    GSessionManager.SendTo(pkt->targetId, sendBuffer);
+}
+
+void Session::OnConnected()
+{
+    // 접속한 상대방의 정보를 로그로 출력하거나 
+    // 서버 환경에 맞는 초기화 패킷 전송 등의 로직을 넣습니다.
+    std::cout << "Session Connected: [GUID " << GetGuid() << "]" << std::endl;
+
+    // 만약 접속하자마자 클라이언트에게 환영 패킷을 보내야 한다면 여기서 작성합니다.
+    // 예: Send(WelcomePacket);
 }

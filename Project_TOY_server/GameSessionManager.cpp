@@ -3,25 +3,35 @@
 
 GameSessionManager GSessionManager;
 
-void GameSessionManager::Add(Session* session)
-{
-    std::lock_guard<std::mutex> lock(_lock);
-    _sessions.insert(session);
-}
-
-void GameSessionManager::Remove(Session* session)
-{
-    std::lock_guard<std::mutex> lock(_lock);
-    _sessions.erase(session);
-}
-
 void GameSessionManager::Broadcast(SendBufferRef sendBuffer)
 {
     std::lock_guard<std::mutex> lock(_lock);
-    for (Session* session : _sessions)
+    for (auto& pair: _sessions)
     {
         
-        session->Send(sendBuffer);
+        pair.second->Send(sendBuffer);
     }
     
+}
+//
+//
+void GameSessionManager::Add(SessionPtr session) {
+    std::lock_guard<std::mutex> lock(_lock);
+    // 세션의 GUID를 키로 사용 (세션에 GetGuid() 함수가 있다고 가정)
+    _sessions[session->GetGuid()] = session;
+}
+
+void GameSessionManager::Remove(SessionPtr session) {
+    std::lock_guard<std::mutex> lock(_lock);
+    _sessions.erase(session->GetGuid());
+}
+
+void GameSessionManager::SendTo(uint64 playerId, SendBufferRef sendBuffer) {
+    std::lock_guard<std::mutex> lock(_lock);
+
+    // 맵에서 해당 ID를 찾음
+    auto it = _sessions.find(playerId);
+    if (it != _sessions.end()) {
+        it->second->Send(sendBuffer);
+    }
 }

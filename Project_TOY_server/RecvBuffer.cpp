@@ -2,6 +2,10 @@
 #include <algorithm>
 
 
+RecvBuffer::RecvBuffer()
+{
+}
+
 RecvBuffer::RecvBuffer(int bufferSize) : _capacity(bufferSize)
 {
     //버퍼 크기를 지정 (보통 한 패킷 최대 크기의 몇 배)

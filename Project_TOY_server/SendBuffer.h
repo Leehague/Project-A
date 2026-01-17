@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include "Types.h"
 
 class SendBuffer
 {
@@ -25,5 +26,3 @@ private:
     int _capacity = 0;
 };
 
-// 스마트 포인터 별칭 정의
-using SendBufferRef = std::shared_ptr<SendBuffer>;

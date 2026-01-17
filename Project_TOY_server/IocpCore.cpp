@@ -1,5 +1,6 @@
 #include "IocpCore.h"
 #include "Session.h"
+#include "Types.h"
 #include <iostream>
 
 IocpCore::IocpCore()
@@ -14,18 +15,25 @@ IocpCore::~IocpCore()
         ::CloseHandle(_iocpHandle);
 }
 
-bool IocpCore::Register(Session* session)
+bool IocpCore::Register(SessionPtr session)
 {
     // 2. 소켓과 IOCP 핸들을 연결 (CompletionKey로 세션 주소를 넘김)
     // 여기서 넘긴 session 주소는 나중에 Dispatch에서 그대로 돌아옴
-    HANDLE h = ::CreateIoCompletionPort((HANDLE)session->GetSocket(), _iocpHandle, (ULONG_PTR)session, 0);
+    // [수정] session.get()을 사용하여 실제 주소(Session*)를 전달합니다.
+    HANDLE h = ::CreateIoCompletionPort(
+        (HANDLE)session->GetSocket(),
+        _iocpHandle,
+        (ULONG_PTR)session.get(), // shared_ptr이 아닌 실제 주소값 전달
+        0
+    );
+
     return (h != INVALID_HANDLE_VALUE);
 }
 
 bool IocpCore::Dispatch(unsigned int timeoutMs)
 {
     DWORD bytesTransferred = 0;
-    Session* session = nullptr;
+    SessionPtr session = nullptr;
     OverlappedEx* overlappedEx = nullptr;
 
     // 3. 완료된 I/O 작업이 있는지 확인 (여기서 스레드가 잠시 멈춤)
