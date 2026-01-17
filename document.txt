@@ -1,0 +1,36 @@
+1주차 document
+
+IOCP 기반 기초 소켓 서버 구현 
+IOCP(Input/Output Completion Port)란 무엇인가? 
+윈도우 운영체제에서 제공하는 비동기 I/O 완료 통보 메커니즘
+
+기존 방식 (Select, Worker Thread): 클라이언트가 1,000명이면 스레드도 1,000개를 만들거나, 루프를 돌며 "데이터 왔니?"라고 계속 물어봐야 합니다(오버헤드 발생).
+
+IOCP 방식: I/O 작업(데이터 받기/보내기)을 운영체제에 맡겨두고, 작업이 **완료(Completion)**되었을 때만 OS가 미리 준비된 **스레드 풀(Worker Threads)**에 신호를 줍니다.
+
+IOCP 핵심구조
+
+Completion Port (CP): 커널에 생성되는 큐(Queue)입니다. 완료된 I/O 정보가 여기에 쌓입니다.
+
+Worker Threads: CP를 감시하다가 완료 신호가 오면 꺼내서 처리하는 일꾼들입니다. 보통 CPU 코어 수 * 2만큼 생성합니다.
+
+Overlapped I/O: 비동기 작업을 위해 데이터를 실어 보낼 구조체입니다.
+
+Accept Thread: 새로운 클라이언트의 연결만 전문적으로 받는 스레드입니다.
+
+
+----
+
+IocpCore
+Listener
+RecvBuff , SendBuff
+Session
+
+에코서버 구현
+로그인 패킷 디자인 및 송수신 확인
+
+2주차
+
+GameSessionManager 구현(브로드 캐스팅 구현 포함)
+메모리 누수 점검
+TODO /클라이언트 수신 스레드 분리

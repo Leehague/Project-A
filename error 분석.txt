@@ -1,0 +1,1 @@
+서버에서 발생한 read access violation 에러는 전형적인 메모리 오염(Memory Corruption) 또는 댕글링 포인터(Dangling Pointer) 문제입니다. 특히 _Val was 0xFFFFFFFFFFFFFFFF라는 값은 프로그램이 쓰레기 값이나 이미 해제된 메모리 주소에 접근하려 할 때 나타나는 신호입니다.
