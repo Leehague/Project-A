@@ -1,5 +1,6 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "Protocol.h"
+#include "RecvBuffer.h"
 #include <winsock2.h>
 #include <iostream>
 #include <string>
@@ -7,31 +8,59 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-// 서버로부터 패킷을 계속 수신하는 함수
+void HandlePacket(PacketHeader* header) {
+    switch (header->type) {
+    case PKT_SC_LOGIN_OK: {
+        auto pkt = reinterpret_cast<PKT_SC_LOGIN_OK_DATA*>(header);
+        std::cout << "Login Success! ID: " << pkt->playerGuid << std::endl;
+        break;
+    }
+    case PKT_SC_CHAT_BROADCAST: {
+        auto pkt = reinterpret_cast<PKT_SC_CHAT_BROADCAST_DATA*>(header);
+        std::cout << "\n[Player " << pkt->playerId << "]: " << pkt->chatMsg << std::endl;
+        std::cout << "Input Message > ";
+        break;
+    }
+    }
+}
+
 void ReceiveThread(SOCKET clientSocket) {
-    char recvBuffer[1024];
+    // 서버에서 썼던 그 RecvBuffer 클래스를 생성 (예: 4KB 크기)
+    RecvBuffer recvBuffer(4096);
 
     while (true) {
-        // 서버로부터 데이터 수신 (패킷이 올 때까지 대기)
-        int len = recv(clientSocket, recvBuffer, 1024, 0);
-        if (len <= 0) {
-            std::cout << "Disconnected from Server." << std::endl;
-            break;
+        // 1. 수신할 수 있는 최대 크기 계산
+        int freeSize = recvBuffer.FreeSize();
+        if (freeSize <= 0) break; // 버퍼 꽉 참 (풀링 필요)
+
+        // 2. 실제 데이터 수신
+        int len = recv(clientSocket, recvBuffer.WritePos(), freeSize, 0);
+        if (len <= 0) break;
+
+        // 3. 수신 성공 시 write 위치 이동
+        if (recvBuffer.OnWrite(len) == false) break;
+
+        // 4. 패킷 조립 및 처리 (핵심 루프)
+        while (true) {
+            int dataSize = recvBuffer.DataSize();
+
+            // 헤더(size, type)조차 읽을 수 없을 만큼 적게 왔다면 다음 recv 대기
+            if (dataSize < sizeof(PacketHeader)) break;
+
+            PacketHeader* header = reinterpret_cast<PacketHeader*>(recvBuffer.ReadPos());
+
+            // 헤더에 적힌 패킷 전체 크기만큼 데이터가 아직 안 왔다면 다음 recv 대기
+            if (dataSize < header->size) break;
+
+            // [패킷 완성!] 이제 안전하게 처리
+            HandlePacket(header);
+
+            // 처리한 만큼 버퍼에서 제거
+            recvBuffer.OnRead(header->size);
         }
 
-        // 수신된 데이터의 헤더 확인
-        PacketHeader* header = reinterpret_cast<PacketHeader*>(recvBuffer);
-
-        if (header->type == PKT_SC_CHAT_BROADCAST) {
-            PKT_SC_CHAT_BROADCAST_DATA* pkt = reinterpret_cast<PKT_SC_CHAT_BROADCAST_DATA*>(recvBuffer);
-            // 다른 사람이 보낸 채팅 출력
-            std::cout << "\n[Player " << pkt->playerId << "]: " << pkt->chatMsg << std::endl;
-            std::cout << "Input Message > "; // 입력 가이드 다시 표시
-        }
-        else if (header->type == PKT_SC_LOGIN_OK) {
-            PKT_SC_LOGIN_OK_DATA* res = (PKT_SC_LOGIN_OK_DATA*)recvBuffer;
-            std::cout << "Login Success! ID: " << res->playerGuid << std::endl;
-        }
+        // 5. 버퍼가 너무 뒤로 밀렸다면 앞으로 당기기 (CleanUp)
+        recvBuffer.Clean();
     }
 }
 int main()

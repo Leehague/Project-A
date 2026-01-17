@@ -124,6 +124,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RecvBuffer.cpp" />
+    <ClCompile Include="RecvBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Protocol.h" />
