@@ -1,7 +1,7 @@
 #pragma once
 #include <set>
 #include <mutex>
-
+#include "SendBuffer.h"
 class Session;
 
 class GameSessionManager
