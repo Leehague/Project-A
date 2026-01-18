@@ -33,7 +33,7 @@ bool IocpCore::Register(SessionPtr session)
 bool IocpCore::Dispatch(unsigned int timeoutMs)
 {
     DWORD bytesTransferred = 0;
-    SessionPtr session = nullptr;
+    Session* session = nullptr;
     OverlappedEx* overlappedEx = nullptr;
 
     // 3. 완료된 I/O 작업이 있는지 확인 (여기서 스레드가 잠시 멈춤)

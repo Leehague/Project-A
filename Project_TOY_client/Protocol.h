@@ -1,3 +1,4 @@
+#include "Types.h"
 #pragma pack(push, 1) // 1바이트 정렬 (메모리 패딩 제거, 네트워크 전송 시 필수)
 
 struct PacketHeader {
@@ -10,7 +11,8 @@ enum PacketType : unsigned short {
     PKT_CS_LOGIN = 1,
     PKT_SC_LOGIN_OK = 2,
     PKT_CS_CHAT = 3,
-    PKT_SC_CHAT_BROADCAST = 4
+    PKT_SC_CHAT_BROADCAST = 4,
+    PKT_SC_WHISPER = 5
 };
 
 // 클라이언트 -> 서버 로그인 요청
@@ -39,6 +41,21 @@ struct PKT_SC_CHAT_BROADCAST_DATA {
     PacketHeader header;
     int playerId;      // 누가 보냈는지 구분용
     char chatMsg[100];
+};
+
+
+// [CS] 클라이언트 -> 서버 귓속말 요청
+struct PKT_CS_WHISPER_DATA {
+    PacketHeader header;
+    uint64 targetId;      // 받을 사람의 GUID
+    char chatMsg[1024];   // 내용
+};
+
+// [SC] 서버 -> 클라이언트 귓속말 전달
+struct PKT_SC_WHISPER_DATA {
+    PacketHeader header;
+    uint64 fromId;        // 보낸 사람의 GUID
+    char chatMsg[1024];   // 내용
 };
 
 #pragma pack(pop)

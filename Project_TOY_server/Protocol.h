@@ -1,3 +1,4 @@
+#include "Types.h"
 #pragma pack(push, 1) // 1바이트 정렬 (메모리 패딩 제거, 네트워크 전송 시 필수)
 
 struct PacketHeader {

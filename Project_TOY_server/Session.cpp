@@ -1,7 +1,7 @@
 #include "Session.h"
 #include <iostream>
 
-Session::Session()
+Session::Session() : _recvBuffer(1024 * 10)
 {
 }
 

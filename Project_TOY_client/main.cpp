@@ -1,6 +1,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "Protocol.h"
 #include "RecvBuffer.h"
+#include "Types.h"
 #include <winsock2.h>
 #include <iostream>
 #include <string>

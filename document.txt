@@ -33,4 +33,7 @@ Session
 
 GameSessionManager 구현(브로드 캐스팅 구현 포함)
 메모리 누수 점검
-TODO /클라이언트 수신 스레드 분리
+클라이언트 수신 스레드 분리
+
+
+TODO 세션 관리 자동화 ,패킷 직렬화(Serialization),메모리 풀링(Memory Pooling)

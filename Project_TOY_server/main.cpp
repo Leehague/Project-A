@@ -30,7 +30,7 @@ int main()
         std::thread t(&Listener::Execute, &listener, std::ref(iocp));
         t.detach();
 
-        // 3. Worker Thread 풀 구성 (동일)
+        // 3. Worker Thread 풀 구성 
         std::vector<std::thread> workerThreads;
         for (int i = 0; i < 4; i++)
         {
@@ -49,40 +49,3 @@ int main()
     return 0;
 }
 
-
-//int main()
-//{
-//    IocpCore iocp;
-//    Listener listener;
-//
-//    // "나는 Session 클래스를 사용할 거야"라고 선언만 하면 끝
-//    listener.StartAccept(7777, []() { return std::make_shared<Session>(); },iocp);
-//
-//    // 접속 스레드 실행
-//    std::thread t(&Listener::Execute, &listener, std::ref(iocp));
-//    t.detach();
-//
-//    // 서버 시작 (7777 포트)
-//    if (listener.StartAccept(7777))
-//    {
-//        // 접속 전용 스레드 실행
-//        std::thread t(&Listener::Execute, &listener);
-//        t.detach();
-//
-//        // 4. Worker Thread 풀 구성 (일단 2개만 생성)
-//        std::vector<std::thread> workerThreads;
-//        for (int i = 0; i < 2; i++)
-//        {
-//            workerThreads.push_back(std::thread([&]() {
-//                while (true)
-//                {
-//                    iocp.Dispatch(); // 여기서 완료된 I/O 처리 (OnRecv, OnSend)
-//                }
-//                }));
-//        }
-//
-//        for (auto& t : workerThreads) t.join();
-//    }
-//
-//    return 0;
-//}
