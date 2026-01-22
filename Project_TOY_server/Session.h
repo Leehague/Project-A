@@ -3,6 +3,7 @@
 #include <winsock2.h>
 #include <queue>
 #include <mutex>
+#include <atomic> 
 #include "RecvBuffer.h"
 #include "SendBuffer.h"
 #include "Protocol.h"
@@ -31,6 +32,7 @@ public:
     // IOCP 워커 스레드가 완료 통보를 받았을 때 호출할 콜백
     void OnRecv(int bytesTransferred);
     void OnSend(int bytesTransferred);
+    void Disconnect();
     void OnDisconnected();
 
     // 자기 자신을 SessionPtr로 반환하는 헬퍼 함수
@@ -48,7 +50,9 @@ public:
 private:
     SOCKET      _socket= INVALID_SOCKET;
     RecvBuffer  _recvBuffer;
-
+    
+    
+    std::atomic<bool> _disconnected = false; //Remove 중복실행 방지 플래그
     
 private:
     std::mutex              _lock;

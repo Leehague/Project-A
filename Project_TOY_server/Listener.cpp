@@ -41,26 +41,6 @@ bool Listener::StartAccept(int port, SessionFactory factory, IocpCore& iocp)
     return true;
 }
 
-//void Listener::Execute()
-//{
-//    while (true)
-//    {
-//        SOCKADDR_IN clientAddr;
-//        int addrLen = sizeof(clientAddr);
-//
-//        // 5. 클라이언트 접속 대기 (동기 accept)
-//        SOCKET clientSocket = ::accept(_listenSocket, (SOCKADDR*)&clientAddr, &addrLen);
-//
-//        if (clientSocket != INVALID_SOCKET)
-//        {
-//            // 접속 성공 시 등록된 핸들러 호출 (세션 생성 및 IOCP 등록)
-//            if (_onAcceptHandler)
-//                _onAcceptHandler(clientSocket);
-//        }
-//    }
-//}
-
-
 
 void Listener::Execute(IocpCore& iocp) {
     while (true) {

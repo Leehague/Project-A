@@ -37,3 +37,17 @@ GameSessionManager 구현(브로드 캐스팅 구현 포함)
 
 
 TODO 세션 관리 자동화 ,패킷 직렬화(Serialization),메모리 풀링(Memory Pooling)
+
+1.세션 관리 자동화 
+session 클래스에서 disconected 함수 구현
+아래의 흐름도로 동작하도록 구현
+명시적 종료 시: Disconnect() 호출 -> closesocket() -> Dispatch에서 bytesTransferred == 0 감지 -> OnDisconnected() 호출.
+
+강제 종료 시: (클라이언트 꺼짐) -> Dispatch에서 에러/0바이트 감지 -> OnDisconnected() 호출.
+
+
+2.패킷 직렬화 Serizlization , 패딩문제등 해결
+google protobuf 도입 
+laptop 환경에서는 설치 완
+TODO protocol.h -> .proto 형태로 변환 및 컴파일 
+TODO desktop 환경에서 google protobuf 설치 (아마 예전에 설치해둔 것이 있을 수 있음 확인할것)

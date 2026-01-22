@@ -126,14 +126,6 @@ void Session::Handle_CS_CHAT(PacketHeader* header)
     GSessionManager.Broadcast(sendBuffer);
 }
 
-void Session::OnDisconnected()
-{
-    
-    // 2. 연결 종료 시 매니저에서 삭제 (필수!)
-    GSessionManager.Remove(shared_from_this());
-    std::cout << "Client Disconnected" << std::endl;
-    
-}
 
 void Session::Send(SendBufferRef sendBuffer)
 {
@@ -205,6 +197,38 @@ void Session::OnSend(int bytesTransferred)
         RegisterSend();
     }
 }
+
+void Session::Disconnect()
+{
+    // 중복 호출 방지
+    if (_socket == INVALID_SOCKET) return;
+
+    // 소켓을 닫으면 진행 중이던 모든 비동기 IO(WSARecv, WSASend)가 
+    // 에러를 발생시키며 GQCS(Dispatch)에서 감지됩니다.
+    ::closesocket(_socket);
+    _socket = INVALID_SOCKET;
+
+}   
+
+void Session::OnDisconnected()
+{
+
+    bool expected = false;
+    if (_disconnected.compare_exchange_strong(expected, true))
+    {
+        GSessionManager.Remove(shared_from_this());
+
+        if (_socket != INVALID_SOCKET) {
+            ::closesocket(_socket);
+            _socket = INVALID_SOCKET;
+        }
+
+        std::cout << "Client Disconnected: " << GetGuid() << std::endl;
+    }
+
+}
+
+
 
 void Session::Handle_CS_WHISPER(PacketHeader* header) {
     PKT_CS_WHISPER_DATA* pkt = reinterpret_cast<PKT_CS_WHISPER_DATA*>(header);
