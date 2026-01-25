@@ -1,7 +1,16 @@
+#ifndef ABSL_CONSUME_DLL
+#define ABSL_CONSUME_DLL
+#endif
+
+#ifndef PROTOBUF_USE_DLLS
+#define PROTOBUF_USE_DLLS
+#endif
+
 #include "IocpCore.h"
 #include "Listener.h"
 #include "Session.h"
 #include "Types.h"
+#include "Protocol/Protocol.pb.h"
 #include <thread>
 #include <vector>
 #include <iostream>

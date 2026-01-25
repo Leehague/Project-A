@@ -16,7 +16,7 @@ Session::~Session()
         closesocket(_socket);
 }
 
-// [1] 수신 예약 (WSARecv)
+//수신 예약 (WSARecv)
 void Session::Receive()
 {
     // Overlapped 정보를 설정 (나중에 IOCP에서 이 정보를 보고 처리함)
@@ -47,10 +47,14 @@ void Session::Receive()
     }
 }
 
-// [2] 수신 완료 콜백 (IOCP Worker Thread에 의해 호출됨)
+//수신 완료 콜백 (IOCP Worker Thread에 의해 호출됨)
 void Session::OnRecv(int bytesTransferred)
 {
-    if (bytesTransferred == 0) { OnDisconnected(); return; }
+    if (bytesTransferred == 0) 
+    {
+        OnDisconnected(); 
+        return; 
+    }
     if (_recvBuffer.OnWrite(bytesTransferred) == false) { OnDisconnected(); return; }
 
     while (true)
@@ -69,7 +73,7 @@ void Session::OnRecv(int bytesTransferred)
             break;
 
         // 4. 패킷 처리 함수로 전달
-        HandlePacket(header);
+        HandlePacket(reinterpret_cast<BYTE*>(_recvBuffer.ReadPos()), header->size);
 
         // 5. 처리한 패킷 크기만큼 읽기 커서 이동
         _recvBuffer.OnRead(header->size);
@@ -79,53 +83,98 @@ void Session::OnRecv(int bytesTransferred)
     Receive();
 }
 
-void Session::HandlePacket(PacketHeader* header)
+
+void Session::HandlePacket(BYTE* buffer, int32 len)
 {
-    switch (header->type)
+    PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
+
+    // 헤더 바로 뒷부분(실제 Protobuf 데이터가 시작되는 곳)
+    BYTE* payload = buffer + sizeof(PacketHeader);
+    int32 payloadSize = len - sizeof(PacketHeader);
+
+    switch (header->id)
     {
-    case PKT_CS_LOGIN:
-        Handle_CS_LOGIN(header);
-        break;
-    case PKT_CS_CHAT:
-        Handle_CS_CHAT(header);
+    case Protocol::PKT_CS_LOGIN:
+    {
+        Protocol::CS_LOGIN pkt;
+        if (pkt.ParseFromArray(payload, payloadSize))
+        {
+            // 성공! 이제 pkt.userid() 등으로 데이터를 꺼내 씁니다.
+            Handle_CS_LOGIN(pkt);
+        }
         break;
     }
+    // ... 다른 패킷들
+    }
 }
-void Session::Handle_CS_LOGIN(PacketHeader* header)
+
+
+void Session::Handle_CS_LOGIN(const Protocol::CS_LOGIN& pkt)
 {
-    PKT_CS_LOGIN_DATA* pkt = reinterpret_cast<PKT_CS_LOGIN_DATA*>(header);
-    std::cout << "로그인 요청 ID: " << pkt->userId << std::endl;
+    std::cout << "로그인 요청 ID: " << pkt.userid() << std::endl;
 
-    // 응답 패킷 만들기 (LOGIN_OK)
-    PKT_SC_LOGIN_OK_DATA resPkt;
-    resPkt.header.size = sizeof(resPkt);
-    resPkt.header.type = PKT_SC_LOGIN_OK;
-    resPkt.success = true;
-    resPkt.playerGuid = 1234; //TEMP 클라이언트 고유 식별 번호 부여 알고리즘 필요 /DB 추가시 DB를 활용
-    //[수정] , 스마트포인터 사용
-    SendBufferRef sb = std::make_shared<SendBuffer>(sizeof(PKT_SC_LOGIN_OK_DATA));
-    sb->CopyData(resPkt);
-    Send(sb);
+    //TODO 로그인 유효성 검증 로직 추가
+        
+    // [수정] google protobuf 도입
+    // 응답 전송 (아까 만든 ServerUtils 활용)
+    Protocol::SC_LOGIN_OK resPkt;
+    resPkt.set_success(true);
+    auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
+    this->Send(sendBuffer);
+
+
+
 }
-void Session::Handle_CS_CHAT(PacketHeader* header)
+
+// [수정]
+void Session::Handle_CS_CHAT(const Protocol::CS_CHAT& pkt)
 {
-    PKT_CS_CHAT_DATA* pkt = reinterpret_cast<PKT_CS_CHAT_DATA*>(header);
+    // 1. 받은 패킷에서 데이터 추출 (pkt->chatMsg 대신 pkt.msg() 등 사용)
+    // .proto 파일에 정의한 필드명에 따라 함수명이 결정됩니다. (예: string msg -> msg())
+    std::string receivedMsg = pkt.msg();
 
-    // [수정] 스마트 포인터로 생성
-    SendBufferRef sendBuffer = std::make_shared<SendBuffer>(sizeof(PKT_SC_CHAT_BROADCAST_DATA));
+    // 2. 보낼 응답 패킷 생성 및 데이터 채우기
+    Protocol::SC_CHAT_BROADCAST res;
 
-    PKT_SC_CHAT_BROADCAST_DATA res;
-    res.header.size = sizeof(res);
-    res.header.type = PKT_SC_CHAT_BROADCAST;
-    res.playerId = (int)GetSocket();
-    strcpy_s(res.chatMsg, pkt->chatMsg);
+    // 플레이어 ID 설정 (소켓 번호보다는 시스템에서 부여한 고유 ID가 좋습니다)
+    res.set_playerid(static_cast<uint64>(GetSocket()));
 
-    sendBuffer->CopyData(res);
+    // 채팅 내용 설정 (Protobuf가 내부적으로 메모리 할당을 관리하므로 strcpy_s가 필요 없습니다)
+    res.set_msg(receivedMsg);
 
-    // 브로드캐스팅
-    GSessionManager.Broadcast(sendBuffer);
+    // 3. ServerUtils를 사용하여 가변 크기용 SendBuffer 생성
+    // 내부에서 ByteSizeLong() 호출, 헤더 기입, 직렬화가 모두 처리됩니다.
+    SendBufferRef sendBuffer = ServerUtils::MakeSendBuffer(res, Protocol::PKT_SC_CHAT_BROADCAST);
+
+    // 4. 브로드캐스팅
+    if (sendBuffer)
+    {
+        GSessionManager.Broadcast(sendBuffer);
+    }
 }
 
+void Session::Handle_CS_WHISPER(const Protocol::CS_WHISPER& pkt) {
+
+    uint64 targetId = pkt.targetplayerid(); // Protobuf getter
+    std::string msg = pkt.msg();
+
+    // 1. 타겟에게 보낼 패킷 생성 (SC_WHISPER 권장)
+    Protocol::SC_WHISPER res;
+    res.set_fromplayerid(this->GetPlayerId()); // 보낸 사람 ID
+    res.set_msg(msg);
+
+    // 2. 버퍼 생성
+    SendBufferRef sendBuffer = ServerUtils::MakeSendBuffer(res, Protocol::PKT_SC_WHISPER);
+
+    if (sendBuffer)
+    {
+        // 3. 타겟에게 전송
+        GSessionManager.SendTo(targetId, sendBuffer);
+
+        // 4. (옵션) 보낸 사람 본인에게도 "전송 성공" 피드백 패킷을 보내면 좋습니다.
+        // 또는 그냥 클라가 보낸 메시지를 본인 화면에 바로 띄우도록 설계할 수도 있습니다.
+    }
+}
 
 void Session::Send(SendBufferRef sendBuffer)
 {
@@ -226,26 +275,6 @@ void Session::OnDisconnected()
         std::cout << "Client Disconnected: " << GetGuid() << std::endl;
     }
 
-}
-
-
-
-void Session::Handle_CS_WHISPER(PacketHeader* header) {
-    PKT_CS_WHISPER_DATA* pkt = reinterpret_cast<PKT_CS_WHISPER_DATA*>(header);
-
-    // 전달할 패킷 생성
-    SendBufferRef sendBuffer = std::make_shared<SendBuffer>(sizeof(PKT_SC_WHISPER_DATA));
-
-    PKT_SC_WHISPER_DATA res;
-    res.header.size = sizeof(res);
-    res.header.type = PKT_SC_WHISPER;
-    res.fromId = this->GetGuid(); // 보낸 사람 (나)
-    strcpy_s(res.chatMsg, pkt->chatMsg);
-
-    sendBuffer->CopyData(res);
-
-    // 매니저를 통해 특정 타겟에게만 발송
-    GSessionManager.SendTo(pkt->targetId, sendBuffer);
 }
 
 void Session::OnConnected()

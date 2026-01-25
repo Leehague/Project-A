@@ -7,9 +7,10 @@ enum PacketId {
     PKT_NONE = 0;
     PKT_CS_LOGIN = 1;          // 클라이언트 -> 서버 (로그인 요청)
     PKT_SC_LOGIN_OK = 2;       // 서버 -> 클라이언트 (로그인 결과)
-    PKT_CS_CHAT = 3;           // 클라이언트 -> 서버 (채팅 보냄)
+    PKT_CS_CHAT = 3;           // 클라이언트 -> 서버 (채팅 보냄)   
     PKT_SC_CHAT_BROADCAST = 4; // 서버 -> 클라이언트 (채팅 뿌리기)
     PKT_SC_WHISPER = 5;           // 서버 -> 클라이언트 (귓속말)
+    PKT_CS_WHISPER = 6;         //클라이언트 -> 서버 (귓속말)
 }
 
 // 1. 로그인 요청
@@ -29,12 +30,21 @@ message CS_CHAT {
     string msg = 1;
 }
 
+// 4. 브로드캐스팅 패킷
 message SC_CHAT_BROADCAST {
     uint64 playerId = 1;
     string msg = 2;
 }
 
-message PKT_SC_WHISPER {
-    uint64 fromId = 1;        // 보낸 사람의 GUID
-    string msg = 2;   // 내용
+//5. 귓속말 (서버 -> 클라) 패킷
+message SC_WHISPER {
+    uint64 fromplayerId = 1;   
+    string msg = 2;      
 }
+
+//6.귓속말 요청(클라 -> 서버) 패킷
+message CS_WHISPER  
+{
+    uint64 targetplayerId = 1;
+    string msg = 2;
+}   

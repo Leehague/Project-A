@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <memory>
 
-
+using BYTE = unsigned char;
 
 using uint8 = std::uint8_t;
 using uint16 = std::uint16_t;
@@ -19,3 +19,4 @@ class Session; class SendBuffer;
 // 스마트 포인터 별칭 정의
 using SessionPtr = std::shared_ptr<Session>;
 using SendBufferRef = std::shared_ptr<SendBuffer>;
+

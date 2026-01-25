@@ -39,6 +39,9 @@
     <ClCompile Include="BufferReader.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Protocol\Protocol.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RecvBuffer.h">
@@ -63,6 +66,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BufferWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol\Protocol.pb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
