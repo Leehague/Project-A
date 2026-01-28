@@ -49,5 +49,5 @@ session 클래스에서 disconected 함수 구현
 2.패킷 직렬화 Serizlization , 패딩문제등 해결
 google protobuf 도입 
 laptop 환경에서는 설치 완
-TODO protocol.h -> .proto 형태로 변환 및 컴파일 
-TODO desktop 환경에서 google protobuf 설치 (아마 예전에 설치해둔 것이 있을 수 있음 확인할것)
+protocol.h -> .proto 형태로 변환 및 컴파일 
+desktop 환경에서 google protobuf 설치 및 적용 Genproto.bat 파일 생성
