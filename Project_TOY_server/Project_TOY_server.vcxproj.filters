@@ -42,6 +42,9 @@
     <ClCompile Include="Protocol\Protocol.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PacketHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RecvBuffer.h">
@@ -81,5 +84,6 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Protocol.proto" />
+    <None Include="GeneratePacketHandler.py" />
   </ItemGroup>
 </Project>

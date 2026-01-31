@@ -112,6 +112,9 @@
       <AdditionalLibraryDirectories>C:\Users\ha052\vcpkg\vcpkg-master\installed\x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libprotobufd.lib;abseil_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>python "$(SolutionDir)GeneratePacketHandler.py"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -133,6 +136,7 @@
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="Protocol\Protocol.pb.cc" />
     <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="SendBuffer.cpp" />
@@ -152,6 +156,7 @@
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="GeneratePacketHandler.py" />
     <None Include="packages.config" />
     <None Include="Protocol.proto" />
   </ItemGroup>

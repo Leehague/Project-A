@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <memory>
 
-class PacketSession;
+
 
 using BYTE = unsigned char;
 
@@ -21,12 +21,5 @@ class Session; class SendBuffer;
 // 스마트 포인터 별칭 정의
 using SessionPtr = std::shared_ptr<Session>;
 using SendBufferRef = std::shared_ptr<SendBuffer>;
-using PacketSessionRef = std::shared_ptr<PacketSession>;
+using SessionRef = std::shared_ptr<Session>;
 
-#pragma pack(push, 1) // 메모리 정렬을 1바이트 단위로 (빈틈 없게)
-struct PacketHeader
-{
-    uint16 size; // 패킷의 전체 크기 (헤더 포함)
-    uint16 id;   // 패킷 종류 (예: 1번은 로그인, 2번은 이동...)
-};
-#pragma pack(pop)

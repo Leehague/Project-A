@@ -14,6 +14,7 @@
 #include <thread>
 #include <vector>
 #include <iostream>
+#include "PacketHandler.h"
 
 
 #pragma comment(lib, "ws2_32.lib")
@@ -21,6 +22,8 @@
 
 int main()
 {
+    PacketHandler::Init();
+
     IocpCore iocp;
     Listener listener;
 

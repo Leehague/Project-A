@@ -1,48 +1,48 @@
-syntax = "proto3";
+ï»¿syntax = "proto3";
 package Protocol;
 
-// ÆÐÅ¶ÀÇ Á¾·ù¸¦ ±¸ºÐÇÏ´Â ID
-// ¾Õ¿¡ PKT_¸¦ ºÙ¿©¼­ ±¸ºÐÇÏ±â ½±°Ô ¸¸µì´Ï´Ù.
+// íŒ¨í‚·ì˜ ì¢…ë¥˜ë¥¼ êµ¬ë¶„í•˜ëŠ” ID
+// ì•žì— PKT_ë¥¼ ë¶™ì—¬ì„œ êµ¬ë¶„í•˜ê¸° ì‰½ê²Œ ë§Œë“­ë‹ˆë‹¤.
 enum PacketId {
     PKT_NONE = 0;
-    PKT_CS_LOGIN = 1;          // Å¬¶óÀÌ¾ðÆ® -> ¼­¹ö (·Î±×ÀÎ ¿äÃ»)
-    PKT_SC_LOGIN_OK = 2;       // ¼­¹ö -> Å¬¶óÀÌ¾ðÆ® (·Î±×ÀÎ °á°ú)
-    PKT_CS_CHAT = 3;           // Å¬¶óÀÌ¾ðÆ® -> ¼­¹ö (Ã¤ÆÃ º¸³¿)   
-    PKT_SC_CHAT_BROADCAST = 4; // ¼­¹ö -> Å¬¶óÀÌ¾ðÆ® (Ã¤ÆÃ »Ñ¸®±â)
-    PKT_SC_WHISPER = 5;           // ¼­¹ö -> Å¬¶óÀÌ¾ðÆ® (±Ó¼Ó¸»)
-    PKT_CS_WHISPER = 6;         //Å¬¶óÀÌ¾ðÆ® -> ¼­¹ö (±Ó¼Ó¸»)
+    PKT_CS_LOGIN = 1;          // í´ë¼ì´ì–¸íŠ¸ -> ì„œë²„ (ë¡œê·¸ì¸ ìš”ì²­)
+    PKT_SC_LOGIN_OK = 2;       // ì„œë²„ -> í´ë¼ì´ì–¸íŠ¸ (ë¡œê·¸ì¸ ê²°ê³¼)
+    PKT_CS_CHAT = 3;           // í´ë¼ì´ì–¸íŠ¸ -> ì„œë²„ (ì±„íŒ… ë³´ëƒ„)   
+    PKT_SC_CHAT_BROADCAST = 4; // ì„œë²„ -> í´ë¼ì´ì–¸íŠ¸ (ì±„íŒ… ë¿Œë¦¬ê¸°)
+    PKT_SC_WHISPER = 5;           // ì„œë²„ -> í´ë¼ì´ì–¸íŠ¸ (ê·“ì†ë§)
+    PKT_CS_WHISPER = 6;         //í´ë¼ì´ì–¸íŠ¸ -> ì„œë²„ (ê·“ì†ë§)
 }
 
-// 1. ·Î±×ÀÎ ¿äÃ»
+// 1. ë¡œê·¸ì¸ ìš”ì²­
 message CS_LOGIN {
     string userId = 1;
     string password = 2;
 }
 
-// 2. ·Î±×ÀÎ ÀÀ´ä
+// 2. ë¡œê·¸ì¸ ì‘ë‹µ
 message SC_LOGIN_OK {
     bool success = 1;
     uint64 playerGuid = 2;
 }
 
-// 3. Ã¤ÆÃ ÆÐÅ¶
+// 3. ì±„íŒ… íŒ¨í‚·
 message CS_CHAT {
     string msg = 1;
 }
 
-// 4. ºê·ÎµåÄ³½ºÆÃ ÆÐÅ¶
+// 4. ë¸Œë¡œë“œìºìŠ¤íŒ… íŒ¨í‚·
 message SC_CHAT_BROADCAST {
     uint64 playerId = 1;
     string msg = 2;
 }
 
-//5. ±Ó¼Ó¸» (¼­¹ö -> Å¬¶ó) ÆÐÅ¶
+//5. ê·“ì†ë§ (ì„œë²„ -> í´ë¼) íŒ¨í‚·
 message SC_WHISPER {
     uint64 fromplayerId = 1;   
     string msg = 2;      
 }
 
-//6.±Ó¼Ó¸» ¿äÃ»(Å¬¶ó -> ¼­¹ö) ÆÐÅ¶
+//6.ê·“ì†ë§ ìš”ì²­(í´ë¼ -> ì„œë²„) íŒ¨í‚·
 message CS_WHISPER  
 {
     uint64 targetplayerId = 1;

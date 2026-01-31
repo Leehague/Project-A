@@ -10,6 +10,7 @@
 #include "GameSessionManager.h"
 #include "Types.h"
 #include "ServerUtils.h"
+#include "PacketHandler.h"
 
 enum class IO_TYPE { RECV, SEND };
 
@@ -70,8 +71,8 @@ private:
 private:
     void RegisterSend(); // 실제로 WSASend를 호출하는 함수
     //handler 함수들
-    void HandlePacket(BYTE* buffer, int32 len);
+    /*void HandlePacket(BYTE* buffer, int32 len);
     void Handle_CS_LOGIN(const Protocol::CS_LOGIN& pkt);
     void Handle_CS_CHAT(const Protocol::CS_CHAT& pkt);
-    void Handle_CS_WHISPER(const Protocol::CS_WHISPER& pkt);
+    void Handle_CS_WHISPER(const Protocol::CS_WHISPER& pkt);*/
 };
