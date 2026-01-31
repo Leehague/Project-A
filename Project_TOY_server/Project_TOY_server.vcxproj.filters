@@ -74,6 +74,9 @@
     <ClInclude Include="ServerUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PacketHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

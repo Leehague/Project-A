@@ -104,7 +104,26 @@ void Session::HandlePacket(BYTE* buffer, int32 len)
         }
         break;
     }
-    // ... 다른 패킷들
+    case Protocol::PKT_CS_CHAT:
+    {
+        Protocol::CS_CHAT pkt;
+        if (pkt.ParseFromArray(payload, payloadSize))
+        {
+            // 성공! 이제 pkt.userid() 등으로 데이터를 꺼내 씁니다.
+            Handle_CS_CHAT(pkt);
+        }
+        break;
+    }    
+    case Protocol::PKT_CS_WHISPER:
+    {
+        Protocol::CS_WHISPER pkt;
+        if (pkt.ParseFromArray(payload, payloadSize))
+        {
+            // 성공! 이제 pkt.userid() 등으로 데이터를 꺼내 씁니다.
+            Handle_CS_WHISPER(pkt);
+        }
+        break;
+    }
     }
 }
 

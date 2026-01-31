@@ -143,6 +143,7 @@
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="Protocol\Protocol.pb.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="SendBuffer.h" />

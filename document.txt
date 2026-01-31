@@ -51,3 +51,5 @@ google protobuf 도입
 laptop 환경에서는 설치 완
 protocol.h -> .proto 형태로 변환 및 컴파일 
 desktop 환경에서 google protobuf 설치 및 적용 Genproto.bat 파일 생성
+
+6주차 (PacketHandler 구현): 수백 개의 패킷을 효율적으로 처리하기 위한 자동 생성(Code Generator) 시스템을 만듭니다.
