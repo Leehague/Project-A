@@ -17,3 +17,5 @@ Project_TOY_server/Protocol/Protocol.pb.cc
 Project_TOY_server/Protocol/Protocol.pb.h
 Project_TOY_server/Genproto.bat
 Project_TOY_server/Protocol
+DummyClient/.vs
+DummyClient/obj

@@ -56,5 +56,4 @@ desktop 환경에서 google protobuf 설치 및 적용 Genproto.bat 파일 생�
 GeneratePacketHandler.py 으로 PacketHandler.h 파일 자동으로 생성 , proto 파일을 참고해서 생성함.(즉 proto 파일만 직접 편집하면 됨)
 PacketHandler.cpp 파일은 수동으로 생성 및 편집 요함.
 Session.cpp 에서 정의하고 있던 핸들러 함수들만을 위한 클래스 정의및 생성 완료 , 자동화 code Generator 역할을 할 python 코드역시 프로젝트에 포함 완료.
-(TODO) desktop 환경에서 프로젝트 설정으로 빌드전 이벤트로써 GeneratePacketHandler.py 실행 커맨드 라인을 넣을것 
 (TODO) Dumyclients 를 c#콘솔앱으로 만들어서 네트워크 테스트

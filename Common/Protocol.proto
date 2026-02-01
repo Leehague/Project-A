@@ -1,0 +1,50 @@
+﻿syntax = "proto3";
+package Protocol;
+
+// 패킷의 종류를 구분하는 ID
+// 앞에 PKT_를 붙여서 구분하기 쉽게 만듭니다.
+enum PacketId {
+    PKT_NONE = 0;
+    PKT_CS_LOGIN = 1;          // 클라이언트 -> 서버 (로그인 요청)
+    PKT_SC_LOGIN_OK = 2;       // 서버 -> 클라이언트 (로그인 결과)
+    PKT_CS_CHAT = 3;           // 클라이언트 -> 서버 (채팅 보냄)   
+    PKT_SC_CHAT_BROADCAST = 4; // 서버 -> 클라이언트 (채팅 뿌리기)
+    PKT_SC_WHISPER = 5;           // 서버 -> 클라이언트 (귓속말)
+    PKT_CS_WHISPER = 6;         //클라이언트 -> 서버 (귓속말)
+}
+
+// 1. 로그인 요청
+message CS_LOGIN {
+    string userId = 1;
+    string password = 2;
+}
+
+// 2. 로그인 응답
+message SC_LOGIN_OK {
+    bool success = 1;
+    uint64 playerGuid = 2;
+}
+
+// 3. 채팅 패킷
+message CS_CHAT {
+    string msg = 1;
+}
+
+// 4. 브로드캐스팅 패킷
+message SC_CHAT_BROADCAST {
+    uint64 playerId = 1;
+    string msg = 2;
+}
+
+//5. 귓속말 (서버 -> 클라) 패킷
+message SC_WHISPER {
+    uint64 fromplayerId = 1;   
+    string msg = 2;      
+}
+
+//6.귓속말 요청(클라 -> 서버) 패킷
+message CS_WHISPER  
+{
+    uint64 targetplayerId = 1;
+    string msg = 2;
+}   
