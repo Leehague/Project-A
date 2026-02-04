@@ -19,6 +19,14 @@ Session::~Session()
 //수신 예약 (WSARecv)
 void Session::Receive()
 {
+    // [추가] 만약 여유 공간이 없으면 Clean을 한 번 더 시도하거나 에러 처리
+    if (_recvBuffer.FreeSize() <= 0)
+    {
+        _recvBuffer.Clean();
+        // Clean 후에도 공간이 없다면 버퍼 크기 자체가 너무 작은 것
+        if (_recvBuffer.FreeSize() <= 0) { OnDisconnected(); return; }
+    }
+
     // Overlapped 정보를 설정 (나중에 IOCP에서 이 정보를 보고 처리함)
     OverlappedEx* overlapped = new OverlappedEx(); // 실제로는 풀링해서 써야 함
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));
@@ -67,6 +75,26 @@ void Session::OnRecv(int bytesTransferred)
 
         // 2. 패킷 헤더를 읽어 전체 크기 확인
         PacketHeader* header = reinterpret_cast<PacketHeader*>(_recvBuffer.ReadPos());
+
+        //logging
+        std::cout <<"header size : " << header->size << std::endl;;
+
+        // 서버의 OnRecv 혹은 패킷 분기 로직
+
+        uint16_t packetId = header->id;
+
+        // GPacketHandler 크기 체크
+        if (packetId >= MAX_PACKET_ID) {
+            std::cout << "Error: Invalid Packet ID " << packetId << std::endl;
+            return; // 여기서 걸린다면 벡터 크기 초기화 문제!
+        }
+
+        if (GPacketHandler[packetId] == nullptr) {
+            std::cout << "Error: No Handler for ID " << packetId << std::endl;
+            return;
+        }
+        // [중요] 비정상적인 대형 패킷 방어
+        if (header->size > 1024 * 5) { OnDisconnected(); return; }
 
         // 3. 전체 패킷이 다 왔는지 확인
         if (dataSize < header->size)

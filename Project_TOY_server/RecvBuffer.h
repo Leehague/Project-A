@@ -19,8 +19,9 @@ public:
     bool OnRead(int numOfBytes);
 
     // 쓰기 위치 주소 (WSARecv에 넘겨줄 버퍼 시작점)
-    char* WritePos() { return &_buffer[_writePos]; }
-
+    //char* WritePos() { return &_buffer[_writePos]; }
+    char* WritePos() { return &_buffer[0] + _writePos; } // 인덱싱[] 대신 포인터 산술 연산 사용
+    
     // 읽기 위치 주소 (패킷 해석을 시작할 지점)
     char* ReadPos() { return &_buffer[_readPos]; }
 

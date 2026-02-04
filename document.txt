@@ -56,4 +56,23 @@ desktop 환경에서 google protobuf 설치 및 적용 Genproto.bat 파일 생�
 GeneratePacketHandler.py 으로 PacketHandler.h 파일 자동으로 생성 , proto 파일을 참고해서 생성함.(즉 proto 파일만 직접 편집하면 됨)
 PacketHandler.cpp 파일은 수동으로 생성 및 편집 요함.
 Session.cpp 에서 정의하고 있던 핸들러 함수들만을 위한 클래스 정의및 생성 완료 , 자동화 code Generator 역할을 할 python 코드역시 프로젝트에 포함 완료.
-(TODO) Dumyclients 를 c#콘솔앱으로 만들어서 네트워크 테스트
+Dumyclients 를 c#콘솔앱으로 만들어서 네트워크 테스트
+- 런타임 에러 : vector subscript out of range 발생
+- PacketHandler , Session:OnRecv 등에 방어코드 추가 -> 여전히 같은 런타임 에러
+- 디버깅모드 이용, 콜스텍 추적 및 c++ 스크립트에 대한 geminai의 분석
+1. 에러 원인 분석: RecvBuffer의 커서 관리 문제
+콜스택 : Session::Receive() -> RecvBuffer::WritePos() -> _buffer[index]
+여기서 _writePos가 _buffer의 실제 크기(_capacity)와 같거나 커졌기 때문에 벡터 범위 초과 에러가 발생합니다
+원인
+데이터 누적: Session::OnRecv 루프 내에서 패킷을 처리한 후 _recvBuffer.OnRead(header->size)를 호출하여 _readPos를 뒤로 밀지만, 정작 데이터를 쓰는 위치인 _writePos는 계속 뒤로만 이동합니다
+Clean 타이밍 문제: 현재 Session::OnRecv 마지막에 _recvBuffer.Clean()을 호출하고 있지만, 만약 패킷이 아주 작게 쪼개져서 오거나 버퍼의 남은 공간(FreeSize)이 다음 수신을 받기에 부족한 상태가 되면, _writePos가 벡터의 끝에 도달하게 됩니다.
+Receive() 예약 시 검증 부족: Session::Receive() 함수는 호출될 때마다 _recvBuffer.WritePos()를 통해 다음 쓰기 위치를 가져오는데, 이때 _writePos가 이미 _capacity에 도달해 있다면 즉시 에러가 발생합니다.
+
+-RecvBuffer.h::char* WritePos() { return &_buffer[0] + _writePos; } // 인덱싱[] 대신 포인터 산술 연산 사용
+
+-Session::Receive() if (_recvBuffer.FreeSize() <= 0) 예외 처리
+
+-> 런타임 에러 해결
+
+- 추가 더미 클라이언트 연결을 서버쪽에서 자동으로 끊는 문제 발생, 정확한 요인은 디버깅 필요 (디버그코드 추가해서 알아낼것)
+(TODO) 서버쪽 디버그 코드 추가로 서버측 비정상적인 연결 해제 문제 원인 파악 - 서버에서 '문제가 있는 연결' 로 간주하고 자동으로 끊고 있음, 여러 예외 코드중 하나에 걸리고 있것으로 추정
