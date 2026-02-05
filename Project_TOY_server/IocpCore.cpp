@@ -2,6 +2,30 @@
 #include "Session.h"
 #include "Types.h"
 #include <iostream>
+#include <winerror.h>
+
+void PrintErrorCode(int32_t errorCode)
+{
+    LPVOID errorMsg;
+
+    // 시스템으로부터 에러 코드에 해당하는 메시지를 가져옵니다.
+    ::FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        errorCode,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR)&errorMsg,
+        0,
+        NULL
+    );
+
+    std::wcout << L"Error Code: " << errorCode << L" / Message: " << (wchar_t*)errorMsg << std::endl;
+
+    // 사용된 메모리를 해제합니다.
+    ::LocalFree(errorMsg);
+}
+
+
 
 IocpCore::IocpCore()
 {
@@ -48,6 +72,8 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
         {
             //TODO 세션상태 체크 로직 추가
 
+            //에러 종류 판별 및 디버깅 로그 출력
+            PrintErrorCode(errCode);
 
             session->OnDisconnected();
             if (overlappedEx) delete overlappedEx;

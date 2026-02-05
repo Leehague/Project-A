@@ -1,11 +1,14 @@
 #include "Session.h"
 #include <iostream>
 
-Session::Session() : _recvBuffer(1024 * 10)
+
+
+Session::Session() : _recvBuffer(1024 * 64)
 {
+
 }
 
-Session::Session(SOCKET socket) : _socket(socket), _recvBuffer(1024 * 10) // 10KB 버퍼
+Session::Session(SOCKET socket) : _socket(socket), _recvBuffer(1024 * 64) // 64KB 버퍼
 {
     
 }
@@ -19,19 +22,26 @@ Session::~Session()
 //수신 예약 (WSARecv)
 void Session::Receive()
 {
+    if (_socket == INVALID_SOCKET) return;
+
     // [추가] 만약 여유 공간이 없으면 Clean을 한 번 더 시도하거나 에러 처리
-    if (_recvBuffer.FreeSize() <= 0)
+    if (_recvBuffer.FreeSize() < sizeof(PacketHeader))
     {
         _recvBuffer.Clean();
         // Clean 후에도 공간이 없다면 버퍼 크기 자체가 너무 작은 것
-        if (_recvBuffer.FreeSize() <= 0) { OnDisconnected(); return; }
+        if (_recvBuffer.FreeSize() < sizeof(PacketHeader))
+        { 
+            std::cout << "Session::Receive , recvBuffer is small" << std::endl;
+            OnDisconnected();
+            return; 
+        }
     }
 
     // Overlapped 정보를 설정 (나중에 IOCP에서 이 정보를 보고 처리함)
     OverlappedEx* overlapped = new OverlappedEx(); // 실제로는 풀링해서 써야 함
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));
     overlapped->type = IO_TYPE::RECV;
-    overlapped->owner = this;
+    overlapped->owner = shared_from_this();
 
     // WSABUF 설정: RecvBuffer에서 쓸 수 있는 공간을 OS에 넘겨줌
     WSABUF wsaBuf;
@@ -51,6 +61,7 @@ void Session::Receive()
         {
             // 진짜 에러 발생 시 처리
             std::cout << "WSARecv Error: " << err << std::endl;
+            delete overlapped;
         }
     }
 }
@@ -60,10 +71,15 @@ void Session::OnRecv(int bytesTransferred)
 {
     if (bytesTransferred == 0) 
     {
+        std::cout << "bytesTransferred is zero" << std::endl;
         OnDisconnected(); 
         return; 
     }
-    if (_recvBuffer.OnWrite(bytesTransferred) == false) { OnDisconnected(); return; }
+    if (_recvBuffer.OnWrite(bytesTransferred) == false) 
+    { 
+        std::cout << "Session::OnRecv , recvBuffer is full (OnWrite failed)" << std::endl;
+        OnDisconnected(); 
+        return; }
 
     while (true)
     {
@@ -114,7 +130,6 @@ void Session::OnRecv(int bytesTransferred)
     Receive();
 }
 
-
 void Session::Send(SendBufferRef sendBuffer)
 {
     std::lock_guard<std::mutex> lock(_lock);
@@ -144,7 +159,7 @@ void Session::RegisterSend()
     OverlappedEx* overlapped = new OverlappedEx(); // 풀링 권장
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));
     overlapped->type = IO_TYPE::SEND;
-    overlapped->owner = this;
+    overlapped->owner = shared_from_this();
 
     WSABUF wsaBuf;
     wsaBuf.buf = sendBuffer->Buffer();
@@ -200,11 +215,31 @@ void Session::Disconnect()
 
 void Session::OnDisconnected()
 {
+    // 원자적으로 체크하여 딱 한 번만 실행되도록 보장
+    if (_disconnected.exchange(true) == true)
+        return;
+    // 여기서 세션 매니저에서 제거
+    auto self = shared_from_this();
+    GSessionManager.Remove(self);
 
-    bool expected = false;
+    if (_socket != INVALID_SOCKET) {
+        ::closesocket(_socket);
+        _socket = INVALID_SOCKET;
+    }
+    std::cout << "Client Disconnected: " << GetGuid() << std::endl;
+    /*bool expected = false;
     if (_disconnected.compare_exchange_strong(expected, true))
     {
-        GSessionManager.Remove(shared_from_this());
+
+        try {
+            SessionPtr self = shared_from_this();
+            GSessionManager.Remove(self);
+        }
+        catch (const std::bad_weak_ptr& e) 
+        {
+            std::cout << "Already destructing session..." << std::endl;
+        }
+        
 
         if (_socket != INVALID_SOCKET) {
             ::closesocket(_socket);
@@ -212,7 +247,7 @@ void Session::OnDisconnected()
         }
 
         std::cout << "Client Disconnected: " << GetGuid() << std::endl;
-    }
+    }*/
 
 }
 

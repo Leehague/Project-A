@@ -16,7 +16,7 @@ bool Handle_CS_LOGIN(SessionRef& session, Protocol::CS_LOGIN& pkt)
     //TODO 로그인 유효성 검증 로직 추가
 
     // [수정] google protobuf 도입
-    // 응답 전송 (아까 만든 ServerUtils 활용)
+    // 응답 전송 
     Protocol::SC_LOGIN_OK resPkt;
     resPkt.set_success(true);
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);

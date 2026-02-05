@@ -12,12 +12,14 @@
 #include "ServerUtils.h"
 #include "PacketHandler.h"
 
+
+
 enum class IO_TYPE { RECV, SEND };
 
 struct OverlappedEx {
     WSAOVERLAPPED overlapped; // OS가 요구하는 기본 구조체 (반드시 맨 앞)
     IO_TYPE type;             // 어떤 작업인지 구분
-    void* owner;              // 이 작업을 요청한 Session 객체 주소
+    SessionRef owner;              // 이 작업을 요청한 Session 객체 주소
 };
 
 class Session :public std::enable_shared_from_this<Session>
