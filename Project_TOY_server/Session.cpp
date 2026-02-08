@@ -215,9 +215,13 @@ void Session::Disconnect()
 
 void Session::OnDisconnected()
 {
+
+
     // 원자적으로 체크하여 딱 한 번만 실행되도록 보장
     if (_disconnected.exchange(true) == true)
         return;
+
+    std::cout << "Client Disconnected: " << GetGuid() << std::endl;
     // 여기서 세션 매니저에서 제거
     auto self = shared_from_this();
     GSessionManager.Remove(self);
@@ -226,7 +230,7 @@ void Session::OnDisconnected()
         ::closesocket(_socket);
         _socket = INVALID_SOCKET;
     }
-    std::cout << "Client Disconnected: " << GetGuid() << std::endl;
+    
     /*bool expected = false;
     if (_disconnected.compare_exchange_strong(expected, true))
     {

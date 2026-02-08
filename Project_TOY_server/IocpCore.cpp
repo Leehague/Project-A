@@ -68,23 +68,23 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
     if (ret==false)
     {
         int errCode = ::WSAGetLastError();
-        if (errCode != WAIT_TIMEOUT && session)
+        if (errCode != WAIT_TIMEOUT && overlappedEx && overlappedEx->owner)
         {
             //TODO 세션상태 체크 로직 추가
 
             //에러 종류 판별 및 디버깅 로그 출력
             PrintErrorCode(errCode);
 
-            session->OnDisconnected();
-            if (overlappedEx) delete overlappedEx;
+            overlappedEx->owner->OnDisconnected();
+            delete overlappedEx;
             return false;
         }
     }
     
     // 전송된 바이트가 0이면 상대방이 접속을 정상 종료(Graceful Shutdown)한 것
-    if (bytesTransferred == 0 && session)
+    if (bytesTransferred == 0 && overlappedEx->owner)
     {
-        session->OnDisconnected();
+        overlappedEx->owner->OnDisconnected();
         if (overlappedEx) { delete overlappedEx; }
        
 
@@ -93,9 +93,9 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
 
     // 성공적으로 작업을 꺼내왔다면 타입에 따라 세션의 콜백 호출
     if (overlappedEx->type == IO_TYPE::RECV)
-        session->OnRecv(bytesTransferred);
+        overlappedEx->owner->OnRecv(bytesTransferred);
     else
-        session->OnSend(bytesTransferred);
+        overlappedEx->owner->OnSend(bytesTransferred);
 
     // 사용한 OverlappedEx 메모리 해제 (풀링 추가 필요)
     delete overlappedEx;
