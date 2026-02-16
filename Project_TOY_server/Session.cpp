@@ -231,27 +231,7 @@ void Session::OnDisconnected()
         _socket = INVALID_SOCKET;
     }
     
-    /*bool expected = false;
-    if (_disconnected.compare_exchange_strong(expected, true))
-    {
-
-        try {
-            SessionPtr self = shared_from_this();
-            GSessionManager.Remove(self);
-        }
-        catch (const std::bad_weak_ptr& e) 
-        {
-            std::cout << "Already destructing session..." << std::endl;
-        }
-        
-
-        if (_socket != INVALID_SOCKET) {
-            ::closesocket(_socket);
-            _socket = INVALID_SOCKET;
-        }
-
-        std::cout << "Client Disconnected: " << GetGuid() << std::endl;
-    }*/
+    
 
 }
 
@@ -261,6 +241,5 @@ void Session::OnConnected()
     // 서버 환경에 맞는 초기화 패킷 전송 등의 로직을 넣습니다.
     std::cout << "Session Connected: [GUID " << GetGuid() << "]" << std::endl;
 
-    // 만약 접속하자마자 클라이언트에게 환영 패킷을 보내야 한다면 여기서 작성합니다.
-    // 예: Send(WelcomePacket);
+    
 }

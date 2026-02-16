@@ -10,7 +10,8 @@ set PROTO_NAME=Protocol.proto
 set COMMON_DIR=%BASE_PATH%Common
 set COMMON_PROTO_OUT=%COMMON_DIR%\Protocol
 set SERVER_DEST=%BASE_PATH%Project_TOY_server\Protocol
-set CLIENT_DEST=%BASE_PATH%DummyClient\Protocol
+set CLIENT_DEST1=%BASE_PATH%DummyClient\Protocol
+set CLIENT_DEST2=%BASE_PATH%Project_TOY_client_c_sharp_unity\Assets\Scripts\Protocol
 
 echo [Info] Target Proto: %COMMON_DIR%\%PROTO_NAME%
 
@@ -39,7 +40,8 @@ echo [Info] Compilation Successful.
 echo [Info] Copying files...
 copy /y "%COMMON_PROTO_OUT%\Protocol.pb.h" "%SERVER_DEST%\"
 copy /y "%COMMON_PROTO_OUT%\Protocol.pb.cc" "%SERVER_DEST%\"
-copy /y "%COMMON_PROTO_OUT%\Protocol.cs" "%CLIENT_DEST%\"
+copy /y "%COMMON_PROTO_OUT%\Protocol.cs" "%CLIENT_DEST1%\"
+copy /y "%COMMON_PROTO_OUT%\Protocol.cs" "%CLIENT_DEST2%\"
 
 :: 5. 파이썬 핸들러 실행 (서버 프로젝트 폴더로 이동)
 echo [Info] Running Python Packet Handler Generator...

@@ -1,5 +1,6 @@
-1주차 document
+document
 
+1주차
 IOCP 기반 기초 소켓 서버 구현 
 IOCP(Input/Output Completion Port)란 무엇인가? 
 윈도우 운영체제에서 제공하는 비동기 I/O 완료 통보 메커니즘
@@ -83,3 +84,20 @@ Session::OnDisconnected 에서 Remove(Shared_from_this()) 호출시 ,shard_from_
 - 이미 참조 횟수(Reference Count)가 0 이된 Session을 참조하려고 시도하고 있거나, 아니면 Session을 만들면서 동시에 참조하면서 타이밍 이슈 때문에 혹은 객체가 이미 소멸했을때 참조를 시도하고 있는 것으로 추정
 
 당장의 런타임 에러는 해결 그러나 dummy client가 보내고 있는 요청들이 어떠한 에러들을 내포하고 있기 때문에 해결 필요
+
+- 서버와 클라이언트 간의 '연결 생명주기(Connection Lifecycle)' 관리가 어긋나면서 발생하는 전형적인 IOCP 비동기 동기화 이슈 (gemini 의 로그 분석)
+현재 로그의 핵심 키워드는 Error 1236, WSARecv 10004/10038, 그리고 **GUID 184467...(-1)**
+- WSARecv 에러 해결
+
+
+client(c# unity) 제작
+0. 우선적으로 네트워크 부분부터 제작( 서버를 미리 만들었음으로 서버와의 연결 우선)
+-PacketManager와 NetworkManager 추가
+-Managers class추가 (싱글톤) 차후 이 클래스가 Core, content 각각과 연관된 Manager들을 호출하는 통로가 될것
+-PacketManager와 NetworkManager는 둘다 네트워크를 위한 매니저들이고 기능이 연계되어 있음.(수정시 양쪽을 확인할 것)
+-서버에서의 GeneratePacketHandler.py 에서 client의 PacketManager_Gen.cs 와 PacketHandler.cs 를 자동수정하도록 수정 특히 PacketManager_Gen.cs 는 완벽히 코드 제너레이터에 의해 생성되고 새로고침됨. PacketHandler.cs는 필요한 부분( 함수의 시그니처 ) 부분만 수정됨 <- 만약 수동 수정되는 부분이 자동으로 수정되거나 누락되는 버그가 있을 수 있음. PacketHandler.cs에서 문제 발생시 참고 할 것.
+
+- Protocol.cs 파일이 Toyclient의 Protocol 디렉토리에 추가되도록 배치파일 수정
+- 간단한 테스트
+- Conneted 는 서버에서 cmd에 출력되는데 disconneted가 출력이 안되는 것 같음 (...? 왜지) <- TODO 원인 확인 할 것
+
