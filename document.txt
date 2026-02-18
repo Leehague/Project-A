@@ -99,5 +99,7 @@ client(c# unity) 제작
 
 - Protocol.cs 파일이 Toyclient의 Protocol 디렉토리에 추가되도록 배치파일 수정
 - 간단한 테스트
-- Conneted 는 서버에서 cmd에 출력되는데 disconneted가 출력이 안되는 것 같음 (...? 왜지) <- TODO 원인 확인 할 것
+- Conneted 는 서버에서 cmd에 출력되는데 disconneted가 출력이 안되는 것 같음 (...? 왜지) <- TODO 원인 확인 할 것: Application이 종료되었을때 종료되기 직전에 호출되어 소캣과 세션을 정리해주는 함수가 부재했기 때문에 발생했음 MonoBehaviour 가 붙어있는 Managers.cs에서 OnApplicationQuit() 함수를 파서 안에서 소켓과 세션을 정리하는 함수를 호출하도록 구현
+
+
 

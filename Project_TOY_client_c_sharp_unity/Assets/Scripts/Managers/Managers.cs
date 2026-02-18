@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Managers : MonoBehaviour
@@ -27,8 +28,9 @@ public class Managers : MonoBehaviour
 
     void Update()
     {
-        // 네트워크 수신 패킷 처리는 매 프레임마다 메인 스레드에서 이루어져야 합니다.
-        _networkManager.Update();
+        //instance를 사용한 접근 (타이밍 이슈 방지)
+        if (_instance != null)
+            _instance._networkManager.Update();
     }
 
     static void Init()
@@ -42,6 +44,7 @@ public class Managers : MonoBehaviour
                 // 없으면 새로 생성
                 go = new GameObject { name = "@Managers" };
                 go.AddComponent<Managers>();
+                Debug.Log("@Managers 생성 및 초기화");
             }
 
             // 씬이 바뀌어도 파괴되지 않게 보호
@@ -54,5 +57,12 @@ public class Managers : MonoBehaviour
         }
 
         
+    }
+
+   
+    void OnApplicationQuit()
+    {
+        // 소켓을 닫고 세션을 정리하는 함수 호출
+        _networkManager.Close();
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using UnityEditor.Sprites;
 using UnityEditor.VersionControl;
 using UnityEngine;
@@ -16,15 +17,10 @@ public class NetworkManager
 
     private Socket _socket;
     private PacketSession _session;
+    private int _disconnected = 0; //0: connected , 1: disconnected
 
     // 서버에서 받은 패킷을 메인 스레드에서 처리하기 위한 큐
     private ConcurrentQueue<PacketMessage> _packetQueue = new ConcurrentQueue<PacketMessage>();
-
-    //void Awake()
-    //{
-    //    //Instance = this;
-    //    DontDestroyOnLoad(gameObject); // 씬 전환 시 파괴 방지
-    //}
 
     public void Init()
     {
@@ -34,6 +30,9 @@ public class NetworkManager
 
     public void Connect(string ip, int port)
     {
+        //플래그 초기화
+        Interlocked.Exchange(ref _disconnected, 0);
+
         IPAddress ipAddr = IPAddress.Parse(ip);
         IPEndPoint endPoint = new IPEndPoint(ipAddr, port);
 
@@ -78,13 +77,21 @@ public class NetworkManager
         }
     }
 
-    public void Send(IMessage packet)
+    //public void Send(IMessage packet)
+    //{
+    //    _session?.Send(packet);
+    //}
+        
+    public void Close() 
     {
-        _session?.Send(packet);
-    }
+        // 1. 중복 호출 방지
+        if (Interlocked.Exchange(ref _disconnected, 1) == 1)
+            return;
 
-    public void OnApplicationQuit()
-    {
-        _session?.Disconnect();
+        if (_session != null)
+        {
+            _session.Disconnect(); // 소켓의 Close나 Shutdown 호출
+            _session = null;
+        }
     }
 }

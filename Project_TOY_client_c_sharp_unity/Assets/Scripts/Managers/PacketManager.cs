@@ -56,13 +56,8 @@ public partial class PacketManager
 
         if (_handler.TryGetValue(id, out Action<PacketSession, IMessage> action))
         {
-            
-
-            // 방법 A: 일반 함수처럼 호출 (가장 많이 쓰임)
-            action(session, packet as IMessage);
-
-            // 방법 B: Invoke 메서드 사용 (Null 체크와 함께 쓰기 좋음)
-            // action?.Invoke(session, packet as IMessage);
+            action(session, packet.Message);
+                     
         }
         else
         {

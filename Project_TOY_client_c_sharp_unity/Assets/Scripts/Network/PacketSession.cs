@@ -1,7 +1,9 @@
 using Google.Protobuf;
 using Protocol;
 using System;
+using System.Linq;
 using System.Net.Sockets;
+using System.Threading;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.XR;
@@ -10,51 +12,50 @@ using UnityEngine.XR;
 public class PacketSession
 {
     private Socket _socket;
-    private byte[] _recvBuffer = new byte[1024 * 64];
+    //private byte[] _recvBuffer = new byte[1024 * 64];
+    private RecvBuffer _recvBuffer= new RecvBuffer(1024 * 64);
     private int _readPos = 0;
     private int _writePos = 0;
-
+    
 
     public void Init(Socket socket) { _socket = socket; }
 
     public void StartReceive()
     {
-        _socket.BeginReceive(_recvBuffer, 0, _recvBuffer.Length, SocketFlags.None, OnReceiveCallback, null);
+        ArraySegment<byte> segment = _recvBuffer.WriteSegment;
+        _socket.BeginReceive(
+            segment.Array,
+            segment.Offset,
+            segment.Count,
+            SocketFlags.None,
+            OnReceiveCallback,
+            null
+        );
     }
 
     // 서버의 RecvBuffer 로직과 동일하게 작동해야 함
-    public void OnReceive(byte[] buffer, int bytesTransferred)
+    public int OnReceive(ArraySegment<byte> buffer)
     {
-        // 1. 버퍼에 데이터 복사 및 커서 이동
-        Array.Copy(buffer, 0, _recvBuffer, _writePos, bytesTransferred);
-        _writePos += bytesTransferred;
+        int processLen = 0;
 
         while (true)
         {
-            int dataSize = _writePos - _readPos;
-            // 최소 헤더 크기(Size 2 + Id 2 = 4바이트) 체크
+            int dataSize = buffer.Count - processLen;
             if (dataSize < 4) break;
 
-            ushort size = BitConverter.ToUInt16(_recvBuffer, _readPos);
+            // buffer.Offset + processLen 위치부터 읽어야 함
+            ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen);
             if (dataSize < size) break;
 
-            // 2. 패킷 번호 추출 및 파싱
-            ushort id = BitConverter.ToUInt16(_recvBuffer, _readPos + 2);
+            ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen + 2);
 
-            // [중요] 여기서 PacketManager를 통해 실제 패킷 객체로 변환
-            Managers.packetManager.OnRecvPacket(id, _recvBuffer, _readPos, size,this);
+            // 패킷 매니저에게 조립된 패킷 전달
+            Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen, size, this);
 
-            _readPos += size;
+            processLen += size;
         }
 
-        // 3. 남은 찌꺼기 데이터 정리 (Clean)
-        if (_readPos > 0)
-        {
-            int remaining = _writePos - _readPos;
-            Array.Copy(_recvBuffer, _readPos, _recvBuffer, 0, remaining);
-            _readPos = 0;
-            _writePos = remaining;
-        }
+        return processLen;
     }
 
     private void OnReceiveCallback(IAsyncResult ar)
@@ -64,13 +65,38 @@ public class PacketSession
             int bytesRead = _socket.EndReceive(ar);
             if (bytesRead > 0)
             {
-                // 여기서 패킷 조립(서버에서 했던 것과 동일한 로직) 수행
-                // 조립 완료된 패킷은 NetworkManager.Instance.PushPacket(packet); 으로 전달
+
+                // 쓰기 커서 이동 (데이터를 받았으므로)
+                if (_recvBuffer.OnWrite(bytesRead) == false)
+                {
+                    Disconnect();
+                    return;
+                }
+
+                // 2. 패킷 조립 시도 (OnRecv 호출)
+                int processLen = OnReceive(_recvBuffer.ReadSegment);
+
+                // 읽기 커서 이동 (패킷 파싱 완료)
+                if (_recvBuffer.OnRead(processLen) == false)
+                {
+                    Disconnect();
+                    return;
+                }
+
+                _recvBuffer.Clean();
 
                 StartReceive(); // 다시 수신 대기
             }
+            else 
+            {
+                Disconnect();
+            }
         }
-        catch (Exception e) { /* 연결 끊김 처리 */ }
+        catch (Exception e)
+        {
+            Debug.LogError($"Receive Error: {e.Message}");
+            Disconnect();
+        }
     }
 
     public void Send(IMessage packet)
@@ -99,6 +125,25 @@ public class PacketSession
 
 
     public void Disconnect() 
+    {
+        
+        try
+        {
+            //  송수신 차단 및 소켓 닫기
+            // Shutdown을 먼저 호출하여 상대방에게 종료 신호(FIN)를 보냅니다.
+            _socket.Shutdown(SocketShutdown.Both);
+            _socket.Close();
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Disconnect Error: {e}");
+        }
+
+        // 3. 엔진/매니저 로직 정리
+        OnDisconnected();
+    }
+
+    private void OnDisconnected()
     {
 
     }
