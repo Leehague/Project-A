@@ -8,17 +8,23 @@ public class Managers : MonoBehaviour
     public static Managers Instance { get { Init(); return _instance; } }
 
     #region Core (네트워크, 리소스 등 게임 인프라)
+    //내부 생성
     private NetworkManager _networkManager = new NetworkManager();
     private PacketManager _packetManager = new PacketManager();
+    private ResourceManager _resourceManager = new ResourceManager();
 
+    //외부 접근용 property
     public static NetworkManager networkManager => Instance._networkManager;
     public static PacketManager packetManager => Instance._packetManager;
+    public static ResourceManager resourceManager => Instance._resourceManager;
     #endregion
 
     #region Contents (오브젝트, UI, 씬 등 실제 게임 데이터)
-    // 나중에 ObjectManager, UIManager 등이 여기 추가됩니다.
-    // private ObjectManager _object = new ObjectManager();
-    // public static ObjectManager Object => Instance._object;
+    //내부 생성
+    private ObjectManager _objectManager = new ObjectManager();
+
+    //외부 접근용 property
+    public static ObjectManager objectManager => Instance._objectManager;
     #endregion
 
     void Start()
