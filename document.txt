@@ -104,5 +104,12 @@ client(c# unity) 제작
 Unity runtime error
 Receive Error : Cannot access a disposed object 
 
-TODO : Handler 함수에 ObjectManager의 함수를 콜하는 테스트를 해서 서버의 요청을 받아 캐릭터를 리소스로부터 꺼내와서 생성하는 코드 만들기
+클라이언트 간단한 이동 및 애니매이션 구현
+-Creature Controller , PlayerController 만듬
+
+
+TODO : 
+1. object manager를 이용해서 리소스를 가져와서 맵과 플레이어 캐릭터 생성 (클라이언트)
+2. 이동 패킷 생성 및 이동 동기화 (클라이언트 - 서버 , 네트워크)
+
 
