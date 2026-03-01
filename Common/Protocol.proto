@@ -15,14 +15,15 @@ enum PacketId {
 
 // 1. 로그인 요청
 message CS_LOGIN {
-    string userId = 1;
+    uint64 userId = 1;
     string password = 2;
 }
 
 // 2. 로그인 응답
 message SC_LOGIN_OK {
     bool success = 1;
-    uint64 playerGuid = 2;
+    uint64 playerId = 2;
+    uint64 templeteId = 3;
 }
 
 // 3. 채팅 패킷
@@ -47,4 +48,4 @@ message CS_WHISPER
 {
     uint64 targetplayerId = 1;
     string msg = 2;
-}   
+}

@@ -22,9 +22,12 @@ public class Managers : MonoBehaviour
     #region Contents (오브젝트, UI, 씬 등 실제 게임 데이터)
     //내부 생성
     private ObjectManager _objectManager = new ObjectManager();
+    private DataManager _dataManager = new DataManager();
+
 
     //외부 접근용 property
     public static ObjectManager objectManager => Instance._objectManager;
+    public static DataManager dataManager => Instance._dataManager;
     #endregion
 
     void Start()
@@ -60,12 +63,13 @@ public class Managers : MonoBehaviour
 
             //초기화가 필요한 Manger들 초기화로직 실행
             _instance._networkManager.Init();
+            
+            _instance._dataManager.Init();
         }
 
         
     }
 
-   
     void OnApplicationQuit()
     {
         // 소켓을 닫고 세션을 정리하는 함수 호출

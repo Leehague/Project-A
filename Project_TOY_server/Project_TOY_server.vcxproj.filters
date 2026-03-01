@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Protocol.proto" />
     <None Include="GeneratePacketHandler.py" />
   </ItemGroup>
 </Project>

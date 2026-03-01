@@ -1,4 +1,5 @@
 using Google.Protobuf;
+using Protocol;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -17,7 +18,9 @@ public class NetworkManager
 
     private Socket _socket;
     private PacketSession _session;
-    private int _disconnected = 0; //0: connected , 1: disconnected
+    private int _disconnected = 1; //0: connected , 1: disconnected
+
+    
 
     // 서버에서 받은 패킷을 메인 스레드에서 처리하기 위한 큐
     private ConcurrentQueue<PacketMessage> _packetQueue = new ConcurrentQueue<PacketMessage>();
@@ -55,6 +58,8 @@ public class NetworkManager
 
             // 수신 시작
             _session.StartReceive();
+
+            
         }
         catch (Exception e)
         {
@@ -76,11 +81,6 @@ public class NetworkManager
             Managers.packetManager.HandlePacket(_session, packet);
         }
     }
-
-    //public void Send(IMessage packet)
-    //{
-    //    _session?.Send(packet);
-    //}
         
     public void Close() 
     {

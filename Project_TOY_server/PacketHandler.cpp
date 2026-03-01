@@ -13,12 +13,23 @@ bool Handle_CS_LOGIN(SessionRef& session, Protocol::CS_LOGIN& pkt)
 {
     std::cout << "로그인 요청 ID: " << pkt.userid() << std::endl;
 
-    //TODO 로그인 유효성 검증 로직 추가
+    //TODO 로그인 유효성 검증 로직 추가 
 
     // [수정] google protobuf 도입
     // 응답 전송 
     Protocol::SC_LOGIN_OK resPkt;
+
+    //Temp , 실제로는 GameRoom 을 만들어서 room 에서 
+    // 고유한 objectID(playerId) 를 각 유저마다 부여해서 이를 유지하면서 이런 room별 유저 리스트에
+    // 유저를 추가한 후 유저의 그 room 에서의 objectId(playerId)를 발급해서 패킷에 포함해야함
+    // 다만 room 별로 playerId
     resPkt.set_success(true);
+    resPkt.set_templeteid(1);
+    resPkt.set_playerid(1); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
+
+    //차후에 플레이어 말고 다른 오브젝트들에 대해서도 다루는 패킷이 필요할 수 있으므로 이를 구분하는
+    //번호 부여 규칙을 정할 필요가 있음  혹은 playerId와 room 별 별개의 objectId를 따로 관리해야 할수도?
+
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
     session->Send(sendBuffer);
 
