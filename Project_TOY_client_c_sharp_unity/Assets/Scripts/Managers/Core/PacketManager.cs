@@ -8,9 +8,17 @@ using UnityEngine.XR;
 
 public partial class PacketManager
 {
-    //// 싱글톤
-    //private static PacketManager _instance = new PacketManager();
-    //public static PacketManager Instance => _instance;
+    // [추가] Type을 키로 하여 PacketId(ushort)를 저장
+    Dictionary<Type, ushort> _typeToId = new Dictionary<Type, ushort>();
+
+    // [추가] 외부에서 ID를 조회할 수 있는 함수
+    public ushort GetId(Type type)
+    {
+        if (_typeToId.TryGetValue(type, out ushort id))
+            return id;
+        return 0;
+    }
+
 
     // 패킷 ID에 따른 파싱 함수를 담는 딕셔너리
     Dictionary<ushort, Action<PacketSession, byte[], ushort>> _onRecv = new Dictionary<ushort, Action<PacketSession, byte[], ushort>>();

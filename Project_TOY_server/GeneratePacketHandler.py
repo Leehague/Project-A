@@ -96,6 +96,10 @@ private:
     for pkt_enum in packet_enums:
         msg_name = pkt_enum.replace("PKT_", "")
         if msg_name in messages:
+            enum_name = to_camel_case(pkt_enum)
+            # 모든 메시지(CS, SC 상관없이) 타입 정보를 등록
+            csharp_register_content += f"        _typeToId.Add(typeof({msg_name}), (ushort)PacketId.{enum_name});\n"
+
             if "SC_" in msg_name: # 클라이언트가 서버로부터 받는 패킷
                 enum_name = to_camel_case(pkt_enum)
                 

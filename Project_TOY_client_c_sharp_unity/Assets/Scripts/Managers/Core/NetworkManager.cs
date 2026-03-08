@@ -56,6 +56,8 @@ public class NetworkManager
             _session = new PacketSession();
             _session.Init(socket);
 
+            _session.OnConnected(socket.RemoteEndPoint);
+
             // 수신 시작
             _session.StartReceive();
 

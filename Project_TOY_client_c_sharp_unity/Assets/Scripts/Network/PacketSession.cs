@@ -2,6 +2,7 @@ using Google.Protobuf;
 using Protocol;
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using UnityEditor.VersionControl;
@@ -12,10 +13,8 @@ using UnityEngine.XR;
 public class PacketSession
 {
     private Socket _socket;
-    //private byte[] _recvBuffer = new byte[1024 * 64];
     private RecvBuffer _recvBuffer= new RecvBuffer(1024 * 64);
-    private int _readPos = 0;
-    private int _writePos = 0;
+    
     
 
     public void Init(Socket socket) { _socket = socket; }
@@ -89,6 +88,7 @@ public class PacketSession
             }
             else 
             {
+                Debug.Log("bytesRead<=0");
                 Disconnect();
             }
         }
@@ -101,12 +101,19 @@ public class PacketSession
 
     public void Send(IMessage packet)
     {
-        // 패킷의 이름을 통해 ID를 찾는 로직 (간단한 예시)
-        string name = packet.Descriptor.Name.Replace("_", "");
-        // Enum 이름을 활용하거나 직접 넘겨받도록 구현
-        PacketId packetId = (PacketId)Enum.Parse(typeof(PacketId), "Pkt" + name);
+        // [수정] 문자열 파싱 대신 PacketManager의 딕셔너리 이용
+        ushort packetId = Managers.packetManager.GetId(packet.GetType());
 
-        byte[] sendBuffer = NetworkUtils.MakeSendBuffer(packet, (ushort)packetId);
+        if (packetId == 0)
+        {
+            Debug.LogError($"Could not find PacketId for {packet.GetType().Name}");
+            return;
+        }
+
+        byte[] sendBuffer = NetworkUtils.MakeSendBuffer(packet, packetId);
+
+        string hex = BitConverter.ToString(sendBuffer).Replace("-", " ");
+        Debug.Log($"[Raw Send Data] {hex}");
 
         try
         {
@@ -146,5 +153,17 @@ public class PacketSession
     private void OnDisconnected()
     {
 
+    }
+
+    // 연결 성공 시 호출될 함수
+    public virtual void OnConnected(EndPoint endPoint)
+    {
+        Debug.Log($"OnConnected : {endPoint}");
+             
+        CS_LOGIN loginPacket = new CS_LOGIN();
+        loginPacket.UserId = 123123;
+        loginPacket.Password = "password 1234";
+
+        Send(loginPacket);
     }
 }

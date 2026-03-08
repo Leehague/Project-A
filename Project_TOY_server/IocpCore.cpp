@@ -61,42 +61,50 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
     Session* session = nullptr;
     OverlappedEx* overlappedEx = nullptr;
 
+    // GQCS 호출
     bool ret = ::GetQueuedCompletionStatus(_iocpHandle, &bytesTransferred,
         (ULONG_PTR*)&session, (LPOVERLAPPED*)&overlappedEx, timeoutMs);
 
-    //완료된 I/O 작업이 있는지 확인 (여기서 스레드가 잠시 멈춤)
-    if (ret==false)
+    if (ret == false)
     {
         int errCode = ::WSAGetLastError();
-        if (errCode != WAIT_TIMEOUT && overlappedEx && overlappedEx->owner)
+        if (errCode == WAIT_TIMEOUT) return true; // 타임아웃은 단순 대기 상태이므로 통과
+
+        // [중요] 에러가 발생했더라도 overlappedEx가 있다면 세션 정리 후 계속 진행
+        if (overlappedEx && overlappedEx->owner)
         {
-            //TODO 세션상태 체크 로직 추가
-
-            //에러 종류 판별 및 디버깅 로그 출력
             PrintErrorCode(errCode);
-
+            std::cout << "GQCS Failure Log - Error: " << errCode << " Type: " << (int)overlappedEx->type << std::endl;
             overlappedEx->owner->OnDisconnected();
             delete overlappedEx;
-            return false;
         }
+        return true; // 루프가 깨지지 않도록 true 반환
     }
-    
-    // 전송된 바이트가 0이면 상대방이 접속을 정상 종료(Graceful Shutdown)한 것
-    if (bytesTransferred == 0 && overlappedEx->owner)
-    {
-        overlappedEx->owner->OnDisconnected();
-        if (overlappedEx) { delete overlappedEx; }
-       
 
+    // 상대방이 접속을 끊은 경우 (Graceful Shutdown)
+    if (bytesTransferred == 0)
+    {
+        if (overlappedEx && overlappedEx->owner) 
+        {
+            std::cout << "Graceful Disconnect detected, session: " << overlappedEx->owner->GetGuid() << std::endl;
+            
+            
+            std::cout << "Disconnect detected during " << (overlappedEx->type == IO_TYPE::RECV ? "RECV" : "SEND") << std::endl;
+            overlappedEx->owner->OnDisconnected();
+            
+        }
+        if (overlappedEx) delete overlappedEx;
         return true;
     }
 
-    // 성공적으로 작업을 꺼내왔다면 타입에 따라 세션의 콜백 호출
-    if (overlappedEx->type == IO_TYPE::RECV)
-        overlappedEx->owner->OnRecv(bytesTransferred);
-    else
-        overlappedEx->owner->OnSend(bytesTransferred);
-
-    // 사용한 OverlappedEx 메모리 해제 (풀링 추가 필요)
+    // [매우 중요] 세션의 소켓이 유효한지 최종 확인 후 콜백 호출
+    if (overlappedEx->owner->GetSocket() != INVALID_SOCKET)
+    {
+        if (overlappedEx->type == IO_TYPE::RECV)
+            overlappedEx->owner->OnRecv(bytesTransferred);
+        else
+            overlappedEx->owner->OnSend(bytesTransferred);
+    }
     delete overlappedEx;
+    return true; // 성공적으로 처리 완료
 }

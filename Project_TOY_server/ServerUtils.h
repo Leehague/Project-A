@@ -25,20 +25,19 @@ public:
 
         SendBufferRef sendBuffer = std::make_shared<SendBuffer>(totalSize);
 
-        BYTE* bufferStart = reinterpret_cast<BYTE*>(sendBuffer->Buffer());
-
-        //헤더 채우기
+        // 1. 헤더 직접 기입
         PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer->Buffer());
         header->size = totalSize;
         header->id = pktId;
 
-        //데이터가 들어갈 위치 계산
-        BYTE* dataStart = bufferStart + headerSize;
-
+        // 2. 데이터 직렬화
+        BYTE* dataStart = reinterpret_cast<BYTE*>(sendBuffer->Buffer()) + headerSize;
         if (pkt.SerializeToArray(dataStart, dataSize) == false)
-        {
             return nullptr;
-        }
+
+        // [핵심 추가] 3. 버퍼의 사용된 크기를 강제로 설정해줌
+        // SendBuffer 클래스에 public으로 추가하거나, Write 함수를 활용해야 합니다.
+        sendBuffer->Close(totalSize);
 
         return sendBuffer;
     }

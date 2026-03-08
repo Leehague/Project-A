@@ -31,9 +31,15 @@ private:
     template<typename T, typename ProcessFunc>
     static bool HandlePacket(ProcessFunc func, SessionRef& session, BYTE* buffer, int32 len)
     {
+        PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
+        uint16 packetId = header->id; // 클래스 이름이 아닌 인스턴스 포인터로 접근
         T pkt;
         if (pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader)) == false)
+        {
+            std::cout << "Packet Parsing Fail! ID: " << packetId << std::endl; // 로그 추가
             return false;
+        }
+        std::cout<< "Packet Parsing success" << std::endl;
         return func(session, pkt);
     }
 };

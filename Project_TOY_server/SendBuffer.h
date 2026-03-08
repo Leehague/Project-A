@@ -20,6 +20,7 @@ public:
     template<typename T>
     void CopyData(T& data) { Write(&data, sizeof(T)); }
 
+    void Close(uint32 size) { _writeSize = size; }
 private:
     std::vector<char> _buffer;
     int _writeSize = 0;

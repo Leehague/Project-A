@@ -22,7 +22,7 @@ Session::~Session()
 //수신 예약 (WSARecv)
 void Session::Receive()
 {
-    if (_socket == INVALID_SOCKET) return;
+    if (_socket == INVALID_SOCKET || _disconnected.load()) return;
 
     // [추가] 만약 여유 공간이 없으면 Clean을 한 번 더 시도하거나 에러 처리
     if (_recvBuffer.FreeSize() < sizeof(PacketHeader))
@@ -59,9 +59,9 @@ void Session::Receive()
         int err = ::WSAGetLastError();
         if (err != WSA_IO_PENDING)
         {
-            // 진짜 에러 발생 시 처리
-            std::cout << "WSARecv Error: " << err << std::endl;
-            delete overlapped;
+            // [강화] 에러 코드와 함께 현재 세션 정보 출력
+            std::cout << "WSARecv Error [Socket: " << _socket << "]: " << err << std::endl;
+            delete overlapped; // 에러 시 메모리 누수 방지
         }
     }
 }
@@ -79,54 +79,80 @@ void Session::OnRecv(int bytesTransferred)
     { 
         std::cout << "Session::OnRecv , recvBuffer is full (OnWrite failed)" << std::endl;
         OnDisconnected(); 
-        return; }
+        return;
+    }
+
+    //loging
+    std::cout << "--- OnRecv Start (Bytes: " << bytesTransferred << ") ---" << std::endl;
+
 
     while (true)
     {
         int dataSize = _recvBuffer.DataSize();
 
         // 1. 헤더(4바이트)만큼은 왔는지 확인
-        if (dataSize < sizeof(PacketHeader))
+        if (dataSize < sizeof(PacketHeader)) {
+            std::cout << "Wait for Header... (Current: " << dataSize << ")" << std::endl;
             break;
-
+        }
         // 2. 패킷 헤더를 읽어 전체 크기 확인
         PacketHeader* header = reinterpret_cast<PacketHeader*>(_recvBuffer.ReadPos());
 
         //logging
-        std::cout <<"header size : " << header->size << std::endl;;
-
+                
         // 서버의 OnRecv 혹은 패킷 분기 로직
 
         uint16_t packetId = header->id;
 
+        
         // GPacketHandler 크기 체크
         if (packetId >= MAX_PACKET_ID) {
             std::cout << "Error: Invalid Packet ID " << packetId << std::endl;
+            OnDisconnected();
             return; // 여기서 걸린다면 벡터 크기 초기화 문제!
         }
 
         if (GPacketHandler[packetId] == nullptr) {
             std::cout << "Error: No Handler for ID " << packetId << std::endl;
+            OnDisconnected();
             return;
         }
         // [중요] 비정상적인 대형 패킷 방어
-        if (header->size > 1024 * 5) { OnDisconnected(); return; }
+        if (header->size > 1024 * 5) 
+        {
+            OnDisconnected();
+            std::cout << "Unnormal big packet is defend" << std::endl; 
+            return;
+        }
 
         // 3. 전체 패킷이 다 왔는지 확인
         if (dataSize < header->size)
+        {
+            std::cout << "Wait for Data... (Need: " << header->size << " / Have: " << dataSize << ")" << std::endl;
             break;
+        }
+        uint16 id = header->id;
+        uint16 size = header->size;
 
-        // 4. 패킷 처리 함수로 전달
-        //HandlePacket(reinterpret_cast<BYTE*>(_recvBuffer.ReadPos()), header->size);
+        // [디버깅 로그]
+        std::cout << "Processing Packet ID: " << header->id << " / Size: " << header->size << std::endl;
+        
 
         SessionRef sessionRef = GetSessionPtr();
-        PacketHandler::HandlePacket(sessionRef, reinterpret_cast<BYTE*>(_recvBuffer.ReadPos()), header->size);
+        if (PacketHandler::HandlePacket(sessionRef, reinterpret_cast<BYTE*>(_recvBuffer.ReadPos()), header->size)==false)
+        {
+            OnDisconnected();
+            std::cout << "handlepacket fail" << std::endl;
+            return;
+        }
 
         // 5. 처리한 패킷 크기만큼 읽기 커서 이동
         _recvBuffer.OnRead(header->size);
+        std::cout << "Packet Processed Successfully." << std::endl;
     }
-
+    std::cout << "--- OnRecv Loop End, Calling Receive() ---" << std::endl;
     _recvBuffer.Clean();
+    
     Receive();
 }
 
@@ -147,6 +173,7 @@ void Session::Send(SendBufferRef sendBuffer)
 // 실제로 WSASend를 호출하는 함수
 void Session::RegisterSend()
 {
+    if (_socket == INVALID_SOCKET || _disconnected.load()) return;
     if (_sendQueue.empty())
         return;
 
@@ -167,15 +194,13 @@ void Session::RegisterSend()
 
     DWORD bytesSent = 0;
     // 비동기 전송 호출
-    int errorCode = ::WSASend(_socket, &wsaBuf, 1, &bytesSent, 0, &overlapped->overlapped, nullptr);
-
-    if (errorCode == SOCKET_ERROR)
+    if (::WSASend(_socket, &wsaBuf, 1, &bytesSent, 0, &overlapped->overlapped, nullptr) == SOCKET_ERROR)
     {
         int err = ::WSAGetLastError();
         if (err != WSA_IO_PENDING)
         {
+            std::cout << "WSASend Error [Socket: " << _socket << "]: " << err << std::endl;
             _sendRegistered = false;
-            std::cout << "WSASend Error: " << err << std::endl;
         }
     }
 }
@@ -215,12 +240,10 @@ void Session::Disconnect()
 
 void Session::OnDisconnected()
 {
-
-
     // 원자적으로 체크하여 딱 한 번만 실행되도록 보장
     if (_disconnected.exchange(true) == true)
         return;
-
+    std::cout << "OnDisconnected Called. Stack Trace Trace..." << std::endl;
     std::cout << "Client Disconnected: " << GetGuid() << std::endl;
     // 여기서 세션 매니저에서 제거
     auto self = shared_from_this();

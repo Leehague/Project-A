@@ -6,6 +6,7 @@ PacketHandlerFunc GPacketHandler[65535];
 
 bool Handle_INVALID(SessionRef& session, BYTE* buffer, int32 len)
 {
+    std::cout << "Handle_INVALID is called" << std::endl;
     return false;
 }
 

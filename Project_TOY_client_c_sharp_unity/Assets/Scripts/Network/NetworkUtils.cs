@@ -1,23 +1,27 @@
 ﻿using System;
 using Google.Protobuf;
+using UnityEngine;
 
 public class NetworkUtils
 {
     public static byte[] MakeSendBuffer(IMessage packet, ushort packetId)
     {
-        // 1. 패킷 본체 직렬화
-        byte[] payload = packet.ToByteArray();
-        ushort size = (ushort)(payload.Length + 4); // 헤더(4) + 본체
+        byte[] dataBuffer = packet.ToByteArray();
+        ushort dataSize = (ushort)dataBuffer.Length;
+        ushort totalSize = (ushort)(dataSize + 4); // 헤더(4) + 데이터
 
-        // 2. 전체 버퍼 생성
-        byte[] sendBuffer = new byte[size];
+        // [디버깅 로그]
+        Debug.Log($"[Send] ID: {packetId}, DataSize: {dataSize}, TotalSize: {totalSize}");
 
-        // 3. 헤더 채우기 (Little Endian 기준)
-        Array.Copy(BitConverter.GetBytes(size), 0, sendBuffer, 0, 2);
+
+        byte[] sendBuffer = new byte[totalSize];
+
+        // 헤더 채우기 (Size 2, ID 2)
+        Array.Copy(BitConverter.GetBytes(totalSize), 0, sendBuffer, 0, 2);
         Array.Copy(BitConverter.GetBytes(packetId), 0, sendBuffer, 2, 2);
 
-        // 4. 본체 채우기
-        Array.Copy(payload, 0, sendBuffer, 4, payload.Length);
+        // 데이터 복사 (Offset 4)
+        Array.Copy(dataBuffer, 0, sendBuffer, 4, dataSize);
 
         return sendBuffer;
     }

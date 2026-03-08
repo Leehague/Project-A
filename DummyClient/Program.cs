@@ -28,7 +28,7 @@ namespace DummyClient
                     {
                         // 2. 패킷 생성 (정의하신 userId, password 사용)
                         CS_LOGIN loginPkt = new CS_LOGIN();
-                        loginPkt.UserId = "my_id_123";      // userId -> UserId
+                        loginPkt.UserId = 12;      // userId -> UserId
                         loginPkt.Password = "password123";  // password -> Password
 
                         // 3. 패킷 전송

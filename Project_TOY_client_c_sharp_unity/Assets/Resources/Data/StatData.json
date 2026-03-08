@@ -5,14 +5,14 @@
       "name": "Knight",
       "hp": 100,
       "attack": 10,
-      "modelPath": "Prefabs/Knight"
+      "modelPath": "Knight"
     },
     {
       "id": 2,
       "name": "UnDead",
       "hp": 80,
       "attack": 15,
-      "modelPath": "Prefabs/UnDead"
+      "modelPath": "UnDead"
     }
   ]
 }

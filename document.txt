@@ -112,8 +112,16 @@ DataManager 생성 , Json 파일 형태로 저장된 정보들을 파싱해서 �
 
 TODO : 
 1. object manager를 이용해서 리소스를 가져와서 맵과 플레이어 캐릭터 생성 (클라이언트) 
-- 최초의 클라이언트에서의 로그인 시도 를 어디서 해야할지 결정해야함, 즉 최초의 '연결 성공'을 어디로 봐야 하는가?
 
 2. 이동 패킷 생성 및 이동 동기화 (클라이언트 - 서버 , 네트워크)
 
+네트워크 에러가 계속 발생해서 디버깅중... 서버 코드가 완벽하지 않음. (멀티쓰레드 환경에서 예상하지 못한 버그들 발생중... 코드 흐름제어 난해함)
 
+제미나이:클라이언트의 PacketSession:OnReceiveCallback 내부 로그를 더 자세히 찍어보시겠어요? <= 여기서 부터 이어가야 할듯
+
+***
+디버깅 결과 :Handle_CS_LOGIN 에서 ServerUtils::MakeSendBuffer를 콜해서 sendBuffer를 생성해서 Send를 해주고 있었는데 MakeSendBuffer 메소드 자체에 문제가 있었음.
+MakeSendBuffer 메소드 안에서 리턴할 Sendbuffer의 _writeSize를 업데이트 하는 부분이 없었고 따라서 클라이언트는 서버가 0바이트 짜리 패킷을 보낸것으로 인식 , 연결을 끊고 있던 것이었음.
+***
+
+그외 자잘하게 StatData.json 안에서 파일경로 설정하는 부분(정확히는 'modelPath' 항목) 중간 코드에 Prefabs/{[path} 여기서 path를 채우는 식으로 되어 있어서 Prefabs는 안써야 오류가 안나고 정상적으로 리소스를 가져 올 수 있음.
