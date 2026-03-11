@@ -19,6 +19,10 @@ public partial class PacketManager
         _onRecv.Add((ushort)PacketId.PktScWhisper, (s, b, sz) => MakePacket<SC_WHISPER>(s, b, sz, (ushort)PacketId.PktScWhisper));
         _handler.Add((ushort)PacketId.PktScWhisper, PacketHandler.Handle_SC_WHISPER);
         _typeToId.Add(typeof(CS_WHISPER), (ushort)PacketId.PktCsWhisper);
+        _typeToId.Add(typeof(CS_MOVING), (ushort)PacketId.PktCsMoving);
+        _typeToId.Add(typeof(SC_MOVING), (ushort)PacketId.PktScMoving);
+        _onRecv.Add((ushort)PacketId.PktScMoving, (s, b, sz) => MakePacket<SC_MOVING>(s, b, sz, (ushort)PacketId.PktScMoving));
+        _handler.Add((ushort)PacketId.PktScMoving, PacketHandler.Handle_SC_MOVING);
 
     }
 }

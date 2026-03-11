@@ -1,6 +1,7 @@
 #pragma once
-#include <winsock2.h>
 #include "Types.h"
+#include <winsock2.h>
+
 class IocpCore
 {
 public:

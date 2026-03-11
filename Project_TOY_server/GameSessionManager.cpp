@@ -3,7 +3,7 @@
 
 GameSessionManager GSessionManager;
 
-void GameSessionManager::Broadcast(SendBufferRef sendBuffer)
+void GameSessionManager::Broadcast(SendBufferPtr sendBuffer)
 {
     std::lock_guard<std::mutex> lock(_lock);
     for (auto& pair: _sessions)
@@ -26,7 +26,7 @@ void GameSessionManager::Remove(SessionPtr session) {
     _sessions.erase(session->GetGuid());
 }
 
-void GameSessionManager::SendTo(uint64 playerId, SendBufferRef sendBuffer) {
+void GameSessionManager::SendTo(uint64 playerId, SendBufferPtr sendBuffer) {
     std::lock_guard<std::mutex> lock(_lock);
 
     // 맵에서 해당 ID를 찾음

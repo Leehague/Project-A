@@ -1,8 +1,8 @@
 #pragma once
-
+#include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "SendBuffer.h"
-#include "Types.h"
+
 #pragma comment(lib, "libprotobufd.lib") // 또는 libprotobufd.lib
 
 #pragma pack(push, 1) // 1바이트 단위로 정렬
@@ -17,13 +17,13 @@ class ServerUtils
 {
 public:
     template<typename T>
-    static SendBufferRef MakeSendBuffer(T& pkt, uint16 pktId)
+    static SendBufferPtr MakeSendBuffer(T& pkt, uint16 pktId)
     {
         const uint16 dataSize = static_cast<uint16>(pkt.ByteSizeLong());
         const uint16 headerSize = sizeof(PacketHeader);
         const uint16 totalSize = dataSize + headerSize;
 
-        SendBufferRef sendBuffer = std::make_shared<SendBuffer>(totalSize);
+        SendBufferPtr sendBuffer = std::make_shared<SendBuffer>(totalSize);
 
         // 1. 헤더 직접 기입
         PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer->Buffer());

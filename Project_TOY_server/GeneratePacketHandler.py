@@ -31,8 +31,8 @@ def generate():
         msg_name = pkt_enum.replace("PKT_", "")
         if msg_name in messages:
             if "CS_" in msg_name:
-                handler_decls += f"bool Handle_{msg_name}(SessionRef& session, Protocol::{msg_name}& pkt);\n"
-                register_part += f"    GPacketHandler[Protocol::PacketId::{pkt_enum}] = [](SessionRef& session, BYTE* buffer, int32 len) {{\n"
+                handler_decls += f"bool Handle_{msg_name}(SessionPtr& session, Protocol::{msg_name}& pkt);\n"
+                register_part += f"    GPacketHandler[Protocol::PacketId::{pkt_enum}] = [](SessionPtr& session, BYTE* buffer, int32 len) {{\n"
                 register_part += f"        return HandlePacket<Protocol::{msg_name}>(Handle_{msg_name}, session, buffer, len);\n"
                 register_part += f"    }};\n"
             else:
@@ -46,18 +46,18 @@ def generate():
 #include "ServerUtils.h"
 #define MAX_PACKET_ID 65535
 
-using SessionRef = std::shared_ptr<class Session>;
-using PacketHandlerFunc = std::function<bool(SessionRef&, BYTE*, int32)>;
+using SessionPtr = std::shared_ptr<class Session>;
+using PacketHandlerFunc = std::function<bool(SessionPtr&, BYTE*, int32)>;
 extern PacketHandlerFunc GPacketHandler[65535];
 
-bool Handle_INVALID(SessionRef& session, BYTE* buffer, int32 len);
+bool Handle_INVALID(SessionPtr& session, BYTE* buffer, int32 len);
 {handler_decls}
 
 class PacketHandler
 {{
 public:
     static void Init();
-    static bool HandlePacket(SessionRef& session, BYTE* buffer, int32 len)
+    static bool HandlePacket(SessionPtr& session, BYTE* buffer, int32 len)
     {{
         PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
         uint16 packetId = header->id;
@@ -68,7 +68,7 @@ public:
 
 private:
     template<typename T, typename ProcessFunc>
-    static bool HandlePacket(ProcessFunc func, SessionRef& session, BYTE* buffer, int32 len)
+    static bool HandlePacket(ProcessFunc func, SessionPtr& session, BYTE* buffer, int32 len)
     {{
         T pkt;
         if (pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader)) == false)

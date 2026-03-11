@@ -34,5 +34,9 @@ public class PacketHandler
         Debug.Log($"Handle_SC_WHISPER: {pkt.ToString()}");
     }
 
-
+    public static void Handle_SC_MOVE(PacketSession session, IMessage packet) 
+    {
+        SC_MOVE pkt = packet as SC_MOVE;
+        Debug.Log($"Handle_SC_MOVE: {pkt.ToString()}");
+    }
 }

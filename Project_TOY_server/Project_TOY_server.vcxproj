@@ -140,6 +140,7 @@
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="Protocol\Protocol.pb.cc" />
     <ClCompile Include="RecvBuffer.cpp" />
+    <ClCompile Include="Room.cpp" />
     <ClCompile Include="SendBuffer.cpp" />
     <ClCompile Include="Session.cpp" />
   </ItemGroup>
@@ -149,14 +150,17 @@
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="PacketHandler.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Protocol\Protocol.pb.h" />
     <ClInclude Include="RecvBuffer.h" />
+    <ClInclude Include="Room.h" />
     <ClInclude Include="SendBuffer.h" />
     <ClInclude Include="ServerUtils.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="GeneratePacketHandler.py" />
     <None Include="packages.config" />
   </ItemGroup>

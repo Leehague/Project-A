@@ -4,21 +4,22 @@
 #include "ServerUtils.h"
 #define MAX_PACKET_ID 65535
 
-using SessionRef = std::shared_ptr<class Session>;
-using PacketHandlerFunc = std::function<bool(SessionRef&, BYTE*, int32)>;
+using SessionPtr = std::shared_ptr<class Session>;
+using PacketHandlerFunc = std::function<bool(SessionPtr&, BYTE*, int32)>;
 extern PacketHandlerFunc GPacketHandler[65535];
 
-bool Handle_INVALID(SessionRef& session, BYTE* buffer, int32 len);
-bool Handle_CS_LOGIN(SessionRef& session, Protocol::CS_LOGIN& pkt);
-bool Handle_CS_CHAT(SessionRef& session, Protocol::CS_CHAT& pkt);
-bool Handle_CS_WHISPER(SessionRef& session, Protocol::CS_WHISPER& pkt);
+bool Handle_INVALID(SessionPtr& session, BYTE* buffer, int32 len);
+bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt);
+bool Handle_CS_CHAT(SessionPtr& session, Protocol::CS_CHAT& pkt);
+bool Handle_CS_WHISPER(SessionPtr& session, Protocol::CS_WHISPER& pkt);
+bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt);
 
 
 class PacketHandler
 {
 public:
     static void Init();
-    static bool HandlePacket(SessionRef& session, BYTE* buffer, int32 len)
+    static bool HandlePacket(SessionPtr& session, BYTE* buffer, int32 len)
     {
         PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
         uint16 packetId = header->id;
@@ -29,17 +30,11 @@ public:
 
 private:
     template<typename T, typename ProcessFunc>
-    static bool HandlePacket(ProcessFunc func, SessionRef& session, BYTE* buffer, int32 len)
+    static bool HandlePacket(ProcessFunc func, SessionPtr& session, BYTE* buffer, int32 len)
     {
-        PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
-        uint16 packetId = header->id; // 클래스 이름이 아닌 인스턴스 포인터로 접근
         T pkt;
         if (pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader)) == false)
-        {
-            std::cout << "Packet Parsing Fail! ID: " << packetId << std::endl; // 로그 추가
             return false;
-        }
-        std::cout<< "Packet Parsing success" << std::endl;
         return func(session, pkt);
     }
 };
@@ -48,16 +43,20 @@ inline void PacketHandler::Init()
 {
     for (int32 i = 0; i < 65535; i++) GPacketHandler[i] = Handle_INVALID;
 
-    GPacketHandler[Protocol::PacketId::PKT_CS_LOGIN] = [](SessionRef& session, BYTE* buffer, int32 len) {
+    GPacketHandler[Protocol::PacketId::PKT_CS_LOGIN] = [](SessionPtr& session, BYTE* buffer, int32 len) {
         return HandlePacket<Protocol::CS_LOGIN>(Handle_CS_LOGIN, session, buffer, len);
     };
     GPacketHandler[Protocol::PacketId::PKT_SC_LOGIN_OK] = Handle_INVALID;
-    GPacketHandler[Protocol::PacketId::PKT_CS_CHAT] = [](SessionRef& session, BYTE* buffer, int32 len) {
+    GPacketHandler[Protocol::PacketId::PKT_CS_CHAT] = [](SessionPtr& session, BYTE* buffer, int32 len) {
         return HandlePacket<Protocol::CS_CHAT>(Handle_CS_CHAT, session, buffer, len);
     };
     GPacketHandler[Protocol::PacketId::PKT_SC_CHAT_BROADCAST] = Handle_INVALID;
     GPacketHandler[Protocol::PacketId::PKT_SC_WHISPER] = Handle_INVALID;
-    GPacketHandler[Protocol::PacketId::PKT_CS_WHISPER] = [](SessionRef& session, BYTE* buffer, int32 len) {
+    GPacketHandler[Protocol::PacketId::PKT_CS_WHISPER] = [](SessionPtr& session, BYTE* buffer, int32 len) {
         return HandlePacket<Protocol::CS_WHISPER>(Handle_CS_WHISPER, session, buffer, len);
     };
+    GPacketHandler[Protocol::PacketId::PKT_CS_MOVING] = [](SessionPtr& session, BYTE* buffer, int32 len) {
+        return HandlePacket<Protocol::CS_MOVING>(Handle_CS_MOVING, session, buffer, len);
+    };
+    GPacketHandler[Protocol::PacketId::PKT_SC_MOVING] = Handle_INVALID;
 }

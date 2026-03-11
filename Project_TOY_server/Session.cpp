@@ -138,8 +138,8 @@ void Session::OnRecv(int bytesTransferred)
         std::cout << "Processing Packet ID: " << header->id << " / Size: " << header->size << std::endl;
         
 
-        SessionRef sessionRef = GetSessionPtr();
-        if (PacketHandler::HandlePacket(sessionRef, reinterpret_cast<BYTE*>(_recvBuffer.ReadPos()), header->size)==false)
+        SessionPtr _sessionPtr = GetSessionPtr();
+        if (PacketHandler::HandlePacket(_sessionPtr, reinterpret_cast<BYTE*>(_recvBuffer.ReadPos()), header->size)==false)
         {
             OnDisconnected();
             std::cout << "handlepacket fail" << std::endl;
@@ -156,7 +156,7 @@ void Session::OnRecv(int bytesTransferred)
     Receive();
 }
 
-void Session::Send(SendBufferRef sendBuffer)
+void Session::Send(SendBufferPtr sendBuffer)
 {
     std::lock_guard<std::mutex> lock(_lock);
 
@@ -181,7 +181,7 @@ void Session::RegisterSend()
 
     // 큐에 쌓인 버퍼들을 하나로 묶어서 보낼 수 있음 (Scatter-Gather)
     // 여기서는 단순화를 위해 하나만 꺼내 보냄
-    SendBufferRef sendBuffer = _sendQueue.front();
+    SendBufferPtr sendBuffer = _sendQueue.front();
 
     OverlappedEx* overlapped = new OverlappedEx(); // 풀링 권장
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));

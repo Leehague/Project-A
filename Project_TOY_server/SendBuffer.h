@@ -1,7 +1,8 @@
 #pragma once
+#include "Types.h"
 #include <vector>
 #include <memory>
-#include "Types.h"
+
 
 class SendBuffer
 {

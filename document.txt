@@ -125,3 +125,12 @@ MakeSendBuffer 메소드 안에서 리턴할 Sendbuffer의 _writeSize를 업데�
 ***
 
 그외 자잘하게 StatData.json 안에서 파일경로 설정하는 부분(정확히는 'modelPath' 항목) 중간 코드에 Prefabs/{[path} 여기서 path를 채우는 식으로 되어 있어서 Prefabs는 안써야 오류가 안나고 정상적으로 리소스를 가져 올 수 있음.
+
+
+2026/03/11
+
+TODO: 이동 패킷 생성 (클라이언트 - 서버 , 네트워크) (완)
+
+이동 패킷생성 완료 , SC_MOVE는 윈도우의 내부 라이브러에서 선언한 DEFINE과 충돌하기때문에 SC_MOVING등으로 선언
+
+TODO : Room 기반의 브로드캐스트 로직 구현

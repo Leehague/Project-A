@@ -4,11 +4,12 @@
 #include <queue>
 #include <mutex>
 #include <atomic> 
+#include "Types.h"
 #include "RecvBuffer.h"
 #include "SendBuffer.h"
 #include "Protocol/Protocol.pb.h"
 #include "GameSessionManager.h"
-#include "Types.h"
+
 #include "ServerUtils.h"
 #include "PacketHandler.h"
 
@@ -19,7 +20,7 @@ enum class IO_TYPE { RECV, SEND };
 struct OverlappedEx {
     WSAOVERLAPPED overlapped; // OS가 요구하는 기본 구조체 (반드시 맨 앞)
     IO_TYPE type;             // 어떤 작업인지 구분
-    SessionRef owner;   // 이 작업을 요청한 Session 객체 주소
+    SessionPtr owner;   // 이 작업을 요청한 Session 객체 주소
 };
 
 class Session :public std::enable_shared_from_this<Session>
@@ -30,7 +31,7 @@ public:
     ~Session(); 
 
     // 외부에서 호출하는 송수신 명령
-    void Send(SendBufferRef sendBuffer);
+    void Send(SendBufferPtr sendBuffer);
     void Receive();
 
     // IOCP 워커 스레드가 완료 통보를 받았을 때 호출할 콜백
@@ -67,7 +68,7 @@ private:
     
 private:
     std::mutex              _lock;
-    std::queue<SendBufferRef> _sendQueue; // 보낼 데이터 대기열
+    std::queue<SendBufferPtr> _sendQueue; // 보낼 데이터 대기열
     bool                    _sendRegistered = false; // 현재 전송 예약 중인지 여부
 
 private:
