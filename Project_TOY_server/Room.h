@@ -9,12 +9,14 @@
 
 class Room : public std::enable_shared_from_this<Room>
 {
+public:
     void Enter(PlayerPtr player);
     void Leave(PlayerPtr player);
     void Broadcast(SendBufferPtr sendBuffer);
+    void SendTo(PlayerPtr player, SendBufferPtr sendBuffer);
 
     // 이동 패킷 처리 루틴
-    void HandleMove(Protocol::CS_MOVING& pkt);
+    void HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt);
 
 private:
     std::mutex _lock;

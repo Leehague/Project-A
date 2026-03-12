@@ -54,11 +54,15 @@ public:
     void SetSocket(SOCKET socket) { _socket = socket; }
     SOCKET GetSocket() { return _socket; }
 
+    void SetPlayerPtr(PlayerPtr playerptr) { _playerptr = playerptr; }
+    PlayerPtr GetPlayerPtr() { return _playerptr; }
+
     // 접속 완료 처리
     void OnConnected();
 
 private:
     uint64 _playerId = 0; // 초기값은 0 혹은 유효하지 않은 값
+    PlayerPtr _playerptr = nullptr;
 private:
     SOCKET      _socket= INVALID_SOCKET;
     RecvBuffer  _recvBuffer;
@@ -73,9 +77,5 @@ private:
 
 private:
     void RegisterSend(); // 실제로 WSASend를 호출하는 함수
-    //handler 함수들
-    /*void HandlePacket(BYTE* buffer, int32 len);
-    void Handle_CS_LOGIN(const Protocol::CS_LOGIN& pkt);
-    void Handle_CS_CHAT(const Protocol::CS_CHAT& pkt);
-    void Handle_CS_WHISPER(const Protocol::CS_WHISPER& pkt);*/
+    
 };

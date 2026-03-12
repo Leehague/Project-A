@@ -14,7 +14,6 @@ using UnityEngine;
 public class NetworkManager 
 {
     
-    //public static NetworkManager Instance { get; private set; }
 
     private Socket _socket;
     private PacketSession _session;
@@ -95,5 +94,10 @@ public class NetworkManager
             _session.Disconnect(); // 소켓의 Close나 Shutdown 호출
             _session = null;
         }
+    }
+
+    public void Send(IMessage packet)
+    {
+        _session.Send(packet);
     }
 }

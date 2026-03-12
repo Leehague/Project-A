@@ -8,9 +8,9 @@ public class ObjectManager
     public GameObject MyPlayer { get; set; }
 
     // 나머지 객체들은 ID로 관리합니다. 여기서 ID는 objectId로 서버에서 관리하는 번호입니다.
-    Dictionary<int, GameObject> _objects = new Dictionary<int, GameObject>();
+    Dictionary<ulong, GameObject> _objects = new Dictionary<ulong, GameObject>();
 
-    public void Add(int objectid, GameObject go, bool isMyPlayer = false)
+    public void Add(ulong objectid, GameObject go, bool isMyPlayer = false)
     {
         if (isMyPlayer)
         {
@@ -20,7 +20,7 @@ public class ObjectManager
         _objects.Add(objectid, go);
     }
 
-    public void Remove(int objectid)
+    public void Remove(ulong objectid)
     {
         if (objectid == 0) return; // 예외 처리
 
@@ -35,7 +35,7 @@ public class ObjectManager
         }
     }
 
-    public GameObject Find(int id)
+    public GameObject Find(ulong id)
     {
         _objects.TryGetValue(id, out GameObject go);
         return go;
@@ -52,7 +52,7 @@ public class ObjectManager
     }
 
     // 생성 및 등록을 한 번에 처리하는 함수
-    public GameObject SpawnPlayer(int templateId, int objectId, bool isMyPlayer = false)
+    public GameObject SpawnPlayer(ulong templateId, ulong objectId, bool isMyPlayer = false)
     {
         // 데이터 매니저에서 정보 추출 ( Knight, Mage 등 )
         if (Managers.dataManager.StatDict.TryGetValue(templateId, out Stat statInfo) == false)
@@ -65,12 +65,11 @@ public class ObjectManager
         // 여기서 Add를 호출하여 관리 목록에 추가
         Add(objectId, go, isMyPlayer);
 
-        // 내 플레이어면 컨트롤러 초기화
-        if (isMyPlayer) 
-        {
-            PlayerController pc = go.GetOrAddComponent<PlayerController>();
-            // pc.Stat = statInfo;
-        }
+        //컨트롤러 초기화
+        PlayerController pc = go.GetOrAddComponent<PlayerController>();
+        pc.stat = statInfo;
+        pc.IsMyPlayer = isMyPlayer;
+        
 
         return go;
     }

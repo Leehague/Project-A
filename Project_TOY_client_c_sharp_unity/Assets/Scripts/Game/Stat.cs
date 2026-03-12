@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [Serializable]
 public class Stat
 {
-    public int id;
+    public ulong id;
     public string name;
     public int hp;
     public int attack;
@@ -14,14 +14,14 @@ public class Stat
 
 // 2. 리스트 형태의 JSON을 받기 위한 래퍼 클래스
 [Serializable]
-public class StatData : ILoader<int, Stat>
+public class StatData : ILoader<ulong, Stat>
 {
     public List<Stat> stats = new List<Stat>();
 
     // List를 Dictionary로 변환하는 규격
-    public Dictionary<int, Stat> MakeDict()
+    public Dictionary<ulong, Stat> MakeDict()
     {
-        Dictionary<int, Stat> dict = new Dictionary<int, Stat>();
+        Dictionary<ulong, Stat> dict = new Dictionary<ulong, Stat>();
         foreach (Stat stat in stats)
             dict.Add(stat.id, stat);
         return dict;

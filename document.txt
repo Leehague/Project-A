@@ -133,4 +133,15 @@ TODO: 이동 패킷 생성 (클라이언트 - 서버 , 네트워크) (완)
 
 이동 패킷생성 완료 , SC_MOVE는 윈도우의 내부 라이브러에서 선언한 DEFINE과 충돌하기때문에 SC_MOVING등으로 선언
 
-TODO : Room 기반의 브로드캐스트 로직 구현
+2026/03/12
+
+TODO : Room 기반의 브로드캐스트 로직 구현(완)
+
+
+- 클라에서 Myplayer가 아니어도 playercontroller를 들고 있게 ObjectManager 의 SpawnPlayer 수정 대신 playercontroller를에서 bool IsMyPlayer 로 플레그를 들고 있게 만듦
+- 따라서 다음과 같은 구분을 가짐
+1.  Playercontroller <- 클라에서 자신이든 타유저든 실제 플레이어(유저)가 조종하는 캐릭터 오브젝트가 클라 상에서 들고 있을 스크립트. 대신 각 클라는 자신이 조정하는 대상이 누구인지만 플레그로 들고 있게함.
+2. CreatureController <- '살아 있는 것' 즉 뭔가 이동을  하는 대상들에게는 전부 붙일 예정인 스크립트. 다만 MonsterController를 따로 만들지는 아직 미정이지만 아마 따로 만드는게 좋지 않을까 싶음.
+
+서버측 , 클라측 이동로직 완성. (Room 기반)
+TODO: Dummyclient를 unity버전으로 여러개 만들어서 실제로 Room 안에 있는 플레이어들 간에 이동 동기화가 되는지 테스트 필요

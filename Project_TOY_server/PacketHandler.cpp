@@ -1,5 +1,6 @@
 #include "PacketHandler.h"
 #include "Session.h"
+#include "Player.h"
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];
@@ -61,7 +62,9 @@ bool Handle_CS_CHAT(SessionPtr& session, Protocol::CS_CHAT& pkt)
     // 4. 브로드캐스팅
     if (sendBuffer)
     {
-        GSessionManager.Broadcast(sendBuffer);
+        auto room = session->GetPlayerPtr()->room.lock();
+            
+        room->Broadcast(sendBuffer);
     }
     return true;
 }
@@ -93,5 +96,13 @@ bool Handle_CS_WHISPER(SessionPtr& session, Protocol::CS_WHISPER& pkt)
 
 bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt) 
 {
+    //세션에서 플레이어 객체 가져오기 (세션에 Player 멤버가 있다고 가정)
+    PlayerPtr player = session->GetPlayerPtr();
+    if (player == nullptr) return false;
+
+    RoomPtr room = player->room.lock();
+    if (room == nullptr) { return false; }
+    room->HandleMove(player,pkt);
+    
     return true;
 }
