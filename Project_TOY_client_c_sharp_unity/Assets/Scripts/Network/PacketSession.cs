@@ -1,13 +1,11 @@
 using Google.Protobuf;
 using Protocol;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using UnityEditor.VersionControl;
 using UnityEngine;
-using UnityEngine.XR;
+
 
 
 public class PacketSession
@@ -15,7 +13,11 @@ public class PacketSession
     private Socket _socket;
     private RecvBuffer _recvBuffer= new RecvBuffer(1024 * 64);
     
-    
+    readonly System.Object _lock = new System.Object();
+    Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
+    List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>(); // 현재 전송 중인 목록
+    bool _pending = false;
+
 
     public void Init(Socket socket) { _socket = socket; }
 
@@ -101,7 +103,8 @@ public class PacketSession
 
     public void Send(IMessage packet)
     {
-        // [수정] 문자열 파싱 대신 PacketManager의 딕셔너리 이용
+
+
         ushort packetId = Managers.packetManager.GetId(packet.GetType());
 
         if (packetId == 0)
@@ -112,41 +115,93 @@ public class PacketSession
 
         byte[] sendBuffer = NetworkUtils.MakeSendBuffer(packet, packetId);
 
-        string hex = BitConverter.ToString(sendBuffer).Replace("-", " ");
-        Debug.Log($"[Raw Send Data] {hex}");
 
-        try
+
+
+        // 큐 기반 Send 호출
+        SendInternal(new ArraySegment<byte>(sendBuffer));
+        
+    }
+
+    private void SendInternal(ArraySegment<byte> sendBuffer)
+    {
+        if (_socket == null) return;
+        lock (_lock)
         {
-            _socket.BeginSend(sendBuffer, 0, sendBuffer.Length, SocketFlags.None, OnSendCallback, null);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Send Error: {e.Message}");
+            _sendQueue.Enqueue(sendBuffer);
+
+            // 전송 중이 아니라면 전송 프로세스 시작
+            if (_pending == false)
+                RegisterSend();
         }
     }
 
+    private void RegisterSend()
+    {
+        _pending = true;
+        // 큐에 있는 모든 데이터를 하나의 리스트로 이동
+        _pendingList.Clear();
+        while (_sendQueue.Count > 0)
+            _pendingList.Add(_sendQueue.Dequeue());
+
+        try
+        {
+            // Socket.BeginSend는 BufferList를 지원하여 여러 세그먼트를 한 번에 보낼 수 있습니다.
+            _socket.BeginSend(_pendingList, SocketFlags.None, OnSendCallback, null);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"RegisterSend Error: {e.Message}");
+            Disconnect();
+        }
+    }
+        
+
     private void OnSendCallback(IAsyncResult ar)
     {
-        _socket.EndSend(ar);
+        try
+        {
+            int bytesTransferred = _socket.EndSend(ar);
+
+            lock (_lock)
+            {
+                if (_sendQueue.Count > 0)
+                {
+                    // 아직 보낼 게 더 있다면 다시 등록
+                    RegisterSend();
+                }
+                else
+                {
+                    _pending = false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"OnSendCallback Error: {e.Message}");
+            Disconnect();
+        }
     }
 
 
     public void Disconnect() 
     {
-        
-        try
-        {
-            //  송수신 차단 및 소켓 닫기
-            // Shutdown을 먼저 호출하여 상대방에게 종료 신호(FIN)를 보냅니다.
-            _socket.Shutdown(SocketShutdown.Both);
-            _socket.Close();
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"Disconnect Error: {e}");
-        }
 
-        // 3. 엔진/매니저 로직 정리
+        lock (_lock)
+        {
+            if (_socket == null) return;
+
+            try
+            {
+                _socket.Shutdown(SocketShutdown.Both);
+                _socket.Close();
+                _socket = null; // Dispose된 객체 접근 방지
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"Disconnect Error: {e}");
+            }
+        }
         OnDisconnected();
     }
 
@@ -161,6 +216,7 @@ public class PacketSession
         Debug.Log($"OnConnected : {endPoint}");
              
         CS_LOGIN loginPacket = new CS_LOGIN();
+        //TEMP, TOOD: 실제로는 user id와 password등의 인증정보에 관한 로직이 들어가야함
         loginPacket.UserId = 123123;
         loginPacket.Password = "password 1234";
 

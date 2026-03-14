@@ -34,6 +34,10 @@ public class PlayerController : CreatureController
             HandleInput();
             CheckAndSendMovePacket();
         }
+        else
+        {
+            InterpolateMovement();
+        }
     }
 
     private void HandleInput()

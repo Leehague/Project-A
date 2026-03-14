@@ -1,14 +1,9 @@
 using Google.Protobuf;
-using Protocol;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using UnityEditor.Sprites;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 public class NetworkManager 
@@ -98,6 +93,11 @@ public class NetworkManager
 
     public void Send(IMessage packet)
     {
+        if (_session == null)
+        {
+            Debug.LogError("세션 객체가 없습니다");
+            return;
+        }
         _session.Send(packet);
     }
 }

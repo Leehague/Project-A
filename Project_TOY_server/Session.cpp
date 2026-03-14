@@ -98,7 +98,7 @@ void Session::OnRecv(int bytesTransferred)
         // 2. 패킷 헤더를 읽어 전체 크기 확인
         PacketHeader* header = reinterpret_cast<PacketHeader*>(_recvBuffer.ReadPos());
 
-        //logging
+        
                 
         // 서버의 OnRecv 혹은 패킷 분기 로직
 
@@ -142,7 +142,8 @@ void Session::OnRecv(int bytesTransferred)
         if (PacketHandler::HandlePacket(_sessionPtr, reinterpret_cast<BYTE*>(_recvBuffer.ReadPos()), header->size)==false)
         {
             OnDisconnected();
-            std::cout << "handlepacket fail" << std::endl;
+            std::cout << "HandlePacket Fail! [PacketID: " << header->id << "][Size: " << header->size << "]" << std::endl;
+                       
             return;
         }
 

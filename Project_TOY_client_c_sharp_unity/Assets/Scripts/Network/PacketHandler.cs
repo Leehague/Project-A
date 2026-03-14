@@ -66,5 +66,14 @@ public class PacketHandler
                 pc.RefreshPos(movepkt.PosInfo);
             }
         }
+        else 
+        {
+            Debug.Log("not found player controller");
+        }
+    }
+
+    public static void Handle_SC_PLAYER_SPAWN(PacketSession session, IMessage packet)
+    { 
+
     }
 }

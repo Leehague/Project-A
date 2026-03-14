@@ -15,7 +15,7 @@
 #include <vector>
 #include <iostream>
 #include "PacketHandler.h"
-
+#include "RoomManager.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -27,6 +27,8 @@ int main()
     IocpCore iocp;
     Listener listener;
 
+    std::cout << GRoomManager.Create() << "번 방 생성" << std::endl;//0번방 생성
+    
     // 1. 서버 시작 (포트, 세션 생성 방식, IOCP 핵심 객체 전달)
     // 람다 함수는 단순히 "어떤 세션 객체를 만들지"만 결정해서 리턴합니다.
     bool success = listener.StartAccept(

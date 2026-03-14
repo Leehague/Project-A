@@ -137,23 +137,28 @@
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="Protocol\Protocol.pb.cc" />
     <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="SendBuffer.cpp" />
     <ClCompile Include="Session.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferWriter.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Protocol\Protocol.pb.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="Room.h" />
+    <ClInclude Include="RoomManager.h" />
     <ClInclude Include="SendBuffer.h" />
     <ClInclude Include="ServerUtils.h" />
     <ClInclude Include="Session.h" />

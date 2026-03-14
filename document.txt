@@ -145,3 +145,21 @@ TODO : Room 기반의 브로드캐스트 로직 구현(완)
 
 서버측 , 클라측 이동로직 완성. (Room 기반)
 TODO: Dummyclient를 unity버전으로 여러개 만들어서 실제로 Room 안에 있는 플레이어들 간에 이동 동기화가 되는지 테스트 필요
+
+
+2026/03/14
+
+클라 측 send 로직을 큐방식으로 전환 (서버는 이미 되어 있음) -> 이동 패킷 전송시에 방생하던 런타임 에러 문제를 해결함
+
+TODO : Spawn Packet 정의 , Player Id 발급 로직
+
+- TODO list for Player Id 발급 로직
+1. create  RoomManager - 현제 서버에 존재하는 모든 룸들을 관리하는 객체 => 완
+	
+2. create ObjectMaanger - 현재 서버에 접속하고 있는 모든 유저들(플레이어들)을 관리하는 객체 =>완
+	-여기서 Player Id(objectId)를 생성하고 유지해야함
+3. create method UpdateObjects in class Room - 룸이 관리하는 플레이어의 캐릭터, 다른 사물 등의 위치 정보를 주기적으로 업데이트 해서 boardcast 를 해주는 (방전체에) 메소드, 그리고 주기적으로 어디선가 콜해주어야함 => 완
+
+TODO:: Spawn Packet 정의 남음. 스폰 => 무빙 사이에서 패킷 주고 받고 이상 없는지 확인할 것
+
+

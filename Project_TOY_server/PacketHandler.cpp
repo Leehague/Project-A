@@ -1,6 +1,8 @@
 #include "PacketHandler.h"
 #include "Session.h"
 #include "Player.h"
+#include "ObjectManager.h"
+#include "RoomManager.h"
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];
@@ -17,21 +19,29 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 
     //TODO 로그인 유효성 검증 로직 추가 
 
-    // [수정] google protobuf 도입
     // 응답 전송 
     Protocol::SC_LOGIN_OK resPkt;
 
-    //Temp , 실제로는 GameRoom 을 만들어서 room 에서 
-    // 고유한 objectID(playerId) 를 각 유저마다 부여해서 이를 유지하면서 이런 room별 유저 리스트에
-    // 유저를 추가한 후 유저의 그 room 에서의 objectId(playerId)를 발급해서 패킷에 포함해야함
-    // 다만 room 별로 playerId
+   
     resPkt.set_success(true);
-    resPkt.set_templete_id(1);
-    resPkt.set_player_id(1); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
+    resPkt.set_templete_id(1);//Knight
 
-    //차후에 플레이어 말고 다른 오브젝트들에 대해서도 다루는 패킷이 필요할 수 있으므로 이를 구분하는
-    //번호 부여 규칙을 정할 필요가 있음  혹은 playerId와 room 별 별개의 objectId를 따로 관리해야 할수도?
+    //Temp
+    if (GRoomManager.FindRoom(0) == nullptr)
+    {
+        // 방이 없습니다! 서버 시작 시점에 Create(1)을 했는지 확인하세요.
+        std::cout << "Error: Room not found!" << std::endl;
+        return false;
+    }
 
+    //TODO: RoomId를 가져오는 로직 필요 , 임시로 1번 (하드코딩 메인에서 1번 Room을 만들고 있음) 
+    GameObjectPtr go = GObjcetManager.Create(0,GameObjectType::Player, session);
+
+
+    resPkt.set_player_id(go->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
+
+    //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
+      
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
     session->Send(sendBuffer);
 
@@ -62,7 +72,7 @@ bool Handle_CS_CHAT(SessionPtr& session, Protocol::CS_CHAT& pkt)
     // 4. 브로드캐스팅
     if (sendBuffer)
     {
-        auto room = session->GetPlayerPtr()->room.lock();
+        RoomPtr room = GRoomManager.FindRoom(session->GetPlayerPtr()->GetroomId());
             
         room->Broadcast(sendBuffer);
     }
@@ -98,11 +108,24 @@ bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt)
 {
     //세션에서 플레이어 객체 가져오기 (세션에 Player 멤버가 있다고 가정)
     PlayerPtr player = session->GetPlayerPtr();
-    if (player == nullptr) return false;
+    if (player == nullptr) 
+    { 
+        std::cout << "Handle_CS_MOVING: player has nullptr" << std::endl;
+        return true; 
+    }
 
-    RoomPtr room = player->room.lock();
-    if (room == nullptr) { return false; }
+    RoomPtr room = GRoomManager.FindRoom(player->GetroomId());
+    if (room == nullptr)
+    {
+        std::cout << "Handle_CS_MOVING: room has nullptr" << std::endl;
+        return true;
+    }
     room->HandleMove(player,pkt);
     
+    return true;
+}
+
+bool Handle_CS_PLAYER_SPAWN(SessionPtr& session, Protocol::CS_PLAYER_SPAWN& pkt)
+{
     return true;
 }
