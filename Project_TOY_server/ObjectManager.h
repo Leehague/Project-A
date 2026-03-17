@@ -6,10 +6,10 @@
 class ObjcetManager 
 {
 public:
-	GameObjectPtr Create(int32 RoomId,GameObjectType type, std::shared_ptr<Session> session);
+	GameObjectPtr Create(GameObjectType type, std::shared_ptr<Session> session);
 	
 	GameObjectPtr Find(int32 objectId);
-	void Removeobjcet(int32 roomId);
+	void Removeobjcet(int32 objectId);
 	int32 GetobjcetCounter();
 	
 private:

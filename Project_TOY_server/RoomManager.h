@@ -7,8 +7,11 @@ class RoomManager
 public:
 	int32 Create();
 	RoomPtr FindRoom(int32 roomId);
+	RoomPtr FindLastRoom();
 	void RemoveRoom(int32 roomId);
 	int32 GetRoomCounter();
+	
+
 
 private:
 	std::mutex _lock;

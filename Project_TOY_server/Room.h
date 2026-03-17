@@ -9,16 +9,17 @@ public:
     void Enter(GameObjectPtr go);
     void Leave(PlayerPtr player);
     void Broadcast(SendBufferPtr sendBuffer);
+    void Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id);//passing_object_id 를 가지는 플레이어(유저)만 제외하고 브로드 캐스팅
     void SendTo(PlayerPtr player, SendBufferPtr sendBuffer);
 
     // 이동 패킷 처리 루틴
     void HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt);
 
-    void SetRoomid(int32 roomid) { _roomid = roomid; }
-    int32 GetRoomid() {return _roomid;}
+    void SetRoomid(int32 roomid) { _Selfroomid = roomid; }
+    int32 GetRoomid() {return _Selfroomid;}
 private:
     std::mutex _lock;
     std::map<uint64, GameObjectPtr> _objects;
 
-    int32 _roomid;
+    int32 _Selfroomid;
 };

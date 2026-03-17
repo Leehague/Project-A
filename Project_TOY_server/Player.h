@@ -9,8 +9,8 @@ class Player : public GameObject
 {
 public:
 
-    Player(int32 objectId, int32 roomId, std::shared_ptr<Session> sessionPtr)
-        : GameObject(objectId, roomId, GameObjectType::Player), session(sessionPtr)
+    Player(int32 objectId, std::shared_ptr<Session> sessionPtr)
+        : GameObject(objectId, GameObjectType::Player), session(sessionPtr)
     {
         
     }

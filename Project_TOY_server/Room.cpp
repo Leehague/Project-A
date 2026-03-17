@@ -2,14 +2,75 @@
 #include "Player.h" 
 #include "Session.h" 
 #include "GameObject.h"
-
+#include "Protocol/Protocol.pb.h"
 
 void Room::Enter(GameObjectPtr go)
 {
-    std::lock_guard<std::mutex> lock(_lock);
-    _objects[go->GetObjectId()] = go;
-    //player->getroo = shared_from_this();
-    //go->SetroomId(_roomid);
+    {
+        std::lock_guard<std::mutex> lock(_lock);
+        _objects[go->GetObjectId()] = go;
+        go->SetroomId(_Selfroomid);
+    }
+    // 2. 본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
+    if (auto player = std::static_pointer_cast<Player>(go))
+    {
+        Protocol::SC_ENTER_GAME enterPkt;
+        *enterPkt.mutable_pos_info() = player->Getpos(); // 서버가 결정한 좌표
+        auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
+        player->session.lock()->Send(sendBuffer);
+    }
+
+    // 3. 타인들에게 나를 알림 (SC_PLAYER_SPAWN 브로드캐스트)
+    {
+        Protocol::SC_PLAYER_SPAWN spawnPkt;
+        
+        // With this code:
+        auto* obj = spawnPkt.add_players_pos_info();
+        obj->CopyFrom(go->Getpos()); // 내 정보 추가
+        
+        if (spawnPkt.players_pos_info_size() > 0) // 데이터가 있을 때만 전송
+        {
+            auto sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
+
+            // 나를 제외한 모두에게 전송 (기존에 만든 Broadcast 함수 활용)
+            Broadcast(sendBuffer, go->GetObjectId());
+        }
+        
+    }
+
+    // 4. 나에게 기존 오브젝트들을 알림 (SC_PLAYER_SPAWN 목록 전송)
+    if (auto player = std::static_pointer_cast<Player>(go))
+    {
+        Protocol::SC_PLAYER_SPAWN spawnPkt;
+
+        // 방의 모든 오브젝트를 순회하며 나를 제외한 정보를 패킷에 추가
+        for (auto& pair : _objects)
+        {
+            if (pair.first == go->GetObjectId())
+                continue; // 본인은 제외 
+
+            // 1. 새로운 PosInfo 슬롯을 리스트에 추가하고 그 주소를 가져옴
+            Protocol::PosInfo* info = spawnPkt.add_players_pos_info();
+
+            // 2. 해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
+            info->CopyFrom(pair.second->Getpos());
+        }
+
+
+        if (spawnPkt.players_pos_info_size() > 0) // 데이터가 있을 때만 전송
+        {
+            // 패킷 시리얼라이즈 및 전송
+            auto sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
+
+            if (auto s = player->session.lock())
+            {
+                std::cout << "[Packet Log] ID: " << Protocol::PKT_SC_PLAYER_SPAWN
+                    << " | Total Size: " << sendBuffer->WriteSize() << " Bytes" << std::endl;
+                s->Send(sendBuffer);
+            }
+        }
+        
+    }
 }
 void Room::Leave(PlayerPtr player)
 {
@@ -18,14 +79,19 @@ void Room::Leave(PlayerPtr player)
 
 void Room::Broadcast(SendBufferPtr sendBuffer)
 {
-    std::cout << "Room::Broadcast works" << std::endl;
+    Broadcast(sendBuffer, -1);
+}
+void Room::Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id)
+{
+    //std::cout << "Room::Broadcast works" << std::endl;
 
     std::lock_guard<std::mutex> lock(_lock);
     for (auto& pair : _objects) {
         if (pair.second->GetType() != GameObjectType::Player) { continue; }
 
-
         PlayerPtr player = std::static_pointer_cast<Player>(pair.second);
+
+        if (player->GetObjectId() == passing_object_id) { continue; }
         auto session = player->session.lock(); // 세션이 살아있는지 확인
         if (session) {
             session->Send(sendBuffer);
@@ -64,5 +130,5 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
     resPos->CopyFrom(player->Getpos());
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
-    Broadcast(sendBuffer); // <-- This must be inside the function body
+    Broadcast(sendBuffer, player->GetObjectId()); // 자기자신은 제외
 }

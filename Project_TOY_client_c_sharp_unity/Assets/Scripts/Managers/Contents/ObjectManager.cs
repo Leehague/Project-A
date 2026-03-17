@@ -1,3 +1,4 @@
+using Protocol;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -6,6 +7,11 @@ public class ObjectManager
 {
     // 내 캐릭터는 특별하니까 따로 관리합니다.
     public GameObject MyPlayer { get; set; }
+
+    public PosInfo MyplayerPosInfo { get; set; }
+    public ulong Myplayer_playerId { get; set; } //서버에서 전송해준 내 캐릭터의 objectId 
+
+    public ulong Myplayer_templeteId { get; set; }//서버에서 전송해준 내 캐릭터의 templeteId
 
     // 나머지 객체들은 ID로 관리합니다. 여기서 ID는 objectId로 서버에서 관리하는 번호입니다.
     Dictionary<ulong, GameObject> _objects = new Dictionary<ulong, GameObject>();

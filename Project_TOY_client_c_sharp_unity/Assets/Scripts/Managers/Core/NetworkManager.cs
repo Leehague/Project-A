@@ -13,7 +13,7 @@ public class NetworkManager
     private Socket _socket;
     private PacketSession _session;
     private int _disconnected = 1; //0: connected , 1: disconnected
-
+    private bool _isConnectSuccess = false;
     
 
     // 서버에서 받은 패킷을 메인 스레드에서 처리하기 위한 큐
@@ -50,12 +50,12 @@ public class NetworkManager
             _session = new PacketSession();
             _session.Init(socket);
 
-            _session.OnConnected(socket.RemoteEndPoint);
+           
 
             // 수신 시작
             _session.StartReceive();
 
-            
+            _isConnectSuccess = true;
         }
         catch (Exception e)
         {
@@ -71,6 +71,12 @@ public class NetworkManager
 
     public void Update()
     {
+        if (_isConnectSuccess)
+        {
+            _isConnectSuccess =false;
+            _session.OnConnected(_socket.RemoteEndPoint);
+
+        }
         // [중요] 메인 스레드(Update)에서 쌓인 패킷을 하나씩 꺼내서 처리
         while (_packetQueue.TryDequeue(out PacketMessage packet))
         {

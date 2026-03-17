@@ -3,11 +3,15 @@ using Protocol; // Protobuf로 생성된 네임스페이스
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Sprites;
 using UnityEngine;
 using UnityEngine.XR;
 
+
 public partial class PacketManager
 {
+    
+
     // [추가] Type을 키로 하여 PacketId(ushort)를 저장
     Dictionary<Type, ushort> _typeToId = new Dictionary<Type, ushort>();
 
@@ -73,4 +77,6 @@ public partial class PacketManager
             Debug.LogWarning($"No handler registered for Packet ID: {id}");
         }
     }
+
+    
 }

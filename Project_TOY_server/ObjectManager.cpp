@@ -4,27 +4,26 @@
 
 ObjcetManager GObjcetManager;
 
-GameObjectPtr ObjcetManager::Create(int32 RoomId, GameObjectType type, std::shared_ptr<Session> session)
+GameObjectPtr ObjcetManager::Create( GameObjectType type, std::shared_ptr<Session> session)
 {
     std::lock_guard<std::mutex> lock(_lock);
-    int32 objcetId = GameobjcetCounter++;
+    int32 objcetId = ++GameobjcetCounter;
 
     GameObjectPtr go = nullptr;
 
     if (type == GameObjectType::Player) {
-        PlayerPtr player = std::make_shared<Player>(objcetId, RoomId, session);
+        PlayerPtr player = std::make_shared<Player>(objcetId, session);
         // Cast PlayerPtr to GameObjectPtr for assignment
         player->Init();
         go = std::static_pointer_cast<GameObject>(player);
     }
     else 
     {
-        go = std::make_shared<GameObject>(objcetId, RoomId, type);
+        go = std::make_shared<GameObject>(objcetId, type);
     }
 
     _objects[objcetId] = go;
-    RoomPtr room = GRoomManager.FindRoom(RoomId);
-    room->Enter(go);
+    
     return go;
 }
 

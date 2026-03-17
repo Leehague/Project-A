@@ -23,7 +23,10 @@ public partial class PacketManager
         _typeToId.Add(typeof(SC_MOVING), (ushort)PacketId.PktScMoving);
         _onRecv.Add((ushort)PacketId.PktScMoving, (s, b, sz) => MakePacket<SC_MOVING>(s, b, sz, (ushort)PacketId.PktScMoving));
         _handler.Add((ushort)PacketId.PktScMoving, PacketHandler.Handle_SC_MOVING);
-        _typeToId.Add(typeof(CS_PLAYER_SPAWN), (ushort)PacketId.PktCsPlayerSpawn);
+        _typeToId.Add(typeof(CS_ENTER_GAME), (ushort)PacketId.PktCsEnterGame);
+        _typeToId.Add(typeof(SC_ENTER_GAME), (ushort)PacketId.PktScEnterGame);
+        _onRecv.Add((ushort)PacketId.PktScEnterGame, (s, b, sz) => MakePacket<SC_ENTER_GAME>(s, b, sz, (ushort)PacketId.PktScEnterGame));
+        _handler.Add((ushort)PacketId.PktScEnterGame, PacketHandler.Handle_SC_ENTER_GAME);
         _typeToId.Add(typeof(SC_PLAYER_SPAWN), (ushort)PacketId.PktScPlayerSpawn);
         _onRecv.Add((ushort)PacketId.PktScPlayerSpawn, (s, b, sz) => MakePacket<SC_PLAYER_SPAWN>(s, b, sz, (ushort)PacketId.PktScPlayerSpawn));
         _handler.Add((ushort)PacketId.PktScPlayerSpawn, PacketHandler.Handle_SC_PLAYER_SPAWN);

@@ -23,11 +23,13 @@ public class Managers : MonoBehaviour
     //郴何 积己
     private ObjectManager _objectManager = new ObjectManager();
     private DataManager _dataManager = new DataManager();
+    private SceneManagerEx SceneManagerEx = new SceneManagerEx();
 
 
     //寇何 立辟侩 property
     public static ObjectManager objectManager => Instance._objectManager;
     public static DataManager dataManager => Instance._dataManager;
+    public static SceneManagerEx sceneManagerEx => Instance.SceneManagerEx;
     #endregion
 
     void Start()

@@ -26,16 +26,8 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
     resPkt.set_success(true);
     resPkt.set_templete_id(1);//Knight
 
-    //Temp
-    if (GRoomManager.FindRoom(0) == nullptr)
-    {
-        // 방이 없습니다! 서버 시작 시점에 Create(1)을 했는지 확인하세요.
-        std::cout << "Error: Room not found!" << std::endl;
-        return false;
-    }
-
-    //TODO: RoomId를 가져오는 로직 필요 , 임시로 1번 (하드코딩 메인에서 1번 Room을 만들고 있음) 
-    GameObjectPtr go = GObjcetManager.Create(0,GameObjectType::Player, session);
+    //수정 :: GObjcetManager.Create 내부에서 Room::Enter를 콜 하던것을 제거 
+    GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session);
 
 
     resPkt.set_player_id(go->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
@@ -125,7 +117,21 @@ bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt)
     return true;
 }
 
-bool Handle_CS_PLAYER_SPAWN(SessionPtr& session, Protocol::CS_PLAYER_SPAWN& pkt)
+bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt)
 {
+    auto player = session->GetPlayerPtr();
+    if (player == nullptr) 
+    { 
+        std::cout << "not found playerPTr in Handle_CS_ENTER_GAME" << std::endl;
+        return true;
+    }
+
+    // Temp , TODO: FindLastRoom 은 서버 입장에서 마지막으로 만들어진 Room 을 찾아서 입장 시키는 것, 
+    // 따라서 해당 클라에 알맞는 룸을 찾아서 입장시키는 로직이 필요함 
+    // 이는 기획에 따라 달라질 요소가 있음
+    GRoomManager.FindLastRoom()->Enter(player); //Enter 로직 속에 전송로직이 포함되어 있으므로 이것으로 충분함
+
     return true;
 }
+
+

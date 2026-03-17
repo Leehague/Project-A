@@ -12,8 +12,9 @@ enum PacketId {
     PKT_CS_WHISPER = 6;         
     PKT_CS_MOVING = 7;           
     PKT_SC_MOVING = 8;
-    PKT_CS_PLAYER_SPAWN = 9;
-    PKT_SC_PLAYER_SPAWN = 10;            
+    PKT_CS_ENTER_GAME = 9;
+    PKT_SC_ENTER_GAME = 10;
+    PKT_SC_PLAYER_SPAWN = 11;            
 
 }
 
@@ -26,7 +27,7 @@ message CS_LOGIN {
 
 message SC_LOGIN_OK {
     bool success = 1;
-    uint64 player_id = 2;
+    uint64 player_id = 2; //해당 플레이어의 object_id
     uint64 templete_id = 3;
 }
 
@@ -71,10 +72,15 @@ message CS_MOVING {
 message SC_MOVING {
   PosInfo pos_info = 1;
 }
-message CS_PLAYER_SPAWN {
+message CS_ENTER_GAME {
 
 }
 
+message SC_ENTER_GAME {
+    PosInfo pos_info = 1;
+}
+
 message SC_PLAYER_SPAWN {
+    repeated PosInfo players_pos_info = 1;
 
 }

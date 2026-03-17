@@ -10,16 +10,14 @@ public class PacketHandler
         SC_LOGIN_OK pkt = packet as SC_LOGIN_OK;
         Debug.Log($"Handle_SC_LOGIN_OK: {pkt.ToString()}");
 
-        //내 플레이어 스폰
-        //패킷정보 캐스팅에서 문제 생길가능성 있음
-        Managers.objectManager.SpawnPlayer(pkt.TempleteId, pkt.PlayerId, true);
+        Managers.objectManager.Myplayer_playerId = pkt.PlayerId;
+        Managers.objectManager.Myplayer_templeteId = pkt.TempleteId;
 
-        //TODO : pkt.PlayerId 캐싱. 클라이언트 에서도 이 playerId(objectId)로 objectManager에서 
-        //object들을 관리하고 있으므로 자신의 playerId(objectId)를 알고 있을 필요가 있음
-
-        //TODO : 다른 플레이어들 스폰
-
-        //씬 매니저를 만들어서 그곳의 씬 초기화 함수를 호출하는 방식으로 변경예정
+        if (pkt.Success) 
+        { 
+            Managers.sceneManagerEx.LoadScene(SceneType.Loading);
+        }
+        
     }
 
     public static void Handle_SC_CHAT_BROADCAST(PacketSession session, IMessage packet)
@@ -76,4 +74,25 @@ public class PacketHandler
     { 
 
     }
+    public static void Handle_SC_ENTER_GAME(PacketSession session, IMessage packet) 
+    {
+        SC_ENTER_GAME enterGamePkt = packet as SC_ENTER_GAME;
+
+        // 1. 서버가 보내준 나의 초기 위치 정보를 저장
+        Managers.objectManager.MyplayerPosInfo=enterGamePkt.PosInfo;
+
+        // 2. 현재 씬이 로딩 씬인지 확인하고 승인 함수 호출
+        LoadingScene loadingScene = Managers.sceneManagerEx.CurrentScene as LoadingScene;
+        if (loadingScene != null)
+        {
+            loadingScene.OnServerEnterAccepted();
+        }
+        else
+        {
+            // 만약 로딩 씬이 아닌데 이 패킷이 왔다면 예외 처리
+            Debug.LogWarning("Received SC_ENTER_GAME but current scene is not LoadingScene");
+        }
+    }
+
+    
 }

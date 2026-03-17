@@ -17,11 +17,15 @@ public:
     char* Buffer() { return _buffer.data(); }
     int Size() { return _writeSize; }
 
+    int WriteSize() const { return _writeSize; }
+
     // (선택) 보낼 패킷 데이터 구조체를 직접 넘기는 편의 함수
     template<typename T>
     void CopyData(T& data) { Write(&data, sizeof(T)); }
 
     void Close(uint32 size) { _writeSize = size; }
+
+
 private:
     std::vector<char> _buffer;
     int _writeSize = 0;

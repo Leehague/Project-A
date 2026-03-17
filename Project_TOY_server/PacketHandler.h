@@ -13,7 +13,7 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt);
 bool Handle_CS_CHAT(SessionPtr& session, Protocol::CS_CHAT& pkt);
 bool Handle_CS_WHISPER(SessionPtr& session, Protocol::CS_WHISPER& pkt);
 bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt);
-bool Handle_CS_PLAYER_SPAWN(SessionPtr& session, Protocol::CS_PLAYER_SPAWN& pkt);
+bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt);
 
 
 class PacketHandler
@@ -60,8 +60,9 @@ inline void PacketHandler::Init()
         return HandlePacket<Protocol::CS_MOVING>(Handle_CS_MOVING, session, buffer, len);
     };
     GPacketHandler[Protocol::PacketId::PKT_SC_MOVING] = Handle_INVALID;
-    GPacketHandler[Protocol::PacketId::PKT_CS_PLAYER_SPAWN] = [](SessionPtr& session, BYTE* buffer, int32 len) {
-        return HandlePacket<Protocol::CS_PLAYER_SPAWN>(Handle_CS_PLAYER_SPAWN, session, buffer, len);
+    GPacketHandler[Protocol::PacketId::PKT_CS_ENTER_GAME] = [](SessionPtr& session, BYTE* buffer, int32 len) {
+        return HandlePacket<Protocol::CS_ENTER_GAME>(Handle_CS_ENTER_GAME, session, buffer, len);
     };
+    GPacketHandler[Protocol::PacketId::PKT_SC_ENTER_GAME] = Handle_INVALID;
     GPacketHandler[Protocol::PacketId::PKT_SC_PLAYER_SPAWN] = Handle_INVALID;
 }

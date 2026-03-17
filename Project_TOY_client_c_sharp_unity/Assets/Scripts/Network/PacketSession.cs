@@ -35,6 +35,30 @@ public class PacketSession
     }
 
     // 서버의 RecvBuffer 로직과 동일하게 작동해야 함
+    //public int OnReceive(ArraySegment<byte> buffer)
+    //{
+    //    int processLen = 0;
+
+    //    while (true)
+    //    {
+    //        int dataSize = buffer.Count - processLen;
+    //        if (dataSize < 4) break;
+
+    //        // buffer.Offset + processLen 위치부터 읽어야 함
+    //        ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen);
+    //        if (dataSize < size) break;
+
+    //        ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen + 2);
+
+    //        // 패킷 매니저에게 조립된 패킷 전달
+    //        Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen, size, this);
+
+    //        processLen += size;
+    //    }
+
+    //    return processLen;
+    //}
+
     public int OnReceive(ArraySegment<byte> buffer)
     {
         int processLen = 0;
@@ -44,14 +68,26 @@ public class PacketSession
             int dataSize = buffer.Count - processLen;
             if (dataSize < 4) break;
 
-            // buffer.Offset + processLen 위치부터 읽어야 함
             ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen);
+            if (size < 4)
+            {
+                // 이런 경우가 발생한다면 서버의 데이터가 오염되었거나 헤더 설계가 잘못된 것임
+                return buffer.Count; // 남은 데이터를 다 버리거나 연결을 끊어야 함
+            }
             if (dataSize < size) break;
-
+            
             ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen + 2);
 
-            // 패킷 매니저에게 조립된 패킷 전달
-            Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen, size, this);
+            // [수정] 헤더(4바이트)를 건너뛰고 실제 데이터 부분만 넘겨줍니다.
+            ushort headerSize = 4;
+            int bodySize = size - headerSize;
+
+            // 안정성을 위해 bodySize가 0 이상인지 한 번 더 체크
+            if (bodySize >= 0)
+            {
+                Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen + headerSize, (ushort)bodySize, this);
+            }
+            
 
             processLen += size;
         }
@@ -214,12 +250,10 @@ public class PacketSession
     public virtual void OnConnected(EndPoint endPoint)
     {
         Debug.Log($"OnConnected : {endPoint}");
-             
-        CS_LOGIN loginPacket = new CS_LOGIN();
-        //TEMP, TOOD: 실제로는 user id와 password등의 인증정보에 관한 로직이 들어가야함
-        loginPacket.UserId = 123123;
-        loginPacket.Password = "password 1234";
 
-        Send(loginPacket);
+        //로그인 씬 로드
+        Managers.sceneManagerEx.LoadScene(SceneType.Login);
+
+
     }
 }

@@ -5,7 +5,7 @@ RoomManager GRoomManager;
 int32 RoomManager::Create()
 {
     std::lock_guard<std::mutex> lock(_lock);  
-    int32 roomId = RoomCounter++;
+    int32 roomId = ++RoomCounter;
     RoomPtr room = std::make_shared<Room>();
     // ... 초기화 로직 ...
     _rooms[roomId] = room;
@@ -16,6 +16,11 @@ int32 RoomManager::Create()
 RoomPtr RoomManager::FindRoom(int32 roomId)
 {
 	return _rooms[roomId];
+}
+
+RoomPtr RoomManager::FindLastRoom()
+{
+    return FindRoom(RoomCounter);
 }
 
 void RoomManager::RemoveRoom(int32 roomId)
