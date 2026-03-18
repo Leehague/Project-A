@@ -517,7 +517,6 @@ class SC_LOGIN_OK final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kPlayerIdFieldNumber = 2,
-    kTempleteIdFieldNumber = 3,
     kSuccessFieldNumber = 1,
   };
   // uint64 player_id = 2;
@@ -528,16 +527,6 @@ class SC_LOGIN_OK final : public ::google::protobuf::Message
   private:
   ::uint64_t _internal_player_id() const;
   void _internal_set_player_id(::uint64_t value);
-
-  public:
-  // uint64 templete_id = 3;
-  void clear_templete_id() ;
-  ::uint64_t templete_id() const;
-  void set_templete_id(::uint64_t value);
-
-  private:
-  ::uint64_t _internal_templete_id() const;
-  void _internal_set_templete_id(::uint64_t value);
 
   public:
   // bool success = 1;
@@ -554,7 +543,7 @@ class SC_LOGIN_OK final : public ::google::protobuf::Message
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<2, 3,
+  static const ::google::protobuf::internal::TcParseTable<1, 2,
                                    0, 0,
                                    2>
       _table_;
@@ -577,7 +566,6 @@ class SC_LOGIN_OK final : public ::google::protobuf::Message
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::uint64_t player_id_;
-    ::uint64_t templete_id_;
     bool success_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -942,6 +930,7 @@ class PosInfo final : public ::google::protobuf::Message
     kYFieldNumber = 3,
     kZFieldNumber = 4,
     kYawFieldNumber = 5,
+    kTempleteIdFieldNumber = 6,
   };
   // uint64 object_id = 1;
   void clear_object_id() ;
@@ -993,11 +982,21 @@ class PosInfo final : public ::google::protobuf::Message
   void _internal_set_yaw(float value);
 
   public:
+  // uint64 templeteId = 6;
+  void clear_templeteid() ;
+  ::uint64_t templeteid() const;
+  void set_templeteid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_templeteid() const;
+  void _internal_set_templeteid(::uint64_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.PosInfo)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<3, 5,
+  static const ::google::protobuf::internal::TcParseTable<3, 6,
                                    0, 0,
                                    2>
       _table_;
@@ -1024,6 +1023,7 @@ class PosInfo final : public ::google::protobuf::Message
     float y_;
     float z_;
     float yaw_;
+    ::uint64_t templeteid_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -2672,7 +2672,7 @@ inline void SC_LOGIN_OK::clear_success() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.success_ = false;
   ClearHasBit(_impl_._has_bits_[0],
-                  0x00000004U);
+                  0x00000002U);
 }
 inline bool SC_LOGIN_OK::success() const {
   // @@protoc_insertion_point(field_get:Protocol.SC_LOGIN_OK.success)
@@ -2680,7 +2680,7 @@ inline bool SC_LOGIN_OK::success() const {
 }
 inline void SC_LOGIN_OK::set_success(bool value) {
   _internal_set_success(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   // @@protoc_insertion_point(field_set:Protocol.SC_LOGIN_OK.success)
 }
 inline bool SC_LOGIN_OK::_internal_success() const {
@@ -2715,31 +2715,6 @@ inline ::uint64_t SC_LOGIN_OK::_internal_player_id() const {
 inline void SC_LOGIN_OK::_internal_set_player_id(::uint64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.player_id_ = value;
-}
-
-// uint64 templete_id = 3;
-inline void SC_LOGIN_OK::clear_templete_id() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.templete_id_ = ::uint64_t{0u};
-  ClearHasBit(_impl_._has_bits_[0],
-                  0x00000002U);
-}
-inline ::uint64_t SC_LOGIN_OK::templete_id() const {
-  // @@protoc_insertion_point(field_get:Protocol.SC_LOGIN_OK.templete_id)
-  return _internal_templete_id();
-}
-inline void SC_LOGIN_OK::set_templete_id(::uint64_t value) {
-  _internal_set_templete_id(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
-  // @@protoc_insertion_point(field_set:Protocol.SC_LOGIN_OK.templete_id)
-}
-inline ::uint64_t SC_LOGIN_OK::_internal_templete_id() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.templete_id_;
-}
-inline void SC_LOGIN_OK::_internal_set_templete_id(::uint64_t value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.templete_id_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -3220,6 +3195,31 @@ inline float PosInfo::_internal_yaw() const {
 inline void PosInfo::_internal_set_yaw(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.yaw_ = value;
+}
+
+// uint64 templeteId = 6;
+inline void PosInfo::clear_templeteid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.templeteid_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000020U);
+}
+inline ::uint64_t PosInfo::templeteid() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.templeteId)
+  return _internal_templeteid();
+}
+inline void PosInfo::set_templeteid(::uint64_t value) {
+  _internal_set_templeteid(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.templeteId)
+}
+inline ::uint64_t PosInfo::_internal_templeteid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.templeteid_;
+}
+inline void PosInfo::_internal_set_templeteid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.templeteid_ = value;
 }
 
 // -------------------------------------------------------------------

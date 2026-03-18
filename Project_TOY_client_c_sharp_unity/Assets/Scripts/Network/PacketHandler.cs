@@ -1,6 +1,7 @@
 using System;
 using Google.Protobuf;
 using Protocol;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 public class PacketHandler
@@ -11,11 +12,16 @@ public class PacketHandler
         Debug.Log($"Handle_SC_LOGIN_OK: {pkt.ToString()}");
 
         Managers.objectManager.Myplayer_playerId = pkt.PlayerId;
-        Managers.objectManager.Myplayer_templeteId = pkt.TempleteId;
 
-        if (pkt.Success) 
-        { 
+
+        if (pkt.Success)
+        {
+
             Managers.sceneManagerEx.LoadScene(SceneType.Loading);
+        }
+        else 
+        {
+            Debug.Log("Login is not ok");
         }
         
     }
@@ -72,7 +78,26 @@ public class PacketHandler
 
     public static void Handle_SC_PLAYER_SPAWN(PacketSession session, IMessage packet)
     { 
+        SC_PLAYER_SPAWN spawn_Pkt = packet as SC_PLAYER_SPAWN;
 
+        Debug.Log("Handle_SC_PLAYER_SPAWN 수신");
+
+        if (spawn_Pkt == null) 
+        {
+            Debug.Log("spawn_Pkt is null");
+            return; 
+        }
+
+        foreach (PosInfo pos in spawn_Pkt.PlayersPosInfo) 
+        {
+            Debug.Log($"현재 소환 시점의 씬: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+
+            bool IsMyplayer = false;
+            if (pos.ObjectId == Managers.objectManager.Myplayer_playerId) { IsMyplayer = true; }
+            Managers.objectManager.SpawnPlayer(pos,IsMyplayer);
+        }
+
+        
     }
     public static void Handle_SC_ENTER_GAME(PacketSession session, IMessage packet) 
     {

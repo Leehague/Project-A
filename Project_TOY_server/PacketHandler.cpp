@@ -22,9 +22,8 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
     // 응답 전송 
     Protocol::SC_LOGIN_OK resPkt;
 
-   
     resPkt.set_success(true);
-    resPkt.set_templete_id(1);//Knight
+    
 
     //수정 :: GObjcetManager.Create 내부에서 Room::Enter를 콜 하던것을 제거 
     GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session);
@@ -33,7 +32,10 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
     resPkt.set_player_id(go->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
 
     //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
-      
+    
+    if (resPkt.success()) { std::cout << "success is true" << std::endl; }
+    else { std::cout << "success is not true" << std::endl; }
+
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
     session->Send(sendBuffer);
 

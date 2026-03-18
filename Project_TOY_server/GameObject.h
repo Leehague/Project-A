@@ -22,6 +22,8 @@ public:
 	void Setpos(Protocol::PosInfo pos) { _pos = pos; }
 	Protocol::PosInfo Getpos() { return _pos; }
 
+	void SetTempleteId_In_pos(uint64 tempeteId) { _pos.set_templeteid(tempeteId); }
+
 	void SetroomId(int32 roomid) { _roomId = roomid; }
 	int32 GetroomId() { return _roomId; }
 

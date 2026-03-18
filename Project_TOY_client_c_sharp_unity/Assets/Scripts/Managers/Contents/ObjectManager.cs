@@ -11,7 +11,7 @@ public class ObjectManager
     public PosInfo MyplayerPosInfo { get; set; }
     public ulong Myplayer_playerId { get; set; } //서버에서 전송해준 내 캐릭터의 objectId 
 
-    public ulong Myplayer_templeteId { get; set; }//서버에서 전송해준 내 캐릭터의 templeteId
+    
 
     // 나머지 객체들은 ID로 관리합니다. 여기서 ID는 objectId로 서버에서 관리하는 번호입니다.
     Dictionary<ulong, GameObject> _objects = new Dictionary<ulong, GameObject>();
@@ -58,15 +58,28 @@ public class ObjectManager
     }
 
     // 생성 및 등록을 한 번에 처리하는 함수
-    public GameObject SpawnPlayer(ulong templateId, ulong objectId, bool isMyPlayer = false)
+    public GameObject SpawnPlayer(PosInfo postion ,bool isMyPlayer = false)
     {
+        ulong templateId = postion.TempleteId;
+        ulong objectId = postion.ObjectId;
+
         // 데이터 매니저에서 정보 추출 ( Knight, Mage 등 )
         if (Managers.dataManager.StatDict.TryGetValue(templateId, out Stat statInfo) == false)
-            return null;
+        {
+            Debug.Log("Spawn Fail : fail to take from stat info ");
+            return null; 
+        }
+
+        Debug.Log($"Attempting to spawn: {statInfo.modelPath}");
 
         // 리소스 매니저로 프리팹 생성
         GameObject go = Managers.resourceManager.Instantiate(statInfo.modelPath);
         go.name = statInfo.name;
+        
+    
+        go.transform.position = new Vector3(postion.X, postion.Y, postion.Z);
+        
+
 
         // 여기서 Add를 호출하여 관리 목록에 추가
         Add(objectId, go, isMyPlayer);

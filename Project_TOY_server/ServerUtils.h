@@ -23,6 +23,10 @@ public:
         const uint16 headerSize = sizeof(PacketHeader);
         const uint16 totalSize = dataSize + headerSize;
 
+        // [디버깅 로그 추가]
+        std::cout << "[Send] ID: " << pktId << ", DataSize: " << dataSize << ", TotalSize: " << totalSize << std::endl;
+
+
         SendBufferPtr sendBuffer = std::make_shared<SendBuffer>(totalSize);
 
         // 1. 헤더 직접 기입

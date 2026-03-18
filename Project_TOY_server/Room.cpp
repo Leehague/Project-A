@@ -10,6 +10,7 @@ void Room::Enter(GameObjectPtr go)
         std::lock_guard<std::mutex> lock(_lock);
         _objects[go->GetObjectId()] = go;
         go->SetroomId(_Selfroomid);
+        
     }
     // 2. 본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
     if (auto player = std::static_pointer_cast<Player>(go))
@@ -28,6 +29,7 @@ void Room::Enter(GameObjectPtr go)
         auto* obj = spawnPkt.add_players_pos_info();
         obj->CopyFrom(go->Getpos()); // 내 정보 추가
         
+
         if (spawnPkt.players_pos_info_size() > 0) // 데이터가 있을 때만 전송
         {
             auto sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
@@ -46,8 +48,10 @@ void Room::Enter(GameObjectPtr go)
         // 방의 모든 오브젝트를 순회하며 나를 제외한 정보를 패킷에 추가
         for (auto& pair : _objects)
         {
-            if (pair.first == go->GetObjectId())
-                continue; // 본인은 제외 
+            //if (pair.first == go->GetObjectId())
+            //{
+            //    continue;
+            //}// 본인은 제외 
 
             // 1. 새로운 PosInfo 슬롯을 리스트에 추가하고 그 주소를 가져옴
             Protocol::PosInfo* info = spawnPkt.add_players_pos_info();

@@ -58,7 +58,6 @@ inline constexpr SC_LOGIN_OK::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
         player_id_{::uint64_t{0u}},
-        templete_id_{::uint64_t{0u}},
         success_{false} {}
 
 template <typename>
@@ -116,7 +115,8 @@ inline constexpr PosInfo::Impl_::Impl_(
         x_{0},
         y_{0},
         z_{0},
-        yaw_{0} {}
+        yaw_{0},
+        templeteid_{::uint64_t{0u}} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR PosInfo::PosInfo(::_pbi::ConstantInitialized)
@@ -355,13 +355,11 @@ const ::uint32_t
         0,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_._has_bits_),
-        6, // hasbit index offset
+        5, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_.success_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_.player_id_),
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_.templete_id_),
-        2,
-        0,
         1,
+        0,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_CHAT, _impl_._has_bits_),
         4, // hasbit index offset
@@ -390,17 +388,19 @@ const ::uint32_t
         0,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_._has_bits_),
-        8, // hasbit index offset
+        9, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.object_id_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.x_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.y_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.z_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.yaw_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::PosInfo, _impl_.templeteid_),
         0,
         1,
         2,
         3,
         4,
+        5,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_MOVING, _impl_._has_bits_),
         4, // hasbit index offset
@@ -428,11 +428,11 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::Protocol::CS_LOGIN)},
         {7, sizeof(::Protocol::SC_LOGIN_OK)},
-        {16, sizeof(::Protocol::CS_CHAT)},
-        {21, sizeof(::Protocol::SC_CHAT_BROADCAST)},
-        {28, sizeof(::Protocol::SC_WHISPER)},
-        {35, sizeof(::Protocol::CS_WHISPER)},
-        {42, sizeof(::Protocol::PosInfo)},
+        {14, sizeof(::Protocol::CS_CHAT)},
+        {19, sizeof(::Protocol::SC_CHAT_BROADCAST)},
+        {26, sizeof(::Protocol::SC_WHISPER)},
+        {33, sizeof(::Protocol::CS_WHISPER)},
+        {40, sizeof(::Protocol::PosInfo)},
         {55, sizeof(::Protocol::CS_MOVING)},
         {60, sizeof(::Protocol::SC_MOVING)},
         {65, sizeof(::Protocol::CS_ENTER_GAME)},
@@ -456,34 +456,34 @@ static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\016Protocol.proto\022\010Protocol\"-\n\010CS_LOGIN\022\017"
-    "\n\007user_id\030\001 \001(\004\022\020\n\010password\030\002 \001(\t\"F\n\013SC_"
+    "\n\007user_id\030\001 \001(\004\022\020\n\010password\030\002 \001(\t\"1\n\013SC_"
     "LOGIN_OK\022\017\n\007success\030\001 \001(\010\022\021\n\tplayer_id\030\002"
-    " \001(\004\022\023\n\013templete_id\030\003 \001(\004\"\026\n\007CS_CHAT\022\013\n\003"
-    "msg\030\001 \001(\t\"3\n\021SC_CHAT_BROADCAST\022\021\n\tplayer"
-    "_id\030\001 \001(\004\022\013\n\003msg\030\002 \001(\t\"0\n\nSC_WHISPER\022\025\n\r"
-    "fromplayer_id\030\001 \001(\004\022\013\n\003msg\030\002 \001(\t\"2\n\nCS_W"
-    "HISPER\022\027\n\017targetplayer_id\030\001 \001(\004\022\013\n\003msg\030\002"
-    " \001(\t\"J\n\007PosInfo\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001x\030"
-    "\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002"
-    "\"0\n\tCS_MOVING\022#\n\010pos_info\030\001 \001(\0132\021.Protoc"
-    "ol.PosInfo\"0\n\tSC_MOVING\022#\n\010pos_info\030\001 \001("
-    "\0132\021.Protocol.PosInfo\"\017\n\rCS_ENTER_GAME\"4\n"
-    "\rSC_ENTER_GAME\022#\n\010pos_info\030\001 \001(\0132\021.Proto"
-    "col.PosInfo\">\n\017SC_PLAYER_SPAWN\022+\n\020player"
-    "s_pos_info\030\001 \003(\0132\021.Protocol.PosInfo*\200\002\n\010"
-    "PacketId\022\014\n\010PKT_NONE\020\000\022\020\n\014PKT_CS_LOGIN\020\001"
-    "\022\023\n\017PKT_SC_LOGIN_OK\020\002\022\017\n\013PKT_CS_CHAT\020\003\022\031"
-    "\n\025PKT_SC_CHAT_BROADCAST\020\004\022\022\n\016PKT_SC_WHIS"
-    "PER\020\005\022\022\n\016PKT_CS_WHISPER\020\006\022\021\n\rPKT_CS_MOVI"
-    "NG\020\007\022\021\n\rPKT_SC_MOVING\020\010\022\025\n\021PKT_CS_ENTER_"
-    "GAME\020\t\022\025\n\021PKT_SC_ENTER_GAME\020\n\022\027\n\023PKT_SC_"
-    "PLAYER_SPAWN\020\013b\006proto3"
+    " \001(\004\"\026\n\007CS_CHAT\022\013\n\003msg\030\001 \001(\t\"3\n\021SC_CHAT_"
+    "BROADCAST\022\021\n\tplayer_id\030\001 \001(\004\022\013\n\003msg\030\002 \001("
+    "\t\"0\n\nSC_WHISPER\022\025\n\rfromplayer_id\030\001 \001(\004\022\013"
+    "\n\003msg\030\002 \001(\t\"2\n\nCS_WHISPER\022\027\n\017targetplaye"
+    "r_id\030\001 \001(\004\022\013\n\003msg\030\002 \001(\t\"^\n\007PosInfo\022\021\n\tob"
+    "ject_id\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z"
+    "\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\022\022\n\ntempleteId\030\006 \001(\004\""
+    "0\n\tCS_MOVING\022#\n\010pos_info\030\001 \001(\0132\021.Protoco"
+    "l.PosInfo\"0\n\tSC_MOVING\022#\n\010pos_info\030\001 \001(\013"
+    "2\021.Protocol.PosInfo\"\017\n\rCS_ENTER_GAME\"4\n\r"
+    "SC_ENTER_GAME\022#\n\010pos_info\030\001 \001(\0132\021.Protoc"
+    "ol.PosInfo\">\n\017SC_PLAYER_SPAWN\022+\n\020players"
+    "_pos_info\030\001 \003(\0132\021.Protocol.PosInfo*\200\002\n\010P"
+    "acketId\022\014\n\010PKT_NONE\020\000\022\020\n\014PKT_CS_LOGIN\020\001\022"
+    "\023\n\017PKT_SC_LOGIN_OK\020\002\022\017\n\013PKT_CS_CHAT\020\003\022\031\n"
+    "\025PKT_SC_CHAT_BROADCAST\020\004\022\022\n\016PKT_SC_WHISP"
+    "ER\020\005\022\022\n\016PKT_CS_WHISPER\020\006\022\021\n\rPKT_CS_MOVIN"
+    "G\020\007\022\021\n\rPKT_SC_MOVING\020\010\022\025\n\021PKT_CS_ENTER_G"
+    "AME\020\t\022\025\n\021PKT_SC_ENTER_GAME\020\n\022\027\n\023PKT_SC_P"
+    "LAYER_SPAWN\020\013b\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    902,
+    901,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -913,16 +913,16 @@ SC_LOGIN_OK::GetClassData() const {
   return SC_LOGIN_OK_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 0, 2>
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2>
 SC_LOGIN_OK::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_._has_bits_),
     0, // no _extensions_
-    3, 24,  // max_field_number, fast_idx_mask
+    2, 8,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967288,  // skipmap
+    4294967292,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    3,  // num_field_entries
+    2,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     SC_LOGIN_OK_class_data_.base(),
@@ -932,28 +932,21 @@ SC_LOGIN_OK::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::SC_LOGIN_OK>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    {::_pbi::TcParser::MiniParse, {}},
-    // bool success = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(SC_LOGIN_OK, _impl_.success_), 2>(),
-     {8, 2, 0,
-      PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.success_)}},
     // uint64 player_id = 2;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_LOGIN_OK, _impl_.player_id_), 0>(),
      {16, 0, 0,
       PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.player_id_)}},
-    // uint64 templete_id = 3;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_LOGIN_OK, _impl_.templete_id_), 1>(),
-     {24, 1, 0,
-      PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.templete_id_)}},
+    // bool success = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(SC_LOGIN_OK, _impl_.success_), 1>(),
+     {8, 1, 0,
+      PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.success_)}},
   }}, {{
     65535, 65535
   }}, {{
     // bool success = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.success_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.success_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     // uint64 player_id = 2;
     {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.player_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
-    // uint64 templete_id = 3;
-    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.templete_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
   }},
   // no aux_entries
   {{
@@ -967,7 +960,7 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     ::memset(&_impl_.player_id_, 0, static_cast<::size_t>(
         reinterpret_cast<char*>(&_impl_.success_) -
         reinterpret_cast<char*>(&_impl_.player_id_)) + sizeof(_impl_.success_));
@@ -996,7 +989,7 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // bool success = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
     if (this_._internal_success() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -1010,15 +1003,6 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
           2, this_._internal_player_id(), target);
-    }
-  }
-
-  // uint64 templete_id = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-    if (this_._internal_templete_id() != 0) {
-      target = stream->EnsureSpace(target);
-      target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
-          3, this_._internal_templete_id(), target);
     }
   }
 
@@ -1047,7 +1031,7 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     // uint64 player_id = 2;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (this_._internal_player_id() != 0) {
@@ -1055,15 +1039,8 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
             this_._internal_player_id());
       }
     }
-    // uint64 templete_id = 3;
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      if (this_._internal_templete_id() != 0) {
-        total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
-            this_._internal_templete_id());
-      }
-    }
     // bool success = 1;
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       if (this_._internal_success() != 0) {
         total_size += 2;
       }
@@ -1087,18 +1064,13 @@ void SC_LOGIN_OK::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (from._internal_player_id() != 0) {
         _this->_impl_.player_id_ = from._impl_.player_id_;
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      if (from._internal_templete_id() != 0) {
-        _this->_impl_.templete_id_ = from._impl_.templete_id_;
-      }
-    }
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (from._internal_success() != 0) {
         _this->_impl_.success_ = from._impl_.success_;
       }
@@ -2374,9 +2346,9 @@ inline void PosInfo::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   ::memset(reinterpret_cast<char*>(&_impl_) +
                offsetof(Impl_, object_id_),
            0,
-           offsetof(Impl_, yaw_) -
+           offsetof(Impl_, templeteid_) -
                offsetof(Impl_, object_id_) +
-               sizeof(Impl_::yaw_));
+               sizeof(Impl_::templeteid_));
 }
 PosInfo::~PosInfo() {
   // @@protoc_insertion_point(destructor:Protocol.PosInfo)
@@ -2435,16 +2407,16 @@ PosInfo::GetClassData() const {
   return PosInfo_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 5, 0, 0, 2>
+const ::_pbi::TcParseTable<3, 6, 0, 0, 2>
 PosInfo::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(PosInfo, _impl_._has_bits_),
     0, // no _extensions_
-    5, 56,  // max_field_number, fast_idx_mask
+    6, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967264,  // skipmap
+    4294967232,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    5,  // num_field_entries
+    6,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     PosInfo_class_data_.base(),
@@ -2475,7 +2447,10 @@ PosInfo::_table_ = {
     {::_pbi::TcParser::FastF32S1,
      {45, 4, 0,
       PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.yaw_)}},
-    {::_pbi::TcParser::MiniParse, {}},
+    // uint64 templeteId = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(PosInfo, _impl_.templeteid_), 5>(),
+     {48, 5, 0,
+      PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.templeteid_)}},
     {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
@@ -2490,6 +2465,8 @@ PosInfo::_table_ = {
     {PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.z_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
     // float yaw = 5;
     {PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.yaw_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kFloat)},
+    // uint64 templeteId = 6;
+    {PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.templeteid_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
   }},
   // no aux_entries
   {{
@@ -2503,10 +2480,10 @@ PROTOBUF_NOINLINE void PosInfo::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     ::memset(&_impl_.object_id_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.yaw_) -
-        reinterpret_cast<char*>(&_impl_.object_id_)) + sizeof(_impl_.yaw_));
+        reinterpret_cast<char*>(&_impl_.templeteid_) -
+        reinterpret_cast<char*>(&_impl_.object_id_)) + sizeof(_impl_.templeteid_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -2576,6 +2553,15 @@ PROTOBUF_NOINLINE void PosInfo::Clear() {
     }
   }
 
+  // uint64 templeteId = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (this_._internal_templeteid() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+          6, this_._internal_templeteid(), target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -2601,7 +2587,7 @@ PROTOBUF_NOINLINE void PosInfo::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     // uint64 object_id = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (this_._internal_object_id() != 0) {
@@ -2633,6 +2619,13 @@ PROTOBUF_NOINLINE void PosInfo::Clear() {
         total_size += 5;
       }
     }
+    // uint64 templeteId = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (this_._internal_templeteid() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+            this_._internal_templeteid());
+      }
+    }
   }
   return this_.MaybeComputeUnknownFieldsSize(total_size,
                                              &this_._impl_._cached_size_);
@@ -2652,7 +2645,7 @@ void PosInfo::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (from._internal_object_id() != 0) {
         _this->_impl_.object_id_ = from._impl_.object_id_;
@@ -2678,6 +2671,11 @@ void PosInfo::MergeImpl(::google::protobuf::MessageLite& to_msg,
         _this->_impl_.yaw_ = from._impl_.yaw_;
       }
     }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (from._internal_templeteid() != 0) {
+        _this->_impl_.templeteid_ = from._impl_.templeteid_;
+      }
+    }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
@@ -2697,8 +2695,8 @@ void PosInfo::InternalSwap(PosInfo* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.yaw_)
-      + sizeof(PosInfo::_impl_.yaw_)
+      PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.templeteid_)
+      + sizeof(PosInfo::_impl_.templeteid_)
       - PROTOBUF_FIELD_OFFSET(PosInfo, _impl_.object_id_)>(
           reinterpret_cast<char*>(&_impl_.object_id_),
           reinterpret_cast<char*>(&other->_impl_.object_id_));

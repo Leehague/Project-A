@@ -7,7 +7,7 @@ public abstract class BaseScene : MonoBehaviour
     // 씬의 타입을 구분하기 위함 (Login, Game 등)
     public SceneType SceneType { get; protected set; } = SceneType.Unknown;
 
-    void Awake()
+    protected virtual void Awake()
     {
         Init();
     }

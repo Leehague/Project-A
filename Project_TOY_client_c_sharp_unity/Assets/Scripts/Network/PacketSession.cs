@@ -78,14 +78,10 @@ public class PacketSession
             
             ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen + 2);
 
-            // [수정] 헤더(4바이트)를 건너뛰고 실제 데이터 부분만 넘겨줍니다.
-            ushort headerSize = 4;
-            int bodySize = size - headerSize;
-
-            // 안정성을 위해 bodySize가 0 이상인지 한 번 더 체크
-            if (bodySize >= 0)
+            // 안정성을 위해 Size가 0 이상인지 한 번 더 체크
+            if (size >= 0)
             {
-                Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen + headerSize, (ushort)bodySize, this);
+                Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen , (ushort)size, this);
             }
             
 
@@ -250,6 +246,13 @@ public class PacketSession
     public virtual void OnConnected(EndPoint endPoint)
     {
         Debug.Log($"OnConnected : {endPoint}");
+
+        CS_LOGIN loginPacket = new CS_LOGIN();
+
+        loginPacket.UserId = 123123;
+        loginPacket.Password = "password 1234";
+
+        Managers.networkManager.Send(loginPacket);
 
         //로그인 씬 로드
         Managers.sceneManagerEx.LoadScene(SceneType.Login);

@@ -51,6 +51,9 @@ public partial class PacketManager
         // 헤더 4바이트(Size 2, Id 2)를 제외한 나머지를 파싱
         pkt.MergeFrom(buffer, 4, size - 4);
 
+        // 이 로그를 찍어보세요!
+        Debug.Log($"[Recv] ID: {id}, Type: {typeof(T).Name}, Size: {size}, Data: {pkt}");
+
         // 로직 처리를 위해 NetworkManager 큐에 삽입
         Managers.networkManager.PushPacket(new PacketMessage { Id = id, Message = pkt});
     }

@@ -25,36 +25,36 @@ namespace Protocol {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg5Qcm90b2NvbC5wcm90bxIIUHJvdG9jb2wiLQoIQ1NfTE9HSU4SDwoHdXNl",
-            "cl9pZBgBIAEoBBIQCghwYXNzd29yZBgCIAEoCSJGCgtTQ19MT0dJTl9PSxIP",
-            "CgdzdWNjZXNzGAEgASgIEhEKCXBsYXllcl9pZBgCIAEoBBITCgt0ZW1wbGV0",
-            "ZV9pZBgDIAEoBCIWCgdDU19DSEFUEgsKA21zZxgBIAEoCSIzChFTQ19DSEFU",
-            "X0JST0FEQ0FTVBIRCglwbGF5ZXJfaWQYASABKAQSCwoDbXNnGAIgASgJIjAK",
-            "ClNDX1dISVNQRVISFQoNZnJvbXBsYXllcl9pZBgBIAEoBBILCgNtc2cYAiAB",
-            "KAkiMgoKQ1NfV0hJU1BFUhIXCg90YXJnZXRwbGF5ZXJfaWQYASABKAQSCwoD",
-            "bXNnGAIgASgJIkoKB1Bvc0luZm8SEQoJb2JqZWN0X2lkGAEgASgEEgkKAXgY",
-            "AiABKAISCQoBeRgDIAEoAhIJCgF6GAQgASgCEgsKA3lhdxgFIAEoAiIwCglD",
-            "U19NT1ZJTkcSIwoIcG9zX2luZm8YASABKAsyES5Qcm90b2NvbC5Qb3NJbmZv",
-            "IjAKCVNDX01PVklORxIjCghwb3NfaW5mbxgBIAEoCzIRLlByb3RvY29sLlBv",
-            "c0luZm8iDwoNQ1NfRU5URVJfR0FNRSI0Cg1TQ19FTlRFUl9HQU1FEiMKCHBv",
-            "c19pbmZvGAEgASgLMhEuUHJvdG9jb2wuUG9zSW5mbyI+Cg9TQ19QTEFZRVJf",
-            "U1BBV04SKwoQcGxheWVyc19wb3NfaW5mbxgBIAMoCzIRLlByb3RvY29sLlBv",
-            "c0luZm8qgAIKCFBhY2tldElkEgwKCFBLVF9OT05FEAASEAoMUEtUX0NTX0xP",
-            "R0lOEAESEwoPUEtUX1NDX0xPR0lOX09LEAISDwoLUEtUX0NTX0NIQVQQAxIZ",
-            "ChVQS1RfU0NfQ0hBVF9CUk9BRENBU1QQBBISCg5QS1RfU0NfV0hJU1BFUhAF",
-            "EhIKDlBLVF9DU19XSElTUEVSEAYSEQoNUEtUX0NTX01PVklORxAHEhEKDVBL",
-            "VF9TQ19NT1ZJTkcQCBIVChFQS1RfQ1NfRU5URVJfR0FNRRAJEhUKEVBLVF9T",
-            "Q19FTlRFUl9HQU1FEAoSFwoTUEtUX1NDX1BMQVlFUl9TUEFXThALYgZwcm90",
-            "bzM="));
+            "cl9pZBgBIAEoBBIQCghwYXNzd29yZBgCIAEoCSIxCgtTQ19MT0dJTl9PSxIP",
+            "CgdzdWNjZXNzGAEgASgIEhEKCXBsYXllcl9pZBgCIAEoBCIWCgdDU19DSEFU",
+            "EgsKA21zZxgBIAEoCSIzChFTQ19DSEFUX0JST0FEQ0FTVBIRCglwbGF5ZXJf",
+            "aWQYASABKAQSCwoDbXNnGAIgASgJIjAKClNDX1dISVNQRVISFQoNZnJvbXBs",
+            "YXllcl9pZBgBIAEoBBILCgNtc2cYAiABKAkiMgoKQ1NfV0hJU1BFUhIXCg90",
+            "YXJnZXRwbGF5ZXJfaWQYASABKAQSCwoDbXNnGAIgASgJIl4KB1Bvc0luZm8S",
+            "EQoJb2JqZWN0X2lkGAEgASgEEgkKAXgYAiABKAISCQoBeRgDIAEoAhIJCgF6",
+            "GAQgASgCEgsKA3lhdxgFIAEoAhISCgp0ZW1wbGV0ZUlkGAYgASgEIjAKCUNT",
+            "X01PVklORxIjCghwb3NfaW5mbxgBIAEoCzIRLlByb3RvY29sLlBvc0luZm8i",
+            "MAoJU0NfTU9WSU5HEiMKCHBvc19pbmZvGAEgASgLMhEuUHJvdG9jb2wuUG9z",
+            "SW5mbyIPCg1DU19FTlRFUl9HQU1FIjQKDVNDX0VOVEVSX0dBTUUSIwoIcG9z",
+            "X2luZm8YASABKAsyES5Qcm90b2NvbC5Qb3NJbmZvIj4KD1NDX1BMQVlFUl9T",
+            "UEFXThIrChBwbGF5ZXJzX3Bvc19pbmZvGAEgAygLMhEuUHJvdG9jb2wuUG9z",
+            "SW5mbyqAAgoIUGFja2V0SWQSDAoIUEtUX05PTkUQABIQCgxQS1RfQ1NfTE9H",
+            "SU4QARITCg9QS1RfU0NfTE9HSU5fT0sQAhIPCgtQS1RfQ1NfQ0hBVBADEhkK",
+            "FVBLVF9TQ19DSEFUX0JST0FEQ0FTVBAEEhIKDlBLVF9TQ19XSElTUEVSEAUS",
+            "EgoOUEtUX0NTX1dISVNQRVIQBhIRCg1QS1RfQ1NfTU9WSU5HEAcSEQoNUEtU",
+            "X1NDX01PVklORxAIEhUKEVBLVF9DU19FTlRFUl9HQU1FEAkSFQoRUEtUX1ND",
+            "X0VOVEVSX0dBTUUQChIXChNQS1RfU0NfUExBWUVSX1NQQVdOEAtiBnByb3Rv",
+            "Mw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Protocol.PacketId), }, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_LOGIN), global::Protocol.CS_LOGIN.Parser, new[]{ "UserId", "Password" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_LOGIN_OK), global::Protocol.SC_LOGIN_OK.Parser, new[]{ "Success", "PlayerId", "TempleteId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_LOGIN_OK), global::Protocol.SC_LOGIN_OK.Parser, new[]{ "Success", "PlayerId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_CHAT), global::Protocol.CS_CHAT.Parser, new[]{ "Msg" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_CHAT_BROADCAST), global::Protocol.SC_CHAT_BROADCAST.Parser, new[]{ "PlayerId", "Msg" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_WHISPER), global::Protocol.SC_WHISPER.Parser, new[]{ "FromplayerId", "Msg" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_WHISPER), global::Protocol.CS_WHISPER.Parser, new[]{ "TargetplayerId", "Msg" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.PosInfo), global::Protocol.PosInfo.Parser, new[]{ "ObjectId", "X", "Y", "Z", "Yaw" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.PosInfo), global::Protocol.PosInfo.Parser, new[]{ "ObjectId", "X", "Y", "Z", "Yaw", "TempleteId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_MOVING), global::Protocol.CS_MOVING.Parser, new[]{ "PosInfo" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_MOVING), global::Protocol.SC_MOVING.Parser, new[]{ "PosInfo" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_ENTER_GAME), global::Protocol.CS_ENTER_GAME.Parser, null, null, null, null, null),
@@ -356,7 +356,6 @@ namespace Protocol {
     public SC_LOGIN_OK(SC_LOGIN_OK other) : this() {
       success_ = other.success_;
       playerId_ = other.playerId_;
-      templeteId_ = other.templeteId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -393,18 +392,6 @@ namespace Protocol {
       }
     }
 
-    /// <summary>Field number for the "templete_id" field.</summary>
-    public const int TempleteIdFieldNumber = 3;
-    private ulong templeteId_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ulong TempleteId {
-      get { return templeteId_; }
-      set {
-        templeteId_ = value;
-      }
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -422,7 +409,6 @@ namespace Protocol {
       }
       if (Success != other.Success) return false;
       if (PlayerId != other.PlayerId) return false;
-      if (TempleteId != other.TempleteId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -432,7 +418,6 @@ namespace Protocol {
       int hash = 1;
       if (Success != false) hash ^= Success.GetHashCode();
       if (PlayerId != 0UL) hash ^= PlayerId.GetHashCode();
-      if (TempleteId != 0UL) hash ^= TempleteId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -459,10 +444,6 @@ namespace Protocol {
         output.WriteRawTag(16);
         output.WriteUInt64(PlayerId);
       }
-      if (TempleteId != 0UL) {
-        output.WriteRawTag(24);
-        output.WriteUInt64(TempleteId);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -481,10 +462,6 @@ namespace Protocol {
         output.WriteRawTag(16);
         output.WriteUInt64(PlayerId);
       }
-      if (TempleteId != 0UL) {
-        output.WriteRawTag(24);
-        output.WriteUInt64(TempleteId);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -500,9 +477,6 @@ namespace Protocol {
       }
       if (PlayerId != 0UL) {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(PlayerId);
-      }
-      if (TempleteId != 0UL) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(TempleteId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -521,9 +495,6 @@ namespace Protocol {
       }
       if (other.PlayerId != 0UL) {
         PlayerId = other.PlayerId;
-      }
-      if (other.TempleteId != 0UL) {
-        TempleteId = other.TempleteId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -552,10 +523,6 @@ namespace Protocol {
             PlayerId = input.ReadUInt64();
             break;
           }
-          case 24: {
-            TempleteId = input.ReadUInt64();
-            break;
-          }
         }
       }
     #endif
@@ -581,10 +548,6 @@ namespace Protocol {
           }
           case 16: {
             PlayerId = input.ReadUInt64();
-            break;
-          }
-          case 24: {
-            TempleteId = input.ReadUInt64();
             break;
           }
         }
@@ -1537,6 +1500,7 @@ namespace Protocol {
       y_ = other.y_;
       z_ = other.z_;
       yaw_ = other.yaw_;
+      templeteId_ = other.templeteId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1612,6 +1576,18 @@ namespace Protocol {
       }
     }
 
+    /// <summary>Field number for the "templeteId" field.</summary>
+    public const int TempleteIdFieldNumber = 6;
+    private ulong templeteId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong TempleteId {
+      get { return templeteId_; }
+      set {
+        templeteId_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -1632,6 +1608,7 @@ namespace Protocol {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Y, other.Y)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Z, other.Z)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Yaw, other.Yaw)) return false;
+      if (TempleteId != other.TempleteId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1644,6 +1621,7 @@ namespace Protocol {
       if (Y != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Y);
       if (Z != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Z);
       if (Yaw != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Yaw);
+      if (TempleteId != 0UL) hash ^= TempleteId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1682,6 +1660,10 @@ namespace Protocol {
         output.WriteRawTag(45);
         output.WriteFloat(Yaw);
       }
+      if (TempleteId != 0UL) {
+        output.WriteRawTag(48);
+        output.WriteUInt64(TempleteId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1712,6 +1694,10 @@ namespace Protocol {
         output.WriteRawTag(45);
         output.WriteFloat(Yaw);
       }
+      if (TempleteId != 0UL) {
+        output.WriteRawTag(48);
+        output.WriteUInt64(TempleteId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1736,6 +1722,9 @@ namespace Protocol {
       }
       if (Yaw != 0F) {
         size += 1 + 4;
+      }
+      if (TempleteId != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(TempleteId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1763,6 +1752,9 @@ namespace Protocol {
       }
       if (other.Yaw != 0F) {
         Yaw = other.Yaw;
+      }
+      if (other.TempleteId != 0UL) {
+        TempleteId = other.TempleteId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -1803,6 +1795,10 @@ namespace Protocol {
             Yaw = input.ReadFloat();
             break;
           }
+          case 48: {
+            TempleteId = input.ReadUInt64();
+            break;
+          }
         }
       }
     #endif
@@ -1840,6 +1836,10 @@ namespace Protocol {
           }
           case 45: {
             Yaw = input.ReadFloat();
+            break;
+          }
+          case 48: {
+            TempleteId = input.ReadUInt64();
             break;
           }
         }

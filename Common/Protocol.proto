@@ -27,8 +27,8 @@ message CS_LOGIN {
 
 message SC_LOGIN_OK {
     bool success = 1;
-    uint64 player_id = 2; //해당 플레이어의 object_id
-    uint64 templete_id = 3;
+    uint64 player_id = 2; 
+    
 }
 
 
@@ -61,6 +61,7 @@ message PosInfo {
   float y = 3;
   float z = 4;
   float yaw = 5;       // 바라보는 방향 (회전)
+  uint64 templeteId = 6;
 }
 
 
@@ -82,5 +83,5 @@ message SC_ENTER_GAME {
 
 message SC_PLAYER_SPAWN {
     repeated PosInfo players_pos_info = 1;
-
+    
 }
