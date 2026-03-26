@@ -40,8 +40,13 @@ public class Managers : MonoBehaviour
     void Update()
     {
         //instance를 사용한 접근 (타이밍 이슈 방지)
-        if (_instance != null)
+        if (_instance == null) return;
+
+        // 씬 전환 중에는 호출 자체를 하지 않음으로써 메인 스레드 점유율을 0으로 만듭니다.
+        if (_instance._networkManager.enabled)
+        {
             _instance._networkManager.Update();
+        }
     }
 
     static void Init()
@@ -52,21 +57,25 @@ public class Managers : MonoBehaviour
             GameObject go = GameObject.Find("@Managers");
             if (go == null)
             {
-                // 없으면 새로 생성
+                // 2. 만약 정말로 없다면 새로 생성
                 go = new GameObject { name = "@Managers" };
-                go.AddComponent<Managers>();
-                Debug.Log("@Managers 생성 및 초기화");
+                _instance = go.AddComponent<Managers>();
+                DontDestroyOnLoad(go);
+
+                // 초기화 로직은 여기서 딱 한 번만!
+                _instance._networkManager.Init();
+                _instance._dataManager.Init();
+                Debug.Log("@Managers 신규 생성 및 초기화 완료");
             }
-
-            // 씬이 바뀌어도 파괴되지 않게 보호
-            DontDestroyOnLoad(go);
-            _instance = go.GetComponent<Managers>();
-
-
-            //초기화가 필요한 Manger들 초기화로직 실행
-            _instance._networkManager.Init();
-            
-            _instance._dataManager.Init();
+            else
+            {
+                // 3. 이름은 있는데 _instance가 연결 안 된 경우 (씬 전환 직후 등)
+                _instance = go.GetComponent<Managers>();
+                if (_instance == null) // 이름만 같고 컴포넌트가 없는 경우 대비
+                {
+                    _instance = go.AddComponent<Managers>();
+                }
+            }
         }
 
         

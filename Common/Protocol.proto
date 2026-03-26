@@ -14,7 +14,9 @@ enum PacketId {
     PKT_SC_MOVING = 8;
     PKT_CS_ENTER_GAME = 9;
     PKT_SC_ENTER_GAME = 10;
-    PKT_SC_PLAYER_SPAWN = 11;            
+    PKT_SC_PLAYER_SPAWN = 11; 
+    PKT_CS_GAME_READY = 12;
+              
 
 }
 
@@ -84,4 +86,9 @@ message SC_ENTER_GAME {
 message SC_PLAYER_SPAWN {
     repeated PosInfo players_pos_info = 1;
     
+}
+
+message CS_GAME_READY 
+{
+    uint64 player_id = 1;
 }

@@ -2,10 +2,9 @@ using Google.Protobuf;
 using Protocol; // Protobuf로 생성된 네임스페이스
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Sprites;
+
 using UnityEngine;
-using UnityEngine.XR;
+
 
 
 public partial class PacketManager
@@ -52,7 +51,7 @@ public partial class PacketManager
         pkt.MergeFrom(buffer, 4, size - 4);
 
         // 이 로그를 찍어보세요!
-        Debug.Log($"[Recv] ID: {id}, Type: {typeof(T).Name}, Size: {size}, Data: {pkt}");
+        //Debug.Log($"[Recv] ID: {id}, Type: {typeof(T).Name}, Size: {size}, Data: {pkt}");
 
         // 로직 처리를 위해 NetworkManager 큐에 삽입
         Managers.networkManager.PushPacket(new PacketMessage { Id = id, Message = pkt});

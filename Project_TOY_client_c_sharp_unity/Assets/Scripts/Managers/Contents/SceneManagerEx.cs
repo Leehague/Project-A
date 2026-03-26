@@ -13,4 +13,13 @@ public class SceneManagerEx
         string name = System.Enum.GetName(typeof(SceneType), type);
         UnityEngine.SceneManagement.SceneManager.LoadScene(name);
     }
+    public AsyncOperation LoadSceneAsync(SceneType type) 
+    {
+        Managers.objectManager.Clear();
+
+
+        string name = System.Enum.GetName(typeof(SceneType), type);
+        return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(name);
+    }
+
 }

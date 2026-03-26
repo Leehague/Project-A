@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class NetworkManager 
@@ -14,6 +15,11 @@ public class NetworkManager
     private PacketSession _session;
     private int _disconnected = 1; //0: connected , 1: disconnected
     private bool _isConnectSuccess = false;
+    
+
+
+    public bool enabled = true;
+    public bool CanPushPacket = true;
 
     public bool IsSession_NULL() 
     { 
@@ -71,27 +77,27 @@ public class NetworkManager
     // 패킷 수신 스레드에서 패킷을 큐에 넣을 때 사용
     public void PushPacket(PacketMessage packet)
     {
+        if (CanPushPacket == false) return;
         _packetQueue.Enqueue(packet);
     }
 
     public void Update()
     {
-        if (_isConnectSuccess)
-        {
-            
-            if (_session != null)
-            {
-                _isConnectSuccess = false;
-                _session.OnConnected(_socket.RemoteEndPoint);
-            }
-            
+        if (this.enabled == false) return;
 
+        if (_isConnectSuccess && _session != null)
+        {
+            _isConnectSuccess = false;
+            _session.OnConnected(_socket.RemoteEndPoint);
         }
-        // [중요] 메인 스레드(Update)에서 쌓인 패킷을 하나씩 꺼내서 처리
+
+
         while (_packetQueue.TryDequeue(out PacketMessage packet))
         {
             Managers.packetManager.HandlePacket(_session, packet);
         }
+
+
     }
         
     public void Close() 

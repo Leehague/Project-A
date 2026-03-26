@@ -30,6 +30,7 @@ public partial class PacketManager
         _typeToId.Add(typeof(SC_PLAYER_SPAWN), (ushort)PacketId.PktScPlayerSpawn);
         _onRecv.Add((ushort)PacketId.PktScPlayerSpawn, (s, b, sz) => MakePacket<SC_PLAYER_SPAWN>(s, b, sz, (ushort)PacketId.PktScPlayerSpawn));
         _handler.Add((ushort)PacketId.PktScPlayerSpawn, PacketHandler.Handle_SC_PLAYER_SPAWN);
+        _typeToId.Add(typeof(CS_GAME_READY), (ushort)PacketId.PktCsGameReady);
 
     }
 }

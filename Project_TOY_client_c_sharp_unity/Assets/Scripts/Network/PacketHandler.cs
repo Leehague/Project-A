@@ -1,7 +1,7 @@
 using System;
 using Google.Protobuf;
 using Protocol;
-using Unity.VisualScripting.Dependencies.Sqlite;
+
 using UnityEngine;
 
 public class PacketHandler
@@ -77,46 +77,35 @@ public class PacketHandler
     }
 
     public static void Handle_SC_PLAYER_SPAWN(PacketSession session, IMessage packet)
-    { 
-        SC_PLAYER_SPAWN spawn_Pkt = packet as SC_PLAYER_SPAWN;
-
-        Debug.Log("Handle_SC_PLAYER_SPAWN 수신");
-
-        if (spawn_Pkt == null) 
-        {
-            Debug.Log("spawn_Pkt is null");
-            return; 
-        }
-
-        foreach (PosInfo pos in spawn_Pkt.PlayersPosInfo) 
-        {
-            Debug.Log($"현재 소환 시점의 씬: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
-
-            bool IsMyplayer = false;
-            if (pos.ObjectId == Managers.objectManager.Myplayer_playerId) { IsMyplayer = true; }
-            Managers.objectManager.SpawnPlayer(pos,IsMyplayer);
-        }
+    {
 
         
+        SC_PLAYER_SPAWN spawnPkt = packet as SC_PLAYER_SPAWN;
+               
+        
+        Managers.objectManager.HandleSpawn(packet as SC_PLAYER_SPAWN);
+               
+        
+
     }
     public static void Handle_SC_ENTER_GAME(PacketSession session, IMessage packet) 
     {
         SC_ENTER_GAME enterGamePkt = packet as SC_ENTER_GAME;
 
-        // 1. 서버가 보내준 나의 초기 위치 정보를 저장
+
+        //로그인 패킷에서 받았던 playerId(obejcId)와 일치하는지 확인
+        if (enterGamePkt.PosInfo.ObjectId != Managers.objectManager.Myplayer_playerId) { return; }
+
+        //서버가 보내준 나의 초기 위치 정보를 저장
         Managers.objectManager.MyplayerPosInfo=enterGamePkt.PosInfo;
 
-        // 2. 현재 씬이 로딩 씬인지 확인하고 승인 함수 호출
-        LoadingScene loadingScene = Managers.sceneManagerEx.CurrentScene as LoadingScene;
-        if (loadingScene != null)
-        {
-            loadingScene.OnServerEnterAccepted();
-        }
-        else
-        {
-            // 만약 로딩 씬이 아닌데 이 패킷이 왔다면 예외 처리
-            Debug.LogWarning("Received SC_ENTER_GAME but current scene is not LoadingScene");
-        }
+        //내 캐릭터 스폰
+        Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo,true);
+
+        //CS_GAME_READY 전송 로직
+        Protocol.CS_GAME_READY _CS_GAME_READY = new Protocol.CS_GAME_READY();
+        _CS_GAME_READY.PlayerId = Managers.objectManager.Myplayer_playerId; // This playerId must equal to 'Real' player Id in server.
+        Managers.networkManager.Send(_CS_GAME_READY);
     }
 
     

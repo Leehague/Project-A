@@ -81,7 +81,8 @@ public class PlayerController : CreatureController
             X = transform.position.x,
             Y = transform.position.y,
             Z = transform.position.z,
-            Yaw = transform.eulerAngles.y // 바라보는 방향
+            Yaw = transform.eulerAngles.y, // 바라보는 방향
+            ObjectId = Managers.objectManager.Myplayer_playerId
         };
 
         // 전송 (네트워크 매니저 혹은 세션을 통해)

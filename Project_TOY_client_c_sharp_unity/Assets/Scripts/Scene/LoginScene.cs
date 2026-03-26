@@ -6,7 +6,7 @@ using System.Collections;
 
 public class LoginScene : BaseScene 
 {
-    bool _loginSent = false;
+    
     protected override void Init()
     {
         base.Init(); // 부모의 공통 초기화 수행

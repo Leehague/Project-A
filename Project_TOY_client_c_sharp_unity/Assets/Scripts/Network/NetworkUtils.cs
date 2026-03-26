@@ -11,7 +11,7 @@ public class NetworkUtils
         ushort totalSize = (ushort)(dataSize + 4); // 헤더(4) + 데이터
 
         // [디버깅 로그]
-        Debug.Log($"[Send] ID: {packetId}, DataSize: {dataSize}, TotalSize: {totalSize}");
+        //Debug.Log($"[Send] ID: {packetId}, DataSize: {dataSize}, TotalSize: {totalSize}");
 
 
         byte[] sendBuffer = new byte[totalSize];

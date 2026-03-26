@@ -193,6 +193,31 @@ struct CS_LOGINDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_LOGINDefaultTypeInternal _CS_LOGIN_default_instance_;
+
+inline constexpr CS_GAME_READY::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        player_id_{::uint64_t{0u}} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CS_GAME_READY::CS_GAME_READY(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(CS_GAME_READY_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CS_GAME_READYDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CS_GAME_READYDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CS_GAME_READYDefaultTypeInternal() {}
+  union {
+    CS_GAME_READY _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_GAME_READYDefaultTypeInternal _CS_GAME_READY_default_instance_;
 template <typename>
 PROTOBUF_CONSTEXPR CS_ENTER_GAME::CS_ENTER_GAME(::_pbi::ConstantInitialized)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
@@ -422,6 +447,11 @@ const ::uint32_t
         4, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_PLAYER_SPAWN, _impl_.players_pos_info_),
         0,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_GAME_READY, _impl_._has_bits_),
+        4, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_GAME_READY, _impl_.player_id_),
+        0,
 };
 
 static const ::_pbi::MigrationSchema
@@ -438,6 +468,7 @@ static const ::_pbi::MigrationSchema
         {65, sizeof(::Protocol::CS_ENTER_GAME)},
         {66, sizeof(::Protocol::SC_ENTER_GAME)},
         {71, sizeof(::Protocol::SC_PLAYER_SPAWN)},
+        {76, sizeof(::Protocol::CS_GAME_READY)},
 };
 static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_default_instance_._instance,
@@ -452,6 +483,7 @@ static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::Protocol::_CS_ENTER_GAME_default_instance_._instance,
     &::Protocol::_SC_ENTER_GAME_default_instance_._instance,
     &::Protocol::_SC_PLAYER_SPAWN_default_instance_._instance,
+    &::Protocol::_CS_GAME_READY_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -470,26 +502,27 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "2\021.Protocol.PosInfo\"\017\n\rCS_ENTER_GAME\"4\n\r"
     "SC_ENTER_GAME\022#\n\010pos_info\030\001 \001(\0132\021.Protoc"
     "ol.PosInfo\">\n\017SC_PLAYER_SPAWN\022+\n\020players"
-    "_pos_info\030\001 \003(\0132\021.Protocol.PosInfo*\200\002\n\010P"
-    "acketId\022\014\n\010PKT_NONE\020\000\022\020\n\014PKT_CS_LOGIN\020\001\022"
-    "\023\n\017PKT_SC_LOGIN_OK\020\002\022\017\n\013PKT_CS_CHAT\020\003\022\031\n"
-    "\025PKT_SC_CHAT_BROADCAST\020\004\022\022\n\016PKT_SC_WHISP"
-    "ER\020\005\022\022\n\016PKT_CS_WHISPER\020\006\022\021\n\rPKT_CS_MOVIN"
-    "G\020\007\022\021\n\rPKT_SC_MOVING\020\010\022\025\n\021PKT_CS_ENTER_G"
-    "AME\020\t\022\025\n\021PKT_SC_ENTER_GAME\020\n\022\027\n\023PKT_SC_P"
-    "LAYER_SPAWN\020\013b\006proto3"
+    "_pos_info\030\001 \003(\0132\021.Protocol.PosInfo\"\"\n\rCS"
+    "_GAME_READY\022\021\n\tplayer_id\030\001 \001(\004*\227\002\n\010Packe"
+    "tId\022\014\n\010PKT_NONE\020\000\022\020\n\014PKT_CS_LOGIN\020\001\022\023\n\017P"
+    "KT_SC_LOGIN_OK\020\002\022\017\n\013PKT_CS_CHAT\020\003\022\031\n\025PKT"
+    "_SC_CHAT_BROADCAST\020\004\022\022\n\016PKT_SC_WHISPER\020\005"
+    "\022\022\n\016PKT_CS_WHISPER\020\006\022\021\n\rPKT_CS_MOVING\020\007\022"
+    "\021\n\rPKT_SC_MOVING\020\010\022\025\n\021PKT_CS_ENTER_GAME\020"
+    "\t\022\025\n\021PKT_SC_ENTER_GAME\020\n\022\027\n\023PKT_SC_PLAYE"
+    "R_SPAWN\020\013\022\025\n\021PKT_CS_GAME_READY\020\014b\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    901,
+    960,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     nullptr,
     0,
-    12,
+    13,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -502,7 +535,7 @@ const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL PacketId_descriptor()
   return file_level_enum_descriptors_Protocol_2eproto[0];
 }
 PROTOBUF_CONSTINIT const uint32_t PacketId_internal_data_[] = {
-    786432u, 0u, };
+    851968u, 0u, };
 // ===================================================================
 
 class CS_LOGIN::_Internal {
@@ -3909,6 +3942,254 @@ void SC_PLAYER_SPAWN::InternalSwap(SC_PLAYER_SPAWN* PROTOBUF_RESTRICT PROTOBUF_N
 }
 
 ::google::protobuf::Metadata SC_PLAYER_SPAWN::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CS_GAME_READY::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<CS_GAME_READY>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CS_GAME_READY, _impl_._has_bits_);
+};
+
+CS_GAME_READY::CS_GAME_READY(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CS_GAME_READY_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.CS_GAME_READY)
+}
+CS_GAME_READY::CS_GAME_READY(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CS_GAME_READY& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CS_GAME_READY_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(from._impl_) {
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+PROTOBUF_NDEBUG_INLINE CS_GAME_READY::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0} {}
+
+inline void CS_GAME_READY::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.player_id_ = {};
+}
+CS_GAME_READY::~CS_GAME_READY() {
+  // @@protoc_insertion_point(destructor:Protocol.CS_GAME_READY)
+  SharedDtor(*this);
+}
+inline void CS_GAME_READY::SharedDtor(MessageLite& self) {
+  CS_GAME_READY& this_ = static_cast<CS_GAME_READY&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL CS_GAME_READY::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CS_GAME_READY(arena);
+}
+constexpr auto CS_GAME_READY::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(CS_GAME_READY),
+                                            alignof(CS_GAME_READY));
+}
+constexpr auto CS_GAME_READY::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_CS_GAME_READY_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &CS_GAME_READY::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CS_GAME_READY>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CS_GAME_READY::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CS_GAME_READY>(), &CS_GAME_READY::ByteSizeLong,
+              &CS_GAME_READY::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CS_GAME_READY, _impl_._cached_size_),
+          false,
+      },
+      &CS_GAME_READY::kDescriptorMethods,
+      &descriptor_table_Protocol_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CS_GAME_READY_class_data_ =
+        CS_GAME_READY::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CS_GAME_READY::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CS_GAME_READY_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CS_GAME_READY_class_data_.tc_table);
+  return CS_GAME_READY_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2>
+CS_GAME_READY::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(CS_GAME_READY, _impl_._has_bits_),
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    CS_GAME_READY_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::CS_GAME_READY>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint64 player_id = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CS_GAME_READY, _impl_.player_id_), 0>(),
+     {8, 0, 0,
+      PROTOBUF_FIELD_OFFSET(CS_GAME_READY, _impl_.player_id_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 player_id = 1;
+    {PROTOBUF_FIELD_OFFSET(CS_GAME_READY, _impl_.player_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+PROTOBUF_NOINLINE void CS_GAME_READY::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.CS_GAME_READY)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.player_id_ = ::uint64_t{0u};
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CS_GAME_READY::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CS_GAME_READY& this_ = static_cast<const CS_GAME_READY&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CS_GAME_READY::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CS_GAME_READY& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:Protocol.CS_GAME_READY)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // uint64 player_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (this_._internal_player_id() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+          1, this_._internal_player_id(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:Protocol.CS_GAME_READY)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CS_GAME_READY::ByteSizeLong(const MessageLite& base) {
+  const CS_GAME_READY& this_ = static_cast<const CS_GAME_READY&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CS_GAME_READY::ByteSizeLong() const {
+  const CS_GAME_READY& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:Protocol.CS_GAME_READY)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+   {
+    // uint64 player_id = 1;
+    cached_has_bits = this_._impl_._has_bits_[0];
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (this_._internal_player_id() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+            this_._internal_player_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CS_GAME_READY::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                            const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this =
+      static_cast<CS_GAME_READY*>(&to_msg);
+  auto& from = static_cast<const CS_GAME_READY&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.CS_GAME_READY)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (from._internal_player_id() != 0) {
+      _this->_impl_.player_id_ = from._impl_.player_id_;
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void CS_GAME_READY::CopyFrom(const CS_GAME_READY& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:Protocol.CS_GAME_READY)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CS_GAME_READY::InternalSwap(CS_GAME_READY* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  swap(_impl_.player_id_, other->_impl_.player_id_);
+}
+
+::google::protobuf::Metadata CS_GAME_READY::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

@@ -133,6 +133,21 @@ bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt)
     // 이는 기획에 따라 달라질 요소가 있음
     GRoomManager.FindLastRoom()->Enter(player); //Enter 로직 속에 전송로직이 포함되어 있으므로 이것으로 충분함
 
+    //수정 : Room ::Enter 에서는 스폰 패킷을 더이상 전송하지 않음.
+
+    return true;
+}
+
+bool Handle_CS_GAME_READY(SessionPtr& session, Protocol::CS_GAME_READY& pkt)
+{
+    //session 에서 들고 있는 playerId(objectId) 와 패킷의 playerId(obejctId)가 일치하는지 확인
+    if (session->GetPlayerId() != pkt.player_id()) 
+    {
+        std::cout << "Handle_CS_GAME_READY: session playerId and packet playerId is not same" << std::endl;
+        return true;
+    }
+    int32 roomid = session->GetPlayerPtr()->GetroomId();
+    GRoomManager.FindRoom(roomid)->SpawnBroadcast(session->GetPlayerPtr());
     return true;
 }
 

@@ -65,6 +65,10 @@ class CS_ENTER_GAME;
 struct CS_ENTER_GAMEDefaultTypeInternal;
 extern CS_ENTER_GAMEDefaultTypeInternal _CS_ENTER_GAME_default_instance_;
 extern const ::google::protobuf::internal::ClassDataFull CS_ENTER_GAME_class_data_;
+class CS_GAME_READY;
+struct CS_GAME_READYDefaultTypeInternal;
+extern CS_GAME_READYDefaultTypeInternal _CS_GAME_READY_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull CS_GAME_READY_class_data_;
 class CS_LOGIN;
 struct CS_LOGINDefaultTypeInternal;
 extern CS_LOGINDefaultTypeInternal _CS_LOGIN_default_instance_;
@@ -128,6 +132,7 @@ enum PacketId : int {
   PKT_CS_ENTER_GAME = 9,
   PKT_SC_ENTER_GAME = 10,
   PKT_SC_PLAYER_SPAWN = 11,
+  PKT_CS_GAME_READY = 12,
   PacketId_INT_MIN_SENTINEL_DO_NOT_USE_ =
       ::std::numeric_limits<::int32_t>::min(),
   PacketId_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -138,11 +143,11 @@ extern const uint32_t PacketId_internal_data_[];
 inline constexpr PacketId PacketId_MIN =
     static_cast<PacketId>(0);
 inline constexpr PacketId PacketId_MAX =
-    static_cast<PacketId>(11);
+    static_cast<PacketId>(12);
 inline bool PacketId_IsValid(int value) {
-  return 0 <= value && value <= 11;
+  return 0 <= value && value <= 12;
 }
-inline constexpr int PacketId_ARRAYSIZE = 11 + 1;
+inline constexpr int PacketId_ARRAYSIZE = 12 + 1;
 const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL PacketId_descriptor();
 template <typename T>
 const ::std::string& PacketId_Name(T value) {
@@ -153,7 +158,7 @@ const ::std::string& PacketId_Name(T value) {
 }
 template <>
 inline const ::std::string& PacketId_Name(PacketId value) {
-  return ::google::protobuf::internal::NameOfDenseEnum<PacketId_descriptor, 0, 11>(
+  return ::google::protobuf::internal::NameOfDenseEnum<PacketId_descriptor, 0, 12>(
       static_cast<int>(value));
 }
 inline bool PacketId_Parse(
@@ -1445,6 +1450,196 @@ class CS_LOGIN final : public ::google::protobuf::Message
 };
 
 extern const ::google::protobuf::internal::ClassDataFull CS_LOGIN_class_data_;
+// -------------------------------------------------------------------
+
+class CS_GAME_READY final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_GAME_READY) */ {
+ public:
+  inline CS_GAME_READY() : CS_GAME_READY(nullptr) {}
+  ~CS_GAME_READY() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_GAME_READY* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_GAME_READY));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_GAME_READY(::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_GAME_READY(const CS_GAME_READY& from) : CS_GAME_READY(nullptr, from) {}
+  inline CS_GAME_READY(CS_GAME_READY&& from) noexcept
+      : CS_GAME_READY(nullptr, ::std::move(from)) {}
+  inline CS_GAME_READY& operator=(const CS_GAME_READY& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_GAME_READY& operator=(CS_GAME_READY&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_GAME_READY& default_instance() {
+    return *reinterpret_cast<const CS_GAME_READY*>(
+        &_CS_GAME_READY_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 12;
+  friend void swap(CS_GAME_READY& a, CS_GAME_READY& b) { a.Swap(&b); }
+  inline void Swap(CS_GAME_READY* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_GAME_READY* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_GAME_READY* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_GAME_READY>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_GAME_READY& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_GAME_READY& from) { CS_GAME_READY::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_GAME_READY* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_GAME_READY"; }
+
+  explicit CS_GAME_READY(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  CS_GAME_READY(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CS_GAME_READY& from);
+  CS_GAME_READY(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, CS_GAME_READY&& from) noexcept
+      : CS_GAME_READY(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kPlayerIdFieldNumber = 1,
+  };
+  // uint64 player_id = 1;
+  void clear_player_id() ;
+  ::uint64_t player_id() const;
+  void set_player_id(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_player_id() const;
+  void _internal_set_player_id(::uint64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_GAME_READY)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<0, 1,
+                                   0, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const CS_GAME_READY& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::uint64_t player_id_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull CS_GAME_READY_class_data_;
 // -------------------------------------------------------------------
 
 class CS_ENTER_GAME final : public ::google::protobuf::internal::ZeroFieldsBase
@@ -3593,6 +3788,35 @@ inline ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>* PROTOBUF_NONNU
 SC_PLAYER_SPAWN::_internal_mutable_players_pos_info() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.players_pos_info_;
+}
+
+// -------------------------------------------------------------------
+
+// CS_GAME_READY
+
+// uint64 player_id = 1;
+inline void CS_GAME_READY::clear_player_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.player_id_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline ::uint64_t CS_GAME_READY::player_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_GAME_READY.player_id)
+  return _internal_player_id();
+}
+inline void CS_GAME_READY::set_player_id(::uint64_t value) {
+  _internal_set_player_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_set:Protocol.CS_GAME_READY.player_id)
+}
+inline ::uint64_t CS_GAME_READY::_internal_player_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.player_id_;
+}
+inline void CS_GAME_READY::_internal_set_player_id(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.player_id_ = value;
 }
 
 #ifdef __GNUC__

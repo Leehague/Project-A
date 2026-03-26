@@ -8,8 +8,11 @@ class Room : public std::enable_shared_from_this<Room>
 public:
     void Enter(GameObjectPtr go);
     void Leave(PlayerPtr player);
+
     void Broadcast(SendBufferPtr sendBuffer);
     void Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id);//passing_object_id 를 가지는 플레이어(유저)만 제외하고 브로드 캐스팅
+    void SpawnBroadcast(PlayerPtr player);
+    
     void SendTo(PlayerPtr player, SendBufferPtr sendBuffer);
 
     // 이동 패킷 처리 루틴
