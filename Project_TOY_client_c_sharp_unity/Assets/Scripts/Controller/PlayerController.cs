@@ -22,9 +22,13 @@ public class PlayerController : CreatureController
     Vector3 _targetPos;
     float _targetYaw;
 
+
+    
+
     protected override void Init()
     {
         base.Init();
+        
     }
 
     protected override void UpdateController()
@@ -70,8 +74,18 @@ public class PlayerController : CreatureController
         if (Time.time - _lastSendTime < SEND_INTERVAL)
             return;
 
-        // 3. 위치가 거의 변하지 않았으면 보내지 않음 (최적화)
-        if (Vector3.Distance(_lastSentPos, transform.position) < 0.01f)
+        // 거리 차이 계산
+        float distance = Vector3.Distance(_lastSentPos, transform.position);
+
+        // 핵심 로직: 
+        // 1. 거리가 멀거나 (이동 중)
+        // 2. 거리는 가깝지만, 현재 내 상태가 '이동'인데 멈추려고 할 때 (상태 변화 시점)
+        // 이 두 경우에만 패킷을 보냅니다.
+
+        bool isMoving = distance > 0.01f;
+
+        // 만약 움직이지도 않는데, 이전 전송 상태도 Idle이었다면 보낼 필요 없음 (최적화 유지)
+        if (!isMoving && State == CreatureState.Idle)
             return;
 
         // 4. 패킷 생성 및 전송
@@ -82,7 +96,8 @@ public class PlayerController : CreatureController
             Y = transform.position.y,
             Z = transform.position.z,
             Yaw = transform.eulerAngles.y, // 바라보는 방향
-            ObjectId = Managers.objectManager.Myplayer_playerId
+            ObjectId = Managers.objectManager.Myplayer_playerId,
+            State = (ulong)State
         };
 
         // 전송 (네트워크 매니저 혹은 세션을 통해)
@@ -106,6 +121,10 @@ public class PlayerController : CreatureController
     {
         _targetPos = new Vector3(info.X, info.Y, info.Z);
         _targetYaw = info.Yaw;
+
+        float distance = (_targetPos - transform.position).magnitude;
+
+        State = (CreatureState)info.State;
     }
 }
 

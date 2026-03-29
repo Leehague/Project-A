@@ -64,6 +64,7 @@ message PosInfo {
   float z = 4;
   float yaw = 5;       // 바라보는 방향 (회전)
   uint64 templeteId = 6;
+  uint64 state = 7;
 }
 
 

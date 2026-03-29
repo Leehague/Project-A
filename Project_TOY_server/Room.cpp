@@ -94,7 +94,10 @@ void Room::SpawnBroadcast(PlayerPtr player)
             // 2. 해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
             info->CopyFrom(pair.second->Getpos());
 
-            std::cout << "other objectId: " << pair.second->Getpos().object_id() << std::endl;
+            std::cout << "other objectId: " << pair.second->Getpos().object_id()
+                <<"templeteId: "<< pair.second->Getpos().templeteid() << std::endl;
+
+
         }
 
         

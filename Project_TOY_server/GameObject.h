@@ -19,7 +19,15 @@ public:
 	
 	int32 GetObjectId() { return _objectId; }
 
-	void Setpos(Protocol::PosInfo pos) { _pos = pos; }
+	void Setpos(Protocol::PosInfo pos) 
+	{
+		_pos.set_x(pos.x());
+		_pos.set_y(pos.y());
+		_pos.set_z(pos.z());
+		_pos.set_yaw(pos.yaw());
+		_pos.set_state(pos.state());
+		// templateId는 건드리지 않음!
+	}
 	Protocol::PosInfo Getpos() { return _pos; }
 
 	void SetTempleteId_In_pos(uint64 tempeteId) { _pos.set_templeteid(tempeteId); }

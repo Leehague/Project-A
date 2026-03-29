@@ -936,6 +936,7 @@ class PosInfo final : public ::google::protobuf::Message
     kZFieldNumber = 4,
     kYawFieldNumber = 5,
     kTempleteIdFieldNumber = 6,
+    kStateFieldNumber = 7,
   };
   // uint64 object_id = 1;
   void clear_object_id() ;
@@ -997,11 +998,21 @@ class PosInfo final : public ::google::protobuf::Message
   void _internal_set_templeteid(::uint64_t value);
 
   public:
+  // uint64 state = 7;
+  void clear_state() ;
+  ::uint64_t state() const;
+  void set_state(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_state() const;
+  void _internal_set_state(::uint64_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.PosInfo)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<3, 6,
+  static const ::google::protobuf::internal::TcParseTable<3, 7,
                                    0, 0,
                                    2>
       _table_;
@@ -1029,6 +1040,7 @@ class PosInfo final : public ::google::protobuf::Message
     float z_;
     float yaw_;
     ::uint64_t templeteid_;
+    ::uint64_t state_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -3415,6 +3427,31 @@ inline ::uint64_t PosInfo::_internal_templeteid() const {
 inline void PosInfo::_internal_set_templeteid(::uint64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.templeteid_ = value;
+}
+
+// uint64 state = 7;
+inline void PosInfo::clear_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000040U);
+}
+inline ::uint64_t PosInfo::state() const {
+  // @@protoc_insertion_point(field_get:Protocol.PosInfo.state)
+  return _internal_state();
+}
+inline void PosInfo::set_state(::uint64_t value) {
+  _internal_set_state(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:Protocol.PosInfo.state)
+}
+inline ::uint64_t PosInfo::_internal_state() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.state_;
+}
+inline void PosInfo::_internal_set_state(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = value;
 }
 
 // -------------------------------------------------------------------
