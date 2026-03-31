@@ -108,5 +108,13 @@ public class PacketHandler
         Managers.networkManager.Send(_CS_GAME_READY);
     }
 
-    
+    public static void Handle_SC_DESPAWN(PacketSession session, IMessage packet) 
+    {
+        SC_DESPAWN despawnPkt = packet as SC_DESPAWN;
+
+        foreach (ulong id in despawnPkt.PlayerId)
+        {
+            Managers.objectManager.Remove(id); // 오브젝트 매니저에 제거 요청
+        }
+    }
 }

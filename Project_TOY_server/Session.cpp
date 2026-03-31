@@ -1,6 +1,8 @@
 #include "Session.h"
 #include <iostream>
-
+#include "RoomManager.h"
+#include "ObjectManager.h"
+#include "Player.h"
 
 
 Session::Session() : _recvBuffer(1024 * 64)
@@ -255,7 +257,17 @@ void Session::OnDisconnected()
         _socket = INVALID_SOCKET;
     }
     
-    
+    //게임 오브젝트 해제
+
+    PlayerPtr player = GetPlayerPtr();
+    if (player)
+    {
+        RoomPtr room = GRoomManager.FindRoom(player->GetroomId());
+        if (room)
+            room->Leave(player); // 룸에서 퇴장 처리
+
+        GObjcetManager.Removeobjcet(player->GetObjectId()); // 전역 매니저에서도 제거
+    }
 
 }
 

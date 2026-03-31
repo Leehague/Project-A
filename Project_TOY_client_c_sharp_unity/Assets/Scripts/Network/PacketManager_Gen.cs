@@ -31,6 +31,9 @@ public partial class PacketManager
         _onRecv.Add((ushort)PacketId.PktScPlayerSpawn, (s, b, sz) => MakePacket<SC_PLAYER_SPAWN>(s, b, sz, (ushort)PacketId.PktScPlayerSpawn));
         _handler.Add((ushort)PacketId.PktScPlayerSpawn, PacketHandler.Handle_SC_PLAYER_SPAWN);
         _typeToId.Add(typeof(CS_GAME_READY), (ushort)PacketId.PktCsGameReady);
+        _typeToId.Add(typeof(SC_DESPAWN), (ushort)PacketId.PktScDespawn);
+        _onRecv.Add((ushort)PacketId.PktScDespawn, (s, b, sz) => MakePacket<SC_DESPAWN>(s, b, sz, (ushort)PacketId.PktScDespawn));
+        _handler.Add((ushort)PacketId.PktScDespawn, PacketHandler.Handle_SC_DESPAWN);
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Protocol;
+﻿using Cinemachine;
+using Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ public class PlayerController : CreatureController
 {
 
     public Stat stat { get; set; }
+
+    
     public bool IsMyPlayer { get; set; }
 
 
@@ -22,13 +25,31 @@ public class PlayerController : CreatureController
     Vector3 _targetPos;
     float _targetYaw;
 
-
-    
+    //카메라 제어 및 이동 관련 변수들
+    Transform _cameraTransform;
+    [SerializeField] float _moveSpeed = 5.0f;
+    [SerializeField] float _rotationSpeed = 10.0f;
 
     protected override void Init()
     {
         base.Init();
-        
+        if (IsMyPlayer)
+        {
+            // 씬에 배치된 Virtual Camera를 찾습니다.
+            var vcam = GameObject.FindObjectOfType<CinemachineFreeLook>();
+            if (vcam != null)
+            {
+                vcam.Follow = this.transform;
+                vcam.LookAt = this.transform;
+                
+            }
+
+            _cameraTransform = Camera.main.transform;
+
+            // 마우스 커서 고정
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     protected override void UpdateController()
@@ -46,22 +67,32 @@ public class PlayerController : CreatureController
 
     private void HandleInput()
     {
-        // 1. 입력 확인 (키보드 WASD 등)
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
+        Vector3 inputDir = new Vector3(h, 0, v).normalized;
 
-        Vector3 moveDir = new Vector3(h, 0, v).normalized;
-
-        // 2. 상태 결정 및 이동
-        if (moveDir.magnitude > 0.1f)
+        if (inputDir.magnitude > 0.1f)
         {
-            State = CreatureState.Moving;
-            // 실제 이동 (속도 5.0f 적용)
-            transform.position += moveDir * Time.deltaTime * 5.0f;
+            // 1. 카메라가 바라보는 방향을 기준으로 이동 방향 계산
+            Vector3 forward = _cameraTransform.forward;
+            Vector3 right = _cameraTransform.right;
 
-            // 부드러운 회전 (LookRotation)
-            Quaternion lookRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 0.2f);
+            forward.y = 0;
+            right.y = 0;
+            forward.Normalize();
+            right.Normalize();
+
+            // 최종 이동 방향: (카메라앞 * 세로입력) + (카메라옆 * 가로입력)
+            Vector3 moveDir = (forward * inputDir.z + right * inputDir.x).normalized;
+
+            // 2. 실제 이동 및 회전
+            transform.position += moveDir * _moveSpeed * Time.deltaTime;
+
+            // 캐릭터가 이동 방향을 부드럽게 바라보게 함
+            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
+
+            State = CreatureState.Moving;
         }
         else
         {

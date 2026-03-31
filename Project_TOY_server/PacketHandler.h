@@ -69,4 +69,5 @@ inline void PacketHandler::Init()
     GPacketHandler[Protocol::PacketId::PKT_CS_GAME_READY] = [](SessionPtr& session, BYTE* buffer, int32 len) {
         return HandlePacket<Protocol::CS_GAME_READY>(Handle_CS_GAME_READY, session, buffer, len);
     };
+    GPacketHandler[Protocol::PacketId::PKT_SC_DESPAWN] = Handle_INVALID;
 }

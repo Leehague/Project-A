@@ -34,7 +34,20 @@ void Room::Enter(GameObjectPtr go)
 }
 void Room::Leave(PlayerPtr player)
 {
+    uint64 playerId = player->GetObjectId();
 
+    {
+        std::lock_guard<std::mutex> lock(_lock);
+        _objects.erase(playerId); // 1. 룸의 관리 목록에서 제거
+    }
+
+    // 2. 타인들에게 이 유저가 나갔음을 알림 (SC_DESPAWN)
+    Protocol::SC_DESPAWN despawnPkt;
+    despawnPkt.add_player_id(playerId);
+    
+
+    auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_DESPAWN);
+    Broadcast(sendBuffer, playerId); // 본인은 이미 나갔으므로 제외
 }
 
 void Room::Broadcast(SendBufferPtr sendBuffer)
