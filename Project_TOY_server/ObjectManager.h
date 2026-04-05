@@ -6,7 +6,7 @@
 class ObjcetManager 
 {
 public:
-	GameObjectPtr Create(GameObjectType type, std::shared_ptr<Session> session);
+	GameObjectPtr Create(GameObjectType type, std::shared_ptr<Session> session, int32 templateId);
 	
 	GameObjectPtr Find(int32 objectId);
 	void Removeobjcet(int32 objectId);

@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Protocol/Protocol.pb.h"
 #include <string>
+#include "Vector3.h"
 
 void Room::Enter(GameObjectPtr go)
 {
@@ -151,11 +152,39 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
     }
 
     // 1. [검증] 이전 위치와 새 위치의 거리 차이가 너무 크면 무시하거나 보정 (핵 방지)
-    //TODO: 검증 로직 추가 필요 , 핵 방지 , 최적화 등
-    
-    // float distance = CalculateDistance(player->posInfo, pkt.pos_info());
-    // if (distance > MAX_MOVE_SPEED) return;
+    Vector3 currentPos = Vector3::PosInfoToVector3(player->Getpos());
+    Vector3 newPos = Vector3(pkt.pos_info().x(), pkt.pos_info().y(), pkt.pos_info().z());
 
+    uint64 currentTick = ::GetTickCount64(); // 현재 서버 시간 (Windows 기준)
+
+    // 처음에만 0일 수 있으므로 예외 처리
+    if (player->lastMoveTick == 0) player->lastMoveTick = currentTick - 100;
+
+    // deltaTime 계산 (초 단위로 변환)
+    float deltaTime = (currentTick - player->lastMoveTick) / 1000.0f;
+    player->lastMoveTick = currentTick; // 현재 시간을 다음 검증을 위해 저장
+
+
+    float dist = Vector3::Distance(currentPos, newPos);
+    float maxAllowedDist = player->GetSpeed() * deltaTime * 1.2f; // 오차범위 20%
+
+    if (dist > maxAllowedDist) {
+        // 너무 멀리 이동함 (패킷 무시 혹은 강제 위치 복구)
+        std::cout << "비정상 이동 요청 인식" << std::endl;
+
+        // 1. 서버에 저장된 '이전' 좌표를 담은 패킷 생성
+        Protocol::SC_MOVING resPkt;
+        auto* resPos = resPkt.mutable_pos_info();
+        resPos->CopyFrom(player->Getpos()); // 업데이트 전의 서버 좌표
+
+        auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
+
+        // 2. 해당 유저에게만 강제로 전송 (위치 되감기)
+        if (auto s = player->session.lock())
+            s->Send(sendBuffer);
+
+        return;
+    }
     // 2. [갱신] 서버 메모리에 플레이어 위치 정보 업데이트
     player->Setpos(pkt.pos_info());
 

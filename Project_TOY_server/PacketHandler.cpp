@@ -24,9 +24,9 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 
     resPkt.set_success(true);
     
-
-    //수정 :: GObjcetManager.Create 내부에서 Room::Enter를 콜 하던것을 제거 
-    GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session);
+    //TODO : DB와 통신해서 템플릿 아이디 등 정보 가져오기 그래서 create할때 동적으로 연결
+    //수정 :: GObjcetManager.Create 내부에서 Room::Enter를 콜 하던것을 제거 (템플릿 Id 1로 하드코딩)
+    GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session,1);
 
 
     resPkt.set_player_id(go->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함

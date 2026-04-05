@@ -9,6 +9,7 @@ public class Stat
     public string name;
     public int hp;
     public int attack;
+    public int speed;
     public string modelPath;
 }
 

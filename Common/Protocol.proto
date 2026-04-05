@@ -67,7 +67,14 @@ message PosInfo {
   uint64 state = 7;
 }
 
-
+message StatInfo {
+    uint64 object_id = 1;
+    string name = 2;
+    uint64 hp = 3;
+    uint64 attack = 4;
+    uint64 speed = 5;
+    uint64 level = 6;
+}
 message CS_MOVING {
     PosInfo pos_info = 1;
 }

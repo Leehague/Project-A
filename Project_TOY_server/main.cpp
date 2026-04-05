@@ -16,6 +16,7 @@
 #include <iostream>
 #include "PacketHandler.h"
 #include "RoomManager.h"
+#include "DataManager.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -23,7 +24,7 @@
 int main()
 {
     PacketHandler::Init();
-
+    DataManager::GetInstance().Init();
     IocpCore iocp;
     Listener listener;
 

@@ -148,6 +148,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferWriter.h" />
+    <ClInclude Include="DataContents.h" />
+    <ClInclude Include="DataManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="IocpCore.h" />
@@ -163,6 +165,7 @@
     <ClInclude Include="ServerUtils.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="Types.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

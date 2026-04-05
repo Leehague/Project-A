@@ -27,8 +27,10 @@ public class PlayerController : CreatureController
 
     //카메라 제어 및 이동 관련 변수들
     Transform _cameraTransform;
-    [SerializeField] float _moveSpeed = 5.0f;
+    [SerializeField] float _moveSpeed =     0;
     [SerializeField] float _rotationSpeed = 10.0f;
+
+    private CharacterController _charController;
 
     protected override void Init()
     {
@@ -49,6 +51,9 @@ public class PlayerController : CreatureController
             // 마우스 커서 고정
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+
+            _charController = GetComponent<CharacterController>();
+            _moveSpeed = stat.speed;
         }
     }
 
@@ -86,9 +91,13 @@ public class PlayerController : CreatureController
             Vector3 moveDir = (forward * inputDir.z + right * inputDir.x).normalized;
 
             // 2. 실제 이동 및 회전
-            transform.position += moveDir * _moveSpeed * Time.deltaTime;
+            //transform.position += moveDir * _moveSpeed * Time.deltaTime;
+            //[수정] 직접 position을 건드리지 않고 Move 함수 사용
+            Vector3 motion = moveDir * _moveSpeed * Time.deltaTime;
+            _charController.Move(motion + Vector3.down * 1.0f * Time.deltaTime);
 
-            // 캐릭터가 이동 방향을 부드럽게 바라보게 함
+
+            //회전 로직
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
 
