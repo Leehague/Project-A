@@ -85,7 +85,9 @@ public class ObjectManager
         // 리소스 매니저로 프리팹 생성
         GameObject go = Managers.resourceManager.Instantiate(statInfo.modelPath);
         go.name = statInfo.name;
-        go.transform.position = new Vector3(postion.X, postion.Y, postion.Z);
+
+        Vector3 spawnPos = new Vector3(postion.X, postion.Y, postion.Z);
+        go.transform.position = spawnPos;
         
 
         // 여기서 Add를 호출하여 관리 목록에 추가
@@ -95,10 +97,10 @@ public class ObjectManager
         PlayerController pc = go.GetOrAddComponent<PlayerController>();
         pc.stat = statInfo;
         pc.IsMyPlayer = isMyPlayer;
+        // 핵심: 생성 직후에 컨트롤러의 내부 목적지 좌표도 동기화
+        pc.SyncPos(spawnPos);
 
-
-        Debug.Log("Spawn player");
-
+        
 
         return go;
     }

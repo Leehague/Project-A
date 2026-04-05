@@ -166,5 +166,13 @@ public class PlayerController : CreatureController
 
         State = (CreatureState)info.State;
     }
+
+    public void SyncPos(Vector3 pos)
+    {
+        // 보간용 목적지 좌표를 현재 좌표로 강제 일치시킴
+        _targetPos = pos;
+        transform.position = pos;
+        _lastSentPos = pos; // 내 캐릭터일 경우 패킷 중복 전송 방지
+    }
 }
 
