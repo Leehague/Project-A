@@ -1,0 +1,15 @@
+{
+  "Maps": [
+    {
+      "id": 1,
+      "name": "Village",
+      "MapPath": "Resource/Maps/Map_01.txt",
+      "MinX": -33,
+      "MinZ": -33,
+      "CellSize": 0.5,
+      "Width": 126,
+      "Height": 108
+    }
+    
+  ]
+}

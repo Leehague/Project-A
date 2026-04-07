@@ -5,7 +5,7 @@
 class RoomManager 
 {
 public:
-	int32 Create();
+	int32 Create(int32 mapId);
 	RoomPtr FindRoom(int32 roomId);
 	RoomPtr FindLastRoom();
 	void RemoveRoom(int32 roomId);

@@ -5,6 +5,20 @@
 #include "Protocol/Protocol.pb.h"
 #include <string>
 #include "Vector3.h"
+#include "MapManager.h"
+#include "Map.h"
+
+Room::Room(int32 roomId, int32 mapId) : _Selfroomid(roomId)
+{
+    // 방이 생성될 때 맵 매니저를 통해 맵을 할당받습니다.
+    // GMapManager는 전역 혹은 싱글톤으로 선언되어 있어야 합니다.
+    _map = GMapManager.LoadMap(mapId);
+
+    if (_map == nullptr)
+    {
+        std::cout << "Room " << roomId << ": Map Load Failed! (ID: " << mapId << ")" << std::endl;
+    }
+}
 
 void Room::Enter(GameObjectPtr go)
 {
@@ -144,6 +158,7 @@ void Room::SendTo(PlayerPtr player, SendBufferPtr sendBuffer)
     }
     // else: session is expired, do nothing or handle error as needed
 }
+
 void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
 {
     if (player == nullptr) 
@@ -169,23 +184,26 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
     float dist = Vector3::Distance(currentPos, newPos);
     float maxAllowedDist = player->GetSpeed() * deltaTime * 1.2f; // 오차범위 20%
 
+    //속도 검증
     if (dist > maxAllowedDist) {
         // 너무 멀리 이동함 (패킷 무시 혹은 강제 위치 복구)
         std::cout << "비정상 이동 요청 인식" << std::endl;
 
-        // 1. 서버에 저장된 '이전' 좌표를 담은 패킷 생성
-        Protocol::SC_MOVING resPkt;
-        auto* resPos = resPkt.mutable_pos_info();
-        resPos->CopyFrom(player->Getpos()); // 업데이트 전의 서버 좌표
-
-        auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
-
-        // 2. 해당 유저에게만 강제로 전송 (위치 되감기)
-        if (auto s = player->session.lock())
-            s->Send(sendBuffer);
-
+        SendMoveResync(player);
         return;
     }
+    
+    // 지형 검증 
+    if (_map != nullptr)
+    {
+        if (_map->CanGo(newPos) == false)
+        {
+            // 충돌 발생! 클라이언트에게 강제 위치 복구 패킷 전송
+            SendMoveResync(player);
+            return;
+        }
+    }
+
     // 2. [갱신] 서버 메모리에 플레이어 위치 정보 업데이트
     player->Setpos(pkt.pos_info());
 
@@ -201,5 +219,20 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
     //Loging
     std::cout << "RoomId: " << _Selfroomid << std::endl
         << "object Id : " << resPos->object_id() << "HandleMove : (" << resPos->x() << resPos->y() << resPos->z() << ")" << std::endl;
+
+}
+
+void Room::SendMoveResync(PlayerPtr player)
+{
+    // 1. 서버에 저장된 '이전' 좌표를 담은 패킷 생성
+    Protocol::SC_MOVING resPkt;
+    auto* resPos = resPkt.mutable_pos_info();
+    resPos->CopyFrom(player->Getpos()); // 업데이트 전의 서버 좌표
+
+    auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
+
+    // 2. 해당 유저에게만 강제로 전송 (위치 되감기)
+    if (auto s = player->session.lock())
+        s->Send(sendBuffer);
 
 }

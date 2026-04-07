@@ -290,7 +290,25 @@ TODO: 충돌 판정 도입
 
 2026/04/05
 TODO: 
-1. 충돌 판정 도입
-2. 새로운 클라이언트 접속시 기존 클라가 움직이기 전까지 위치가 갱신 안되는 문제 해결=> 완 , playerController의 InterpolateMovement (보간) 로직에서 사용하는 targetPos 의 초기값이 자동으로 0,0,0으로 초기화 되서 (기본 생성자를 사용하고 있으므로) 생기는 문제 , 스폰 로직에서 명시적으로 초기화 하는식으로 해결
 
+1. 새로운 클라이언트 접속시 기존 클라가 움직이기 전까지 위치가 갱신 안되는 문제 해결=> 완 , playerController의 InterpolateMovement (보간) 로직에서 사용하는 targetPos 의 초기값이 자동으로 0,0,0으로 초기화 되서 (기본 생성자를 사용하고 있으므로) 생기는 문제 , 스폰 로직에서 명시적으로 초기화 하는식으로 해결
 
+2. 지형 판정 :NavMesh 기반의 2.5D 검증 도입
+
+3. 전투 판정: 클라이언트 우선 + 서버 사후 검증 도입
+
+-서버측 Map Mangaer.h, Map.h 생성
+-cpp 파일 구체적 구현 필요
+
+2026/04/07
+
+- DataContents.h 에 MapData 추가 
+- Map class , MapManager class 추가 및 함수 구현
+- DataManger가 초기화시 Mapdata.json파일을 보고 resource/Maps/Map_01.txt 파일의 맵 의 구체적인 내비게이션 정보를 읽어오도록 함 (Map 과 MapManager의 함수들을 사용함)
+- Room 클래스에서 생성자에서 내부 변수들을 초기화하도록 수정함. 특히 여기서 _map 도 초기화함 
+- Room.Create를 main에서 호출하고 있음.  map Id 역시 하드코딩으로 하고 있음. 복수의 Room을 운영하기 시작하면 수정해야함
+- Room::HandleMove 에서 위에서 추가한 기능들로 하여금 서버의 메모리에서 들고 있는 Nav정보를 참고해서 Cango를 이용해 검증하고 있음. 정상적이라면 유니티와 같은 결론을 내려야함.(즉, 테스트 단계에서는 유니티와 항상 같은 결론)
+
+TODO: 
+1. 데미지 판정, UI , 스킬 시스템 등 게임로직
+2. 여러개의 룸 운영

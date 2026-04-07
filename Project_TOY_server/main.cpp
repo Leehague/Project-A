@@ -17,6 +17,7 @@
 #include "PacketHandler.h"
 #include "RoomManager.h"
 #include "DataManager.h"
+#include "MapManager.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -25,10 +26,11 @@ int main()
 {
     PacketHandler::Init();
     DataManager::GetInstance().Init();
+    GMapManager.Init(); // DataManager의 Init 이후에 실행되어야 함.
     IocpCore iocp;
     Listener listener;
 
-    std::cout << GRoomManager.Create() << "번 방 생성" << std::endl;//0번방 생성
+    std::cout << GRoomManager.Create(1) << "번 방 생성" << std::endl; //0번방 생성 , 1번 맵으로 초기화
     
     // 1. 서버 시작 (포트, 세션 생성 방식, IOCP 핵심 객체 전달)
     // 람다 함수는 단순히 "어떤 세션 객체를 만들지"만 결정해서 리턴합니다.

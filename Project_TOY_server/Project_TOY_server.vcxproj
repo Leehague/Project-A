@@ -137,6 +137,8 @@
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="Protocol\Protocol.pb.cc" />
@@ -154,6 +156,8 @@
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="MapManager.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="Player.h" />
