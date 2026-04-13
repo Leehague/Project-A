@@ -1,0 +1,39 @@
+{
+  "skills": [
+    {
+      "id": 101,
+      "name": "일반 공격",
+      "skillType": "Melee",
+      "damage": 50,
+      "range": 2.0,
+      "coolTime": 0.5,
+      "animName": "Attack_Melee_01",
+      "CostType": "None",
+      "cost" : 0
+    },
+    {
+      "id": 201,
+      "name": "화염구",
+      "skillType": "Projectile",
+      "damage": 80,
+      "range": 15.0,
+      "projectileSpeed": 10.0,
+      "projectileId": 5001,
+      "coolTime": 2.0,
+      "animName": "Cast_Fireball",
+      "CostType": "Mana",
+      "cost": 10
+    },
+    {
+      "id": 301,
+      "name": "돌진",
+      "skillType": "Dash",
+      "dashDistance": 5.0,
+      "dashSpeed": 15.0,
+      "coolTime": 5.0,
+      "animName": "Dash_Start",
+      "CostType": "Mana",
+      "cost": 10
+    }
+  ]
+}

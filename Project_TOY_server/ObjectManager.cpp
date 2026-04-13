@@ -12,9 +12,8 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
     GameObjectPtr go = nullptr;
 
     if (type == GameObjectType::Player) {
-        PlayerPtr player = std::make_shared<Player>(objcetId, session);
-        // Cast PlayerPtr to GameObjectPtr for assignment
-        player->Init(templateId);
+        PlayerPtr player = std::make_shared<Player>(objcetId, session, templateId);
+        
         go = std::static_pointer_cast<GameObject>(player);
     }
     else 

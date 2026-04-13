@@ -21,6 +21,9 @@ public:
     // 이동 패킷 처리 루틴
     void HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt);
 
+    // 스킬 패킷 처리 
+    void HandleSkill(PlayerPtr player , Protocol::CS_SKILL& pkt);
+
     void SetRoomid(int32 roomid) { _Selfroomid = roomid; }
     int32 GetRoomid() {return _Selfroomid;}
 private:

@@ -15,6 +15,7 @@ public:
     void Init() {
         LoadStatData("Data/StatData.json");
         LoadMapData("Data/MapData.json");
+        LoadSkillData("Data/SkillData.json");
     }
 
 private:
@@ -39,8 +40,10 @@ private:
             StatData stat;
             stat.templateId = item["id"]; //json 파일에서의 id는 templateId 를 말하는 것임
             stat.baseHp = item["hp"];
+            stat.baseMp = item["mp"];
             stat.baseAttack = item["attack"];
             stat.speed = item["speed"];
+            stat.name = item["name"];
             _statTable[stat.templateId] = stat;
         }
     }
@@ -76,7 +79,27 @@ private:
             _mapTable[mapdata.MapId] = mapdata;
         }
     }
+    void LoadSkillData(const std::string& path) {
+        std::ifstream f(path);
+        if (!f.is_open()) return;
 
+        json data = json::parse(f);
+        for (auto& item : data["skills"]) {
+            SkillData skill;
+            skill.id = item["id"];
+            skill.name = item["name"];
+            skill.skillType = static_cast<SkillType>(item["skillType"].get<int>());
+            skill.costType = static_cast<CostType>(item["CostType"].get<int>());
+            skill.damage = item["damage"];
+            skill.range = item["range"];
+            skill.coolTime = item["coolTime"];
+            skill.animName = item["animName"];
+            skill.cost = item["cost"];
+            _skillTable[skill.id] = skill;
+        }
+    }
+
+    
 public:
     const StatData* GetStat(int32 templateId) {
         if (_statTable.find(templateId) == _statTable.end()) return nullptr;
@@ -87,8 +110,12 @@ public:
         if (_mapTable.find(MapId) == _mapTable.end()) return nullptr;
         return &_mapTable[MapId];
     }
+    const SkillData* GetSkill(int32 id) {
+        if (_skillTable.find(id) == _skillTable.end()) return nullptr;
+        return &_skillTable[id];
+    }
 private:
     std::map<int32, StatData> _statTable; //key : tempateId , value : StatData
     std::map<int32, MapData> _mapTable; //key : MapId, value : MapData
-
+    std::unordered_map<int32, SkillData> _skillTable; //key : Id , value : SkillData
 };

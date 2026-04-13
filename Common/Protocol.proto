@@ -17,6 +17,10 @@ enum PacketId {
     PKT_SC_PLAYER_SPAWN = 11; 
     PKT_CS_GAME_READY = 12;
     PKT_SC_DESPAWN = 13;
+    PKT_CS_SKILL = 14;
+    PKT_SC_SKILL = 15;
+    PKT_SC_CHANGE_HP = 16;
+    PKT_SC_CHANGE_MP = 17;
 
 }
 
@@ -103,4 +107,47 @@ message CS_GAME_READY {
 
 message SC_DESPAWN {
     repeated uint64 player_id = 1;
+}
+
+message CS_SKILL {
+    int32 skill_id = 1;
+
+  // 스킬 타입별로 필요한 '추가 정보'만 묶어서 관리
+  oneof extra_info {
+    TargetobjectInfo target = 2;      // 근접/타겟팅용 (대상 ID)
+    TargetPosInfo dest_pos = 3;  // 논타겟/이동기용 (목표 좌표)
+  }
+}
+
+message SC_SKILL {
+  uint64 object_id = 1;
+  int32 skill_id = 2;
+  oneof extra_info {
+    TargetobjectInfo target = 3;      // 근접/타겟팅용 (대상 ID)
+    TargetPosInfo dest_pos = 4;  // 논타겟/이동기용 (목표 좌표)
+  }
+}
+
+message SC_CHANGE_HP {
+  uint64 object_id = 1;
+  int32 current_hp = 2;
+  int32 damage = 3;
+  uint64 attacker_id = 4;
+}
+
+
+message TargetobjectInfo {
+    uint64 target_object_id = 1;
+}
+
+message TargetPosInfo{
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message SC_CHANGE_MP {
+  uint64 object_id = 1;
+  int32 current_mp = 2;
+  
 }

@@ -312,3 +312,29 @@ TODO:
 TODO: 
 1. 데미지 판정, UI , 스킬 시스템 등 게임로직
 2. 여러개의 룸 운영
+
+
+
+2026/04/12
+
+
+TODO: 전투 시스템의 기초(평타와 데미지) 구현
+
+- 워크플로우 개선 : DataCopyToClient And Sever.bat 배치파일 생성 , Common 파일에 존재하는 static Data와 유니티 에디터를 통해 생성한 Map 파일을 각각 서버와 클라이언트에 복사본을 만들어주는 배치파일. (이제 json 파일들은 common 파일, Map data는 \Project_TOY_client_c_sharp_unity\MapData (유니티 에디터를 통해 생성) 가 원본임.
+
+TODO: oneof 를 사용해 protobuf에서 패킷 디자인 완료, 같은 스킬 패킷을 이용해서 스킬 타입 별로 별도의 정보를 전달하기 위함.
+
+2026/04/13
+
+
+- 패킷 추가 : CS_SKILL ,SC_SKILL , SC_CHANGE_HP
+- 스킬 시스템을 위한 코드 서버측에 추가 CS_SKILL핸들러 -> Room::HandleSkill
+- skillData ,  StatData 일부 수정
+- Player.h 에서 일부 코드 GameObject.h로 이동
+
+TODO: 
+1. 클라 UI 시스템
+2, 클라 패킷 핸들러 작성
+3. 패킷 아키텍쳐 리펙토링 (정확히는 PosInfo 에 TempleteId가 있는데 이걸어떻게 해야 할지 결정해야됨. 나아가 서버에서 GameObject와 Player가 TempleteId를 어떻게 다루어야 할지도)
+
+

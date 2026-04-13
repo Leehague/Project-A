@@ -34,6 +34,16 @@ public partial class PacketManager
         _typeToId.Add(typeof(SC_DESPAWN), (ushort)PacketId.PktScDespawn);
         _onRecv.Add((ushort)PacketId.PktScDespawn, (s, b, sz) => MakePacket<SC_DESPAWN>(s, b, sz, (ushort)PacketId.PktScDespawn));
         _handler.Add((ushort)PacketId.PktScDespawn, PacketHandler.Handle_SC_DESPAWN);
+        _typeToId.Add(typeof(CS_SKILL), (ushort)PacketId.PktCsSkill);
+        _typeToId.Add(typeof(SC_SKILL), (ushort)PacketId.PktScSkill);
+        _onRecv.Add((ushort)PacketId.PktScSkill, (s, b, sz) => MakePacket<SC_SKILL>(s, b, sz, (ushort)PacketId.PktScSkill));
+        _handler.Add((ushort)PacketId.PktScSkill, PacketHandler.Handle_SC_SKILL);
+        _typeToId.Add(typeof(SC_CHANGE_HP), (ushort)PacketId.PktScChangeHp);
+        _onRecv.Add((ushort)PacketId.PktScChangeHp, (s, b, sz) => MakePacket<SC_CHANGE_HP>(s, b, sz, (ushort)PacketId.PktScChangeHp));
+        _handler.Add((ushort)PacketId.PktScChangeHp, PacketHandler.Handle_SC_CHANGE_HP);
+        _typeToId.Add(typeof(SC_CHANGE_MP), (ushort)PacketId.PktScChangeMp);
+        _onRecv.Add((ushort)PacketId.PktScChangeMp, (s, b, sz) => MakePacket<SC_CHANGE_MP>(s, b, sz, (ushort)PacketId.PktScChangeMp));
+        _handler.Add((ushort)PacketId.PktScChangeMp, PacketHandler.Handle_SC_CHANGE_MP);
 
     }
 }

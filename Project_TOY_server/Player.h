@@ -7,18 +7,23 @@
 #include "DataContents.h"
 #include "DataManager.h"
 
+struct SkillRecord {
+    int64 lastUseTime = 0; // 밀리초(ms) 단위
+};
+
 class Player : public GameObject
 {
 public:
 
-    Player(int32 objectId, std::shared_ptr<Session> sessionPtr)
+    Player(int32 objectId, std::shared_ptr<Session> sessionPtr, int32 templateId)
         : GameObject(objectId, GameObjectType::Player), session(sessionPtr)
     {
-        
+        Init(templateId);
     }
 
-    void Init(int32 templateId)
+    virtual void Init(int32 templateId)
     {
+        
         auto sessionPtr = session.lock();
         if (sessionPtr)
         {
@@ -31,28 +36,11 @@ public:
 
     std::weak_ptr<Session> session; // 순환 참조 방지
 
-public:
-    float GetSpeed() { return _speed; }
-private:
-    //stat Data 
 
-    int32 _templateId = 0; // 캐릭터 종류 고유 번호 
-    int32 _maxHp = 0; // 기본 체력
-    int32 _attack = 0; // 기본 공격력
-    float _speed = 0; // 이동 속도 (고정값 혹은 기본값)
-    
+
+
 public:
     uint64 lastMoveTick = 0; // 마지막 이동 검증 시간 (ms)
-private:
-    void InitStatData(int32 templateId)
-    {
-        const StatData* statData = DataManager::GetInstance().GetStat(templateId);
-        if (statData) {
-            _speed = statData->speed;
-            _maxHp = statData->baseHp;
-            _attack = statData->baseAttack;
-            _templateId = templateId;
-            // 나중에 DB가 붙으면 여기서 _level = db.GetLevel() 등을 호출하면 됩니다.
-        }
-    }
+    std::map<int32, int64> _skillCooltimes; // <SkillID, LastUsedTick>
+
 };

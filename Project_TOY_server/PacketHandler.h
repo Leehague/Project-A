@@ -15,6 +15,7 @@ bool Handle_CS_WHISPER(SessionPtr& session, Protocol::CS_WHISPER& pkt);
 bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt);
 bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt);
 bool Handle_CS_GAME_READY(SessionPtr& session, Protocol::CS_GAME_READY& pkt);
+bool Handle_CS_SKILL(SessionPtr& session, Protocol::CS_SKILL& pkt);
 
 
 class PacketHandler
@@ -70,4 +71,10 @@ inline void PacketHandler::Init()
         return HandlePacket<Protocol::CS_GAME_READY>(Handle_CS_GAME_READY, session, buffer, len);
     };
     GPacketHandler[Protocol::PacketId::PKT_SC_DESPAWN] = Handle_INVALID;
+    GPacketHandler[Protocol::PacketId::PKT_CS_SKILL] = [](SessionPtr& session, BYTE* buffer, int32 len) {
+        return HandlePacket<Protocol::CS_SKILL>(Handle_CS_SKILL, session, buffer, len);
+    };
+    GPacketHandler[Protocol::PacketId::PKT_SC_SKILL] = Handle_INVALID;
+    GPacketHandler[Protocol::PacketId::PKT_SC_CHANGE_HP] = Handle_INVALID;
+    GPacketHandler[Protocol::PacketId::PKT_SC_CHANGE_MP] = Handle_INVALID;
 }

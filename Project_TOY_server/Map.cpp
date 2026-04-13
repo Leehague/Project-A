@@ -46,16 +46,26 @@ bool Map::Load(const MapData* mapdata)
 
     // 3. 데이터 공간 확보
     _collisionData.assign(_height, std::vector<bool>(_width, false));
+    _heightData.assign(_height, std::vector<float>(_width, 0.0f)); // 공간 확보
 
     // 4. 맵 데이터 파싱
     for (int z = 0; z < _height; z++)
     {
         for (int x = 0; x < _width; x++)
         {
-            int value;
-            if (ifs >> value)
+            std::string cellInfo;
+            if (ifs >> cellInfo)
             {
-                _collisionData[z][x] = (value == 1);
+                // "0|1.5" 형태의 문자열 파싱
+                size_t pos = cellInfo.find('|');
+                if (pos != std::string::npos)
+                {
+                    int collision = std::stoi(cellInfo.substr(0, pos));
+                    float height = std::stof(cellInfo.substr(pos + 1));
+
+                    _collisionData[z][x] = (collision == 1);
+                    _heightData[z][x] = height;
+                }
             }
         }
     }
@@ -75,4 +85,15 @@ bool Map::CanGo(Vector3 pos)
         return false;
 
     return !_collisionData[z][x];
+}
+
+float Map::GetHeight(Vector3 pos)
+{
+    int x = static_cast<int>((pos.x - _minX) / _cellSize);
+    int z = static_cast<int>((pos.z - _minZ) / _cellSize);
+
+    if (x < 0 || x >= _width || z < 0 || z >= _height)
+        return -100.0f;
+
+    return _heightData[z][x];
 }

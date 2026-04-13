@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "ObjectManager.h"
 #include "RoomManager.h"
+#include "DataContents.h"
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];
@@ -151,4 +152,23 @@ bool Handle_CS_GAME_READY(SessionPtr& session, Protocol::CS_GAME_READY& pkt)
     return true;
 }
 
+//클라에서온 스킬사용 요청 핸들러 함수
+bool Handle_CS_SKILL(SessionPtr& session, Protocol::CS_SKILL& pkt)
+{
+    PlayerPtr player = session->GetPlayerPtr();
+    if (player == nullptr)
+    {
+        std::cout << "Handle_CS_SKILL: player has nullptr" << std::endl;
+        return true;
+    }
 
+    RoomPtr room = GRoomManager.FindRoom(player->GetroomId());
+    if (room == nullptr)
+    {
+        std::cout << "Handle_CS_SKILL: room has nullptr" << std::endl;
+        return true;
+    }
+    room->HandleSkill(player, pkt);
+    
+    return true;
+}

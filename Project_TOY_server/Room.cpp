@@ -222,6 +222,107 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
 
 }
 
+void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
+{
+    //TODO: [핵 방지]_skillCooltimes 를 이용하던 아니면 다른 메모리영역을 추가하던 해서 스킬이 진짜 그 캐릭터가 쓸수 있는 스킬인지 체크하는 로직필요
+
+    const SkillData* skilldata = DataManager::GetInstance().GetSkill(pkt.skill_id());
+    int64 now = GetTickCount64();
+    int64 lastUsed = player->_skillCooltimes[skilldata->id];
+    int64 coolTime = skilldata->coolTime * 1000; // 초 단위를 ms로 변환
+
+    if (now - lastUsed < coolTime) {
+        // 아직 쿨타임 중! 요청 무시 혹은 에러 패킷 전송
+        return;
+    }
+
+    // 검증 통과 후 사용 시점 갱신
+    player->_skillCooltimes[skilldata->id] = now;
+
+    // 3. 코스트(마나 등) 체크 및 차감
+    // (Player 클래스에 GetStat(), SetStat() 혹은 직접 접근 가능한 멤버가 있다고 가정)
+    if (skilldata->costType == CostType::Mana) {
+        int32 currentMp = player->GetCurrentMp(); // 플레이어 현재 MP 가져오기
+        int32 requiredMp = skilldata->cost; // 예시: 스킬 데이터에 코스트 수치를 추가하면 더 좋습니다.
+
+        
+        if (player->UseMp(currentMp - requiredMp) == false) 
+        {
+            //마나 부족, 본인에게 메시지등을 보낼수 있을것임
+            return;
+        }
+
+        //본인에게 MP 변경 패킷 전송 
+        Protocol::SC_CHANGE_MP mp_Change_pkt;
+        mp_Change_pkt.set_object_id ( player->GetObjectId());
+        mp_Change_pkt.set_current_mp(player->GetCurrentMp());
+        auto sendBuffer = ServerUtils::MakeSendBuffer(mp_Change_pkt, Protocol::PKT_SC_CHANGE_MP);
+
+        if (auto s = player->session.lock())
+            s->Send(sendBuffer);
+    }
+
+    // 4. 검증 통과 후 사용 시점 갱신
+    player->_skillCooltimes[skilldata->id] = now;
+
+    // 5. 스킬 타입별 피격 판정
+    bool isHit = false;
+
+    switch (skilldata->skillType)
+    {
+    case SkillType::Melee:
+    {
+        // 클라이언트가 보낸 target_id로 대상 오브젝트 찾기
+        GameObjectPtr target = (_objects.find(pkt.target().target_object_id()) != _objects.end()) ? _objects[pkt.target().target_object_id()] : nullptr;
+
+        if (target && target->GetObjectId() != player->GetObjectId()) {
+            // 거리 계산 (Vector3::Distance)
+            float dist = Vector3::Distance(Vector3::PosInfoToVector3(player->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
+
+            // 사거리 검증 (약간의 마진 부여: 0.5f)
+            if (dist <= skilldata->range + 0.5f) {
+                isHit = true;
+
+                // 데미지 계산 및 적용
+                int32 damage = skilldata->damage + player->GetAttack(); // 스킬데미지 + 캐릭터공격력 수정 가능
+                target->OnAttacked(player, damage); // 대상의 HP를 깎는 함수 호출
+
+                std::cout << "[Melee Hit] " << player->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
+            }
+        }
+    }
+    break;
+
+    case SkillType::Projectile:
+        // 투사체는 즉시 피격이 아니라 Projectile 객체를 생성하여 Update에서 처리
+        // SpawnProjectile(player, skilldata, pkt.target_pos());
+        break;
+
+    case SkillType::Dash:
+        // 이동 가능 지역인지 확인 후 좌표 강제 갱신
+        break;
+    }
+
+    // 6. 결과 브로드캐스트 (주변 모두에게 애니메이션 알림)
+    Protocol::SC_SKILL resPkt;
+    resPkt.set_object_id(player->GetObjectId());
+    resPkt.set_skill_id(skilldata->id);
+    
+    if (pkt.has_target())
+    {
+        // mutable_target()을 통해 TargetobjectInfo 객체의 포인터를 얻어 값 설정
+        resPkt.mutable_target()->set_target_object_id(pkt.target().target_object_id());
+    }
+    else if (pkt.has_dest_pos())
+    {
+        resPkt.mutable_dest_pos()->CopyFrom(pkt.dest_pos());
+    }
+
+    auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_SKILL);
+    Broadcast(sendBuffer);
+}
+
+//위치 되감기
 void Room::SendMoveResync(PlayerPtr player)
 {
     // 1. 서버에 저장된 '이전' 좌표를 담은 패킷 생성
@@ -236,3 +337,5 @@ void Room::SendMoveResync(PlayerPtr player)
         s->Send(sendBuffer);
 
 }
+
+

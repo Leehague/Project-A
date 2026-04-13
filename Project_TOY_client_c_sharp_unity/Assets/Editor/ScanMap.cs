@@ -66,16 +66,19 @@ public class MapExporter : EditorWindow
 
                 if (Physics.Raycast(rayStart, Vector3.down, out hit, 200.0f, obstacleMask))
                 {
-                    sb.Append("1 "); // 벽이 있음 (갈 수 없음)
+                    // 벽인 경우 (높이는 충돌 지점의 Y값)
+                    sb.Append($"1|{hit.point.y:F2} ");
                 }
                 // 2. Ground 레이어에 부딪히는지 확인 (바닥 체크)
                 else if (Physics.Raycast(rayStart, Vector3.down, out hit, 200.0f, groundMask))
                 {
-                    sb.Append("0 "); // 바닥임 (갈 수 있음)
+                    // 갈 수 있는 바닥인 경우
+                    sb.Append($"0|{hit.point.y:F2} ");
                 }
                 else
                 {
-                    sb.Append("1 "); // 낭떠러지나 허공 (갈 수 없음)
+                    // 낭떠러지
+                    sb.Append($"1|-100.0 ");
                 }
             }
             sb.AppendLine();

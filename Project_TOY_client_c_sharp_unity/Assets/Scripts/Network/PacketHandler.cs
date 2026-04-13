@@ -117,4 +117,16 @@ public class PacketHandler
             Managers.objectManager.Remove(id); // 오브젝트 매니저에 제거 요청
         }
     }
+    public static void Handle_SC_SKILL(PacketSession session, IMessage packet)
+    { 
+        //스킬 종류에 따라 분기해야할듯?
+    }
+    public static void Handle_SC_CHANGE_HP(PacketSession session, IMessage packet) 
+    { 
+        //바뀐 HP UI에 정보 전달
+    }
+    public static void Handle_SC_CHANGE_MP(PacketSession session, IMessage packet) 
+    {
+        //바뀐 MP UI에 정보 전달
+    }
 }
