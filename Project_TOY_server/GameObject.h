@@ -21,11 +21,7 @@ public:
 	
 	GameObject(int32 objectId ) : _objectId(objectId), _roomId(0), _type(GameObjectType::None){ _pos.set_object_id(static_cast<uint64_t>(objectId)); }
 	GameObject(int32 objectId,  GameObjectType type) : _objectId(objectId), _roomId(0), _type(type) { _pos.set_object_id(static_cast<uint64_t>(objectId)); }
-	GameObject(int32 objectId, GameObjectType type , int32 templteId) : _objectId(objectId), _roomId(0), _type(type) 
-	{ 
-		_pos.set_object_id(static_cast<uint64_t>(objectId)); 
-		Init(templteId);
-	}
+	
 
 	
 	int32 GetObjectId() { return _objectId; }
@@ -41,7 +37,7 @@ public:
 	}
 	Protocol::PosInfo Getpos() { return _pos; }
 
-	void SetTempleteId_In_pos(uint64 tempeteId) { _pos.set_templeteid(tempeteId); }
+	//void SetTempleteId_In_pos(uint64 tempeteId) { _pos.set_templeteid(tempeteId); } 이제는 posInfo에 templteId 가 없음.
 
 	void SetroomId(int32 roomid) { _roomId = roomid; }
 	int32 GetroomId() { return _roomId; }
@@ -82,6 +78,9 @@ public:
 
 	float GetSpeed() { return _speed; }
 	const StatData* GetBaseStatData() { return _basestatData; }
+	int32 GetTempleteId() {
+		return _basestatData->templateId;
+	}
 	int32 GetAttack() { return _attack; }
 	const std::string& GetName() { return  _name; }
 	int32 GetCurrentHp() { return CurrentHp; }

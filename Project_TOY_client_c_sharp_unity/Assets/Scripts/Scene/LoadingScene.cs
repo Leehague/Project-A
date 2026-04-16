@@ -11,7 +11,7 @@ public class LoadingScene : BaseScene
     protected override void Init()
     {
         base.Init(); // 부모의 공통 초기화 수행
-        SceneType = SceneType.Loading;
+        SceneType = Define.SceneType.Loading;
 
          StartCoroutine(LoadSceneAsync());
     }
@@ -24,7 +24,7 @@ public class LoadingScene : BaseScene
     IEnumerator LoadSceneAsync()
     {
         
-        _asyncOp = Managers.sceneManagerEx.LoadSceneAsync(SceneType.Game);
+        _asyncOp = Managers.sceneManagerEx.LoadSceneAsync(Define.SceneType.Game);
         
         _asyncOp.allowSceneActivation = false;
 

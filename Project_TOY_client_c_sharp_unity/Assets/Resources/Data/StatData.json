@@ -3,8 +3,8 @@
     {
       "id": 1,
       "name": "Knight",
-      "hp": 100,
-      "mp" : 100,
+      "MaxHp": 100,
+      "MaxMp" : 100,
       "attack": 10,
       "speed" : 10,
       "modelPath": "Knight"
@@ -12,8 +12,8 @@
     {
       "id": 2,
       "name": "UnDead",
-      "hp": 80,
-      "mp": 120,
+      "MaxHp": 80,
+      "MaxMp": 120,
       "attack": 15,
       "speed": 10,
       "modelPath": "UnDead"

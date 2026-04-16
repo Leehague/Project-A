@@ -6,7 +6,7 @@ public class GameScene : BaseScene
     protected override void Init()
     {
         base.Init(); // 부모의 공통 초기화 수행
-        SceneType = SceneType.Game;
+        SceneType = Define.SceneType.Game;
 
         Debug.Log("Game Scene INIT");
 

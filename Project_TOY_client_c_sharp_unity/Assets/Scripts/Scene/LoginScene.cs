@@ -10,7 +10,7 @@ public class LoginScene : BaseScene
     protected override void Init()
     {
         base.Init(); // 부모의 공통 초기화 수행
-        SceneType = SceneType.Login;
+        SceneType = Define.SceneType.Login;
 
         //StartCoroutine(CoLogin()); // send를 두번 하는 문제를 유발해서 그냥 connected 가 packetsession에서 되는 시점으로 로직 이동
     }

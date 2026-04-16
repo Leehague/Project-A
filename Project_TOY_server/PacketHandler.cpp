@@ -25,7 +25,7 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 
     resPkt.set_success(true);
     
-    //TODO : DB와 통신해서 템플릿 아이디 등 정보 가져오기 그래서 create할때 동적으로 연결
+    //TODO : [DB 필요]DB와 통신해서 템플릿 아이디 등 정보 가져오기 그래서 create할때 동적으로 연결
     //수정 :: GObjcetManager.Create 내부에서 Room::Enter를 콜 하던것을 제거 (템플릿 Id 1로 하드코딩)
     GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session,1);
 

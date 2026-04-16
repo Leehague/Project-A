@@ -26,14 +26,14 @@ enum PacketId {
 
 
 message CS_LOGIN {
-    uint64 user_id = 1;
+    int32 user_id = 1;
     string password = 2;
 }
 
 
 message SC_LOGIN_OK {
     bool success = 1;
-    uint64 player_id = 2; 
+    int32 player_id = 2; 
     
 }
 
@@ -44,40 +44,39 @@ message CS_CHAT {
 
 
 message SC_CHAT_BROADCAST {
-    uint64 player_id = 1;
+    int32 player_id = 1;
     string msg = 2;
 }
 
 
 message SC_WHISPER {
-    uint64 fromplayer_id = 1;   
+    int32 fromplayer_id = 1;   
     string msg = 2;      
 }
 
 
 message CS_WHISPER  
 {
-    uint64 targetplayer_id = 1;
+    int32 targetplayer_id = 1;
     string msg = 2;
 }
 
 message PosInfo {
-  uint64 object_id = 1; // 이동하는 대상의 ID
+  int32 object_id = 1; // 이동하는 대상의 ID
   float x = 2;
   float y = 3;
   float z = 4;
   float yaw = 5;       // 바라보는 방향 (회전)
-  uint64 templeteId = 6;
-  uint64 state = 7;
+  int32 state = 6;
 }
 
 message StatInfo {
-    uint64 object_id = 1;
+    int32 object_id = 1;
     string name = 2;
-    uint64 hp = 3;
-    uint64 attack = 4;
-    uint64 speed = 5;
-    uint64 level = 6;
+    int32 hp = 3;
+    int32 attack = 4;
+    int32 speed = 5;
+    int32 level = 6;
 }
 message CS_MOVING {
     PosInfo pos_info = 1;
@@ -94,19 +93,27 @@ message CS_ENTER_GAME {
 
 message SC_ENTER_GAME {
     PosInfo pos_info = 1;
-}
-
-message SC_PLAYER_SPAWN {
-    repeated PosInfo players_pos_info = 1;
+    int32 templeteId = 2;
     
 }
 
+message SC_PLAYER_SPAWN {
+    repeated SpawnInfo players_spawn_info = 1;
+    
+}
+
+message SpawnInfo
+{
+    PosInfo spawnposinfo = 1;
+    int32 templeteId = 2;
+}
+
 message CS_GAME_READY {
-    uint64 player_id = 1;
+    int32 player_id = 1;
 }
 
 message SC_DESPAWN {
-    repeated uint64 player_id = 1;
+    repeated int32 player_id = 1;
 }
 
 message CS_SKILL {
@@ -120,7 +127,7 @@ message CS_SKILL {
 }
 
 message SC_SKILL {
-  uint64 object_id = 1;
+  int32 object_id = 1;
   int32 skill_id = 2;
   oneof extra_info {
     TargetobjectInfo target = 3;      // 근접/타겟팅용 (대상 ID)
@@ -129,15 +136,15 @@ message SC_SKILL {
 }
 
 message SC_CHANGE_HP {
-  uint64 object_id = 1;
+  int32 object_id = 1;
   int32 current_hp = 2;
   int32 damage = 3;
-  uint64 attacker_id = 4;
+  int32 attacker_id = 4;
 }
 
 
 message TargetobjectInfo {
-    uint64 target_object_id = 1;
+    int32 target_object_id = 1;
 }
 
 message TargetPosInfo{
@@ -147,7 +154,7 @@ message TargetPosInfo{
 }
 
 message SC_CHANGE_MP {
-  uint64 object_id = 1;
+  int32 object_id = 1;
   int32 current_mp = 2;
   
 }

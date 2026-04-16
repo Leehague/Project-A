@@ -12,19 +12,19 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
     GameObjectPtr go = nullptr;
 
     if (type == GameObjectType::Player) {
-        PlayerPtr player = std::make_shared<Player>(objcetId, session, templateId);
-        
+        PlayerPtr player = std::make_shared<Player>(objcetId, session);
+        player->Init(templateId);
         go = std::static_pointer_cast<GameObject>(player);
     }
     else 
     {
         go = std::make_shared<GameObject>(objcetId, type);
+        go->Init(templateId);
     }
 
     _objects[objcetId] = go;
 
-    //Temp , 실제로는 DB등에서 알맞은 템플릿 ID (즉 만들고자 하는 GameObject 의 TempleteId 를 알아야 함)
-    go->SetTempleteId_In_pos(1);
+    
     return go;
 }
 

@@ -17,7 +17,7 @@ public class PacketHandler
         if (pkt.Success)
         {
 
-            Managers.sceneManagerEx.LoadScene(SceneType.Loading);
+            Managers.sceneManagerEx.LoadScene(Define.SceneType.Loading);
         }
         else 
         {
@@ -100,7 +100,7 @@ public class PacketHandler
         Managers.objectManager.MyplayerPosInfo=enterGamePkt.PosInfo;
 
         //내 캐릭터 스폰
-        Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo,true);
+        Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo, enterGamePkt.TempleteId, true);
 
         //CS_GAME_READY 전송 로직
         Protocol.CS_GAME_READY _CS_GAME_READY = new Protocol.CS_GAME_READY();
@@ -112,14 +112,33 @@ public class PacketHandler
     {
         SC_DESPAWN despawnPkt = packet as SC_DESPAWN;
 
-        foreach (ulong id in despawnPkt.PlayerId)
+        foreach (int id in despawnPkt.PlayerId)
         {
             Managers.objectManager.Remove(id); // 오브젝트 매니저에 제거 요청
         }
     }
     public static void Handle_SC_SKILL(PacketSession session, IMessage packet)
-    { 
+    {
+        SC_SKILL skillPkt = packet as SC_SKILL;
         //스킬 종류에 따라 분기해야할듯?
+        Debug.Log($"skill used :{skillPkt.SkillId}");
+        Skill skilldata=Managers.dataManager.SkillDict[skillPkt.SkillId]; //여기서 skilldata 는 수정하면 안됨.
+        GameObject Caster=Managers.objectManager.Find(skillPkt.ObjectId); //스킬을 쓴 사람 (Caster)
+        CreatureController cc = Caster.GetComponent<CreatureController>();
+
+        switch ((skillType)skilldata.skillTypeId) //애니매이션 틀고 UI 업데이트하고 
+        {
+            case skillType.Common:
+                break;
+            case skillType.Melee:
+                cc.State = Define.CreatureState.Skill;
+                break;
+            case skillType.Projectile:
+                break;
+            case skillType.Dash:
+                break;
+        }
+
     }
     public static void Handle_SC_CHANGE_HP(PacketSession session, IMessage packet) 
     { 

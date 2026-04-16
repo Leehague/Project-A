@@ -39,8 +39,8 @@ private:
         for (auto& item : data["stats"]) {
             StatData stat;
             stat.templateId = item["id"]; //json 파일에서의 id는 templateId 를 말하는 것임
-            stat.baseHp = item["hp"];
-            stat.baseMp = item["mp"];
+            stat.baseHp = item["MaxHp"];
+            stat.baseMp = item["MaxMp"];
             stat.baseAttack = item["attack"];
             stat.speed = item["speed"];
             stat.name = item["name"];
@@ -84,17 +84,49 @@ private:
         if (!f.is_open()) return;
 
         json data = json::parse(f);
+        //1. 스킬 타입별로 정리 , 현재로써는 '가이드 라인' 의 역할
+        std::map<int32, std::vector<std::string>> infoMap;
+        std::vector<std::string> commonInfo;
+        for (auto& st : data["skillType"]) {
+            int32 typeId = st["TypeId"];
+            std::vector<std::string> info = st["Infolist"].get<std::vector<std::string>>();
+
+            if (typeId == 0) commonInfo = info; // 0번은 공통
+            else infoMap[typeId] = info;
+        }
+
+        // 2. 실제 스킬 데이터 로드
         for (auto& item : data["skills"]) {
             SkillData skill;
+
+            // JSON 객체 형태이므로 필드명을 직접 참조하여 안전하게 로드
+            // (Infolist에 있는 필드들을 순회하며 로드하는 방식도 가능하지만, 
+            //  구조체 멤버가 고정되어 있으므로 아래 방식이 더 직관적입니다.)
+
+            // [공통 필드]
             skill.id = item["id"];
-            skill.name = item["name"];
-            skill.skillType = static_cast<SkillType>(item["skillType"].get<int>());
-            skill.costType = static_cast<CostType>(item["CostType"].get<int>());
-            skill.damage = item["damage"];
-            skill.range = item["range"];
+            skill.name = item["name"].get<std::string>();
+            skill.skillType = static_cast<SkillType>(item["skillTypeId"].get<int>());
             skill.coolTime = item["coolTime"];
-            skill.animName = item["animName"];
-            skill.cost = item["cost"];
+            skill.costType = static_cast<CostType>(item["CostTypeId"].get<int>());
+            skill.animName = item["animName"].get<std::string>();
+
+            // [타입별 선택적 필드] - item.contains() 또는 item.value() 사용
+            if (item.contains("damage")) skill.damage = item["damage"];
+            if (item.contains("range")) skill.range = item["range"];
+
+            // Projectile 전용
+            if (skill.skillType == SkillType::Projectile) {
+                if (item.contains("projectileSpeed")) skill.projectileSpeed = item["projectileSpeed"];
+                if (item.contains("projectileId")) skill.projectileId = item["projectileId"];
+            }
+
+            // Dash 전용
+            if (skill.skillType == SkillType::Dash) {
+                if (item.contains("dashDistance")) skill.dashDistance = item["dashDistance"];
+                if (item.contains("dashSpeed")) skill.dashSpeed = item["dashSpeed"];
+            }
+
             _skillTable[skill.id] = skill;
         }
     }

@@ -10,7 +10,7 @@ public class ObjectManager
     public GameObject MyPlayer { get; set; }
     public PosInfo MyplayerPosInfo { get; set; }
     //서버에서 전송해준 내 캐릭터의 objectId
-    public ulong Myplayer_playerId { get; set; }  
+    public int Myplayer_playerId { get; set; }  
 
     private List<Protocol.SC_PLAYER_SPAWN> _spawnQueue = new List<Protocol.SC_PLAYER_SPAWN>();
     // Game 씬이 준비되었는지 나타내는 플래그
@@ -18,9 +18,9 @@ public class ObjectManager
 
 
     // 나머지 객체들은 ID로 관리합니다. 여기서 ID는 objectId로 서버에서 관리하는 번호입니다.
-    Dictionary<ulong, GameObject> _objects = new Dictionary<ulong, GameObject>();
+    Dictionary<int, GameObject> _objects = new Dictionary<int, GameObject>();
 
-    public void Add(ulong objectid, GameObject go, bool isMyPlayer = false)
+    public void Add(int objectid, GameObject go, bool isMyPlayer = false)
     {
         if (isMyPlayer)
         {
@@ -36,7 +36,7 @@ public class ObjectManager
             _objects.Add(objectid, go);
     }
 
-    public void Remove(ulong objectid)
+    public void Remove(int objectid)
     {
         if (objectid == 0) return; // 예외 처리
 
@@ -51,7 +51,7 @@ public class ObjectManager
         }
     }
 
-    public GameObject Find(ulong id)
+    public GameObject Find(int id)
     {
         _objects.TryGetValue(id, out GameObject go);
         return go;
@@ -68,13 +68,13 @@ public class ObjectManager
     }
 
     // 생성 및 등록을 한 번에 처리하는 함수
-    public GameObject SpawnPlayer(PosInfo postion , bool isMyPlayer = false)
+    public GameObject SpawnPlayer(PosInfo postion, int templeteId , bool isMyPlayer = false)
     {
-        ulong templateId = postion.TempleteId;
-        ulong objectId = postion.ObjectId;
+        int _templeteId = templeteId;
+        int objectId = postion.ObjectId;
 
         // 데이터 매니저에서 정보 추출 ( Knight, Mage 등 )
-        if (Managers.dataManager.StatDict.TryGetValue(templateId, out Stat statInfo) == false)
+        if (Managers.dataManager.StatDict.TryGetValue(_templeteId, out Stat statInfo) == false)
         {
             Debug.Log("Spawn Fail : fail to take from stat info ");
             return null; 
@@ -108,15 +108,7 @@ public class ObjectManager
 
     public void HandleSpawn(Protocol.SC_PLAYER_SPAWN packet)
     {
-        //// 아직 게임 씬이 아니라면 큐에 보관만 하고 리턴
-        //if (Managers.sceneManagerEx.CurrentScene.SceneType !=SceneType.Game)
-        //{
-        //    _spawnQueue.Add(packet);
-        //    Debug.Log("Scene not ready. Spawn packet queued."); 
-        //    return;
-        //}
-
-        // 씬이 준비되었다면 즉시 생성
+        //pooling 시스템 도입을 고민해야 할 수도?
         SpawnFromPacket(packet);
     }
 
@@ -124,13 +116,13 @@ public class ObjectManager
 
     private void SpawnFromPacket(Protocol.SC_PLAYER_SPAWN packet)
     {
-        foreach (var pos in packet.PlayersPosInfo)
+        foreach (var spawninfo in packet.PlayersSpawnInfo)
         {
-            bool isMyPlayer = (pos.ObjectId == Myplayer_playerId);
+            bool isMyPlayer = (spawninfo.Spawnposinfo.ObjectId == Myplayer_playerId);
             if (isMyPlayer) { continue; }
 
-            Debug.Log(pos.ObjectId);
-            SpawnPlayer(pos);
+            Debug.Log(spawninfo.Spawnposinfo.ObjectId);
+            SpawnPlayer(spawninfo.Spawnposinfo, spawninfo.TempleteId);
         }
     }
 }

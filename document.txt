@@ -337,4 +337,29 @@ TODO:
 2, 클라 패킷 핸들러 작성
 3. 패킷 아키텍쳐 리펙토링 (정확히는 PosInfo 에 TempleteId가 있는데 이걸어떻게 해야 할지 결정해야됨. 나아가 서버에서 GameObject와 Player가 TempleteId를 어떻게 다루어야 할지도)
 
+2026/04/14
 
+posInfo 에서 templteId 제거 , SC EnterGame 에서 별개로 전송
+지금은 CS Login 핸들러 함수에서 임의로 1로 하드코딩해서 TempleteId 를 설정해서 플레이어 오브젝트를 생성하고 있지만 DB와 통신해서 결정해야함
+
+-SkillData.Json이 제대로 작성되어 있나 검사하는 코드 : 요소 수를 비교한다거나 skills 와 skillType을 비교해서 skills의 각 스킬은 스킬 타입의 common 의 리스트 수 + 각 타입 리스트수 가 인자수 와 같은지 검사한다거나 
+
+-TODO:**데이터 주도 설계(Data-Driven Design)** 동적으로 스킬 시스템(skill Data)에 적용,(보류)=> 차후에 코드 제너레이터를 SkillData.json 을 인풋으로 받아 DataContents.h의 sturct을 정의하도록 설계할것
+
+
+2026/04/15
+
+-struct SkillData 에 변수 추가
+-클라 : [스킬 인풋] -> [CS Skill 전송] ->[서버측 처리후 브로드 캐스팅] ->[SC skill 수신] 까지 완료
+
+TODO:
+1. 클라 측 DataManager의 로드에 SkillData 추가 (완)
+2. [SC skill 수신] 이후 로직 클라에 추가 (절반)
+
+
+2026/04/16
+
+-[SC skill 수신] =>스킬 모션(TODO: 애니매이션 동기화)
+-UI 시스템 도입, HP MP Bar 추가
+
+TODO : 피격 판정 및 데미지 계산 판정 => 클라 수신 UI update (테스트 결과 원할하게 안됨 원인 파악후 조치 필요)

@@ -40,6 +40,9 @@ void Room::Enter(GameObjectPtr go)
         }
         Protocol::SC_ENTER_GAME enterPkt;
         *enterPkt.mutable_pos_info() = player->Getpos(); // 서버가 결정한 좌표
+
+        enterPkt.set_templeteid(go->GetTempleteId()); //핸들러에서 결정된 템플릿 아이디
+        
         auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
         player->session.lock()->Send(sendBuffer);
     }
@@ -92,15 +95,17 @@ void Room::SpawnBroadcast(PlayerPtr player)
     //(player 기준)타인들에게 나를 알림 (SC_PLAYER_SPAWN 브로드캐스트)
     {
         Protocol::SC_PLAYER_SPAWN spawnPkt;
+              
+        Protocol::SpawnInfo* spawnInfo = spawnPkt.add_players_spawn_info();
 
-        // With this code:
-        auto* obj = spawnPkt.add_players_pos_info();
-        obj->CopyFrom(player->Getpos()); // 내 정보 추가
+        spawnInfo->mutable_spawnposinfo()->CopyFrom(player->Getpos());
+        spawnInfo->set_templeteid(player->GetTempleteId());
 
 
-        if (spawnPkt.players_pos_info_size() > 0) // 데이터가 있을 때만 전송
+        if (spawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
         {
-            auto sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
+            
+            SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
 
             // 나를 제외한 모두에게 전송 (기존에 만든 Broadcast 함수 활용)
             Broadcast(sendBuffer, player->GetObjectId());
@@ -116,22 +121,18 @@ void Room::SpawnBroadcast(PlayerPtr player)
         for (auto& pair : _objects)
         {
             
-            // 1. 새로운 PosInfo 슬롯을 리스트에 추가하고 그 주소를 가져옴
-            Protocol::PosInfo* info = spawnPkt.add_players_pos_info();
+            Protocol::SpawnInfo* spawnInfo = spawnPkt.add_players_spawn_info();
                        
             // 2. 해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
-            info->CopyFrom(pair.second->Getpos());
-
+            spawnInfo->mutable_spawnposinfo()->CopyFrom(pair.second->Getpos());
+            spawnInfo->set_templeteid(pair.second->GetTempleteId());
             
-            /*std::cout << "other objectId: " << pair.second->Getpos().object_id()
-                <<"templeteId: "<< pair.second->Getpos().templeteid() << std::endl;*/
 
 
         }
 
         
-
-        if (spawnPkt.players_pos_info_size() > 0) // 데이터가 있을 때만 전송
+        if (spawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
         {
             // 패킷 시리얼라이즈 및 전송
             auto sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);

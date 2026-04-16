@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 public abstract class BaseScene : MonoBehaviour
 {
     // 씬의 타입을 구분하기 위함 (Login, Game 등)
-    public SceneType SceneType { get; protected set; } = SceneType.Unknown;
+    public Define.SceneType SceneType { get; protected set; } = Define.SceneType.Unknown;
 
     protected virtual void Awake()
     {

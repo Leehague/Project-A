@@ -255,7 +255,7 @@ public class PacketSession
         Managers.networkManager.Send(loginPacket);
 
         //로그인 씬 로드
-        Managers.sceneManagerEx.LoadScene(SceneType.Login);
+        Managers.sceneManagerEx.LoadScene(Define.SceneType.Login);
 
 
     }

@@ -3,37 +3,75 @@
     {
       "id": 101,
       "name": "일반 공격",
-      "skillType": "Melee",
+      "skillTypeId": 1,
+      "coolTime": 0.5,
+      "CostTypeId": 0,
+      "cost": 0,
       "damage": 50,
       "range": 2.0,
-      "coolTime": 0.5,
-      "animName": "Attack_Melee_01",
-      "CostType": "None",
-      "cost" : 0
+      "animName": "Attack_Melee_01"
     },
     {
       "id": 201,
       "name": "화염구",
-      "skillType": "Projectile",
+      "skillTypeId": 2,
+      "coolTime": 2.0,
+      "CostTypeId": 1,
+      "cost": 10,
       "damage": 80,
       "range": 15.0,
       "projectileSpeed": 10.0,
       "projectileId": 5001,
-      "coolTime": 2.0,
-      "animName": "Cast_Fireball",
-      "CostType": "Mana",
-      "cost": 10
+      "animName": "Cast_Fireball"
     },
     {
       "id": 301,
       "name": "돌진",
-      "skillType": "Dash",
+      "skillTypeId": 3,
       "dashDistance": 5.0,
       "dashSpeed": 15.0,
       "coolTime": 5.0,
       "animName": "Dash_Start",
-      "CostType": "Mana",
+      "CostTypeId": 1,
       "cost": 10
+    }
+  ],
+
+  "skillType": [
+    {
+      "Type": "Common",
+      "TypeId": 0,
+      "Infolist": [ "id", "name", "skillTypeId", "coolTime", "CostTypeId", "cost", "animName" ]
+    },
+    {
+      "Type": "Melee",
+      "TypeId": 1,
+      "Infolist": [ "range", "damage" ]
+    },
+    {
+      "Type": "Projectile",
+      "TypeId": 2,
+      "Infolist": [ "range", "damage", "projectileSpeed", "projectileId" ]
+    },
+    {
+      "skillType": "Dash",
+      "TypeId": 3,
+      "Infolist": [ "dashDistance", "dashSpeed" ]
+    }
+  ],
+  "CostType": [
+
+    {
+      "costType": "None",
+      "costTypeId": 0
+    },
+    {
+      "costType": "Mana",
+      "costTypeId": 1
+    },
+    {
+      "costType": "Hp",
+      "costTypeId": 2
     }
   ]
 }

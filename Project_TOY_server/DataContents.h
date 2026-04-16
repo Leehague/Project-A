@@ -27,7 +27,7 @@ struct MapData
 };
 
 enum class SkillType {
-    None = 0,
+    Common = 0,     // 공통타입, 가장 기본타입
     Melee = 1,      // 근접
     Projectile = 2, // 투사체
     Dash = 3        // 이동기
@@ -50,4 +50,12 @@ struct SkillData {
     float coolTime;
     std::string animName;
     int32 cost;
+
+    //Projectile
+    float projectileSpeed;
+    int32 projectileId;
+    
+    //Dash
+    float dashDistance;
+    float dashSpeed;
 };

@@ -24,12 +24,13 @@ public class Managers : MonoBehaviour
     private ObjectManager _objectManager = new ObjectManager();
     private DataManager _dataManager = new DataManager();
     private SceneManagerEx SceneManagerEx = new SceneManagerEx();
-
+    private UIManager UIManager = new UIManager();
 
     //외부 접근용 property
     public static ObjectManager objectManager => Instance._objectManager;
     public static DataManager dataManager => Instance._dataManager;
     public static SceneManagerEx sceneManagerEx => Instance.SceneManagerEx;
+    public static UIManager uiManager => Instance.UIManager;
     #endregion
 
     void Start()
