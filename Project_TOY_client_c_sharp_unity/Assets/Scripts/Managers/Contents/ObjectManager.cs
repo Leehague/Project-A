@@ -95,7 +95,10 @@ public class ObjectManager
 
         //컨트롤러 초기화
         PlayerController pc = go.GetOrAddComponent<PlayerController>();
-        pc.stat = statInfo;
+        pc.stat = new Stat(statInfo);
+
+        pc.stat.hp = pc.stat.MaxHp; //스폰시 풀피로 
+
         pc.IsMyPlayer = isMyPlayer;
         // 핵심: 생성 직후에 컨트롤러의 내부 목적지 좌표도 동기화
         pc.SyncPos(spawnPos);

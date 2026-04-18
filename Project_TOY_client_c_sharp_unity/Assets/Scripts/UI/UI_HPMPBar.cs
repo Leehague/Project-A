@@ -53,17 +53,18 @@ public class UI_HPMPBar : UI_Scene
 
     void UpdateHP(int hp)
     {
-        if (_stat == null || _stat.hp == 0) return;
-
-        float ratio = (float)hp / _stat.hp;
+        
+        if (_stat == null ) return;
+        
+        float ratio = (float)hp / _stat.MaxHp;
         Get<Slider>((int)Sliders.HPBar).value = ratio;
     }
 
     void UpdateMp(int mp) 
     {
-        if (_stat == null || _stat.mp == 0) return;
-
-        float ratio = (float)mp / _stat.mp;
+        if (_stat == null ) return;
+        
+        float ratio = (float)mp / _stat.MaxMp;
         Get<Slider>((int)Sliders.MPBar).value = ratio;
     }
 }

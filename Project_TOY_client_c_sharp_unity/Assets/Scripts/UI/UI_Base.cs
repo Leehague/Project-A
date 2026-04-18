@@ -42,8 +42,5 @@ public abstract class UI_Base : MonoBehaviour
     protected Button GetButton(int idx) => Get<Button>(idx);
     protected Image GetImage(int idx) => Get<Image>(idx);
 
-    internal static void BindEvent(GameObject go, Action<PointerEventData> action, Define.UIEvent type)
-    {
-        throw new NotImplementedException();
-    }
+    
 }

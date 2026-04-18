@@ -142,10 +142,18 @@ public class PacketHandler
     }
     public static void Handle_SC_CHANGE_HP(PacketSession session, IMessage packet) 
     { 
-        //바뀐 HP UI에 정보 전달
+        SC_CHANGE_HP sc_change_hp_pkt= packet as SC_CHANGE_HP;
+        GameObject HPChanger =Managers.objectManager.Find(sc_change_hp_pkt.ObjectId);
+        PlayerController HPChanger_pc = HPChanger.GetComponent<PlayerController>();
+        HPChanger_pc.stat.hp = sc_change_hp_pkt.CurrentHp; //stat class에 등록된 UI의 함수들로 자동 처리, UI를 직접 호출할 필요 없음
+
+        //attacker_id 와 damage 를 이용한 UI 이벤트 발생등 코드 추가 가능
     }
     public static void Handle_SC_CHANGE_MP(PacketSession session, IMessage packet) 
     {
-        //바뀐 MP UI에 정보 전달
+        SC_CHANGE_MP sc_change_mp_pkt= packet as SC_CHANGE_MP;
+        GameObject MpChanger = Managers.objectManager.Find(sc_change_mp_pkt.ObjectId);
+        PlayerController MpChanger_pc = MpChanger.GetComponent<PlayerController>();
+        MpChanger_pc.stat.mp = sc_change_mp_pkt.CurrentMp;
     }
 }

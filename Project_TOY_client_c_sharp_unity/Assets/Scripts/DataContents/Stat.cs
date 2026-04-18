@@ -5,6 +5,17 @@ using System.Collections.Generic;
 [Serializable]
 public class Stat
 {
+    public Stat(Stat other) 
+    { 
+        this.id = other.id;
+        this.name = other.name;
+        this.MaxHp = other.MaxHp;
+        this.MaxMp = other.MaxMp;
+
+        this.attack = other.attack;
+        this.speed = other.speed;
+        this.modelPath = other.modelPath;
+    }
     public int id;
     public string name;
     public int MaxHp;

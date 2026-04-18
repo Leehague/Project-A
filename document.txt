@@ -363,3 +363,10 @@ TODO:
 -UI 시스템 도입, HP MP Bar 추가
 
 TODO : 피격 판정 및 데미지 계산 판정 => 클라 수신 UI update (테스트 결과 원할하게 안됨 원인 파악후 조치 필요)
+
+2026/04/18
+
+-Melee (일반공격) 스킬 기획 변화 , 캐릭터 주변 범위 공격
+-서버에서 판정, 현재는 모든 오브젝트들을 순회하면서 범위 안에 있는지 검사( 그리드 시스템 도입 필요)
+-클라에서 ObjectManager 의 SpawnPlayer 에서 pc.stat = statInfo 로 'refrence copy'를 하고 있었음. (즉 포인터가 전달 되고 있었음) 그래서 모든 플레이어의 stat이 동일한 메모리에서 관리되고 있었음. 이로 인한 UI버그 발생
+- pc.stat = new Stat(statInfo); 으로 수정

@@ -273,24 +273,41 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
     {
     case SkillType::Melee:
     {
-        // 클라이언트가 보낸 target_id로 대상 오브젝트 찾기
-        GameObjectPtr target = (_objects.find(pkt.target().target_object_id()) != _objects.end()) ? _objects[pkt.target().target_object_id()] : nullptr;
+        //distance 체크 , 그리드 방식으로 수정예정
+        for (auto obj : _objects) 
+        {
+            GameObjectPtr target = obj.second;
+            if (target && target->GetObjectId() != player->GetObjectId()) {
+                // 거리 계산 (Vector3::Distance)
+                float dist = Vector3::Distance(Vector3::PosInfoToVector3(player->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
 
-        if (target && target->GetObjectId() != player->GetObjectId()) {
-            // 거리 계산 (Vector3::Distance)
-            float dist = Vector3::Distance(Vector3::PosInfoToVector3(player->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
 
-            // 사거리 검증 (약간의 마진 부여: 0.5f)
-            if (dist <= skilldata->range + 0.5f) {
-                isHit = true;
 
-                // 데미지 계산 및 적용
-                int32 damage = skilldata->damage + player->GetAttack(); // 스킬데미지 + 캐릭터공격력 수정 가능
-                target->OnAttacked(player, damage); // 대상의 HP를 깎는 함수 호출
+                // 사거리 검증 (약간의 마진 부여: 0.5f)
+                if (dist <= skilldata->range + 0.5f) {
+                    isHit = true;
 
-                std::cout << "[Melee Hit] " << player->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
+                    // 데미지 계산 및 적용
+                    int32 damage = skilldata->damage + player->GetAttack(); // 스킬데미지 + 캐릭터공격력 수정 가능
+                    target->OnAttacked(player, damage); // 대상의 HP를 깎는 함수 호출
+
+                    //Hp 변화 방송
+                    Protocol::SC_CHANGE_HP hp_changed_pkt;
+                    hp_changed_pkt.set_object_id(target->GetObjectId());
+                    hp_changed_pkt.set_current_hp(target->GetCurrentHp());
+                    hp_changed_pkt.set_damage(damage);
+                    hp_changed_pkt.set_attacker_id(player->GetObjectId());
+                    auto sendBuffer = ServerUtils::MakeSendBuffer(hp_changed_pkt, Protocol::PKT_SC_CHANGE_HP);
+                    Broadcast(sendBuffer);
+
+                    std::cout << "[Melee Hit] " << player->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
+                }
             }
         }
+
+        // 클라이언트가 보낸 target_id로 대상 오브젝트 찾기( 타게팅용, 기획 변경으로 삭제)
+        //GameObjectPtr target = (_objects.find(pkt.target().target_object_id()) != _objects.end()) ? _objects[pkt.target().target_object_id()] : nullptr;
+
     }
     break;
 
