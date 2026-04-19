@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Text;
+using UnityEngine.AI;
+
 
 public class MapExporter : EditorWindow
 {
@@ -86,5 +88,43 @@ public class MapExporter : EditorWindow
 
         File.WriteAllText(path, sb.ToString());
         Debug.Log($"Map Export Complete: {path}");
+    }
+}
+
+public class NavMeshExporter : EditorWindow
+{
+    [MenuItem("Tools/Export NavMesh for C++ Server")]
+    public static void Export()
+    {
+        // 1. 현재 Bake된 NavMesh 데이터 가져오기
+        NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
+
+        // 2. 저장 경로 설정
+        string path = Application.dataPath + "/../MapData/NavMesh_01.bin";
+
+        using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
+        {
+            // [정점 정보 저장]
+            writer.Write(tri.vertices.Length);
+            foreach (Vector3 v in tri.vertices)
+            {
+                writer.Write(v.x);
+                writer.Write(v.y);
+                writer.Write(v.z);
+            }
+
+            // [인덱스(삼각형 연결) 정보 저장]
+            writer.Write(tri.indices.Length);
+            foreach (int index in tri.indices)
+            {
+                writer.Write(index);
+            }
+        }
+        Debug.Log($"NavMesh Export Complete: {path} (Vertices: {tri.vertices.Length})");
+
+        // ScanMap.cs의 Export 함수 내부
+        
+        Debug.Log($"Vertices: {tri.vertices.Length}, Indices: {tri.indices.Length}"); // 여기서 0이 나오는지 확인
+
     }
 }

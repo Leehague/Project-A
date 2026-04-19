@@ -34,3 +34,4 @@ private:
 
     MapPtr _map;
 };
+

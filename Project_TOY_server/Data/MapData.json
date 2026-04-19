@@ -4,6 +4,7 @@
       "id": 1,
       "name": "Village",
       "MapPath": "Resource/Maps/Map_01.txt",
+      "NavMeshPath": "Resource/Maps/NavMesh_01.bin",
       "MinX": -33,
       "MinZ": -33,
       "CellSize": 0.5,

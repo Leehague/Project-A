@@ -59,8 +59,13 @@ public class PacketHandler
                 // 오차가 임계값(예: 0.5m)보다 크면 강제 보정
                 if (distance > 0.5f)
                 {
-                    // 너무 멀면 순간이동 시키거나, 부드럽게 위치를 땡겨옴 (Reconciliation)
-                    go.transform.position = serverPos;
+                    if (movepkt.PosInfo.State == (int)Define.CreatureState.Idle)
+                    {
+                        Debug.Log("갈수 없는 지역");
+                        pc.SyncPos(serverPos);
+                    }
+                    
+                     
                 }
             }
             else

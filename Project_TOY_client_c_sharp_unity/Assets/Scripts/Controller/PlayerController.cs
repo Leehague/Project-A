@@ -31,6 +31,8 @@ public class PlayerController : CreatureController
     [SerializeField] float _rotationSpeed = 10.0f;
 
     private CharacterController _charController;
+    bool _isStuckByServer = false;
+    float _stuckTimer = 0f;
 
     protected override void Init()
     {
@@ -76,6 +78,13 @@ public class PlayerController : CreatureController
 
     private void HandleInput()
     {
+        if (_isStuckByServer)
+        {
+            _stuckTimer -= Time.deltaTime;
+            if (_stuckTimer <= 0) _isStuckByServer = false;
+            return; // 서버가 보정한 직후에는 키 입력을 무시함
+        }
+
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
         Vector3 inputDir = new Vector3(h, 0, v).normalized;
@@ -179,10 +188,17 @@ public class PlayerController : CreatureController
 
     public void SyncPos(Vector3 pos)
     {
+        if (_charController != null) _charController.enabled = false;
         // 보간용 목적지 좌표를 현재 좌표로 강제 일치시킴
         _targetPos = pos;
         transform.position = pos;
         _lastSentPos = pos; // 내 캐릭터일 경우 패킷 중복 전송 방지
+        if (_charController != null) _charController.enabled = true;
+
+        // [추가] 서버가 위치를 강제로 되돌렸다면, 0.1초간 입력을 무시하여 
+        // 벽에 부딪혀 멈춘 듯한 마찰력을 시뮬레이션합니다.
+        _isStuckByServer = true;
+        _stuckTimer = 0.1f;
     }
 
     // PlayerController.cs 내부 HandleInput 메서드 등에 추가

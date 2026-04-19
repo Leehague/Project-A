@@ -21,7 +21,7 @@ MapPtr MapManager::LoadMap(int mapId)
 
     // 货肺款 Map 按眉 积己 棺 肺靛
     MapPtr map = std::make_shared<Map>();
-    if (map->Load(data))
+    if (map->Load(data) && map->LoadNavMesh(data->NavMeshPath))
     {
         _maps[mapId] = map;
         return map;

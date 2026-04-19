@@ -27,8 +27,11 @@ xcopy /Y /S /I "%SOURCE_DIR%\*.json" "%SERVER_DIR%"
 xcopy /Y /S /I "%SOURCE_FORSERVER_DIR%\*.json" "%SERVER_DIR%"
 
 echo Copying Map TXT files to Server...
-:: 맵 파일이 .txt라면 아래처럼, .json이라면 *.json으로 수정하세요.
+:: 기존 .txt 파일 복사 명령어
 xcopy /Y /S /I "%MapData_Source_Dir%\*.txt" "%MapData_Server_Dir%"
+:: [새로 추가] 새로 생성한 .bin 파일도 서버 폴더로 복사합니다.
+xcopy /Y /S /I "%MapData_Source_Dir%\*.bin" "%MapData_Server_Dir%"
+
 
 :: 4. 클라이언트 데이터 폴더로 복사
 if not exist "%CLIENT_DIR%" mkdir "%CLIENT_DIR%"

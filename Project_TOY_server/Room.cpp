@@ -305,9 +305,7 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
             }
         }
 
-        // 클라이언트가 보낸 target_id로 대상 오브젝트 찾기( 타게팅용, 기획 변경으로 삭제)
-        //GameObjectPtr target = (_objects.find(pkt.target().target_object_id()) != _objects.end()) ? _objects[pkt.target().target_object_id()] : nullptr;
-
+     
     }
     break;
 
@@ -347,6 +345,7 @@ void Room::SendMoveResync(PlayerPtr player)
     Protocol::SC_MOVING resPkt;
     auto* resPos = resPkt.mutable_pos_info();
     resPos->CopyFrom(player->Getpos()); // 업데이트 전의 서버 좌표
+    resPos->set_state((int)CreatureState::Idle);
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
 

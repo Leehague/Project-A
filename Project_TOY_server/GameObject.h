@@ -13,6 +13,14 @@ enum class GameObjectType
 	Monster,
 };
 
+enum class CreatureState
+{
+	Idle,
+	Moving,
+	Skill,
+	Dead,
+};
+
 class GameObject : public std::enable_shared_from_this<GameObject>
 {
 public:

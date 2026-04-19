@@ -19,6 +19,7 @@ struct MapData
     uint64 MapId;
     std::string mapName;
     std::string MapPath;
+    std::string NavMeshPath;
     int64 MinX;
     int64 MinZ;
     float CellSize;

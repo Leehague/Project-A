@@ -71,6 +71,7 @@ private:
             mapdata.MapId = item["id"];
             mapdata.mapName = item["name"];
             mapdata.MapPath = item["MapPath"];
+            mapdata.NavMeshPath = item["NavMeshPath"];
             mapdata.MinX = item["MinX"];
             mapdata.MinZ = item["MinZ"];
             mapdata.width = item["Width"];
