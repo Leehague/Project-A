@@ -19,6 +19,7 @@ public:
     bool CanGo_Old(Vector3 pos);
     bool CanGo(Vector3 pos); // 핵심 로직
     float GetHeight(Vector3 pos); // [추가] 특정 좌표의 지형 높이 반환
+    uint64 GetMapId();
 
 private:
 

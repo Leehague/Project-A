@@ -42,42 +42,33 @@ public class PacketHandler
     {
         SC_MOVING movepkt = packet as SC_MOVING;
         if (movepkt == null) return;
+
         GameObject go = Managers.objectManager.Find(movepkt.PosInfo.ObjectId);
         if (go == null) return;
-        PlayerController pc;
-        if (go.TryGetComponent<PlayerController>(out pc))
+
+        // 1. 공통 부모인 CreatureController를 먼저 찾습니다.
+        CreatureController cc = go.GetComponent<CreatureController>();
+        if (cc == null) return;
+
+        // 2. 타입에 따라 분기 처리
+        if ((cc is PlayerController pc) && (pc.IsMyPlayer))
         {
-            if (pc == null) { return; }
+            
+            // [내 캐릭터] 서버 위치와 동기화 및 오차 보정
+            Vector3 serverPos = new Vector3(movepkt.PosInfo.X, movepkt.PosInfo.Y, movepkt.PosInfo.Z);
+            float distance = Vector3.Distance(go.transform.position, serverPos);
 
-            if (pc.IsMyPlayer)
+            if (distance > 0.5f)
             {
-                // [내 캐릭터 로직]
-                // 서버가 보내온 위치(확정된 위치)와 현재 내 유니티 위치를 비교
-                Vector3 serverPos = new Vector3(movepkt.PosInfo.X, movepkt.PosInfo.Y, movepkt.PosInfo.Z);
-                float distance = Vector3.Distance(go.transform.position, serverPos);
-
-                // 오차가 임계값(예: 0.5m)보다 크면 강제 보정
-                if (distance > 0.5f)
-                {
-                    if (movepkt.PosInfo.State == (int)Define.CreatureState.Idle)
-                    {
-                        Debug.Log("갈수 없는 지역");
-                        pc.SyncPos(serverPos);
-                    }
-                    
-                     
-                }
+                // 서버가 강제로 위치를 되돌려야 하는 상황 (예: 갈 수 없는 지역)
+                pc.SyncPos(serverPos);
             }
-            else
-            {
-                // [타인 캐릭터 로직]
-                // 다른 유저가 움직인 것이므로 목표 위치만 갱신해줌
-                pc.RefreshPos(movepkt.PosInfo);
-            }
+            
         }
         else 
         {
-            Debug.Log("not found player controller");
+            // [몬스터] [타인 캐릭터] 몬스터, 타인캐릭터는 항상 서버가 주도권을 가지므로 RefreshPos로 목적지만 갱신
+            cc.RefreshPos(movepkt.PosInfo);
         }
     }
 
@@ -101,6 +92,13 @@ public class PacketHandler
         //로그인 패킷에서 받았던 playerId(obejcId)와 일치하는지 확인
         if (enterGamePkt.PosInfo.ObjectId != Managers.objectManager.Myplayer_playerId) { return; }
 
+        //Map 로드
+        string Mapname = "Map" + enterGamePkt.MapId.ToString();
+        if (!GameObject.Find(Mapname))
+        {
+            Managers.resourceManager.Instantiate(Mapname);
+        }
+
         //서버가 보내준 나의 초기 위치 정보를 저장
         Managers.objectManager.MyplayerPosInfo=enterGamePkt.PosInfo;
 
@@ -113,9 +111,9 @@ public class PacketHandler
         Managers.networkManager.Send(_CS_GAME_READY);
     }
 
-    public static void Handle_SC_DESPAWN(PacketSession session, IMessage packet) 
+    public static void Handle_SC_PLAYER_DESPAWN(PacketSession session, IMessage packet) 
     {
-        SC_DESPAWN despawnPkt = packet as SC_DESPAWN;
+        SC_PLAYER_DESPAWN despawnPkt = packet as SC_PLAYER_DESPAWN;
 
         foreach (int id in despawnPkt.PlayerId)
         {
@@ -160,5 +158,16 @@ public class PacketHandler
         GameObject MpChanger = Managers.objectManager.Find(sc_change_mp_pkt.ObjectId);
         PlayerController MpChanger_pc = MpChanger.GetComponent<PlayerController>();
         MpChanger_pc.stat.mp = sc_change_mp_pkt.CurrentMp;
+    }
+
+    public static void Handle_SC_MONSTER_SPAWN(PacketSession session, IMessage packet)
+    {
+        SC_MONSTER_SPAWN sc_monster_spawn_pkt= packet as SC_MONSTER_SPAWN;
+
+        foreach (SpawnInfo info in sc_monster_spawn_pkt.MonstersSpawnInfo) 
+        {
+            // ObjectManager에서 몬스터 스폰 처리 
+            Managers.objectManager.SpawnMonster(info.Spawnposinfo, info.TempleteId);
+        }
     }
 }

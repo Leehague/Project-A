@@ -388,3 +388,11 @@ TODO : 피격 판정 및 데미지 계산 판정 => 클라 수신 UI update (테
 
 TODO: 수동으로 유니티 bake를 조정해줘야함
 
+2026/04/22
+
+-MapId 를 SC ENTER GAME 에서 서버가 클라에게 넘겨주게 추가.
+-UI 에서 Text(구버전) ->TMP 변경 , 다만 UI 특히 text설정은 별개로 자세히 봐야 함
+-클라의 NavMesh Surface 의 Use Geometry 설정  Render Meshes->Physics Colliders 변경, 클라의 물리 판정과 거의 유사하게 NavMesh를 판정함
+- Monster class 생성 ,세션 없음, 스킬 , 무빙 등은 가능해야함 
+- 클라: Spawn 패킷 처리 
+- 서버: 몬스터 생성 및 룸 입장=>스폰브로드캐스팅 로직 완성 

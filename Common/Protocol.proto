@@ -16,11 +16,13 @@ enum PacketId {
     PKT_SC_ENTER_GAME = 10;
     PKT_SC_PLAYER_SPAWN = 11; 
     PKT_CS_GAME_READY = 12;
-    PKT_SC_DESPAWN = 13;
+    PKT_SC_PLAYER_DESPAWN = 13;
     PKT_CS_SKILL = 14;
     PKT_SC_SKILL = 15;
     PKT_SC_CHANGE_HP = 16;
     PKT_SC_CHANGE_MP = 17;
+    PKT_SC_MONSTER_SPAWN = 18;
+    
 
 }
 
@@ -94,7 +96,7 @@ message CS_ENTER_GAME {
 message SC_ENTER_GAME {
     PosInfo pos_info = 1;
     int32 templeteId = 2;
-    
+    int32 MapId = 3;
 }
 
 message SC_PLAYER_SPAWN {
@@ -112,7 +114,7 @@ message CS_GAME_READY {
     int32 player_id = 1;
 }
 
-message SC_DESPAWN {
+message SC_PLAYER_DESPAWN  {
     repeated int32 player_id = 1;
 }
 
@@ -157,4 +159,8 @@ message SC_CHANGE_MP {
   int32 object_id = 1;
   int32 current_mp = 2;
   
+}
+
+message SC_MONSTER_SPAWN {
+    repeated SpawnInfo monsters_spawn_info = 1;
 }

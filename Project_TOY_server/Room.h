@@ -8,12 +8,15 @@ class Room : public std::enable_shared_from_this<Room>
 public:
     Room(int32 roomId, int32 mapId);
     void Enter(GameObjectPtr go);
+    
     void Leave(PlayerPtr player);
 
     void Broadcast(SendBufferPtr sendBuffer);
     void Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id);//passing_object_id 를 가지는 플레이어(유저)만 제외하고 브로드 캐스팅
     void SpawnBroadcast(PlayerPtr player);
-    
+    void SpawnBroadcast(const std::vector<MonsterPtr>& monsters);
+    void SpawnBroadcast(MonsterPtr monster);
+
     void SendTo(PlayerPtr player, SendBufferPtr sendBuffer);
     void SendMoveResync(PlayerPtr player);
 

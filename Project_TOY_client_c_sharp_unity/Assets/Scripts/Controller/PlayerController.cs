@@ -11,9 +11,6 @@ using UnityEngine;
 public class PlayerController : CreatureController
 {
 
-    public Stat stat { get; set; }
-
-    
     public bool IsMyPlayer { get; set; }
 
 
@@ -21,9 +18,7 @@ public class PlayerController : CreatureController
     const float SEND_INTERVAL = 0.05f; // 20Hz (초당 20번 전송)
     Vector3 _lastSentPos;
 
-    // 타인일 때 사용할 변수들
-    Vector3 _targetPos;
-    float _targetYaw;
+    
 
     //카메라 제어 및 이동 관련 변수들
     Transform _cameraTransform;
@@ -175,18 +170,9 @@ public class PlayerController : CreatureController
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 10f);
     }
 
-    // 핸들러에서 호출할 데이터 갱신 함수
-    public void RefreshPos(PosInfo info)
-    {
-        _targetPos = new Vector3(info.X, info.Y, info.Z);
-        _targetYaw = info.Yaw;
+    
 
-        float distance = (_targetPos - transform.position).magnitude;
-
-        State = (Define.CreatureState)info.State;
-    }
-
-    public void SyncPos(Vector3 pos)
+    public override void SyncPos(Vector3 pos)
     {
         if (_charController != null) _charController.enabled = false;
         // 보간용 목적지 좌표를 현재 좌표로 강제 일치시킴

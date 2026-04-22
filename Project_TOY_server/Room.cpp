@@ -7,6 +7,7 @@
 #include "Vector3.h"
 #include "MapManager.h"
 #include "Map.h"
+#include "Monster.h"
 
 Room::Room(int32 roomId, int32 mapId) : _Selfroomid(roomId)
 {
@@ -28,10 +29,9 @@ void Room::Enter(GameObjectPtr go)
         _objects[go->GetObjectId()] = go;
         go->SetroomId(_Selfroomid);
 
-        
     }
     //본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
-    if (auto player = std::static_pointer_cast<Player>(go))
+    if (auto player = std::static_pointer_cast<Player>(go) )
     {       
         
         if (auto session = player->session.lock())
@@ -43,13 +43,19 @@ void Room::Enter(GameObjectPtr go)
 
         enterPkt.set_templeteid(go->GetTempleteId()); //핸들러에서 결정된 템플릿 아이디
         
+        enterPkt.set_mapid(_map->GetMapId()); //클라에 보내줄 맵 Id
         auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
         player->session.lock()->Send(sendBuffer);
     }
-
+    else if (go->GetType() == GameObjectType::Monster)
+    {
+        MonsterPtr monster= std::static_pointer_cast<Monster>(go);
+        SpawnBroadcast(monster);
+    }
     // 수정 : 스폰 패킷은 Room::Enter 에서 전송하지 않고 나중에 레디 패킷을 수신해서 전송함
     
 }
+
 void Room::Leave(PlayerPtr player)
 {
     uint64 playerId = player->GetObjectId();
@@ -60,11 +66,11 @@ void Room::Leave(PlayerPtr player)
     }
 
     // 2. 타인들에게 이 유저가 나갔음을 알림 (SC_DESPAWN)
-    Protocol::SC_DESPAWN despawnPkt;
+    Protocol::SC_PLAYER_DESPAWN despawnPkt;
     despawnPkt.add_player_id(playerId);
     
 
-    auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_DESPAWN);
+    auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_PLAYER_DESPAWN);
     Broadcast(sendBuffer, playerId); // 본인은 이미 나갔으므로 제외
 }
 
@@ -115,37 +121,81 @@ void Room::SpawnBroadcast(PlayerPtr player)
 
     //(player 기준)나에게 기존 오브젝트들을 알림 (SC_PLAYER_SPAWN 목록 전송)
     {
-        Protocol::SC_PLAYER_SPAWN spawnPkt;
+        Protocol::SC_PLAYER_SPAWN playerspawnPkt;
+        Protocol::SC_MONSTER_SPAWN monsterspawnPkt;
 
         // 방의 모든 오브젝트를 순회하며 나를 제외한 정보를 패킷에 추가
         for (auto& pair : _objects)
         {
-            
-            Protocol::SpawnInfo* spawnInfo = spawnPkt.add_players_spawn_info();
-                       
-            // 2. 해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
-            spawnInfo->mutable_spawnposinfo()->CopyFrom(pair.second->Getpos());
-            spawnInfo->set_templeteid(pair.second->GetTempleteId());
-            
+            if (pair.second->GetType() == GameObjectType::Player) 
+            {
+                Protocol::SpawnInfo* spawnInfo = playerspawnPkt.add_players_spawn_info();
 
+                //해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
+                spawnInfo->mutable_spawnposinfo()->CopyFrom(pair.second->Getpos());
+                spawnInfo->set_templeteid(pair.second->GetTempleteId());
+            }
+            else if (pair.second->GetType() == GameObjectType::Monster) 
+            {
+                Protocol::SpawnInfo* spawnInfo = monsterspawnPkt.add_monsters_spawn_info();
+
+                //해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
+                spawnInfo->mutable_spawnposinfo()->CopyFrom(pair.second->Getpos());
+                spawnInfo->set_templeteid(pair.second->GetTempleteId());
+            }
 
         }
 
-        
-        if (spawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
+        if (playerspawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
         {
             // 패킷 시리얼라이즈 및 전송
-            auto sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
+            auto sendBuffer = ServerUtils::MakeSendBuffer(playerspawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
 
             if (auto s = player->session.lock())
             {
-                /*std::cout << "[Packet Log] ID: " << Protocol::PKT_SC_PLAYER_SPAWN
-                    << " | Total Size: " << sendBuffer->WriteSize() << " Bytes" << std::endl;*/
+                
+                s->Send(sendBuffer);
+            }
+        }
+        else if (monsterspawnPkt.monsters_spawn_info_size() >0)
+        {
+            // 패킷 시리얼라이즈 및 전송
+            auto sendBuffer = ServerUtils::MakeSendBuffer(playerspawnPkt, Protocol::PKT_SC_MONSTER_SPAWN);
+
+            if (auto s = player->session.lock())
+            {
                 s->Send(sendBuffer);
             }
         }
     }
 
+}
+void Room::SpawnBroadcast(const std::vector<MonsterPtr>& monsters)
+{
+
+    Protocol::SC_MONSTER_SPAWN monsterspawn_pkt;
+
+    for(MonsterPtr monster : monsters) 
+    {
+        Protocol::SpawnInfo* spawnInfo = monsterspawn_pkt.add_monsters_spawn_info();
+
+        spawnInfo->mutable_spawnposinfo()->CopyFrom(monster->Getpos());
+        spawnInfo->set_templeteid(monster->GetTempleteId());
+    }
+
+    if (monsterspawn_pkt.monsters_spawn_info_size() > 0) // 데이터가 있을 때만 전송
+    {
+
+        SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(monsterspawn_pkt, Protocol::PKT_SC_MONSTER_SPAWN);
+
+        //전체에게 전송
+        Broadcast(sendBuffer);
+    }
+
+}
+void Room::SpawnBroadcast(MonsterPtr monster)
+{
+    SpawnBroadcast({monster});
 }
 void Room::SendTo(PlayerPtr player, SendBufferPtr sendBuffer)
 {

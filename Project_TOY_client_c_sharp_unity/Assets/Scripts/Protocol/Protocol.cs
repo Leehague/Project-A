@@ -37,34 +37,37 @@ namespace Protocol {
             "BRIOCgZhdHRhY2sYBCABKAUSDQoFc3BlZWQYBSABKAUSDQoFbGV2ZWwYBiAB",
             "KAUiMAoJQ1NfTU9WSU5HEiMKCHBvc19pbmZvGAEgASgLMhEuUHJvdG9jb2wu",
             "UG9zSW5mbyIwCglTQ19NT1ZJTkcSIwoIcG9zX2luZm8YASABKAsyES5Qcm90",
-            "b2NvbC5Qb3NJbmZvIg8KDUNTX0VOVEVSX0dBTUUiSAoNU0NfRU5URVJfR0FN",
+            "b2NvbC5Qb3NJbmZvIg8KDUNTX0VOVEVSX0dBTUUiVwoNU0NfRU5URVJfR0FN",
             "RRIjCghwb3NfaW5mbxgBIAEoCzIRLlByb3RvY29sLlBvc0luZm8SEgoKdGVt",
-            "cGxldGVJZBgCIAEoBSJCCg9TQ19QTEFZRVJfU1BBV04SLwoScGxheWVyc19z",
-            "cGF3bl9pbmZvGAEgAygLMhMuUHJvdG9jb2wuU3Bhd25JbmZvIkgKCVNwYXdu",
-            "SW5mbxInCgxzcGF3bnBvc2luZm8YASABKAsyES5Qcm90b2NvbC5Qb3NJbmZv",
-            "EhIKCnRlbXBsZXRlSWQYAiABKAUiIgoNQ1NfR0FNRV9SRUFEWRIRCglwbGF5",
-            "ZXJfaWQYASABKAUiHwoKU0NfREVTUEFXThIRCglwbGF5ZXJfaWQYASADKAUi",
-            "hQEKCENTX1NLSUxMEhAKCHNraWxsX2lkGAEgASgFEiwKBnRhcmdldBgCIAEo",
-            "CzIaLlByb3RvY29sLlRhcmdldG9iamVjdEluZm9IABIrCghkZXN0X3BvcxgD",
-            "IAEoCzIXLlByb3RvY29sLlRhcmdldFBvc0luZm9IAEIMCgpleHRyYV9pbmZv",
-            "IpgBCghTQ19TS0lMTBIRCglvYmplY3RfaWQYASABKAUSEAoIc2tpbGxfaWQY",
-            "AiABKAUSLAoGdGFyZ2V0GAMgASgLMhouUHJvdG9jb2wuVGFyZ2V0b2JqZWN0",
-            "SW5mb0gAEisKCGRlc3RfcG9zGAQgASgLMhcuUHJvdG9jb2wuVGFyZ2V0UG9z",
-            "SW5mb0gAQgwKCmV4dHJhX2luZm8iWgoMU0NfQ0hBTkdFX0hQEhEKCW9iamVj",
-            "dF9pZBgBIAEoBRISCgpjdXJyZW50X2hwGAIgASgFEg4KBmRhbWFnZRgDIAEo",
-            "BRITCgthdHRhY2tlcl9pZBgEIAEoBSIsChBUYXJnZXRvYmplY3RJbmZvEhgK",
-            "EHRhcmdldF9vYmplY3RfaWQYASABKAUiMAoNVGFyZ2V0UG9zSW5mbxIJCgF4",
-            "GAEgASgCEgkKAXkYAiABKAISCQoBehgDIAEoAiI1CgxTQ19DSEFOR0VfTVAS",
-            "EQoJb2JqZWN0X2lkGAEgASgFEhIKCmN1cnJlbnRfbXAYAiABKAUq+wIKCFBh",
-            "Y2tldElkEgwKCFBLVF9OT05FEAASEAoMUEtUX0NTX0xPR0lOEAESEwoPUEtU",
-            "X1NDX0xPR0lOX09LEAISDwoLUEtUX0NTX0NIQVQQAxIZChVQS1RfU0NfQ0hB",
-            "VF9CUk9BRENBU1QQBBISCg5QS1RfU0NfV0hJU1BFUhAFEhIKDlBLVF9DU19X",
-            "SElTUEVSEAYSEQoNUEtUX0NTX01PVklORxAHEhEKDVBLVF9TQ19NT1ZJTkcQ",
-            "CBIVChFQS1RfQ1NfRU5URVJfR0FNRRAJEhUKEVBLVF9TQ19FTlRFUl9HQU1F",
-            "EAoSFwoTUEtUX1NDX1BMQVlFUl9TUEFXThALEhUKEVBLVF9DU19HQU1FX1JF",
-            "QURZEAwSEgoOUEtUX1NDX0RFU1BBV04QDRIQCgxQS1RfQ1NfU0tJTEwQDhIQ",
-            "CgxQS1RfU0NfU0tJTEwQDxIUChBQS1RfU0NfQ0hBTkdFX0hQEBASFAoQUEtU",
-            "X1NDX0NIQU5HRV9NUBARYgZwcm90bzM="));
+            "cGxldGVJZBgCIAEoBRINCgVNYXBJZBgDIAEoBSJCCg9TQ19QTEFZRVJfU1BB",
+            "V04SLwoScGxheWVyc19zcGF3bl9pbmZvGAEgAygLMhMuUHJvdG9jb2wuU3Bh",
+            "d25JbmZvIkgKCVNwYXduSW5mbxInCgxzcGF3bnBvc2luZm8YASABKAsyES5Q",
+            "cm90b2NvbC5Qb3NJbmZvEhIKCnRlbXBsZXRlSWQYAiABKAUiIgoNQ1NfR0FN",
+            "RV9SRUFEWRIRCglwbGF5ZXJfaWQYASABKAUiJgoRU0NfUExBWUVSX0RFU1BB",
+            "V04SEQoJcGxheWVyX2lkGAEgAygFIoUBCghDU19TS0lMTBIQCghza2lsbF9p",
+            "ZBgBIAEoBRIsCgZ0YXJnZXQYAiABKAsyGi5Qcm90b2NvbC5UYXJnZXRvYmpl",
+            "Y3RJbmZvSAASKwoIZGVzdF9wb3MYAyABKAsyFy5Qcm90b2NvbC5UYXJnZXRQ",
+            "b3NJbmZvSABCDAoKZXh0cmFfaW5mbyKYAQoIU0NfU0tJTEwSEQoJb2JqZWN0",
+            "X2lkGAEgASgFEhAKCHNraWxsX2lkGAIgASgFEiwKBnRhcmdldBgDIAEoCzIa",
+            "LlByb3RvY29sLlRhcmdldG9iamVjdEluZm9IABIrCghkZXN0X3BvcxgEIAEo",
+            "CzIXLlByb3RvY29sLlRhcmdldFBvc0luZm9IAEIMCgpleHRyYV9pbmZvIloK",
+            "DFNDX0NIQU5HRV9IUBIRCglvYmplY3RfaWQYASABKAUSEgoKY3VycmVudF9o",
+            "cBgCIAEoBRIOCgZkYW1hZ2UYAyABKAUSEwoLYXR0YWNrZXJfaWQYBCABKAUi",
+            "LAoQVGFyZ2V0b2JqZWN0SW5mbxIYChB0YXJnZXRfb2JqZWN0X2lkGAEgASgF",
+            "IjAKDVRhcmdldFBvc0luZm8SCQoBeBgBIAEoAhIJCgF5GAIgASgCEgkKAXoY",
+            "AyABKAIiNQoMU0NfQ0hBTkdFX01QEhEKCW9iamVjdF9pZBgBIAEoBRISCgpj",
+            "dXJyZW50X21wGAIgASgFIkQKEFNDX01PTlNURVJfU1BBV04SMAoTbW9uc3Rl",
+            "cnNfc3Bhd25faW5mbxgBIAMoCzITLlByb3RvY29sLlNwYXduSW5mbyqcAwoI",
+            "UGFja2V0SWQSDAoIUEtUX05PTkUQABIQCgxQS1RfQ1NfTE9HSU4QARITCg9Q",
+            "S1RfU0NfTE9HSU5fT0sQAhIPCgtQS1RfQ1NfQ0hBVBADEhkKFVBLVF9TQ19D",
+            "SEFUX0JST0FEQ0FTVBAEEhIKDlBLVF9TQ19XSElTUEVSEAUSEgoOUEtUX0NT",
+            "X1dISVNQRVIQBhIRCg1QS1RfQ1NfTU9WSU5HEAcSEQoNUEtUX1NDX01PVklO",
+            "RxAIEhUKEVBLVF9DU19FTlRFUl9HQU1FEAkSFQoRUEtUX1NDX0VOVEVSX0dB",
+            "TUUQChIXChNQS1RfU0NfUExBWUVSX1NQQVdOEAsSFQoRUEtUX0NTX0dBTUVf",
+            "UkVBRFkQDBIZChVQS1RfU0NfUExBWUVSX0RFU1BBV04QDRIQCgxQS1RfQ1Nf",
+            "U0tJTEwQDhIQCgxQS1RfU0NfU0tJTEwQDxIUChBQS1RfU0NfQ0hBTkdFX0hQ",
+            "EBASFAoQUEtUX1NDX0NIQU5HRV9NUBAREhgKFFBLVF9TQ19NT05TVEVSX1NQ",
+            "QVdOEBJiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Protocol.PacketId), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -79,17 +82,18 @@ namespace Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_MOVING), global::Protocol.CS_MOVING.Parser, new[]{ "PosInfo" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_MOVING), global::Protocol.SC_MOVING.Parser, new[]{ "PosInfo" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_ENTER_GAME), global::Protocol.CS_ENTER_GAME.Parser, null, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_ENTER_GAME), global::Protocol.SC_ENTER_GAME.Parser, new[]{ "PosInfo", "TempleteId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_ENTER_GAME), global::Protocol.SC_ENTER_GAME.Parser, new[]{ "PosInfo", "TempleteId", "MapId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_PLAYER_SPAWN), global::Protocol.SC_PLAYER_SPAWN.Parser, new[]{ "PlayersSpawnInfo" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SpawnInfo), global::Protocol.SpawnInfo.Parser, new[]{ "Spawnposinfo", "TempleteId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_GAME_READY), global::Protocol.CS_GAME_READY.Parser, new[]{ "PlayerId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_DESPAWN), global::Protocol.SC_DESPAWN.Parser, new[]{ "PlayerId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_PLAYER_DESPAWN), global::Protocol.SC_PLAYER_DESPAWN.Parser, new[]{ "PlayerId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_SKILL), global::Protocol.CS_SKILL.Parser, new[]{ "SkillId", "Target", "DestPos" }, new[]{ "ExtraInfo" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_SKILL), global::Protocol.SC_SKILL.Parser, new[]{ "ObjectId", "SkillId", "Target", "DestPos" }, new[]{ "ExtraInfo" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_CHANGE_HP), global::Protocol.SC_CHANGE_HP.Parser, new[]{ "ObjectId", "CurrentHp", "Damage", "AttackerId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.TargetobjectInfo), global::Protocol.TargetobjectInfo.Parser, new[]{ "TargetObjectId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.TargetPosInfo), global::Protocol.TargetPosInfo.Parser, new[]{ "X", "Y", "Z" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_CHANGE_MP), global::Protocol.SC_CHANGE_MP.Parser, new[]{ "ObjectId", "CurrentMp" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_CHANGE_MP), global::Protocol.SC_CHANGE_MP.Parser, new[]{ "ObjectId", "CurrentMp" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_MONSTER_SPAWN), global::Protocol.SC_MONSTER_SPAWN.Parser, new[]{ "MonstersSpawnInfo" }, null, null, null, null)
           }));
     }
     #endregion
@@ -110,11 +114,12 @@ namespace Protocol {
     [pbr::OriginalName("PKT_SC_ENTER_GAME")] PktScEnterGame = 10,
     [pbr::OriginalName("PKT_SC_PLAYER_SPAWN")] PktScPlayerSpawn = 11,
     [pbr::OriginalName("PKT_CS_GAME_READY")] PktCsGameReady = 12,
-    [pbr::OriginalName("PKT_SC_DESPAWN")] PktScDespawn = 13,
+    [pbr::OriginalName("PKT_SC_PLAYER_DESPAWN")] PktScPlayerDespawn = 13,
     [pbr::OriginalName("PKT_CS_SKILL")] PktCsSkill = 14,
     [pbr::OriginalName("PKT_SC_SKILL")] PktScSkill = 15,
     [pbr::OriginalName("PKT_SC_CHANGE_HP")] PktScChangeHp = 16,
     [pbr::OriginalName("PKT_SC_CHANGE_MP")] PktScChangeMp = 17,
+    [pbr::OriginalName("PKT_SC_MONSTER_SPAWN")] PktScMonsterSpawn = 18,
   }
 
   #endregion
@@ -2877,6 +2882,7 @@ namespace Protocol {
     public SC_ENTER_GAME(SC_ENTER_GAME other) : this() {
       posInfo_ = other.posInfo_ != null ? other.posInfo_.Clone() : null;
       templeteId_ = other.templeteId_;
+      mapId_ = other.mapId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -2910,6 +2916,18 @@ namespace Protocol {
       }
     }
 
+    /// <summary>Field number for the "MapId" field.</summary>
+    public const int MapIdFieldNumber = 3;
+    private int mapId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int MapId {
+      get { return mapId_; }
+      set {
+        mapId_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -2927,6 +2945,7 @@ namespace Protocol {
       }
       if (!object.Equals(PosInfo, other.PosInfo)) return false;
       if (TempleteId != other.TempleteId) return false;
+      if (MapId != other.MapId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -2936,6 +2955,7 @@ namespace Protocol {
       int hash = 1;
       if (posInfo_ != null) hash ^= PosInfo.GetHashCode();
       if (TempleteId != 0) hash ^= TempleteId.GetHashCode();
+      if (MapId != 0) hash ^= MapId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -2962,6 +2982,10 @@ namespace Protocol {
         output.WriteRawTag(16);
         output.WriteInt32(TempleteId);
       }
+      if (MapId != 0) {
+        output.WriteRawTag(24);
+        output.WriteInt32(MapId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -2980,6 +3004,10 @@ namespace Protocol {
         output.WriteRawTag(16);
         output.WriteInt32(TempleteId);
       }
+      if (MapId != 0) {
+        output.WriteRawTag(24);
+        output.WriteInt32(MapId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -2995,6 +3023,9 @@ namespace Protocol {
       }
       if (TempleteId != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(TempleteId);
+      }
+      if (MapId != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(MapId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -3016,6 +3047,9 @@ namespace Protocol {
       }
       if (other.TempleteId != 0) {
         TempleteId = other.TempleteId;
+      }
+      if (other.MapId != 0) {
+        MapId = other.MapId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -3047,6 +3081,10 @@ namespace Protocol {
             TempleteId = input.ReadInt32();
             break;
           }
+          case 24: {
+            MapId = input.ReadInt32();
+            break;
+          }
         }
       }
     #endif
@@ -3075,6 +3113,10 @@ namespace Protocol {
           }
           case 16: {
             TempleteId = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            MapId = input.ReadInt32();
             break;
           }
         }
@@ -3714,16 +3756,16 @@ namespace Protocol {
   }
 
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class SC_DESPAWN : pb::IMessage<SC_DESPAWN>
+  public sealed partial class SC_PLAYER_DESPAWN : pb::IMessage<SC_PLAYER_DESPAWN>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<SC_DESPAWN> _parser = new pb::MessageParser<SC_DESPAWN>(() => new SC_DESPAWN());
+    private static readonly pb::MessageParser<SC_PLAYER_DESPAWN> _parser = new pb::MessageParser<SC_PLAYER_DESPAWN>(() => new SC_PLAYER_DESPAWN());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<SC_DESPAWN> Parser { get { return _parser; } }
+    public static pb::MessageParser<SC_PLAYER_DESPAWN> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -3739,7 +3781,7 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SC_DESPAWN() {
+    public SC_PLAYER_DESPAWN() {
       OnConstruction();
     }
 
@@ -3747,15 +3789,15 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SC_DESPAWN(SC_DESPAWN other) : this() {
+    public SC_PLAYER_DESPAWN(SC_PLAYER_DESPAWN other) : this() {
       playerId_ = other.playerId_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public SC_DESPAWN Clone() {
-      return new SC_DESPAWN(this);
+    public SC_PLAYER_DESPAWN Clone() {
+      return new SC_PLAYER_DESPAWN(this);
     }
 
     /// <summary>Field number for the "player_id" field.</summary>
@@ -3772,12 +3814,12 @@ namespace Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as SC_DESPAWN);
+      return Equals(other as SC_PLAYER_DESPAWN);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(SC_DESPAWN other) {
+    public bool Equals(SC_PLAYER_DESPAWN other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -3842,7 +3884,7 @@ namespace Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(SC_DESPAWN other) {
+    public void MergeFrom(SC_PLAYER_DESPAWN other) {
       if (other == null) {
         return;
       }
@@ -5618,6 +5660,193 @@ namespace Protocol {
           }
           case 16: {
             CurrentMp = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class SC_MONSTER_SPAWN : pb::IMessage<SC_MONSTER_SPAWN>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<SC_MONSTER_SPAWN> _parser = new pb::MessageParser<SC_MONSTER_SPAWN>(() => new SC_MONSTER_SPAWN());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<SC_MONSTER_SPAWN> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Protocol.ProtocolReflection.Descriptor.MessageTypes[22]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SC_MONSTER_SPAWN() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SC_MONSTER_SPAWN(SC_MONSTER_SPAWN other) : this() {
+      monstersSpawnInfo_ = other.monstersSpawnInfo_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public SC_MONSTER_SPAWN Clone() {
+      return new SC_MONSTER_SPAWN(this);
+    }
+
+    /// <summary>Field number for the "monsters_spawn_info" field.</summary>
+    public const int MonstersSpawnInfoFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Protocol.SpawnInfo> _repeated_monstersSpawnInfo_codec
+        = pb::FieldCodec.ForMessage(10, global::Protocol.SpawnInfo.Parser);
+    private readonly pbc::RepeatedField<global::Protocol.SpawnInfo> monstersSpawnInfo_ = new pbc::RepeatedField<global::Protocol.SpawnInfo>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::Protocol.SpawnInfo> MonstersSpawnInfo {
+      get { return monstersSpawnInfo_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as SC_MONSTER_SPAWN);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(SC_MONSTER_SPAWN other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!monstersSpawnInfo_.Equals(other.monstersSpawnInfo_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= monstersSpawnInfo_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      monstersSpawnInfo_.WriteTo(output, _repeated_monstersSpawnInfo_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      monstersSpawnInfo_.WriteTo(ref output, _repeated_monstersSpawnInfo_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      size += monstersSpawnInfo_.CalculateSize(_repeated_monstersSpawnInfo_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(SC_MONSTER_SPAWN other) {
+      if (other == null) {
+        return;
+      }
+      monstersSpawnInfo_.Add(other.monstersSpawnInfo_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            monstersSpawnInfo_.AddEntriesFrom(input, _repeated_monstersSpawnInfo_codec);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            monstersSpawnInfo_.AddEntriesFrom(ref input, _repeated_monstersSpawnInfo_codec);
             break;
           }
         }

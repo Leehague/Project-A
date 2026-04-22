@@ -6,6 +6,11 @@
 #include "Room.h"
 #include "DataContents.h"
 #include "DataManager.h"
+struct SkillRecord {
+	int64 lastUseTime = 0; // 밀리초(ms) 단위
+};
+
+
 enum class GameObjectType 
 {
 	None,
@@ -41,11 +46,10 @@ public:
 		_pos.set_z(pos.z());
 		_pos.set_yaw(pos.yaw());
 		_pos.set_state(pos.state());
-		// templateId는 건드리지 않음!
+		
 	}
 	Protocol::PosInfo Getpos() { return _pos; }
 
-	//void SetTempleteId_In_pos(uint64 tempeteId) { _pos.set_templeteid(tempeteId); } 이제는 posInfo에 templteId 가 없음.
 
 	void SetroomId(int32 roomid) { _roomId = roomid; }
 	int32 GetroomId() { return _roomId; }
@@ -56,6 +60,7 @@ public:
 	{
 		InitStatData(templateId);
 	}
+	
 protected:
 	void InitStatData(int32 templateId)
 	{

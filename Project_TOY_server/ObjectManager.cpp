@@ -1,6 +1,8 @@
+#pragma once
 #include "ObjectManager.h"
 #include "RoomManager.h"
 #include "Player.h"
+#include "Monster.h"
 
 ObjcetManager GObjcetManager;
 
@@ -15,6 +17,12 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
         PlayerPtr player = std::make_shared<Player>(objcetId, session);
         player->Init(templateId);
         go = std::static_pointer_cast<GameObject>(player);
+    }
+    else if(type == GameObjectType::Monster)
+    {
+        MonsterPtr monster = std::make_shared<Monster>(objcetId);
+        monster->Init(templateId);
+        go = std::static_pointer_cast<GameObject>(monster);
     }
     else 
     {

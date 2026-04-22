@@ -7,10 +7,6 @@
 #include "DataContents.h"
 #include "DataManager.h"
 
-struct SkillRecord {
-    int64 lastUseTime = 0; // 밀리초(ms) 단위
-};
-
 class Player : public GameObject
 {
 public:

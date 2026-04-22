@@ -1,10 +1,15 @@
+using Protocol;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CreatureController : MonoBehaviour
 {
-    
+    public Stat stat { get; set; }
+
+    // 타인일 때 사용할 변수들
+    protected Vector3 _targetPos;
+    protected float _targetYaw;
 
     [SerializeField]
     protected Define.CreatureState _state = Define.CreatureState.Idle;
@@ -72,5 +77,20 @@ public class CreatureController : MonoBehaviour
         State = Define.CreatureState.Idle;
 
         
+    }
+
+    // 핸들러에서 호출할 데이터 갱신 함수
+    public void RefreshPos(PosInfo info)
+    {
+        _targetPos = new Vector3(info.X, info.Y, info.Z);
+        _targetYaw = info.Yaw;
+
+        float distance = (_targetPos - transform.position).magnitude;
+
+        State = (Define.CreatureState)info.State;
+    }
+    public virtual void SyncPos(Vector3 pos) 
+    {
+        transform.position = pos;
     }
 }

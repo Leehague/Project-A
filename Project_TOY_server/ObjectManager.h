@@ -6,6 +6,7 @@
 class ObjcetManager 
 {
 public:
+	//생성자 호출, 초기화(Init 호출) , _objects에 추가
 	GameObjectPtr Create(GameObjectType type, std::shared_ptr<Session> session, int32 templateId);
 	
 	GameObjectPtr Find(int32 objectId);

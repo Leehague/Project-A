@@ -31,9 +31,9 @@ public partial class PacketManager
         _onRecv.Add((ushort)PacketId.PktScPlayerSpawn, (s, b, sz) => MakePacket<SC_PLAYER_SPAWN>(s, b, sz, (ushort)PacketId.PktScPlayerSpawn));
         _handler.Add((ushort)PacketId.PktScPlayerSpawn, PacketHandler.Handle_SC_PLAYER_SPAWN);
         _typeToId.Add(typeof(CS_GAME_READY), (ushort)PacketId.PktCsGameReady);
-        _typeToId.Add(typeof(SC_DESPAWN), (ushort)PacketId.PktScDespawn);
-        _onRecv.Add((ushort)PacketId.PktScDespawn, (s, b, sz) => MakePacket<SC_DESPAWN>(s, b, sz, (ushort)PacketId.PktScDespawn));
-        _handler.Add((ushort)PacketId.PktScDespawn, PacketHandler.Handle_SC_DESPAWN);
+        _typeToId.Add(typeof(SC_PLAYER_DESPAWN), (ushort)PacketId.PktScPlayerDespawn);
+        _onRecv.Add((ushort)PacketId.PktScPlayerDespawn, (s, b, sz) => MakePacket<SC_PLAYER_DESPAWN>(s, b, sz, (ushort)PacketId.PktScPlayerDespawn));
+        _handler.Add((ushort)PacketId.PktScPlayerDespawn, PacketHandler.Handle_SC_PLAYER_DESPAWN);
         _typeToId.Add(typeof(CS_SKILL), (ushort)PacketId.PktCsSkill);
         _typeToId.Add(typeof(SC_SKILL), (ushort)PacketId.PktScSkill);
         _onRecv.Add((ushort)PacketId.PktScSkill, (s, b, sz) => MakePacket<SC_SKILL>(s, b, sz, (ushort)PacketId.PktScSkill));
@@ -44,6 +44,9 @@ public partial class PacketManager
         _typeToId.Add(typeof(SC_CHANGE_MP), (ushort)PacketId.PktScChangeMp);
         _onRecv.Add((ushort)PacketId.PktScChangeMp, (s, b, sz) => MakePacket<SC_CHANGE_MP>(s, b, sz, (ushort)PacketId.PktScChangeMp));
         _handler.Add((ushort)PacketId.PktScChangeMp, PacketHandler.Handle_SC_CHANGE_MP);
+        _typeToId.Add(typeof(SC_MONSTER_SPAWN), (ushort)PacketId.PktScMonsterSpawn);
+        _onRecv.Add((ushort)PacketId.PktScMonsterSpawn, (s, b, sz) => MakePacket<SC_MONSTER_SPAWN>(s, b, sz, (ushort)PacketId.PktScMonsterSpawn));
+        _handler.Add((ushort)PacketId.PktScMonsterSpawn, PacketHandler.Handle_SC_MONSTER_SPAWN);
 
     }
 }

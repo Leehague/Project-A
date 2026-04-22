@@ -25,7 +25,8 @@ public class UI_HPMPBar : UI_Scene
         base.Init(); // 캔버스 설정 등 부모 로직 수행
 
         // 2. 자동 바인딩
-        Bind<Text>(typeof(Texts));
+        
+        Bind<TMPro.TextMeshProUGUI>(typeof(Texts));
         Bind<Slider>(typeof(Sliders));
     }
 

@@ -98,6 +98,10 @@ float Map::GetHeight(Vector3 pos)
 
     return _heightData[z][x];
 }
+uint64 Map::GetMapId()
+{
+    return _mapdata->MapId;
+}
 //bool Map::LoadNavMesh(const std::string& path) {
 //    std::ifstream ifs(path, std::ios::binary);
 //    if (!ifs.is_open()) return false;

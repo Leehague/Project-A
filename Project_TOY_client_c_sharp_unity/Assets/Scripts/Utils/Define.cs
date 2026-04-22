@@ -28,4 +28,6 @@ public class Define
         Skill,
         Dead,
     }
+
+    
 }

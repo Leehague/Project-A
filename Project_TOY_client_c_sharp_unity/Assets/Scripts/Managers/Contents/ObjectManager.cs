@@ -79,9 +79,6 @@ public class ObjectManager
             Debug.Log("Spawn Fail : fail to take from stat info ");
             return null; 
         }
-
-        Debug.Log($"Attempting to spawn: {statInfo.modelPath}");
-
         // 리소스 매니저로 프리팹 생성
         GameObject go = Managers.resourceManager.Instantiate(statInfo.modelPath);
         go.name = statInfo.name;
@@ -103,11 +100,42 @@ public class ObjectManager
         // 핵심: 생성 직후에 컨트롤러의 내부 목적지 좌표도 동기화
         pc.SyncPos(spawnPos);
 
-        
-
         return go;
     }
 
+    public GameObject SpawnMonster(PosInfo postion, int templeteId)
+    {
+        int _templeteId = templeteId;
+        int objectId = postion.ObjectId;
+
+        // 데이터 매니저에서 정보 추출 ( Knight, Mage 등 )
+        if (Managers.dataManager.StatDict.TryGetValue(_templeteId, out Stat statInfo) == false)
+        {
+            Debug.Log("Spawn Fail : fail to take from stat info ");
+            return null;
+        }
+        // 리소스 매니저로 프리팹 생성
+        GameObject go = Managers.resourceManager.Instantiate(statInfo.modelPath);
+        go.name = statInfo.name;
+
+        Vector3 spawnPos = new Vector3(postion.X, postion.Y, postion.Z);
+        go.transform.position = spawnPos;
+
+
+        // 여기서 Add를 호출하여 관리 목록에 추가
+        Add(objectId, go); //'몬스터' 스폰이기때문에 IsMyplayer는 기본인 false 사용
+
+        //컨트롤러 초기화
+        MonsterController mc = go.GetOrAddComponent<MonsterController>();
+        mc.stat = new Stat(statInfo);
+
+        mc.stat.hp = mc.stat.MaxHp; //스폰시 풀피로 
+
+        // 핵심: 생성 직후에 컨트롤러의 내부 목적지 좌표도 동기화
+        mc.SyncPos(spawnPos);
+
+        return go;
+    }
 
     public void HandleSpawn(Protocol.SC_PLAYER_SPAWN packet)
     {

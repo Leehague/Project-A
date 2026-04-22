@@ -38,7 +38,7 @@ public abstract class UI_Base : MonoBehaviour
     }
 
     // 자주 쓰는 컴포넌트들을 편하게 가져오기 위한 헬퍼 함수들
-    protected Text GetText(int idx) => Get<Text>(idx);
+    protected TMPro.TextMeshProUGUI GetText(int idx) => Get<TMPro.TextMeshProUGUI>(idx);
     protected Button GetButton(int idx) => Get<Button>(idx);
     protected Image GetImage(int idx) => Get<Image>(idx);
 
