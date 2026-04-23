@@ -7,8 +7,9 @@ class Room : public std::enable_shared_from_this<Room>
 {
 public:
     Room(int32 roomId, int32 mapId);
-    void Enter(GameObjectPtr go);
-    
+    void Enter(GameObjectPtr go);//단일 입장 , 가능하면 플레이어에게만 사용
+    void EnterMonsters(const std::vector<MonsterPtr>& monsters); //복수의 몬스터들 한번에 입장
+
     void Leave(PlayerPtr player);
 
     void Broadcast(SendBufferPtr sendBuffer);
@@ -29,6 +30,9 @@ public:
 
     void SetRoomid(int32 roomid) { _Selfroomid = roomid; }
     int32 GetRoomid() {return _Selfroomid;}
+
+    //몬스터 스폰 
+    void MonsterSpawn(int32 NumOfMonster);
 private:
     std::mutex _lock;
     std::map<uint64, GameObjectPtr> _objects;

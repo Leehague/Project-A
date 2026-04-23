@@ -31,9 +31,10 @@ void Room::Enter(GameObjectPtr go)
 
     }
     //본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
-    if (auto player = std::static_pointer_cast<Player>(go) )
+    if (go->GetType() == GameObjectType::Player )
     {       
-        
+        auto player = std::static_pointer_cast<Player>(go);
+        if (player==nullptr) { return; }
         if (auto session = player->session.lock())
         {
             session->SetPlayerId(player->GetObjectId());
@@ -54,6 +55,20 @@ void Room::Enter(GameObjectPtr go)
     }
     // 수정 : 스폰 패킷은 Room::Enter 에서 전송하지 않고 나중에 레디 패킷을 수신해서 전송함
     
+}
+
+void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
+{
+    //서버 내부 메모리에 정보 저장(방 입장 처리)
+    {
+        for (MonsterPtr monster : monsters) 
+        {
+            std::lock_guard<std::mutex> lock(_lock);
+            _objects[monster->GetObjectId()] = monster;
+            monster->SetroomId(_Selfroomid);
+        }
+    }
+    SpawnBroadcast(monsters);
 }
 
 void Room::Leave(PlayerPtr player)
@@ -386,6 +401,11 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_SKILL);
     Broadcast(sendBuffer);
+}
+
+void Room::MonsterSpawn(int32 NumOfMonster)
+{
+
 }
 
 //위치 되감기

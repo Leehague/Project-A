@@ -44,7 +44,6 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 }
 
 
-
 bool Handle_CS_CHAT(SessionPtr& session, Protocol::CS_CHAT& pkt)
 {
     // 1. 받은 패킷에서 데이터 추출 (pkt->chatMsg 대신 pkt.msg() 등 사용)
