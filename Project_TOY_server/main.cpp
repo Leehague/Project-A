@@ -34,23 +34,10 @@ void ConsoleThread(RoomPtr room)
 
         if (command == "spawn")
         {
-            // 주의: 여기서 직접 Room 데이터에 접근하면 Race Condition 위험이 있음!
-            // 지금은 임시로 직접 호출하거나, 나중에 JobQueue에 넣으세요.
-            std::cout << "Admin: Spawning test monsters..." << std::endl;
+            
+            std::cout << "Admin: Spawning test five monsters..." << std::endl;
 
-            // 테스트용 몬스터 생성 및 입장 로직 jobqueue로 수정해야함
-            std::vector<MonsterPtr> monsters;
-            for (int i = 0; i < 5; i++)
-            {
-                MonsterPtr monster = std::static_pointer_cast<Monster>(
-                    GObjcetManager.Create(GameObjectType::Monster,nullptr, 2) //몬스터는 session이 필요없기 때문에 nullptr로 전달
-                );
-                monster->Getpos().set_x(10.0f + i * 2.0f);
-                monster->Getpos().set_z(10.0f);
-
-                monsters.push_back(monster);
-            }
-            room->EnterMonsters(monsters);
+            room->MonsterSpawn(5);
         }
         else if (command == "exit")
         {

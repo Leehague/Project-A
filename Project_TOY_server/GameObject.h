@@ -6,6 +6,8 @@
 #include "Room.h"
 #include "DataContents.h"
 #include "DataManager.h"
+#include "Vector3.h"
+
 struct SkillRecord {
 	int64 lastUseTime = 0; // 밀리초(ms) 단위
 };
@@ -39,6 +41,8 @@ public:
 	
 	int32 GetObjectId() { return _objectId; }
 
+
+
 	void Setpos(Protocol::PosInfo pos) 
 	{
 		_pos.set_x(pos.x());
@@ -48,7 +52,10 @@ public:
 		_pos.set_state(pos.state());
 		
 	}
-	Protocol::PosInfo Getpos() { return _pos; }
+	void Set_x(float x) { _pos.set_x(x); }; void Set_y(float y) { _pos.set_y(y); }; void Set_z(float z) { _pos.set_z(z); };
+	const Protocol::PosInfo* Getpos() { return &_pos; }
+	Vector3 Getpos_As_Vector3() { return Vector3::PosInfoToVector3(&_pos); }
+
 
 
 	void SetroomId(int32 roomid) { _roomId = roomid; }

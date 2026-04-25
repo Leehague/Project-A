@@ -19,7 +19,7 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{781c8c45-bae1-4f58-8082-c54736b535e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Managers\Objects">
+    <Filter Include="Header Files\Objects">
       <UniqueIdentifier>{93e1d03e-76df-416d-bc11-c7d8cc051918}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -111,13 +111,10 @@
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>Header Files\Managers\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Room.h">
-      <Filter>Header Files\Managers\Objects</Filter>
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files\Managers\Objects</Filter>
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
       <Filter>Header Files</Filter>
@@ -135,7 +132,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Monster.h">
-      <Filter>Header Files\Managers\Objects</Filter>
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

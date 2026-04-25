@@ -21,9 +21,9 @@ public:
         return sqrt(dx * dx + dy * dy + dz * dz);
     }
 
-    static Vector3 PosInfoToVector3(Protocol::PosInfo posinfo)
+    static Vector3 PosInfoToVector3(const Protocol::PosInfo* posinfo)
     {
-        return Vector3(posinfo.x(), posinfo.y(), posinfo.z());
+        return Vector3(posinfo->x(), posinfo->y(), posinfo->z());
 
     }
 };

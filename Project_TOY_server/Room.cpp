@@ -8,6 +8,9 @@
 #include "MapManager.h"
 #include "Map.h"
 #include "Monster.h"
+#include "DataContents.h"
+#include "ObjectManager.h"
+
 
 Room::Room(int32 roomId, int32 mapId) : _Selfroomid(roomId)
 {
@@ -18,7 +21,9 @@ Room::Room(int32 roomId, int32 mapId) : _Selfroomid(roomId)
     if (_map == nullptr)
     {
         std::cout << "Room " << roomId << ": Map Load Failed! (ID: " << mapId << ")" << std::endl;
+        return;
     }
+    InitGridData(_map->GetMapData());
 }
 
 void Room::Enter(GameObjectPtr go)
@@ -28,6 +33,9 @@ void Room::Enter(GameObjectPtr go)
         std::lock_guard<std::mutex> lock(_lock);
         _objects[go->GetObjectId()] = go;
         go->SetroomId(_Selfroomid);
+
+        auto [cellX, cellZ] = GetGridPos(Vector3::PosInfoToVector3(go->Getpos())); // 좌표로 인덱스 추출
+        _objectGrid[cellZ][cellX].insert(go);
 
     }
     //본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
@@ -39,8 +47,8 @@ void Room::Enter(GameObjectPtr go)
         {
             session->SetPlayerId(player->GetObjectId());
         }
-        Protocol::SC_ENTER_GAME enterPkt;
-        *enterPkt.mutable_pos_info() = player->Getpos(); // 서버가 결정한 좌표
+        Protocol::SC_ENTER_GAME enterPkt;     
+        *enterPkt.mutable_pos_info() = *(player->Getpos()); // 서버가 결정한 좌표
 
         enterPkt.set_templeteid(go->GetTempleteId()); //핸들러에서 결정된 템플릿 아이디
         
@@ -73,10 +81,23 @@ void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
 
 void Room::Leave(PlayerPtr player)
 {
+    if (player == nullptr) return;
+
     uint64 playerId = player->GetObjectId();
 
     {
         std::lock_guard<std::mutex> lock(_lock);
+        
+        auto it = _objects.find(playerId);
+        if (it == _objects.end())
+            return; // 이미 나갔거나 없는 객체면 무시
+
+        GameObjectPtr go = it->second;
+
+        // 그리드에서 제거
+        auto [cellX, cellZ] = GetGridPos(Vector3::PosInfoToVector3(go->Getpos()));
+        _objectGrid[cellZ][cellX].erase(go);
+
         _objects.erase(playerId); // 1. 룸의 관리 목록에서 제거
     }
 
@@ -87,6 +108,8 @@ void Room::Leave(PlayerPtr player)
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_PLAYER_DESPAWN);
     Broadcast(sendBuffer, playerId); // 본인은 이미 나갔으므로 제외
+
+
 }
 
 void Room::Broadcast(SendBufferPtr sendBuffer)
@@ -119,7 +142,7 @@ void Room::SpawnBroadcast(PlayerPtr player)
               
         Protocol::SpawnInfo* spawnInfo = spawnPkt.add_players_spawn_info();
 
-        spawnInfo->mutable_spawnposinfo()->CopyFrom(player->Getpos());
+        spawnInfo->mutable_spawnposinfo()->CopyFrom(*player->Getpos());
         spawnInfo->set_templeteid(player->GetTempleteId());
 
 
@@ -147,7 +170,7 @@ void Room::SpawnBroadcast(PlayerPtr player)
                 Protocol::SpawnInfo* spawnInfo = playerspawnPkt.add_players_spawn_info();
 
                 //해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
-                spawnInfo->mutable_spawnposinfo()->CopyFrom(pair.second->Getpos());
+                spawnInfo->mutable_spawnposinfo()->CopyFrom(*(pair.second->Getpos()));
                 spawnInfo->set_templeteid(pair.second->GetTempleteId());
             }
             else if (pair.second->GetType() == GameObjectType::Monster) 
@@ -155,7 +178,7 @@ void Room::SpawnBroadcast(PlayerPtr player)
                 Protocol::SpawnInfo* spawnInfo = monsterspawnPkt.add_monsters_spawn_info();
 
                 //해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
-                spawnInfo->mutable_spawnposinfo()->CopyFrom(pair.second->Getpos());
+                spawnInfo->mutable_spawnposinfo()->CopyFrom(*(pair.second->Getpos()));
                 spawnInfo->set_templeteid(pair.second->GetTempleteId());
             }
 
@@ -194,7 +217,7 @@ void Room::SpawnBroadcast(const std::vector<MonsterPtr>& monsters)
     {
         Protocol::SpawnInfo* spawnInfo = monsterspawn_pkt.add_monsters_spawn_info();
 
-        spawnInfo->mutable_spawnposinfo()->CopyFrom(monster->Getpos());
+        spawnInfo->mutable_spawnposinfo()->CopyFrom(*(monster->Getpos()));
         spawnInfo->set_templeteid(monster->GetTempleteId());
     }
 
@@ -270,21 +293,28 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
         }
     }
 
+    //[갱신] 그리드 업데이트
+    {
+        UpdateObjectGrid(player, currentPos, newPos);
+    }
+
+
     // 2. [갱신] 서버 메모리에 플레이어 위치 정보 업데이트
     player->Setpos(pkt.pos_info());
 
     // 3. [전달] 방 안의 다른 유저들에게 이동 사실 브로드캐스트
     Protocol::SC_MOVING resPkt;
     auto* resPos = resPkt.mutable_pos_info();
-    resPos->CopyFrom(player->Getpos());
+    resPos->CopyFrom(*(player->Getpos()));
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
-    Broadcast(sendBuffer, player->GetObjectId()); // 자기자신은 제외
+   
+    BroadcastAround(sendBuffer, Vector3::PosInfoToVector3(player->Getpos()), player->GetObjectId());// 자기자신은 제외한 인접 플레이어들에게 방송
 
-
+    
     //Loging
-    std::cout << "RoomId: " << _Selfroomid << std::endl
-        << "object Id : " << resPos->object_id() << "HandleMove : (" << resPos->x() << resPos->y() << resPos->z() << ")" << std::endl;
+    /*std::cout << "RoomId: " << _Selfroomid << std::endl
+        << "object Id : " << resPos->object_id() << "HandleMove : (" << resPos->x() << resPos->y() << resPos->z() << ")" << std::endl;*/
 
 }
 
@@ -363,7 +393,7 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
                     hp_changed_pkt.set_damage(damage);
                     hp_changed_pkt.set_attacker_id(player->GetObjectId());
                     auto sendBuffer = ServerUtils::MakeSendBuffer(hp_changed_pkt, Protocol::PKT_SC_CHANGE_HP);
-                    Broadcast(sendBuffer);
+                    BroadcastAround(sendBuffer,player->Getpos_As_Vector3());
 
                     std::cout << "[Melee Hit] " << player->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
                 }
@@ -405,7 +435,19 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
 
 void Room::MonsterSpawn(int32 NumOfMonster)
 {
+    // 테스트용 몬스터 생성 및 입장 로직 jobqueue로 수정해야함
+    std::vector<MonsterPtr> monsters;
+    for (int i = 0; i < NumOfMonster; i++)
+    {
+        MonsterPtr monster = std::static_pointer_cast<Monster>(
+            GObjcetManager.Create(GameObjectType::Monster, nullptr, 2) //몬스터는 session이 필요없기 때문에 nullptr로 전달
+        );
+        monster->Set_x(10.0f + i * 2.0f);
+        monster->Set_z(10.0f);
 
+        monsters.push_back(monster);
+    }
+    EnterMonsters(monsters);
 }
 
 //위치 되감기
@@ -414,7 +456,7 @@ void Room::SendMoveResync(PlayerPtr player)
     // 1. 서버에 저장된 '이전' 좌표를 담은 패킷 생성
     Protocol::SC_MOVING resPkt;
     auto* resPos = resPkt.mutable_pos_info();
-    resPos->CopyFrom(player->Getpos()); // 업데이트 전의 서버 좌표
+    resPos->CopyFrom(*(player->Getpos())); // 업데이트 전의 서버 좌표
     resPos->set_state((int)CreatureState::Idle);
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
@@ -423,6 +465,101 @@ void Room::SendMoveResync(PlayerPtr player)
     if (auto s = player->session.lock())
         s->Send(sendBuffer);
 
+}
+
+std::pair<int, int> Room::GetGridPos(Vector3 pos)
+{
+    // Map에서 읽어온 정보를 기준으로 계산
+    int x = static_cast<int>((pos.x - _minX) / _cellSize);
+    int z = static_cast<int>((pos.z - _minZ) / _cellSize);
+
+    // 인덱스 범위 초과 방지 (방어 코드)
+    x = std::clamp(x, 0, _gridWidth - 1);
+    z = std::clamp(z, 0, _gridHeight - 1);
+
+    return { x, z };
+}
+
+//인접 플레이어 추출 (Interest Management)
+std::vector<PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_object_id)
+{
+    std::vector<PlayerPtr> adjacentPlayers;
+    auto [cellX, cellZ] = GetGridPos(pos);
+
+    // 주변 9개 칸 (자신 포함) 순회
+    for (int dz = -1; dz <= 1; ++dz)
+    {
+        for (int dx = -1; dx <= 1; ++dx)
+        {
+            int nx = cellX + dx;
+            int nz = cellZ + dz;
+
+            // 유효한 그리드 범위인지 확인
+            if (nx >= 0 && nx < _gridWidth && nz >= 0 && nz < _gridHeight)
+            {
+                for (auto& go : _objectGrid[nz][nx])
+                {
+                    // 플레이어인 경우만 패킷 수신 대상이므로 추가
+                    if (go->GetType() == GameObjectType::Player && go->GetObjectId() != passing_object_id)
+                    {
+                        adjacentPlayers.push_back(std::static_pointer_cast<Player>(go));
+                    }
+                }
+            }
+        }
+    }
+    return adjacentPlayers;
+}
+void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
+{
+    // 1. 이전 좌표와 새 좌표의 그리드 인덱스 계산
+    auto oldGridPos = GetGridPos(oldPos);
+    auto newGridPos = GetGridPos(newPos);
+
+    // 2. 만약 같은 칸 내에서의 이동이라면 갱신할 필요 없음
+    if (oldGridPos == newGridPos)
+        return;
+
+    // 3. 이전 그리드에서 제거
+    {
+        int oldX = oldGridPos.first;
+        int oldZ = oldGridPos.second;
+        _objectGrid[oldZ][oldX].erase(go);
+    }
+
+    // 4. 새로운 그리드에 추가
+    {
+        int newX = newGridPos.first;
+        int newZ = newGridPos.second;
+        _objectGrid[newZ][newX].insert(go);
+    }
+
+    // [참고] 여기서 추가로 처리할 수 있는 로직:
+    // 만약 플레이어라면, 새로 진입한 그리드 주변에만 본인의 정보를 브로드캐스트 하도록 유도 가능
+}
+
+void Room::BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id)
+{
+    // 모든 플레이어가 아니라 인접한 플레이어에게만 보냄
+    auto targets = GetAdjacentPlayers(centerPos, passing_object_id);
+
+    for (PlayerPtr player : targets)
+    {
+        if (auto session = player->session.lock())
+        {
+            session->Send(sendBuffer);
+        }
+    }
+}
+
+void Room::InitGridData(const MapData* mapdata)
+{
+    _cellSize = mapdata->CellSize;
+    _minX = mapdata->MinX;
+    _minZ = mapdata->MinZ;
+    _gridWidth = mapdata->width;
+    _gridHeight = mapdata->height;
+    _objectGrid.assign(_gridHeight, std::vector<std::set<GameObjectPtr>>(_gridWidth));
 }
 
 

@@ -21,6 +21,7 @@ public:
     float GetHeight(Vector3 pos); // [추가] 특정 좌표의 지형 높이 반환
     uint64 GetMapId();
 
+    const MapData* GetMapData() {return _mapdata;}
 private:
 
     int _width;
@@ -28,7 +29,7 @@ private:
     float _minX, _minZ;
     float _cellSize;
 
-    const MapData* _mapdata;
+    const MapData* _mapdata =nullptr;
     std::vector<std::vector<bool>> _collisionData;
     std::vector<std::vector<float>> _heightData; // [추가] 높이 데이터 저장용
 

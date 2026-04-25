@@ -18,7 +18,7 @@ using int32 = std::int32_t;
 using int64 = std::int64_t;
 
 class Session; class SendBuffer; class Player; class Room;
-class GameObject; class Map; class Monster;
+class GameObject; class Map; class Monster; class Vector3; struct MapData; //MapData는 구조체로 선언되어 있음
 
 // 스마트 포인터 별칭 정의
 using SessionPtr = std::shared_ptr<Session>;

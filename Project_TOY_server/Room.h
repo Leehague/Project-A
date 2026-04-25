@@ -40,5 +40,28 @@ private:
     int32 _Selfroomid;
 
     MapPtr _map;
+
+private: //그리드 시스템 관련
+    // 1. 그리드 인덱스 계산 (좌표 -> 그리드 좌표)
+    std::pair<int, int> GetGridPos(Vector3 pos);
+
+    // 2. 내 주변 9개 칸에 속한 플레이어 리스트 가져오기 (브로드캐스트 타겟 추출)
+    std::vector<PlayerPtr> GetAdjacentPlayers(Vector3 pos, int32 passing_object_id =-1);
+
+    // 3. 오브젝트 이동 시 그리드 갱신 (Enter/Move/Leave 시 호출)
+    void UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos);
+
+    // 인접 플레이어 에게 방송
+    void BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id =-1);
+private:
+    // [그리드 데이터 구조] _objectGrid[z][x] = {해당 칸에 있는 오브젝트 세트}
+    // std::set을 쓰면 중복 제거 및 특정 오브젝트 탐색이 빠릅니다.
+    std::vector<std::vector<std::set<GameObjectPtr>>> _objectGrid;
+
+    // Map의 정보를 복사해두거나 직접 참조하여 인덱스 계산에 사용
+    float _minX=0, _minZ=0, _cellSize=0;
+    int _gridWidth=0, _gridHeight=0;
+private:
+    void InitGridData(const MapData* mapdata);
 };
 

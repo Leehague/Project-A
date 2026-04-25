@@ -53,9 +53,9 @@ bool Handle_CS_CHAT(SessionPtr& session, Protocol::CS_CHAT& pkt)
     // 2. 보낼 응답 패킷 생성 및 데이터 채우기
     Protocol::SC_CHAT_BROADCAST res;
 
-    // 플레이어 ID 설정 (소켓 번호보다는 시스템에서 부여한 고유 ID가 좋습니다)
-    res.set_player_id(static_cast<uint64>(session->Session::GetSocket()));
-
+    // 플레이어 ID 설정 
+    //res.set_player_id(static_cast<uint64>(session->Session::GetSocket()));
+    res.set_player_id(session->GetPlayerId());
     // 채팅 내용 설정 (Protobuf가 내부적으로 메모리 할당을 관리하므로 strcpy_s가 필요 없습니다)
     res.set_msg(receivedMsg);
 
