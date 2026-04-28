@@ -32,3 +32,16 @@ int32 RoomManager::GetRoomCounter()
 {
     return RoomCounter;
 }
+
+std::vector<RoomPtr> RoomManager::GetRooms()
+{
+    std::lock_guard<std::mutex> lock(_lock);
+    std::vector<RoomPtr> rooms;
+
+    for (auto& pair : _rooms)
+    {
+        rooms.push_back(pair.second);
+    }
+
+    return rooms;
+}

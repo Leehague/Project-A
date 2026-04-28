@@ -34,8 +34,8 @@ void Room::Enter(GameObjectPtr go)
         _objects[go->GetObjectId()] = go;
         go->SetroomId(_Selfroomid);
 
-        auto [cellX, cellZ] = GetGridPos(Vector3::PosInfoToVector3(go->Getpos())); // 좌표로 인덱스 추출
-        _objectGrid[cellZ][cellX].insert(go);
+        auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // 좌표로 인덱스 추출
+        _sectors[cellZ][cellX].insert(go);
 
     }
     //본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
@@ -95,8 +95,8 @@ void Room::Leave(PlayerPtr player)
         GameObjectPtr go = it->second;
 
         // 그리드에서 제거
-        auto [cellX, cellZ] = GetGridPos(Vector3::PosInfoToVector3(go->Getpos()));
-        _objectGrid[cellZ][cellX].erase(go);
+        auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos()));
+        _sectors[cellZ][cellX].erase(go);
 
         _objects.erase(playerId); // 1. 룸의 관리 목록에서 제거
     }
@@ -235,6 +235,20 @@ void Room::SpawnBroadcast(MonsterPtr monster)
 {
     SpawnBroadcast({monster});
 }
+
+void Room::BroadcastMove(GameObjectPtr go)
+{
+    if (go == nullptr) return;
+
+    Protocol::SC_MOVING movePkt;
+    movePkt.mutable_pos_info()->CopyFrom(*go->Getpos()); // 현재 오브젝트의 좌표 정보 복사
+
+    auto sendBuffer = ServerUtils::MakeSendBuffer(movePkt, Protocol::PKT_SC_MOVING);
+
+    //주변에 방송 (본인 제외 로직은 BroadcastAround에 구현된 passing_object_id 활용)
+    BroadcastAround(sendBuffer, Vector3::PosInfoToVector3(go->Getpos()), go->GetObjectId());
+}
+
 void Room::SendTo(PlayerPtr player, SendBufferPtr sendBuffer)
 {
     std::lock_guard<std::mutex> lock(_lock);
@@ -430,7 +444,7 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
     }
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_SKILL);
-    Broadcast(sendBuffer);
+    BroadcastAround(sendBuffer, player->Getpos_As_Vector3());
 }
 
 void Room::MonsterSpawn(int32 NumOfMonster)
@@ -450,6 +464,36 @@ void Room::MonsterSpawn(int32 NumOfMonster)
     EnterMonsters(monsters);
 }
 
+PlayerPtr Room::GetNearestPlayer(Vector3 pos, float maxRange)
+{
+    PlayerPtr nearestPlayer = nullptr;
+    float bestDistSq = maxRange * maxRange; // 제곱근 연산을 피하기 위해 거리의 제곱 사용
+
+    // 1. 주변 9개 그리드에 있는 플레이어 리스트를 가져옴 (이미 구현된 함수 활용)
+    std::vector<PlayerPtr> adjacentPlayers = GetAdjacentPlayers(pos);
+
+    // 2. 리스트를 순회하며 가장 가까운 플레이어 탐색
+    for (const PlayerPtr& player : adjacentPlayers)
+    {
+        // 사망 상태인 플레이어는 제외 (필요 시)
+        if (player->GetState() == CreatureState::Dead)
+            continue;
+
+        Vector3 playerPos = Vector3::PosInfoToVector3(player->Getpos());
+
+        // 두 지점 사이의 거리 제곱 계산 (sqrt를 안 써서 성능 이득)
+        float distSq = Vector3::DistanceSquared(pos, playerPos);
+
+        if (distSq < bestDistSq)
+        {
+            bestDistSq = distSq;
+            nearestPlayer = player;
+        }
+    }
+
+    return nearestPlayer;
+}
+
 //위치 되감기
 void Room::SendMoveResync(PlayerPtr player)
 {
@@ -467,24 +511,28 @@ void Room::SendMoveResync(PlayerPtr player)
 
 }
 
-std::pair<int, int> Room::GetGridPos(Vector3 pos)
+std::pair<int, int> Room::GetSectorPos(Vector3 pos)
 {
-    // Map에서 읽어온 정보를 기준으로 계산
-    int x = static_cast<int>((pos.x - _minX) / _cellSize);
-    int z = static_cast<int>((pos.z - _minZ) / _cellSize);
+    // 1. 먼저 물리 타일 좌표로 변환
+    int cellX = static_cast<int>(std::floor((pos.x - _minX) / _cellSize));
+    int cellZ = static_cast<int>(std::floor((pos.z - _minZ) / _cellSize));
 
-    // 인덱스 범위 초과 방지 (방어 코드)
-    x = std::clamp(x, 0, _gridWidth - 1);
-    z = std::clamp(z, 0, _gridHeight - 1);
+    // 2. 물리 좌표를 섹터 크기로 나누어 섹터 인덱스 산출
+    int sectorX = cellX / _sectorSize;
+    int sectorZ = cellZ / _sectorSize;
 
-    return { x, z };
+    // 범위 제한
+    sectorX = std::clamp(sectorX, 0, _sectorCountX - 1);
+    sectorZ = std::clamp(sectorZ, 0, _sectorCountZ - 1);
+
+    return { sectorX, sectorZ };
 }
 
 //인접 플레이어 추출 (Interest Management)
 std::vector<PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_object_id)
 {
     std::vector<PlayerPtr> adjacentPlayers;
-    auto [cellX, cellZ] = GetGridPos(pos);
+    auto [cellX, cellZ] = GetSectorPos(pos);
 
     // 주변 9개 칸 (자신 포함) 순회
     for (int dz = -1; dz <= 1; ++dz)
@@ -495,11 +543,10 @@ std::vector<PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_objec
             int nz = cellZ + dz;
 
             // 유효한 그리드 범위인지 확인
-            if (nx >= 0 && nx < _gridWidth && nz >= 0 && nz < _gridHeight)
+            if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
             {
-                for (auto& go : _objectGrid[nz][nx])
+                for (auto& go : _sectors[nz][nx])
                 {
-                    // 플레이어인 경우만 패킷 수신 대상이므로 추가
                     if (go->GetType() == GameObjectType::Player && go->GetObjectId() != passing_object_id)
                     {
                         adjacentPlayers.push_back(std::static_pointer_cast<Player>(go));
@@ -513,8 +560,8 @@ std::vector<PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_objec
 void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
 {
     // 1. 이전 좌표와 새 좌표의 그리드 인덱스 계산
-    auto oldGridPos = GetGridPos(oldPos);
-    auto newGridPos = GetGridPos(newPos);
+    auto oldGridPos = GetSectorPos(oldPos);
+    auto newGridPos = GetSectorPos(newPos);
 
     // 2. 만약 같은 칸 내에서의 이동이라면 갱신할 필요 없음
     if (oldGridPos == newGridPos)
@@ -524,14 +571,14 @@ void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
     {
         int oldX = oldGridPos.first;
         int oldZ = oldGridPos.second;
-        _objectGrid[oldZ][oldX].erase(go);
+        _sectors[oldZ][oldX].erase(go);
     }
 
     // 4. 새로운 그리드에 추가
     {
         int newX = newGridPos.first;
         int newZ = newGridPos.second;
-        _objectGrid[newZ][newX].insert(go);
+        _sectors[newZ][newX].insert(go);
     }
 
     // [참고] 여기서 추가로 처리할 수 있는 로직:
@@ -557,9 +604,29 @@ void Room::InitGridData(const MapData* mapdata)
     _cellSize = mapdata->CellSize;
     _minX = mapdata->MinX;
     _minZ = mapdata->MinZ;
-    _gridWidth = mapdata->width;
-    _gridHeight = mapdata->height;
-    _objectGrid.assign(_gridHeight, std::vector<std::set<GameObjectPtr>>(_gridWidth));
+    // 섹터 개수 계산 (전체 가로/세로 타일 수 / 섹터 크기)
+    _sectorCountX = (mapdata->width / _sectorSize) + 1;
+    _sectorCountZ = (mapdata->height / _sectorSize) + 1;
+
+    _sectors.assign(_sectorCountZ, std::vector<std::set<GameObjectPtr>>(_sectorCountX));
 }
 
 
+void Room::Update()
+{
+    // 몬스터 AI 및 이동 업데이트
+    // _objects를 순회하며 몬스터만 골라내거나, 별도의 _monsters 리스트를 관리하면 더 빠릅니다.
+    for (auto& item : _objects)
+    {
+
+        GameObjectPtr go = item.second;
+
+        if (go->GetType() == GameObjectType::Monster)
+        {
+            auto monster = std::static_pointer_cast<Monster>(go);
+            monster->UpdateAction();
+        }
+    }
+
+    // TODO: 프로젝트 TOY 서버의 다른 업데이트 로직 (환경 변화 등)
+}

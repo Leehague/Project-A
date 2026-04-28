@@ -3,6 +3,7 @@
 #include <memory>
 #include <mutex>
 #include <map>
+#include <vector>
 #include "Protocol/Protocol.pb.h"
 
 using BYTE = unsigned char;

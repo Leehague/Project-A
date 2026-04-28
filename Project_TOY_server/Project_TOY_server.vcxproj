@@ -139,6 +139,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapManager.cpp" />
+    <ClCompile Include="Monster.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="Protocol\Protocol.pb.cc" />
@@ -155,6 +156,8 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="IocpCore.h" />
+    <ClInclude Include="JobQueue.h" />
+    <ClInclude Include="JobSerializer.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapManager.h" />

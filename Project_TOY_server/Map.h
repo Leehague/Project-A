@@ -10,6 +10,14 @@ struct Triangle {
     float minX, maxX, minZ, maxZ;
 };
 
+struct PQNode {
+    bool operator<(const PQNode& other) const { return f > other.f; }
+    int32 f; // g + h
+    int32 g; // 시작점부터의 비용
+    Vector3 pos;
+};
+
+
 struct MapData;
 class Map
 {
@@ -22,6 +30,7 @@ public:
     uint64 GetMapId();
 
     const MapData* GetMapData() {return _mapdata;}
+    std::pair<int, int> GetGridPos(Vector3 pos);
 private:
 
     int _width;
@@ -37,5 +46,16 @@ private:
     std::vector<Triangle> _navTriangles;
     // 각 그리드 좌표(z, x)에 속한 삼각형들의 인덱스 리스트
     std::vector<std::vector<std::vector<int>>> _gridIndices;
+
+
+    
+
+public:
+    // 시작점에서 목적지까지의 경로를 Vector3 리스트로 반환
+    std::vector<Vector3> FindPath(Vector3 startPos, Vector3 endPos);
+
+private:
+    // 좌표를 정수형 그리드 인덱스로 변환하는 헬퍼 (기존 GetGridPos 활용)
+    // 인접 노드 탐색 시 사용
 };
 

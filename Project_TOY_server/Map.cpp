@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include "DataContents.h"
+#include <queue>
 
 bool Map::Load(const MapData* mapdata)
 {
@@ -102,69 +103,99 @@ uint64 Map::GetMapId()
 {
     return _mapdata->MapId;
 }
-//bool Map::LoadNavMesh(const std::string& path) {
-//    std::ifstream ifs(path, std::ios::binary);
-//    if (!ifs.is_open()) return false;
-//
-//    // 1. 정점 로드
-//    int vertCount;
-//    ifs.read((char*)&vertCount, sizeof(int));
-//    std::vector<Vector3> vertices(vertCount);
-//    
-//    ifs.read((char*)vertices.data(), sizeof(Vector3) * vertCount);
-//
-//    //for (int i = 0; i < vertCount; i++) {
-//    //    // x, y, z를 각각 4바이트씩 읽어서 대입
-//    //    ifs.read((char*)&vertices[i].x, sizeof(float));
-//    //    ifs.read((char*)&vertices[i].y, sizeof(float));
-//    //    ifs.read((char*)&vertices[i].z, sizeof(float));
-//    //}
-//
-//    // 2. 인덱스 로드 후 삼각형 구성
-//    int indexCount;
-//    ifs.read((char*)&indexCount, sizeof(int));
-//    for (int i = 0; i < indexCount; i += 3) {
-//        int i1, i2, i3;
-//        ifs.read((char*)&i1, sizeof(int));
-//        ifs.read((char*)&i2, sizeof(int));
-//        ifs.read((char*)&i3, sizeof(int));
-//
-//        _navTriangles.push_back({ vertices[i1], vertices[i2], vertices[i3] });
-//    }
-//
-//    // 2. 그리드 인덱스 공간 확보
-//    _gridIndices.assign(_height, std::vector<std::vector<int>>(_width));
-//
-//    // 3. 각 삼각형을 그리드에 등록
-//    for (int i = 0; i < _navTriangles.size(); i++) {
-//        const auto& tri = _navTriangles[i];
-//
-//        // 삼각형의 AABB를 그리드 좌표로 변환
-//        int startX = static_cast<int>((tri.minX - _minX) / _cellSize);
-//        int endX = static_cast<int>((tri.maxX - _minX) / _cellSize);
-//        int startZ = static_cast<int>((tri.minZ - _minZ) / _cellSize);
-//        int endZ = static_cast<int>((tri.maxZ - _minZ) / _cellSize);
-//
-//        // 유효 범위 클램핑
-//        startX = std::max(0, std::min(startX, _width - 1));
-//        endX = std::max(0, std::min(endX, _width - 1));
-//        startZ = std::max(0, std::min(startZ, _height - 1));
-//        endZ = std::max(0, std::min(endZ, _height - 1));
-//
-//        // 해당 범위의 모든 그리드 칸에 내 인덱스를 등록
-//        for (int z = startZ; z <= endZ; z++) {
-//            for (int x = startX; x <= endX; x++) {
-//                _gridIndices[z][x].push_back(i);
-//            }
-//        }
-//    }
-//
-//    std::cout << "Total Triangles: " << _navTriangles.size() << std::endl;
-//    if (!_navTriangles.empty()) {
-//        std::cout << "Sample Triangle 0: V1(" << _navTriangles[0].v1.x << ", " << _navTriangles[0].v1.z << ")" << std::endl;
-//    }
-//    return true;
-//}
+std::pair<int, int> Map::GetGridPos(Vector3 pos)
+{
+    // 1. 기준 좌표(_minX, _minZ)로부터의 거리를 셀 크기로 나눕니다.
+    int x = static_cast<int>((pos.x - _minX) / _cellSize);
+    int z = static_cast<int>((pos.z - _minZ) / _cellSize);
+
+    // 2. 맵의 범위를 벗어나지 않도록 보정(Clamp)해줍니다.
+    // _width와 _height는 맵 로드 시 결정된 타일의 개수입니다.
+    x = std::max(0, std::min(x, _width - 1));
+    z = std::max(0, std::min(z, _height - 1));
+
+    return { x, z };
+}
+
+std::vector<Vector3> Map::FindPath(Vector3 startPos, Vector3 endPos)
+{
+    std::vector<Vector3> path;
+
+    // 1. 갈 수 없는 목적지라면 바로 리턴
+    if (!CanGo(endPos)) return path;
+
+    // 2. 우선순위 큐 및 방문 기록용 데이터 구조
+    std::priority_queue<PQNode> pq;
+    // key: 그리드 좌표(pair<int, int>), value: 해당 지점까지의 최소 비용 g
+    std::map<std::pair<int, int>, int32> bestG;
+    // 부모 노드 기록 (경로 역추적용)
+    std::map<std::pair<int, int>, std::pair<int, int>> parent;
+
+    auto startIdx = GetGridPos(startPos);
+    auto endIdx = GetGridPos(endPos);
+
+    if (startIdx == endIdx) return { endPos };
+
+    pq.push({ 0, 0, startPos });
+    bestG[startIdx] = 0;
+
+    while (!pq.empty())
+    {
+        PQNode node = pq.top();
+        pq.pop();
+
+        std::pair<int, int> nowIdx = GetGridPos(node.pos);
+
+        // 목적지 도착 확인
+        if (nowIdx == endIdx)
+        {
+            // 경로 역추적하여 path 벡터 채우기
+            std::pair<int, int> curr = endIdx;
+            while (curr != startIdx)
+            {
+                path.push_back(Vector3(
+                    curr.first * _cellSize + _minX,
+                    GetHeight(Vector3(curr.first * _cellSize + _minX, 0, curr.second * _cellSize + _minZ)),
+                    curr.second * _cellSize + _minZ
+                ));
+                curr = parent[curr];
+            }
+            std::reverse(path.begin(), path.end());
+            return path;
+        }
+
+        // 8방향 탐색
+        static int dx[] = { 1, -1, 0, 0, 1, 1, -1, -1 };
+        static int dz[] = { 0, 0, 1, -1, 1, -1, 1, -1 };
+
+        for (int i = 0; i < 8; i++)
+        {
+            int nextX = nowIdx.first + dx[i];
+            int nextZ = nowIdx.second + dz[i];
+            std::pair<int, int> nextIdx = { nextX, nextZ };
+
+            Vector3 nextPos(nextX * _cellSize + _minX, 0, nextZ * _cellSize + _minZ);
+            nextPos.y = GetHeight(nextPos);
+
+            if (!CanGo(nextPos)) continue;
+
+            // 가로/세로는 10, 대각선은 14 (정수 연산 최적화)
+            int32 moveCost = (i < 4) ? 10 : 14;
+            int32 nextG = node.g + moveCost;
+
+            if (bestG.find(nextIdx) == bestG.end() || nextG < bestG[nextIdx])
+            {
+                bestG[nextIdx] = nextG;
+                // Heuristic: 맨해튼 거리 
+                int32 h = static_cast<int32>(std::abs(nextX - endIdx.first) + std::abs(nextZ - endIdx.second)) * 10;
+                pq.push({ nextG + h, nextG, nextPos });
+                parent[nextIdx] = nowIdx;
+            }
+        }
+    }
+
+    return path;
+}
 
 bool Map::LoadNavMesh(const std::string& path) {
     std::ifstream ifs(path, std::ios::binary);

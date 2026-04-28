@@ -21,8 +21,28 @@
 #include "Monster.h"
 #include "GameObject.h"
 #include "ObjectManager.h"
+#include "JobSerializer.h"
 
 #pragma comment(lib, "ws2_32.lib")
+
+JobSerializer GJobSerializer;
+
+void WorkerThread(IocpCore& iocp)
+{
+    while (true)
+    {
+        // [네트워크 일감] 우선 순위 1
+        // 타임아웃을 짧게 주어(예: 10ms) 네트워크가 없으면 빠르게 다음으로 넘어갑니다.
+        iocp.Dispatch(10);
+
+        // [게임 로직 일감] 우선 순위 2
+        // 실행 대기 중인 JobQueue(Room 등)를 꺼내어 처리합니다.
+        while (auto jobQueue = GJobSerializer.Pop())
+        {
+            jobQueue->Execute();
+        }
+    }
+}
 
 void ConsoleThread(RoomPtr room)
 {
@@ -49,19 +69,16 @@ int main()
 {
     PacketHandler::Init();
     DataManager::GetInstance().Init();
-    GMapManager.Init(); // DataManager의 Init 이후에 실행되어야 함.
+    GMapManager.Init();
     IocpCore iocp;
     Listener listener;
 
-    std::cout << GRoomManager.Create(1) << "번 방 생성" << std::endl; //0번방 생성 , 1번 맵으로 초기화
-    
-    RoomPtr defaultRoom = GRoomManager.FindRoom(1);
-    // 콘솔 입력 쓰레드 시작
-    std::thread consoleThread(ConsoleThread, defaultRoom);
-    consoleThread.detach(); // 메인 쓰레드와 별개로 동작하게 분리
+    std::cout << GRoomManager.Create(1) << "번 방 생성" << std::endl;
 
-    // 1. 서버 시작 (포트, 세션 생성 방식, IOCP 핵심 객체 전달)
-    // 람다 함수는 단순히 "어떤 세션 객체를 만들지"만 결정해서 리턴합니다.
+    RoomPtr defaultRoom = GRoomManager.FindRoom(1);
+    std::thread consoleThread(ConsoleThread, defaultRoom);
+    consoleThread.detach();
+
     bool success = listener.StartAccept(
         7777,
         []() { return std::make_shared<Session>(); },
@@ -70,21 +87,34 @@ int main()
 
     if (success)
     {
-        // 2. 접속 전용 스레드 실행
-        // 이제 Listener::Execute 내부에서 factory를 써서 세션을 만들고 iocp에 등록합니다.
         std::thread t(&Listener::Execute, &listener, std::ref(iocp));
         t.detach();
 
-        // 3. Worker Thread 풀 구성 
+        // [수정] 3. Worker Thread 풀 구성 
+        // 정의해둔 WorkerThread 함수를 사용하여 네트워크와 로직을 모두 처리하게 합니다.
         std::vector<std::thread> workerThreads;
         for (int i = 0; i < 4; i++)
         {
-            workerThreads.push_back(std::thread([&iocp]() {
-                while (true)
-                {
-                    iocp.Dispatch();
-                }
-                }));
+            workerThreads.push_back(std::thread(WorkerThread, std::ref(iocp)));
+        }
+
+        // 4. [Main Thread 전용] 주기적인 로직 업데이트 (Tick 관리)
+        while (true)
+        {
+            auto rooms = GRoomManager.GetRooms();
+            for (auto& room : rooms)
+            {
+                // 로직 업데이트 예약
+                room->Push([room]() {
+                    room->Update();
+                    });
+
+                // 일감이 있음을 알림
+                GJobSerializer.Push(room);
+            }
+
+            // 50ms마다 틱 생성 (20 FPS)
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
 
         for (auto& t : workerThreads)

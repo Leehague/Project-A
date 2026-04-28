@@ -7,6 +7,7 @@
 #include "DataContents.h"
 #include "DataManager.h"
 #include "Vector3.h"
+#include "RoomManager.h"
 
 struct SkillRecord {
 	int64 lastUseTime = 0; // 밀리초(ms) 단위
@@ -52,14 +53,25 @@ public:
 		_pos.set_state(pos.state());
 		
 	}
+
+      void Setpos(Vector3 vecpos) 
+    {
+        Vector3 dir(vecpos.x - _pos.x(), vecpos.y - _pos.y(), vecpos.z - _pos.z());
+        _pos.set_x(vecpos.x);
+        _pos.set_y(vecpos.y);
+        _pos.set_z(vecpos.z);
+		_pos.set_yaw(CalculateYaw(dir));
+    }
 	void Set_x(float x) { _pos.set_x(x); }; void Set_y(float y) { _pos.set_y(y); }; void Set_z(float z) { _pos.set_z(z); };
 	const Protocol::PosInfo* Getpos() { return &_pos; }
 	Vector3 Getpos_As_Vector3() { return Vector3::PosInfoToVector3(&_pos); }
 
-
-
+	CreatureState GetState() { return static_cast<CreatureState>(_pos.state()); }
+	void SetState(CreatureState state) { _pos.set_state(static_cast<int32>(state)); }
 	void SetroomId(int32 roomid) { _roomId = roomid; }
 	int32 GetroomId() { return _roomId; }
+
+	RoomPtr Getroomptr() { return GRoomManager.FindRoom(_roomId); }
 
 	GameObjectType GetType() { return _type; }
 public:
@@ -106,6 +118,9 @@ public:
 	int32 GetCurrentHp() { return CurrentHp; }
 	int32 GetCurrentMp() { return CurrentMp; }
 
+	int32 GetMaxHP() { return _maxHp; }
+	int32 GetMaxMP() { return _maxMp; }
+
 	bool UseMp(int32 requiredMp) 
 	{
 		if (CurrentMp - requiredMp < 0) { return false; }
@@ -132,4 +147,23 @@ protected:
 
 	//기본 스탯 정보. 참고만해야함. 변화하는 정보가 아님
 	const StatData* _basestatData = nullptr; //templeteId 는 여기에 포함되어 있음
+
+public:
+	float CalculateYaw(Vector3 dir)
+	{
+		// 이동 거리가 거의 없으면 각도를 변경하지 않음 (0으로 나누기 방지)
+		if (dir.x == 0 && dir.z == 0)
+			return 0.0f; // 혹은 기존 yaw 유지
+
+		// atan2는 라디안 값을 반환 (-PI ~ PI)
+		float radian = std::atan2(dir.x, dir.z);
+
+		// 라디안 -> 도 변환
+		float degree = radian * (180.0f / 3.1415926535f);
+
+		// 결과를 0~360 범위로 정규화 (선택 사항)
+		if (degree < 0) degree += 360.0f;
+
+		return degree;
+	}
 };
