@@ -16,8 +16,19 @@ public:
     template<typename T>
     bool Write(T* src) { return Write(src, sizeof(T)); }
 
-    bool Write(void* src, uint32 len) {
+    template<typename T>
+    bool Write(T* src, uint32 len) {
         if (FreeSize() < len) return false;
+
+        // 추가된 방어 코드: 실수 타입일 경우 유효성 검사
+        if constexpr (std::is_floating_point_v<T>) {
+            if (!std::isfinite(*src)) { // src를 직접 역참조해서 체크
+                float safeValue = 0.0f;
+                ::memcpy(&_buffer[_pos], &safeValue, sizeof(float));
+                _pos += len;
+                return true;
+            }
+        }
         ::memcpy(&_buffer[_pos], src, len);
         _pos += len;
         return true;

@@ -25,7 +25,8 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-JobSerializer GJobSerializer;
+//JobSerializer GJobSerializer;
+
 
 void WorkerThread(IocpCore& iocp)
 {
@@ -39,7 +40,10 @@ void WorkerThread(IocpCore& iocp)
         // 실행 대기 중인 JobQueue(Room 등)를 꺼내어 처리합니다.
         while (auto jobQueue = GJobSerializer.Pop())
         {
+            
+            // Monster 등 다른 JobQueue인 경우 처리
             jobQueue->Execute();
+            
         }
     }
 }
@@ -99,22 +103,17 @@ int main()
         }
 
         // 4. [Main Thread 전용] 주기적인 로직 업데이트 (Tick 관리)
+        // main.cpp의 while 루프
         while (true)
         {
             auto rooms = GRoomManager.GetRooms();
             for (auto& room : rooms)
             {
-                // 로직 업데이트 예약
-                room->Push([room]() {
-                    room->Update();
-                    });
-
-                // 일감이 있음을 알림
+                // 룸 자체를 시리얼라이저에 등록하여 워커 쓰레드가 처리하게 함
                 GJobSerializer.Push(room);
             }
 
-            // 50ms마다 틱 생성 (20 FPS)
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 적절한 틱 간격
         }
 
         for (auto& t : workerThreads)

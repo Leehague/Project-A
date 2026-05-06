@@ -78,4 +78,5 @@ inline void PacketHandler::Init()
     GPacketHandler[Protocol::PacketId::PKT_SC_CHANGE_HP] = Handle_INVALID;
     GPacketHandler[Protocol::PacketId::PKT_SC_CHANGE_MP] = Handle_INVALID;
     GPacketHandler[Protocol::PacketId::PKT_SC_MONSTER_SPAWN] = Handle_INVALID;
+    GPacketHandler[Protocol::PacketId::PKT_SC_MONSTER_DEAD] = Handle_INVALID;
 }

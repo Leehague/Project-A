@@ -57,6 +57,11 @@ public class ObjectManager
         return go;
     }
 
+    public CreatureController FindController(int id) 
+    {
+        return Find(id).GetComponent<CreatureController>();
+    }
+
     // 모든 객체 삭제 (씬 전환 등에서 사용)
     public void Clear()
     {

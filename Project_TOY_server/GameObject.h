@@ -26,8 +26,11 @@ enum class CreatureState
 	Idle,
 	Moving,
 	Skill,
-	Dead,
+	OnDead, //방금 사망
+	Dead, //죽어있었던 상태
 };
+
+
 
 class GameObject : public std::enable_shared_from_this<GameObject>
 {
@@ -105,8 +108,16 @@ public:
 	{
 		CurrentHp = CurrentHp - damage;
 
-		//TODO: CurrentHp <0 이 되었을때 사망 처리 로직
+		if (CurrentHp <= 0)
+		{
+			CurrentHp = 0;
+			std::cout << _name << " is dead" << std::endl; 
+			OnDead();
+		}
+		
 	}
+
+	
 
 	float GetSpeed() { return _speed; }
 	const StatData* GetBaseStatData() { return _basestatData; }
@@ -127,6 +138,17 @@ public:
 		CurrentMp = CurrentMp - requiredMp;
 		return true;
 	}
+
+protected:
+	//GameObject 사망 판정시 호출될 함수
+	virtual void OnDead() 
+	{
+		//사망 상태 방송 패킷 전송은 Room의 Execute 에서 담당
+
+		//Dead 로 Creature state 수정
+		SetState(CreatureState::OnDead);
+
+	}
 protected:
 
 	int32 _objectId = 0;
@@ -140,7 +162,7 @@ protected:
 	int32 _maxHp = 0; //최대 체력 = 기본 최대체력 + something
 	int32 _maxMp = 0; //최대 마나 = 기본 최대마나 + something
 	int32 _attack = 0; // 공격력 = 기본 공격력(baseAttack) + something
-	float _speed = 0; // 이동 속도 (고정값 혹은 기본값)
+	float _speed = 1; // 이동 속도 (고정값 혹은 기본값)
 	std::string _name ="NOPE";
 	int32 CurrentHp = 0; //현재 체력
 	int32 CurrentMp = 0; // 현재 마나
@@ -152,7 +174,7 @@ public:
 	float CalculateYaw(Vector3 dir)
 	{
 		// 이동 거리가 거의 없으면 각도를 변경하지 않음 (0으로 나누기 방지)
-		if (dir.x == 0 && dir.z == 0)
+		if (std::abs(dir.x) < EPSILON && std::abs(dir.z) < EPSILON)
 			return 0.0f; // 혹은 기존 yaw 유지
 
 		// atan2는 라디안 값을 반환 (-PI ~ PI)
@@ -163,6 +185,9 @@ public:
 
 		// 결과를 0~360 범위로 정규화 (선택 사항)
 		if (degree < 0) degree += 360.0f;
+
+		if (!std::isfinite(degree))
+			return 0.0f;
 
 		return degree;
 	}

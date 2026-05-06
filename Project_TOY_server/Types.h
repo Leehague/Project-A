@@ -6,6 +6,8 @@
 #include <vector>
 #include "Protocol/Protocol.pb.h"
 
+
+
 using BYTE = unsigned char;
 
 using uint8 = std::uint8_t;
@@ -30,3 +32,4 @@ using GameObjectPtr = std::shared_ptr<GameObject>;
 using MapPtr = std::shared_ptr<Map>;
 using MonsterPtr = std::shared_ptr<Monster>;
 
+const float EPSILON = 1e-4f;

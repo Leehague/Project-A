@@ -3,40 +3,29 @@
 #include <queue>
 #include <mutex>
 
+class JobSerializer; // 전방 선언
+//extern JobSerializer GJobSerializer; // 외부 어딘가(main.cpp 등)에 선언된 객체임을 알림
+
 using JobFn = std::function<void()>;
 
 class JobQueue : public std::enable_shared_from_this<JobQueue>
 {
 public:
+    JobQueue(JobSerializer* jobserializer): _jobserializer(jobserializer){}
+    virtual ~JobQueue() {}
+
     // 일감을 큐에 추가
-    void Push(JobFn&& fn)
-    {
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
-            _jobs.push(std::move(fn));
-        }
-    }
+    void Push(JobFn&& fn);
+    
 
     // 쌓인 일감들을 실행 (한 쓰레드만 진입하도록 설계)
-    void Execute()
-    {
-        while (true)
-        {
-            JobFn job;
-            {
-                std::lock_guard<std::mutex> lock(_mutex);
-                if (_jobs.empty())
-                    break;
-
-                job = std::move(_jobs.front());
-                _jobs.pop();
-            }
-
-            job(); // 실제 로직 실행
-        }
-    }
+    virtual void Execute();
+    
 
 private:
     std::mutex _mutex;
     std::queue<JobFn> _jobs;
+    bool _isInsideJobQueue = false;
+protected:
+    JobSerializer* _jobserializer;
 };

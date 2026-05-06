@@ -10,9 +10,9 @@
 #include "Monster.h"
 #include "DataContents.h"
 #include "ObjectManager.h"
+#include "JobSerializer.h"
 
-
-Room::Room(int32 roomId, int32 mapId) : _Selfroomid(roomId)
+Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(roomId)
 {
     // 방이 생성될 때 맵 매니저를 통해 맵을 할당받습니다.
     // GMapManager는 전역 혹은 싱글톤으로 선언되어 있어야 합니다.
@@ -46,6 +46,7 @@ void Room::Enter(GameObjectPtr go)
         if (auto session = player->session.lock())
         {
             session->SetPlayerId(player->GetObjectId());
+            session->SetPlayerPtr(player);
         }
         Protocol::SC_ENTER_GAME enterPkt;     
         *enterPkt.mutable_pos_info() = *(player->Getpos()); // 서버가 결정한 좌표
@@ -54,6 +55,9 @@ void Room::Enter(GameObjectPtr go)
         
         enterPkt.set_mapid(_map->GetMapId()); //클라에 보내줄 맵 Id
         auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
+        
+        if (!sendBuffer) return;
+        
         player->session.lock()->Send(sendBuffer);
     }
     else if (go->GetType() == GameObjectType::Monster)
@@ -107,6 +111,8 @@ void Room::Leave(PlayerPtr player)
     
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_PLAYER_DESPAWN);
+    if (!sendBuffer) return;
+    
     Broadcast(sendBuffer, playerId); // 본인은 이미 나갔으므로 제외
 
 
@@ -118,21 +124,54 @@ void Room::Broadcast(SendBufferPtr sendBuffer)
 }
 void Room::Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id)
 {
-    //std::cout << "Room::Broadcast works" << std::endl;
-
-    std::lock_guard<std::mutex> lock(_lock);
-    for (auto& pair : _objects) {
-        if (pair.second->GetType() != GameObjectType::Player) { continue; }
-
-        PlayerPtr player = std::static_pointer_cast<Player>(pair.second);
-
-        if (player->GetObjectId() == passing_object_id) { continue; }
-        auto session = player->session.lock(); // 세션이 살아있는지 확인
-        if (session) {
-            session->Send(sendBuffer);
-            std::cout << "Broadcast to session " << session->GetGuid() << std::endl;
+    // Snapshot target sessions under lock to avoid data-race / iterator invalidation
+    std::vector<std::shared_ptr<Session>> targets;
+    {
+        std::lock_guard<std::mutex> lock(_lock);
+        for (auto& pair : _objects) {
+            if (pair.second->GetType() != GameObjectType::Player) continue;
+            auto player = std::static_pointer_cast<Player>(pair.second);
+            if (player->GetObjectId() == passing_object_id) continue;
+            if (auto session = player->session.lock()) {
+                targets.push_back(session);
+            }
         }
     }
+    Broadcast(sendBuffer,targets);//target이 있는 버전의 Braodcast를 호출함
+    
+}
+void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Session>> targets)
+{
+    // Buffer sanity check
+    if (!sendBuffer || sendBuffer->Size() == 0) {
+        std::cerr << "[ERROR] Broadcast: Invalid SendBuffer" << std::endl;
+        return;
+    }
+
+    if (targets.empty()) {
+        std::cout << "[DEBUG] Broadcast: No targets" << std::endl;
+        return;
+    }
+    // Capture self to keep the room alive during job execution
+    RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
+    uint32 bufferSize = sendBuffer->Size();
+
+
+    this->Push([self, sendBuffer, targets, bufferSize]() {
+        std::cout << "[Broadcast Job] Sending to " << targets.size()
+            << " targets, buffer size: " << bufferSize<< " Now, sendBufferSize:  "<< sendBuffer->Size() << std::endl;
+
+        for (auto& session : targets) {
+            if (!session) continue;
+            try {
+                session->Send(sendBuffer);
+            }
+            catch (const std::exception& e) {
+                std::cerr << "[ERROR] Broadcast send failed: " << e.what() << std::endl;
+            }
+        }
+        });
+
 }
 void Room::SpawnBroadcast(PlayerPtr player)
 {
@@ -151,6 +190,8 @@ void Room::SpawnBroadcast(PlayerPtr player)
             
             SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
 
+            if (!sendBuffer) return;
+
             // 나를 제외한 모두에게 전송 (기존에 만든 Broadcast 함수 활용)
             Broadcast(sendBuffer, player->GetObjectId());
         }
@@ -162,48 +203,46 @@ void Room::SpawnBroadcast(PlayerPtr player)
         Protocol::SC_PLAYER_SPAWN playerspawnPkt;
         Protocol::SC_MONSTER_SPAWN monsterspawnPkt;
 
-        // 방의 모든 오브젝트를 순회하며 나를 제외한 정보를 패킷에 추가
-        for (auto& pair : _objects)
+        // Snapshot _objects under lock
+        std::vector<GameObjectPtr> snapshot;
         {
-            if (pair.second->GetType() == GameObjectType::Player) 
+            std::lock_guard<std::mutex> lock(_lock);
+            snapshot.reserve(_objects.size());
+            for (auto& pair : _objects)
+                snapshot.push_back(pair.second);
+        }
+
+        for (auto& obj : snapshot)
+        {
+            if (!obj) continue;
+            if (obj->GetType() == GameObjectType::Player)
             {
                 Protocol::SpawnInfo* spawnInfo = playerspawnPkt.add_players_spawn_info();
-
-                //해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
-                spawnInfo->mutable_spawnposinfo()->CopyFrom(*(pair.second->Getpos()));
-                spawnInfo->set_templeteid(pair.second->GetTempleteId());
+                spawnInfo->mutable_spawnposinfo()->CopyFrom(*(obj->Getpos()));
+                spawnInfo->set_templeteid(obj->GetTempleteId());
             }
-            else if (pair.second->GetType() == GameObjectType::Monster) 
+            else if (obj->GetType() == GameObjectType::Monster)
             {
                 Protocol::SpawnInfo* spawnInfo = monsterspawnPkt.add_monsters_spawn_info();
-
-                //해당 슬롯에 기존 오브젝트의 위치 정보를 복사 
-                spawnInfo->mutable_spawnposinfo()->CopyFrom(*(pair.second->Getpos()));
-                spawnInfo->set_templeteid(pair.second->GetTempleteId());
+                spawnInfo->mutable_spawnposinfo()->CopyFrom(*(obj->Getpos()));
+                spawnInfo->set_templeteid(obj->GetTempleteId());
             }
-
         }
 
-        if (playerspawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
+        if (playerspawnPkt.players_spawn_info_size() > 0)
         {
-            // 패킷 시리얼라이즈 및 전송
             auto sendBuffer = ServerUtils::MakeSendBuffer(playerspawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
-
-            if (auto s = player->session.lock())
-            {
-                
-                s->Send(sendBuffer);
-            }
+            if (!sendBuffer) return;
+            
+            
+            if (auto s = player->session.lock()) s->Send(sendBuffer);
         }
-        else if (monsterspawnPkt.monsters_spawn_info_size() >0)
+        if (monsterspawnPkt.monsters_spawn_info_size() > 0)
         {
-            // 패킷 시리얼라이즈 및 전송
-            auto sendBuffer = ServerUtils::MakeSendBuffer(playerspawnPkt, Protocol::PKT_SC_MONSTER_SPAWN);
-
-            if (auto s = player->session.lock())
-            {
-                s->Send(sendBuffer);
-            }
+            auto sendBuffer = ServerUtils::MakeSendBuffer(monsterspawnPkt, Protocol::PKT_SC_MONSTER_SPAWN);
+            if (!sendBuffer) return;
+            
+            if (auto s = player->session.lock()) s->Send(sendBuffer);
         }
     }
 
@@ -224,42 +263,96 @@ void Room::SpawnBroadcast(const std::vector<MonsterPtr>& monsters)
     if (monsterspawn_pkt.monsters_spawn_info_size() > 0) // 데이터가 있을 때만 전송
     {
 
-        SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(monsterspawn_pkt, Protocol::PKT_SC_MONSTER_SPAWN);
+        auto sendBuffer = ServerUtils::MakeSendBuffer(monsterspawn_pkt, Protocol::PKT_SC_MONSTER_SPAWN);
 
-        //전체에게 전송
-        Broadcast(sendBuffer);
+        if (sendBuffer) {
+            //전체에게 전송
+            Broadcast(sendBuffer);
+        }
+
+        
     }
 
 }
 void Room::SpawnBroadcast(MonsterPtr monster)
 {
-    SpawnBroadcast({monster});
+    SpawnBroadcast(std::vector<MonsterPtr>{monster});
+}
+
+void Room::BroadcastMove(const std::vector<GameObjectPtr>& gameobjects)
+{
+    Protocol::SC_MOVING movePkt;
+    for (GameObjectPtr go : gameobjects) 
+    {
+        if (go == nullptr) return;
+
+        Protocol::PosInfo* newPos = movePkt.add_pos_info();
+        newPos->CopyFrom(*go->Getpos());
+
+        // Sanitize all components (use isfinite to catch inf/NaN)
+        if (!std::isfinite(newPos->x()) || !std::isfinite(newPos->y()) || !std::isfinite(newPos->z()))
+        {
+            std::cout << "BroadcastMove: invalid coordinates detected. Dropping broadcast." << std::endl;
+            return;
+        }
+        
+        //log
+        //std::cout << "\n newPos: \t" << newPos->x() << "\t" << newPos->y() << "\t" << newPos->z() << std::endl;
+
+       
+    }
+    
+    if (movePkt.pos_info_size() > 0) 
+    {
+        auto sendBuffer = ServerUtils::MakeSendBuffer(movePkt, Protocol::PKT_SC_MOVING);
+
+
+        if (sendBuffer)
+        {
+            if (gameobjects.size() == 1) 
+            {
+                //주변에 방송 (본인 제외 로직은 BroadcastAround에 구현된 passing_object_id 활용)
+                BroadcastAround(sendBuffer, Vector3::PosInfoToVector3(gameobjects[0]->Getpos()), gameobjects[0]->GetObjectId());
+            }
+            else 
+            { 
+                //TODO BroadcastAround 를 하나의 위치 기준으로 하는게 아니라 여러개의 위치를 기반으로 적당한 범위에 방송하도록 오버로딩필요
+                Broadcast(sendBuffer);
+            }
+            //Broadcast(sendBuffer);
+        }
+           
+    }
+
 }
 
 void Room::BroadcastMove(GameObjectPtr go)
 {
-    if (go == nullptr) return;
-
-    Protocol::SC_MOVING movePkt;
-    movePkt.mutable_pos_info()->CopyFrom(*go->Getpos()); // 현재 오브젝트의 좌표 정보 복사
-
-    auto sendBuffer = ServerUtils::MakeSendBuffer(movePkt, Protocol::PKT_SC_MOVING);
-
-    //주변에 방송 (본인 제외 로직은 BroadcastAround에 구현된 passing_object_id 활용)
-    BroadcastAround(sendBuffer, Vector3::PosInfoToVector3(go->Getpos()), go->GetObjectId());
+    BroadcastMove(std::vector< GameObjectPtr>{ go });
 }
+
 
 void Room::SendTo(PlayerPtr player, SendBufferPtr sendBuffer)
 {
-    std::lock_guard<std::mutex> lock(_lock);
-
-    // Get the session from the player (std::weak_ptr<Session>)
-    auto session = player->session.lock(); // Convert weak_ptr to shared_ptr
-    if (session)
+    // Snapshot session under lock, then send outside lock
+        std::shared_ptr<Session> session;
     {
-        session->Send(sendBuffer);
+        std::lock_guard<std::mutex> lock(_lock);
+        if (!player) return;
+        session = player->session.lock();
     }
-    // else: session is expired, do nothing or handle error as needed
+
+    if (session) {
+        try {
+            session->Send(sendBuffer);
+        }
+        catch (const std::exception& e) {
+            std::cerr << "SendTo: session->Send threw: " << e.what() << " Guid:" << session->GetGuid() << std::endl;
+        }
+        catch (...) {
+            std::cerr << "SendTo: unknown exception when sending to Guid:" << (session ? session->GetGuid() : 0) << std::endl;
+        }
+    }
 }
 
 void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
@@ -317,15 +410,8 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
     player->Setpos(pkt.pos_info());
 
     // 3. [전달] 방 안의 다른 유저들에게 이동 사실 브로드캐스트
-    Protocol::SC_MOVING resPkt;
-    auto* resPos = resPkt.mutable_pos_info();
-    resPos->CopyFrom(*(player->Getpos()));
-
-    auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
-   
-    BroadcastAround(sendBuffer, Vector3::PosInfoToVector3(player->Getpos()), player->GetObjectId());// 자기자신은 제외한 인접 플레이어들에게 방송
-
     
+    BroadcastMove(player);
     //Loging
     /*std::cout << "RoomId: " << _Selfroomid << std::endl
         << "object Id : " << resPos->object_id() << "HandleMove : (" << resPos->x() << resPos->y() << resPos->z() << ")" << std::endl;*/
@@ -368,6 +454,8 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
         mp_Change_pkt.set_current_mp(player->GetCurrentMp());
         auto sendBuffer = ServerUtils::MakeSendBuffer(mp_Change_pkt, Protocol::PKT_SC_CHANGE_MP);
 
+        if (!sendBuffer) return;
+
         if (auto s = player->session.lock())
             s->Send(sendBuffer);
     }
@@ -407,6 +495,8 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
                     hp_changed_pkt.set_damage(damage);
                     hp_changed_pkt.set_attacker_id(player->GetObjectId());
                     auto sendBuffer = ServerUtils::MakeSendBuffer(hp_changed_pkt, Protocol::PKT_SC_CHANGE_HP);
+                    if (!sendBuffer) return;
+                    
                     BroadcastAround(sendBuffer,player->Getpos_As_Vector3());
 
                     std::cout << "[Melee Hit] " << player->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
@@ -414,7 +504,7 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
             }
         }
 
-     
+
     }
     break;
 
@@ -444,24 +534,37 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
     }
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_SKILL);
+    if (!sendBuffer) return;
     BroadcastAround(sendBuffer, player->Getpos_As_Vector3());
 }
 
 void Room::MonsterSpawn(int32 NumOfMonster)
 {
-    // 테스트용 몬스터 생성 및 입장 로직 jobqueue로 수정해야함
-    std::vector<MonsterPtr> monsters;
-    for (int i = 0; i < NumOfMonster; i++)
-    {
-        MonsterPtr monster = std::static_pointer_cast<Monster>(
-            GObjcetManager.Create(GameObjectType::Monster, nullptr, 2) //몬스터는 session이 필요없기 때문에 nullptr로 전달
-        );
-        monster->Set_x(10.0f + i * 2.0f);
-        monster->Set_z(10.0f);
+    // [수정] 외부 쓰레드(ConsoleThread 등)에서 호출될 것을 대비해 
+    // 실제 로직을 람다로 묶어 JobQueue에 넣습니다.
+    RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
 
-        monsters.push_back(monster);
-    }
-    EnterMonsters(monsters);
+    this->Push([self, NumOfMonster]() {
+        std::vector<MonsterPtr> monsters;
+        for (int i = 0; i < NumOfMonster; i++)
+        {
+            MonsterPtr monster = std::static_pointer_cast<Monster>(
+                GObjcetManager.Create(GameObjectType::Monster, nullptr, 2)
+            );
+
+            // 좌표 설정 등 로직 수행
+            monster->Set_x(10.0f + i * 2.0f);
+            monster->Set_z(10.0f);
+
+            monsters.push_back(monster);
+        }
+
+        // EnterMonsters 내부에서도 락을 잡고 데이터를 수정하므로 
+        // Job 내부에서 실행되는 것이 안전합니다.
+        self->EnterMonsters(monsters);
+
+        std::cout << "[Job] MonsterSpawn completed: " << NumOfMonster << " monsters." << std::endl;
+        });
 }
 
 PlayerPtr Room::GetNearestPlayer(Vector3 pos, float maxRange)
@@ -499,11 +602,14 @@ void Room::SendMoveResync(PlayerPtr player)
 {
     // 1. 서버에 저장된 '이전' 좌표를 담은 패킷 생성
     Protocol::SC_MOVING resPkt;
-    auto* resPos = resPkt.mutable_pos_info();
+
+    Protocol::PosInfo* resPos = resPkt.add_pos_info();
     resPos->CopyFrom(*(player->Getpos())); // 업데이트 전의 서버 좌표
     resPos->set_state((int)CreatureState::Idle);
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
+
+    if (!sendBuffer) return;
 
     // 2. 해당 유저에게만 강제로 전송 (위치 되감기)
     if (auto s = player->session.lock())
@@ -529,74 +635,145 @@ std::pair<int, int> Room::GetSectorPos(Vector3 pos)
 }
 
 //인접 플레이어 추출 (Interest Management)
-std::vector<PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_object_id)
+std::vector<std::shared_ptr<Session>> Room::GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id)
 {
-    std::vector<PlayerPtr> adjacentPlayers;
+    std::vector<std::shared_ptr<Session>> SessionsOfadjacentPlayers;
+
     auto [cellX, cellZ] = GetSectorPos(pos);
 
-    // 주변 9개 칸 (자신 포함) 순회
-    for (int dz = -1; dz <= 1; ++dz)
+    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
+    std::vector<GameObjectPtr> snapshot;
     {
-        for (int dx = -1; dx <= 1; ++dx)
+        std::lock_guard<std::mutex> lock(_lock);
+        for (int dz = -1; dz <= 1; ++dz)
         {
-            int nx = cellX + dx;
-            int nz = cellZ + dz;
-
-            // 유효한 그리드 범위인지 확인
-            if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
+            for (int dx = -1; dx <= 1; ++dx)
             {
-                for (auto& go : _sectors[nz][nx])
+                int nx = cellX + dx;
+                int nz = cellZ + dz;
+
+                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
                 {
-                    if (go->GetType() == GameObjectType::Player && go->GetObjectId() != passing_object_id)
+                    for (auto& go : _sectors[nz][nx])
                     {
-                        adjacentPlayers.push_back(std::static_pointer_cast<Player>(go));
+                        snapshot.push_back(go);
                     }
                 }
             }
         }
     }
+
+    // Process snapshot without holding the room lock
+    for (auto& go : snapshot)
+    {
+        if (!go) continue;
+
+        // CHECK ID FIRST before any weak_ptr operations
+        if (go->GetObjectId() == passing_object_id) continue;
+
+        if (go->GetType() == GameObjectType::Player)
+        {
+            auto player = std::static_pointer_cast<Player>(go);
+
+            // Only now try to lock the session weak_ptr
+            if (auto session = player->session.lock())
+            {
+
+                SessionsOfadjacentPlayers.push_back(session);
+            }
+        }
+    }
+
+    return SessionsOfadjacentPlayers;
+}
+
+std::vector <PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_object_id) 
+{
+    std::vector <PlayerPtr>adjacentPlayers;
+
+    auto [cellX, cellZ] = GetSectorPos(pos);
+
+    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
+    std::vector<GameObjectPtr> snapshot;
+    {
+        std::lock_guard<std::mutex> lock(_lock);
+        for (int dz = -1; dz <= 1; ++dz)
+        {
+            for (int dx = -1; dx <= 1; ++dx)
+            {
+                int nx = cellX + dx;
+                int nz = cellZ + dz;
+
+                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
+                {
+                    for (auto& go : _sectors[nz][nx])
+                    {
+                        snapshot.push_back(go);
+                    }
+                }
+            }
+        }
+    }
+
+    // Process snapshot without holding the room lock
+    for (auto& go : snapshot)
+    {
+        if (!go) continue;
+
+        // CHECK ID FIRST before any weak_ptr operations
+        if (go->GetObjectId() == passing_object_id) continue;
+
+        if (go->GetType() == GameObjectType::Player)
+        {
+            auto player = std::static_pointer_cast<Player>(go);
+
+            // Only now try to lock the session weak_ptr
+            if (auto session = player->session.lock())
+            {
+
+                adjacentPlayers.push_back(player);
+            }
+        }
+    }
+
     return adjacentPlayers;
 }
+
+
+
+
+
 void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
 {
-    // 1. 이전 좌표와 새 좌표의 그리드 인덱스 계산
     auto oldGridPos = GetSectorPos(oldPos);
     auto newGridPos = GetSectorPos(newPos);
 
-    // 2. 만약 같은 칸 내에서의 이동이라면 갱신할 필요 없음
     if (oldGridPos == newGridPos)
         return;
 
-    // 3. 이전 그리드에서 제거
-    {
-        int oldX = oldGridPos.first;
-        int oldZ = oldGridPos.second;
-        _sectors[oldZ][oldX].erase(go);
-    }
+    int oldX = oldGridPos.first;
+    int oldZ = oldGridPos.second;
+    int newX = newGridPos.first;
+    int newZ = newGridPos.second;
 
-    // 4. 새로운 그리드에 추가
+    // Protect _sectors modification with lock
     {
-        int newX = newGridPos.first;
-        int newZ = newGridPos.second;
-        _sectors[newZ][newX].insert(go);
+        std::lock_guard<std::mutex> lock(_lock);
+        // Defensive: verify indices valid
+        if (oldZ >= 0 && oldZ < (int)_sectors.size() && oldX >= 0 && oldX < (int)_sectors[oldZ].size())
+            _sectors[oldZ][oldX].erase(go);
+        if (newZ >= 0 && newZ < (int)_sectors.size() && newX >= 0 && newX < (int)_sectors[newZ].size())
+            _sectors[newZ][newX].insert(go);
     }
-
-    // [참고] 여기서 추가로 처리할 수 있는 로직:
-    // 만약 플레이어라면, 새로 진입한 그리드 주변에만 본인의 정보를 브로드캐스트 하도록 유도 가능
 }
 
 void Room::BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id)
 {
     // 모든 플레이어가 아니라 인접한 플레이어에게만 보냄
-    auto targets = GetAdjacentPlayers(centerPos, passing_object_id);
+    std::vector<std::shared_ptr<Session>> targets = GetAdjacentPlayersSessions(centerPos, passing_object_id);
 
-    for (PlayerPtr player : targets)
-    {
-        if (auto session = player->session.lock())
-        {
-            session->Send(sendBuffer);
-        }
-    }
+    
+    Broadcast(sendBuffer, targets);
 }
 
 void Room::InitGridData(const MapData* mapdata)
@@ -612,21 +789,54 @@ void Room::InitGridData(const MapData* mapdata)
 }
 
 
-void Room::Update()
+
+void Room::Execute() 
 {
-    // 몬스터 AI 및 이동 업데이트
-    // _objects를 순회하며 몬스터만 골라내거나, 별도의 _monsters 리스트를 관리하면 더 빠릅니다.
-    for (auto& item : _objects)
+    
+    // 1. Execute queued jobs for this room
+    JobQueue::Execute();
+
+    // 2. Collect monsters under lock to avoid concurrent-modification while iterating
+    
+    //여기서 사망 상태 패킷 방송
+    Protocol::SC_MONSTER_DEAD deadpkt; bool anyDead = false;
+
+    std::vector<MonsterPtr> monstersToUpdate;
     {
-
-        GameObjectPtr go = item.second;
-
-        if (go->GetType() == GameObjectType::Monster)
+        std::lock_guard<std::mutex> lock(_lock);
+        for (auto& item : _objects)
         {
-            auto monster = std::static_pointer_cast<Monster>(go);
-            monster->UpdateAction();
+            if (item.second->GetType() == GameObjectType::Monster)
+            {
+                monstersToUpdate.push_back(std::static_pointer_cast<Monster>(item.second));
+            }
+            if (item.second->GetState() == CreatureState::OnDead)
+            {
+                
+                deadpkt.add_dead_object_id_list(item.second->GetObjectId());
+                item.second->SetState(CreatureState::Dead);
+                anyDead = true; // 죽은 몬스터가 있을 때만 플래그 활성화
+            }
+
         }
     }
 
-    // TODO: 프로젝트 TOY 서버의 다른 업데이트 로직 (환경 변화 등)
+    // 3. Push monster update jobs (do not hold _lock while invoking Push)
+    for (auto& monster : monstersToUpdate)
+    {
+        this->Push([monster]() {
+            monster->JobUpdate();
+            });
+    }
+    if (anyDead) 
+    {
+        SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(deadpkt, Protocol::PKT_SC_MONSTER_DEAD);
+
+        if (!sendBuffer) return;
+
+        Broadcast(sendBuffer);
+
+        std::cout << "SomeOne is dead, boradcasting" << std::endl;
+    }
+    
 }

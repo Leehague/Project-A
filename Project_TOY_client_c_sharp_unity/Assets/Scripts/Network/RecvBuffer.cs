@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public class RecvBuffer
 {
@@ -51,11 +52,17 @@ public class RecvBuffer
         int dataSize = DataSize;
         if (dataSize == 0)
         {
+
+            // Debug.Log($"[RecvBuffer Clean] Full Reset: ReadPos=0, WritePos=0");
             // 남은 데이터가 없으면 그냥 커서를 처음으로 리셋
             _readPos = _writePos = 0;
         }
         else
         {
+
+            // 남은 데이터가 있어서 복사(이동)가 일어나는 경우
+            // 이 로그가 몬스터 스폰 에러 직전에 찍히는지 확인하세요.
+            Debug.Log($"[RecvBuffer Clean] Copying Data: Size={dataSize}, From={_readPos} To=0"); 
             // 남은 데이터가 있다면 맨 앞으로 복사해서 붙여넣음
             Array.Copy(_buffer.Array, _buffer.Offset + _readPos, _buffer.Array, _buffer.Offset, dataSize);
             _readPos = 0;

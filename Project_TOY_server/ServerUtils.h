@@ -2,6 +2,7 @@
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "SendBuffer.h"
+#include "BufferWriter.h"
 
 #pragma comment(lib, "libprotobufd.lib") // 또는 libprotobufd.lib
 
@@ -24,7 +25,7 @@ public:
         const uint16 totalSize = dataSize + headerSize;
 
         // [디버깅 로그 추가]
-        std::cout << "[Send] ID: " << pktId << ", DataSize: " << dataSize << ", TotalSize: " << totalSize << std::endl;
+        //std::cout << "[Send] ID: " << pktId << ", DataSize: " << dataSize << ", TotalSize: " << totalSize << std::endl;
 
 
         SendBufferPtr sendBuffer = std::make_shared<SendBuffer>(totalSize);
@@ -44,5 +45,8 @@ public:
         sendBuffer->Close(totalSize);
 
         return sendBuffer;
+
+
+        
     }
 };

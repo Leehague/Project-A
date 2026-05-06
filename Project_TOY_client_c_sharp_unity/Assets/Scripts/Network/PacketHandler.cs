@@ -43,33 +43,37 @@ public class PacketHandler
         SC_MOVING movepkt = packet as SC_MOVING;
         if (movepkt == null) return;
 
-        GameObject go = Managers.objectManager.Find(movepkt.PosInfo.ObjectId);
-        if (go == null) return;
-
-        // 1. 공통 부모인 CreatureController를 먼저 찾습니다.
-        CreatureController cc = go.GetComponent<CreatureController>();
-        if (cc == null) return;
-
-        // 2. 타입에 따라 분기 처리
-        if ((cc is PlayerController pc) && (pc.IsMyPlayer))
+        foreach (PosInfo posInfo in movepkt.PosInfo) 
         {
-            
-            // [내 캐릭터] 서버 위치와 동기화 및 오차 보정
-            Vector3 serverPos = new Vector3(movepkt.PosInfo.X, movepkt.PosInfo.Y, movepkt.PosInfo.Z);
-            float distance = Vector3.Distance(go.transform.position, serverPos);
+            GameObject go = Managers.objectManager.Find(posInfo.ObjectId);
+            if (go == null) return;
 
-            if (distance > 0.5f)
+            // 1. 공통 부모인 CreatureController를 먼저 찾습니다.
+            CreatureController cc = go.GetComponent<CreatureController>();
+            if (cc == null) return;
+
+            // 2. 타입에 따라 분기 처리
+            if ((cc is PlayerController pc) && (pc.IsMyPlayer))
             {
-                // 서버가 강제로 위치를 되돌려야 하는 상황 (예: 갈 수 없는 지역)
-                pc.SyncPos(serverPos);
+
+                // [내 캐릭터] 서버 위치와 동기화 및 오차 보정
+                Vector3 serverPos = new Vector3(posInfo.X, posInfo.Y, posInfo.Z);
+                float distance = Vector3.Distance(go.transform.position, serverPos);
+
+                if (distance > 0.5f)
+                {
+                    // 서버가 강제로 위치를 되돌려야 하는 상황 (예: 갈 수 없는 지역)
+                    pc.SyncPos(serverPos);
+                }
+
             }
-            
+            else
+            {
+                // [몬스터] [타인 캐릭터] 몬스터, 타인캐릭터는 항상 서버가 주도권을 가지므로 RefreshPos로 목적지만 갱신
+                cc.RefreshPos(posInfo);
+            }
         }
-        else 
-        {
-            // [몬스터] [타인 캐릭터] 몬스터, 타인캐릭터는 항상 서버가 주도권을 가지므로 RefreshPos로 목적지만 갱신
-            cc.RefreshPos(movepkt.PosInfo);
-        }
+
     }
 
     public static void Handle_SC_PLAYER_SPAWN(PacketSession session, IMessage packet)
@@ -143,21 +147,30 @@ public class PacketHandler
         }
 
     }
-    public static void Handle_SC_CHANGE_HP(PacketSession session, IMessage packet) 
-    { 
-        SC_CHANGE_HP sc_change_hp_pkt= packet as SC_CHANGE_HP;
-        GameObject HPChanger =Managers.objectManager.Find(sc_change_hp_pkt.ObjectId);
-        PlayerController HPChanger_pc = HPChanger.GetComponent<PlayerController>();
-        HPChanger_pc.stat.hp = sc_change_hp_pkt.CurrentHp; //stat class에 등록된 UI의 함수들로 자동 처리, UI를 직접 호출할 필요 없음
+    public static void Handle_SC_CHANGE_HP(PacketSession session, IMessage packet)
+    {
+        SC_CHANGE_HP sc_change_hp_pkt = packet as SC_CHANGE_HP;
+        GameObject HPChanger = Managers.objectManager.Find(sc_change_hp_pkt.ObjectId);
+        CreatureController HPChanger_cc = HPChanger.GetComponent<CreatureController>();
+        if (HPChanger_cc != null)
+        {
+            HPChanger_cc.stat.hp = sc_change_hp_pkt.CurrentHp; 
+            //stat class에 등록된 UI의 함수들로 자동 처리, UI를 직접 호출할 필요 없음 }
 
-        //attacker_id 와 damage 를 이용한 UI 이벤트 발생등 코드 추가 가능
+            //attacker_id 와 damage 를 이용한 UI 이벤트 발생등 코드 추가 가능
+
+        }
     }
     public static void Handle_SC_CHANGE_MP(PacketSession session, IMessage packet) 
     {
         SC_CHANGE_MP sc_change_mp_pkt= packet as SC_CHANGE_MP;
         GameObject MpChanger = Managers.objectManager.Find(sc_change_mp_pkt.ObjectId);
-        PlayerController MpChanger_pc = MpChanger.GetComponent<PlayerController>();
-        MpChanger_pc.stat.mp = sc_change_mp_pkt.CurrentMp;
+        CreatureController MpChanger_cc = MpChanger.GetComponent<CreatureController>();
+        if (MpChanger_cc != null) 
+        {
+            MpChanger_cc.stat.mp = sc_change_mp_pkt.CurrentMp;
+        }
+        
     }
 
     public static void Handle_SC_MONSTER_SPAWN(PacketSession session, IMessage packet)
@@ -168,6 +181,17 @@ public class PacketHandler
         {
             // ObjectManager에서 몬스터 스폰 처리 
             Managers.objectManager.SpawnMonster(info.Spawnposinfo, info.TempleteId);
+        }
+    }
+
+    public static void Handle_SC_MONSTER_DEAD(PacketSession session, IMessage packet)
+    {
+        SC_MONSTER_DEAD sc_monster_dead_pkt = packet as SC_MONSTER_DEAD;
+
+        foreach (int obejectid in sc_monster_dead_pkt.DeadObjectIdList) 
+        {
+            CreatureController deadcc =Managers.objectManager.FindController(obejectid);
+            deadcc.OnDead();
         }
     }
 }

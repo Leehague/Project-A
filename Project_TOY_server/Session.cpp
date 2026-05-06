@@ -85,7 +85,7 @@ void Session::OnRecv(int bytesTransferred)
     }
 
     //loging
-    std::cout << "--- OnRecv Start (Bytes: " << bytesTransferred << ") ---" << std::endl;
+    //std::cout << "--- OnRecv Start (Bytes: " << bytesTransferred << ") ---" << std::endl;
 
 
     while (true)
@@ -94,7 +94,7 @@ void Session::OnRecv(int bytesTransferred)
 
         // 1. 헤더(4바이트)만큼은 왔는지 확인
         if (dataSize < sizeof(PacketHeader)) {
-            std::cout << "Wait for Header... (Current: " << dataSize << ")" << std::endl;
+           // std::cout << "Wait for Header... (Current: " << dataSize << ")" << std::endl;
             break;
         }
         // 2. 패킷 헤더를 읽어 전체 크기 확인
@@ -137,7 +137,7 @@ void Session::OnRecv(int bytesTransferred)
         uint16 size = header->size;
 
         // [디버깅 로그]
-        std::cout << "Processing Packet ID: " << header->id << " / Size: " << header->size << std::endl;
+        //std::cout << "Processing Packet ID: " << header->id << " / Size: " << header->size << std::endl;
         
 
         SessionPtr _sessionPtr = GetSessionPtr();
@@ -151,9 +151,9 @@ void Session::OnRecv(int bytesTransferred)
 
         // 5. 처리한 패킷 크기만큼 읽기 커서 이동
         _recvBuffer.OnRead(header->size);
-        std::cout << "Packet Processed Successfully." << std::endl;
+        //std::cout << "Packet Processed Successfully." << std::endl;
     }
-    std::cout << "--- OnRecv Loop End, Calling Receive() ---" << std::endl;
+    //std::cout << "--- OnRecv Loop End, Calling Receive() ---" << std::endl;
     _recvBuffer.Clean();
     
     Receive();
@@ -169,7 +169,13 @@ void Session::Send(SendBufferPtr sendBuffer)
     // 2. 만약 현재 전송 중인 작업이 없다면 전송 예약 실행
     if (_sendRegistered == false)
     {
-        RegisterSend();
+        //틱 체크, 패킷전송이 '너무 자주' 되는 것 방지
+        uint64 currentTick = ::GetTickCount64();
+        if (currentTick - _lastSendTick >= SEND_TICK_INTERVAL)
+        {
+            _lastSendTick = currentTick;
+            RegisterSend();
+        }
     }
 }
 
@@ -185,6 +191,15 @@ void Session::RegisterSend()
     // 큐에 쌓인 버퍼들을 하나로 묶어서 보낼 수 있음 (Scatter-Gather)
     // 여기서는 단순화를 위해 하나만 꺼내 보냄
     SendBufferPtr sendBuffer = _sendQueue.front();
+
+    if (!sendBuffer) {
+        // defensive: drop invalid entry
+        _sendQueue.pop();
+        _sendRegistered = false;
+        if (!_sendQueue.empty()) RegisterSend();
+        return;
+    }
+
 
     OverlappedEx* overlapped = new OverlappedEx(); // 풀링 권장
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));
@@ -204,6 +219,8 @@ void Session::RegisterSend()
         {
             std::cout << "WSASend Error [Socket: " << _socket << "]: " << err << std::endl;
             _sendRegistered = false;
+            // treat as fatal: ensure proper cleanup
+            OnDisconnected();
         }
     }
 }

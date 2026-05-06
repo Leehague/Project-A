@@ -34,30 +34,7 @@ public class PacketSession
         );
     }
 
-    // 서버의 RecvBuffer 로직과 동일하게 작동해야 함
-    //public int OnReceive(ArraySegment<byte> buffer)
-    //{
-    //    int processLen = 0;
-
-    //    while (true)
-    //    {
-    //        int dataSize = buffer.Count - processLen;
-    //        if (dataSize < 4) break;
-
-    //        // buffer.Offset + processLen 위치부터 읽어야 함
-    //        ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen);
-    //        if (dataSize < size) break;
-
-    //        ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen + 2);
-
-    //        // 패킷 매니저에게 조립된 패킷 전달
-    //        Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen, size, this);
-
-    //        processLen += size;
-    //    }
-
-    //    return processLen;
-    //}
+   
 
     public int OnReceive(ArraySegment<byte> buffer)
     {
@@ -69,21 +46,32 @@ public class PacketSession
             if (dataSize < 4) break;
 
             ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen);
-            if (size < 4)
+            if (size < 4 || size > 1024 * 10) // 10KB 초과 시 차단
             {
                 // 이런 경우가 발생한다면 서버의 데이터가 오염되었거나 헤더 설계가 잘못된 것임
-                return buffer.Count; // 남은 데이터를 다 버리거나 연결을 끊어야 함
+                Debug.LogError($"Invalid Packet Size: {size}");
+                Disconnect(); // 스트림 오염으로 간주하고 연결 종료
+                return 0;
+                
             }
             if (dataSize < size) break;
             
             ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen + 2);
 
-            // 안정성을 위해 Size가 0 이상인지 한 번 더 체크
-            if (size >= 0)
-            {
-                Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen , (ushort)size, this);
-            }
             
+
+            //[검증 로그] 패킷 파싱 시도 직전의 Raw 데이터를 출력
+            //string hex = BitConverter.ToString(buffer.Array, buffer.Offset + processLen, size);
+            //Debug.Log($"[Recv Dump] ID: {id}, TotalSize: {size}, Hex: {hex}");
+
+            // [점검용 로그] 모든 패킷의 헤더 정보를 찍습니다.
+            //Debug.Log($"[Recv Check] ID: {id}, Size: {size}, CurrentProcessLen: {processLen}, BufferTotal: {buffer.Count}");
+            if (size < 4 || size > 1024)
+            {
+                // 여기서 브레이크 포인트를 걸고 Hex 데이터를 확인하세요.
+                Debug.LogError($"[Broken Packet] 위치: {processLen}, 읽은 Size: {size}");
+            }
+            Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen, size, this);
 
             processLen += size;
         }
@@ -106,6 +94,9 @@ public class PacketSession
                     return;
                 }
 
+                // [로그 추가] 현재 수신된 총 바이트와 파싱 전 상태
+                int beforeDataSize = _recvBuffer.DataSize;
+
                 // 2. 패킷 조립 시도 (OnRecv 호출)
                 int processLen = OnReceive(_recvBuffer.ReadSegment);
 
@@ -114,6 +105,12 @@ public class PacketSession
                 {
                     Disconnect();
                     return;
+                }
+
+                // [로그 추가] 몬스터 스폰 시 패킷이 짤렸는지 확인
+                if (processLen < beforeDataSize)
+                {
+                    Debug.Log($"[PacketSession] Partial Packet: Processed={processLen}, Remaining={beforeDataSize - processLen}");
                 }
 
                 _recvBuffer.Clean();
@@ -136,7 +133,6 @@ public class PacketSession
     public void Send(IMessage packet)
     {
 
-
         ushort packetId = Managers.packetManager.GetId(packet.GetType());
 
         if (packetId == 0)
@@ -146,9 +142,6 @@ public class PacketSession
         }
 
         byte[] sendBuffer = NetworkUtils.MakeSendBuffer(packet, packetId);
-
-
-
 
         // 큐 기반 Send 호출
         SendInternal(new ArraySegment<byte>(sendBuffer));

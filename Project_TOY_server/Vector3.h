@@ -75,7 +75,7 @@ public:
     void Normalize()
     {
         float len = Length();
-        if (len > 0.0f)
+        if (len > 0.000001f)
         {
             x /= len;
             y /= len;
@@ -87,7 +87,7 @@ public:
     Vector3 GetNormalized() const
     {
         float len = Length();
-        if (len > 0.0f)
+        if (len > 0.000001f)
             return Vector3(x / len, y / len, z / len);
         return Vector3(0.f, 0.f, 0.f);
     }

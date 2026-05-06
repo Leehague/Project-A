@@ -23,12 +23,16 @@ public:
     template<typename T>
     void CopyData(T& data) { Write(&data, sizeof(T)); }
 
-    void Close(uint32 size) { _writeSize = size; }
+    void Close(uint32 size) {
+        _writeSize = size;
+        isClosed = true;
+    }
 
 
 private:
     std::vector<char> _buffer;
     int _writeSize = 0;
     int _capacity = 0;
+    bool isClosed = false;
 };
 

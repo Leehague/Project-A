@@ -104,7 +104,7 @@ private:
                 enum_name = to_camel_case(pkt_enum)
                 
                 # csharp_register_content += f"        _onRecv.Add((ushort)PacketId.{enum_name}, MakePacket<{msg_name}>);\n"
-                csharp_register_content += f"        _onRecv.Add((ushort)PacketId.{enum_name}, (s, b, sz) => MakePacket<{msg_name}>(s, b, sz, (ushort)PacketId.{enum_name}));\n"
+                csharp_register_content += f"        _onRecv.Add((ushort)PacketId.{enum_name}, (s, b, off, sz) => MakePacket<{msg_name}>(s, b, off, sz, (ushort)PacketId.{enum_name}));\n"
                 csharp_register_content += f"        _handler.Add((ushort)PacketId.{enum_name}, PacketHandler.Handle_{msg_name});\n"
                 
                 csharp_handler_content += f"""    public static void Handle_{msg_name}(PacketSession session, IMessage packet)

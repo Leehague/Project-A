@@ -38,6 +38,8 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
     else { std::cout << "success is not true" << std::endl; }
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
+    
+    if (!sendBuffer) { return true; }
     session->Send(sendBuffer);
 
     return true;

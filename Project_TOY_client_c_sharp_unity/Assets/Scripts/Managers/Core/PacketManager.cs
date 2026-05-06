@@ -24,7 +24,7 @@ public partial class PacketManager
 
 
     // 패킷 ID에 따른 파싱 함수를 담는 딕셔너리
-    Dictionary<ushort, Action<PacketSession, byte[], ushort>> _onRecv = new Dictionary<ushort, Action<PacketSession, byte[], ushort>>();
+    Dictionary<ushort, Action<PacketSession, byte[],int, ushort>> _onRecv = new Dictionary<ushort, Action<PacketSession, byte[],int, ushort>>();
 
     // 유니티 메인 스레드에서 실행될 핸들러 함수들
     Dictionary<ushort, Action<PacketSession, IMessage>> _handler = new Dictionary<ushort, Action<PacketSession, IMessage>>();
@@ -39,20 +39,31 @@ public partial class PacketManager
     {
         if (_onRecv.TryGetValue(id, out var action))
         {
-            action.Invoke(session, buffer, size);
+            action.Invoke(session, buffer, offset, size);
         }
     }
 
     // 제네릭을 이용한 패킷 생성 헬퍼 함수
-    void MakePacket<T>(PacketSession session, byte[] buffer, ushort size, ushort id ) where T : IMessage, new()
+    void MakePacket<T>(PacketSession session, byte[] buffer, int offset, ushort size, ushort id ) where T : IMessage, new()
     {
         T pkt = new T();
-        // 헤더 4바이트(Size 2, Id 2)를 제외한 나머지를 파싱
-        pkt.MergeFrom(buffer, 4, size - 4);
+        int dataSize = size - 4;
+        int newoffset = offset +4;
+        
+        try
+        {
+            pkt.MergeFrom(buffer, newoffset, dataSize);
+        }
+        catch (Exception ex)
+        {
+            // 에러 발생 시 버퍼의 상태를 스냅샷으로 찍음
+            Debug.LogError($"[Packet Error] ID: {id}, Size: {size}");
+            Debug.LogError(ex.Message);
+            //Debug.LogError($"Current Buffer State: ReadPos={buffer.ReadPos}, WritePos={buffer.WritePos}");
 
-        // 이 로그를 찍어보세요!
-        //Debug.Log($"[Recv] ID: {id}, Type: {typeof(T).Name}, Size: {size}, Data: {pkt}");
-
+        }
+        
+        
         // 로직 처리를 위해 NetworkManager 큐에 삽입
         Managers.networkManager.PushPacket(new PacketMessage { Id = id, Message = pkt});
     }

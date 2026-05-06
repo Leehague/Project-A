@@ -93,4 +93,15 @@ public class CreatureController : MonoBehaviour
     {
         transform.position = pos;
     }
+    //해당 Creautre가 사망시 호출될 함수
+    public virtual void OnDead() 
+    {
+        if(_state == Define.CreatureState.Dead) return; //'살아있는' 상태였을때만 실행되어야 함
+        
+        
+        _state = Define.CreatureState.Dead;
+
+        //Creatue 종류에 따라 해당하는 사망 로직 실행
+        //ex ) 애니매이션, 특정 컨텐츠 실행 등
+    }
 }

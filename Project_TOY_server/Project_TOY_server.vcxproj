@@ -132,9 +132,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BufferReader.h" />
     <ClCompile Include="GameSessionManager.cpp" />
     <ClCompile Include="IocpCore.cpp" />
+    <ClCompile Include="JobQueue.cpp" />
+    <ClCompile Include="JobSerializer.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -150,7 +151,6 @@
     <ClCompile Include="Session.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BufferWriter.h" />
     <ClInclude Include="DataContents.h" />
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="GameObject.h" />

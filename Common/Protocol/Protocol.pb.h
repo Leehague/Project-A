@@ -109,6 +109,10 @@ class SC_LOGIN_OK;
 struct SC_LOGIN_OKDefaultTypeInternal;
 extern SC_LOGIN_OKDefaultTypeInternal _SC_LOGIN_OK_default_instance_;
 extern const ::google::protobuf::internal::ClassDataFull SC_LOGIN_OK_class_data_;
+class SC_MONSTER_DEAD;
+struct SC_MONSTER_DEADDefaultTypeInternal;
+extern SC_MONSTER_DEADDefaultTypeInternal _SC_MONSTER_DEAD_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull SC_MONSTER_DEAD_class_data_;
 class SC_MONSTER_SPAWN;
 struct SC_MONSTER_SPAWNDefaultTypeInternal;
 extern SC_MONSTER_SPAWNDefaultTypeInternal _SC_MONSTER_SPAWN_default_instance_;
@@ -179,6 +183,7 @@ enum PacketId : int {
   PKT_SC_CHANGE_HP = 16,
   PKT_SC_CHANGE_MP = 17,
   PKT_SC_MONSTER_SPAWN = 18,
+  PKT_SC_MONSTER_DEAD = 19,
   PacketId_INT_MIN_SENTINEL_DO_NOT_USE_ =
       ::std::numeric_limits<::int32_t>::min(),
   PacketId_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -189,11 +194,11 @@ extern const uint32_t PacketId_internal_data_[];
 inline constexpr PacketId PacketId_MIN =
     static_cast<PacketId>(0);
 inline constexpr PacketId PacketId_MAX =
-    static_cast<PacketId>(18);
+    static_cast<PacketId>(19);
 inline bool PacketId_IsValid(int value) {
-  return 0 <= value && value <= 18;
+  return 0 <= value && value <= 19;
 }
-inline constexpr int PacketId_ARRAYSIZE = 18 + 1;
+inline constexpr int PacketId_ARRAYSIZE = 19 + 1;
 const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL PacketId_descriptor();
 template <typename T>
 const ::std::string& PacketId_Name(T value) {
@@ -204,7 +209,7 @@ const ::std::string& PacketId_Name(T value) {
 }
 template <>
 inline const ::std::string& PacketId_Name(PacketId value) {
-  return ::google::protobuf::internal::NameOfDenseEnum<PacketId_descriptor, 0, 18>(
+  return ::google::protobuf::internal::NameOfDenseEnum<PacketId_descriptor, 0, 19>(
       static_cast<int>(value));
 }
 inline bool PacketId_Parse(
@@ -1281,6 +1286,205 @@ class SC_PLAYER_DESPAWN final : public ::google::protobuf::Message
 };
 
 extern const ::google::protobuf::internal::ClassDataFull SC_PLAYER_DESPAWN_class_data_;
+// -------------------------------------------------------------------
+
+class SC_MONSTER_DEAD final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_MONSTER_DEAD) */ {
+ public:
+  inline SC_MONSTER_DEAD() : SC_MONSTER_DEAD(nullptr) {}
+  ~SC_MONSTER_DEAD() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_MONSTER_DEAD* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_MONSTER_DEAD));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_MONSTER_DEAD(::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_MONSTER_DEAD(const SC_MONSTER_DEAD& from) : SC_MONSTER_DEAD(nullptr, from) {}
+  inline SC_MONSTER_DEAD(SC_MONSTER_DEAD&& from) noexcept
+      : SC_MONSTER_DEAD(nullptr, ::std::move(from)) {}
+  inline SC_MONSTER_DEAD& operator=(const SC_MONSTER_DEAD& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_MONSTER_DEAD& operator=(SC_MONSTER_DEAD&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_MONSTER_DEAD& default_instance() {
+    return *reinterpret_cast<const SC_MONSTER_DEAD*>(
+        &_SC_MONSTER_DEAD_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 23;
+  friend void swap(SC_MONSTER_DEAD& a, SC_MONSTER_DEAD& b) { a.Swap(&b); }
+  inline void Swap(SC_MONSTER_DEAD* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_MONSTER_DEAD* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_MONSTER_DEAD* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_MONSTER_DEAD>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_MONSTER_DEAD& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_MONSTER_DEAD& from) { SC_MONSTER_DEAD::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_MONSTER_DEAD* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_MONSTER_DEAD"; }
+
+  explicit SC_MONSTER_DEAD(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  SC_MONSTER_DEAD(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const SC_MONSTER_DEAD& from);
+  SC_MONSTER_DEAD(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, SC_MONSTER_DEAD&& from) noexcept
+      : SC_MONSTER_DEAD(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kDeadObjectIdListFieldNumber = 1,
+  };
+  // repeated int32 dead_object_id_list = 1;
+  int dead_object_id_list_size() const;
+  private:
+  int _internal_dead_object_id_list_size() const;
+
+  public:
+  void clear_dead_object_id_list() ;
+  ::int32_t dead_object_id_list(int index) const;
+  void set_dead_object_id_list(int index, ::int32_t value);
+  void add_dead_object_id_list(::int32_t value);
+  const ::google::protobuf::RepeatedField<::int32_t>& dead_object_id_list() const;
+  ::google::protobuf::RepeatedField<::int32_t>* PROTOBUF_NONNULL mutable_dead_object_id_list();
+
+  private:
+  const ::google::protobuf::RepeatedField<::int32_t>& _internal_dead_object_id_list() const;
+  ::google::protobuf::RepeatedField<::int32_t>* PROTOBUF_NONNULL _internal_mutable_dead_object_id_list();
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_MONSTER_DEAD)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<0, 1,
+                                   0, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const SC_MONSTER_DEAD& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedField<::int32_t> dead_object_id_list_;
+    ::google::protobuf::internal::CachedSize _dead_object_id_list_cached_byte_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull SC_MONSTER_DEAD_class_data_;
 // -------------------------------------------------------------------
 
 class SC_LOGIN_OK final : public ::google::protobuf::Message
@@ -3914,21 +4118,23 @@ class SC_MOVING final : public ::google::protobuf::Message
   enum : int {
     kPosInfoFieldNumber = 1,
   };
-  // .Protocol.PosInfo pos_info = 1;
-  bool has_pos_info() const;
-  void clear_pos_info() ;
-  const ::Protocol::PosInfo& pos_info() const;
-  [[nodiscard]] ::Protocol::PosInfo* PROTOBUF_NULLABLE release_pos_info();
-  ::Protocol::PosInfo* PROTOBUF_NONNULL mutable_pos_info();
-  void set_allocated_pos_info(::Protocol::PosInfo* PROTOBUF_NULLABLE value);
-  void unsafe_arena_set_allocated_pos_info(::Protocol::PosInfo* PROTOBUF_NULLABLE value);
-  ::Protocol::PosInfo* PROTOBUF_NULLABLE unsafe_arena_release_pos_info();
-
+  // repeated .Protocol.PosInfo pos_info = 1;
+  int pos_info_size() const;
   private:
-  const ::Protocol::PosInfo& _internal_pos_info() const;
-  ::Protocol::PosInfo* PROTOBUF_NONNULL _internal_mutable_pos_info();
+  int _internal_pos_info_size() const;
 
   public:
+  void clear_pos_info() ;
+  ::Protocol::PosInfo* PROTOBUF_NONNULL mutable_pos_info(int index);
+  ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>* PROTOBUF_NONNULL mutable_pos_info();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>& _internal_pos_info() const;
+  ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>* PROTOBUF_NONNULL _internal_mutable_pos_info();
+  public:
+  const ::Protocol::PosInfo& pos_info(int index) const;
+  ::Protocol::PosInfo* PROTOBUF_NONNULL add_pos_info();
+  const ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>& pos_info() const;
   // @@protoc_insertion_point(class_scope:Protocol.SC_MOVING)
  private:
   class _Internal;
@@ -3955,7 +4161,7 @@ class SC_MOVING final : public ::google::protobuf::Message
         const SC_MOVING& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
-    ::Protocol::PosInfo* PROTOBUF_NULLABLE pos_info_;
+    ::google::protobuf::RepeatedPtrField< ::Protocol::PosInfo > pos_info_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -5986,103 +6192,60 @@ inline void CS_MOVING::set_allocated_pos_info(::Protocol::PosInfo* PROTOBUF_NULL
 
 // SC_MOVING
 
-// .Protocol.PosInfo pos_info = 1;
-inline bool SC_MOVING::has_pos_info() const {
-  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
-  PROTOBUF_ASSUME(!value || _impl_.pos_info_ != nullptr);
-  return value;
+// repeated .Protocol.PosInfo pos_info = 1;
+inline int SC_MOVING::_internal_pos_info_size() const {
+  return _internal_pos_info().size();
+}
+inline int SC_MOVING::pos_info_size() const {
+  return _internal_pos_info_size();
 }
 inline void SC_MOVING::clear_pos_info() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (_impl_.pos_info_ != nullptr) _impl_.pos_info_->Clear();
-  ClearHasBit(_impl_._has_bits_[0],
+  _impl_.pos_info_.Clear();
+  ClearHasBitForRepeated(_impl_._has_bits_[0],
                   0x00000001U);
 }
-inline const ::Protocol::PosInfo& SC_MOVING::_internal_pos_info() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  const ::Protocol::PosInfo* p = _impl_.pos_info_;
-  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::PosInfo&>(::Protocol::_PosInfo_default_instance_);
+inline ::Protocol::PosInfo* PROTOBUF_NONNULL SC_MOVING::mutable_pos_info(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_MOVING.pos_info)
+  return _internal_mutable_pos_info()->Mutable(index);
 }
-inline const ::Protocol::PosInfo& SC_MOVING::pos_info() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>* PROTOBUF_NONNULL SC_MOVING::mutable_pos_info()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_MOVING.pos_info)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_pos_info();
+}
+inline const ::Protocol::PosInfo& SC_MOVING::pos_info(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
   // @@protoc_insertion_point(field_get:Protocol.SC_MOVING.pos_info)
+  return _internal_pos_info().Get(index);
+}
+inline ::Protocol::PosInfo* PROTOBUF_NONNULL SC_MOVING::add_pos_info()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::Protocol::PosInfo* _add =
+      _internal_mutable_pos_info()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:Protocol.SC_MOVING.pos_info)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>& SC_MOVING::pos_info() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:Protocol.SC_MOVING.pos_info)
   return _internal_pos_info();
 }
-inline void SC_MOVING::unsafe_arena_set_allocated_pos_info(
-    ::Protocol::PosInfo* PROTOBUF_NULLABLE value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (GetArena() == nullptr) {
-    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.pos_info_);
-  }
-  _impl_.pos_info_ = reinterpret_cast<::Protocol::PosInfo*>(value);
-  if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_MOVING.pos_info)
-}
-inline ::Protocol::PosInfo* PROTOBUF_NULLABLE SC_MOVING::release_pos_info() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-  ::Protocol::PosInfo* released = _impl_.pos_info_;
-  _impl_.pos_info_ = nullptr;
-  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
-    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
-    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
-    if (GetArena() == nullptr) {
-      delete old;
-    }
-  } else {
-    if (GetArena() != nullptr) {
-      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
-    }
-  }
-  return released;
-}
-inline ::Protocol::PosInfo* PROTOBUF_NULLABLE SC_MOVING::unsafe_arena_release_pos_info() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:Protocol.SC_MOVING.pos_info)
-
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-  ::Protocol::PosInfo* temp = _impl_.pos_info_;
-  _impl_.pos_info_ = nullptr;
-  return temp;
-}
-inline ::Protocol::PosInfo* PROTOBUF_NONNULL SC_MOVING::_internal_mutable_pos_info() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (_impl_.pos_info_ == nullptr) {
-    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::PosInfo>(GetArena());
-    _impl_.pos_info_ = reinterpret_cast<::Protocol::PosInfo*>(p);
-  }
+inline const ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>&
+SC_MOVING::_internal_pos_info() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.pos_info_;
 }
-inline ::Protocol::PosInfo* PROTOBUF_NONNULL SC_MOVING::mutable_pos_info()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  ::Protocol::PosInfo* _msg = _internal_mutable_pos_info();
-  // @@protoc_insertion_point(field_mutable:Protocol.SC_MOVING.pos_info)
-  return _msg;
-}
-inline void SC_MOVING::set_allocated_pos_info(::Protocol::PosInfo* PROTOBUF_NULLABLE value) {
-  ::google::protobuf::Arena* message_arena = GetArena();
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (message_arena == nullptr) {
-    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.pos_info_);
-  }
-
-  if (value != nullptr) {
-    ::google::protobuf::Arena* submessage_arena = value->GetArena();
-    if (message_arena != submessage_arena) {
-      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
-    }
-    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-  }
-
-  _impl_.pos_info_ = reinterpret_cast<::Protocol::PosInfo*>(value);
-  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_MOVING.pos_info)
+inline ::google::protobuf::RepeatedPtrField<::Protocol::PosInfo>* PROTOBUF_NONNULL
+SC_MOVING::_internal_mutable_pos_info() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.pos_info_;
 }
 
 // -------------------------------------------------------------------
@@ -7266,6 +7429,60 @@ inline ::google::protobuf::RepeatedPtrField<::Protocol::SpawnInfo>* PROTOBUF_NON
 SC_MONSTER_SPAWN::_internal_mutable_monsters_spawn_info() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.monsters_spawn_info_;
+}
+
+// -------------------------------------------------------------------
+
+// SC_MONSTER_DEAD
+
+// repeated int32 dead_object_id_list = 1;
+inline int SC_MONSTER_DEAD::_internal_dead_object_id_list_size() const {
+  return _internal_dead_object_id_list().size();
+}
+inline int SC_MONSTER_DEAD::dead_object_id_list_size() const {
+  return _internal_dead_object_id_list_size();
+}
+inline void SC_MONSTER_DEAD::clear_dead_object_id_list() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dead_object_id_list_.Clear();
+  ClearHasBitForRepeated(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline ::int32_t SC_MONSTER_DEAD::dead_object_id_list(int index) const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_MONSTER_DEAD.dead_object_id_list)
+  return _internal_dead_object_id_list().Get(index);
+}
+inline void SC_MONSTER_DEAD::set_dead_object_id_list(int index, ::int32_t value) {
+  _internal_mutable_dead_object_id_list()->Set(index, value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_MONSTER_DEAD.dead_object_id_list)
+}
+inline void SC_MONSTER_DEAD::add_dead_object_id_list(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _internal_mutable_dead_object_id_list()->Add(value);
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:Protocol.SC_MONSTER_DEAD.dead_object_id_list)
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>& SC_MONSTER_DEAD::dead_object_id_list() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:Protocol.SC_MONSTER_DEAD.dead_object_id_list)
+  return _internal_dead_object_id_list();
+}
+inline ::google::protobuf::RepeatedField<::int32_t>* PROTOBUF_NONNULL SC_MONSTER_DEAD::mutable_dead_object_id_list()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_MONSTER_DEAD.dead_object_id_list)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_dead_object_id_list();
+}
+inline const ::google::protobuf::RepeatedField<::int32_t>&
+SC_MONSTER_DEAD::_internal_dead_object_id_list() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.dead_object_id_list_;
+}
+inline ::google::protobuf::RepeatedField<::int32_t>* PROTOBUF_NONNULL
+SC_MONSTER_DEAD::_internal_mutable_dead_object_id_list() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.dead_object_id_list_;
 }
 
 #ifdef __GNUC__

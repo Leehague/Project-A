@@ -16,9 +16,21 @@ public:
     template<typename T>
     bool Read(T* dest) { return Read(dest, sizeof(T)); }
 
-    bool Read(void* dest, uint32 len) {
+    template<typename T>
+    bool Read(T* dest, uint32 len) {
         if (FreeSize() < len) return false;
         ::memcpy(dest, &_buffer[_pos], len);
+
+        // 방어 코드: 읽어온 값이 실수인데 유효하지 않다면
+        if constexpr (std::is_floating_point_v<T>) {
+            if (!std::isfinite(*dest)) {
+                _pos += len;
+                *dest = 0.0f; // 안전한 값으로 강제 치환하거나 false 반환
+                return false;
+            }
+        }
+
+
         _pos += len;
         return true;
     }

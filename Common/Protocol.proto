@@ -22,7 +22,7 @@ enum PacketId {
     PKT_SC_CHANGE_HP = 16;
     PKT_SC_CHANGE_MP = 17;
     PKT_SC_MONSTER_SPAWN = 18;
-    
+    PKT_SC_MONSTER_DEAD = 19;
 
 }
 
@@ -86,7 +86,7 @@ message CS_MOVING {
 
 
 message SC_MOVING {
-    PosInfo pos_info = 1;
+    repeated PosInfo pos_info = 1;
 }
 
 message CS_ENTER_GAME {
@@ -163,4 +163,8 @@ message SC_CHANGE_MP {
 
 message SC_MONSTER_SPAWN {
     repeated SpawnInfo monsters_spawn_info = 1;
+}
+
+message SC_MONSTER_DEAD {
+    repeated int32 dead_object_id_list = 1;
 }

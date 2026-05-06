@@ -303,7 +303,15 @@ bool IsPointInTriangle(Vector3 p, Triangle tri) {
     float dot12 = v1x * v2x + v1z * v2z;
 
     // Barycentric 좌표(u, v) 계산
-    float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
+    float denom = (dot00 * dot11 - dot01 * dot01);
+    // 분모가 0에 가깝다면 (삼각형이 일직선이거나 데이터가 깨진 경우)
+    if (std::abs(denom) < 0.000001f)
+    {
+        // NaN을 반환하지 말고, 계산이 불가능함을 알리거나 기본값 반환 
+        return false;
+    }
+
+    float invDenom = 1.0f / denom;
     float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
     float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 

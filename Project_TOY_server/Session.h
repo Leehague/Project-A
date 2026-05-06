@@ -54,8 +54,11 @@ public:
     void SetSocket(SOCKET socket) { _socket = socket; }
     SOCKET GetSocket() { return _socket; }
 
-    void SetPlayerPtr(PlayerPtr playerptr) { _playerptr = playerptr; }
-    PlayerPtr GetPlayerPtr() { return _playerptr; }
+    void SetPlayerPtr(const PlayerPtr& playerptr) { _playerptr = playerptr; }
+    PlayerPtr GetPlayerPtr() 
+    { 
+        return _playerptr;
+    }
 
     // 접속 완료 처리
     void OnConnected();
@@ -74,6 +77,9 @@ private:
     std::mutex              _lock;
     std::queue<SendBufferPtr> _sendQueue; // 보낼 데이터 대기열
     bool                    _sendRegistered = false; // 현재 전송 예약 중인지 여부
+
+    uint64 _lastSendTick = 0;
+    const uint64 SEND_TICK_INTERVAL = 20; // 20ms 주기
 
 private:
     void RegisterSend(); // 실제로 WSASend를 호출하는 함수
