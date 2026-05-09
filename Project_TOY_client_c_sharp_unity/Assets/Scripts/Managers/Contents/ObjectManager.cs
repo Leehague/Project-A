@@ -119,9 +119,23 @@ public class ObjectManager
             Debug.Log("Spawn Fail : fail to take from stat info ");
             return null;
         }
-        // 리소스 매니저로 프리팹 생성
-        GameObject go = Managers.resourceManager.Instantiate(statInfo.modelPath);
+
+        GameObject go;
+        if (Managers.poolingManager.TryPopcreatureObject(_templeteId, out CreatureController newcc))
+        {
+            //풀링 되어 있는게 있다면 그것을 택함
+            go = newcc.gameObject;
+            Debug.Log("여기?");
+        }
+        else
+        {
+            // 아니면 리소스 매니저로 프리팹 생성
+            go = Managers.resourceManager.Instantiate(statInfo.modelPath);
+        }
+        
         go.name = statInfo.name;
+
+        Debug.Log($"spawnPos : ({postion.X} , {postion.Y}, {postion.Z})");
 
         Vector3 spawnPos = new Vector3(postion.X, postion.Y, postion.Z);
         go.transform.position = spawnPos;

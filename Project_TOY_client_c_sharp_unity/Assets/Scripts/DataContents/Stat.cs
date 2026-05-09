@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 // 1. 개별 데이터 단위 (예: 캐릭터 정보)
 [Serializable]
@@ -16,11 +17,21 @@ public class Stat
         this.speed = other.speed;
         this.modelPath = other.modelPath;
     }
+
+    public void Init() 
+    {
+        hp = MaxHp;
+        mp = MaxMp;
+
+    }
+    
     public int id;
+
     public string name;
     public int MaxHp;
     public int MaxMp;
     
+
     public int attack;
     public int speed;
     public string modelPath;
@@ -62,7 +73,7 @@ public class StatData : ILoader<int, Stat>
     {
         Dictionary<int, Stat> dict = new Dictionary<int, Stat>();
         foreach (Stat stat in stats)
-            dict.Add(stat.id, stat);
+            dict.Add(stat.id , stat);
         return dict;
     }
 }

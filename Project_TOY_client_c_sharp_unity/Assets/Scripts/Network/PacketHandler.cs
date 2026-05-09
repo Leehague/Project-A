@@ -71,6 +71,9 @@ public class PacketHandler
             {
                 // [몬스터] [타인 캐릭터] 몬스터, 타인캐릭터는 항상 서버가 주도권을 가지므로 RefreshPos로 목적지만 갱신
                 cc.RefreshPos(posInfo);
+
+                //디버그
+                Debug.Log($"yaw of {posInfo.ObjectId} : {posInfo.Yaw}");
             }
         }
 

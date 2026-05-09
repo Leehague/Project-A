@@ -30,6 +30,7 @@ public class CreatureController : MonoBehaviour
     protected virtual void Init()
     {
         _animator = GetComponent<Animator>();
+        
     }
 
     void Start()
@@ -100,6 +101,9 @@ public class CreatureController : MonoBehaviour
         
         
         _state = Define.CreatureState.Dead;
+
+        //풀링 시스템 사용
+        Managers.poolingManager.AddcreatureObejct(this);
 
         //Creatue 종류에 따라 해당하는 사망 로직 실행
         //ex ) 애니매이션, 특정 컨텐츠 실행 등

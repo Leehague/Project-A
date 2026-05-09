@@ -44,7 +44,7 @@ public:
     int32 GetRoomid() {return _Selfroomid;}
 
     //몬스터 스폰 
-    void MonsterSpawn(int32 NumOfMonster);
+    void MonsterSpawn(int32 NumOfMonster, int templatedId);
 
     MapPtr GetMapptr() { return _map; };
 

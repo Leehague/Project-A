@@ -94,6 +94,11 @@ void Monster::JobUpdate()
     if (now < _nextDecisionTick)
         return; // 아직 주기가 안 되었으면 스킵
     
+    if (GetState() == CreatureState::OnDead || GetState() == CreatureState::Dead)
+    {
+        return; // 방금 죽은 상태 (OnDead) 혹은 죽어 있는 상태 (Dead) 이면 스킵
+    }
+
     _nextDecisionTick = now + DECISION_INTERVAL_MS;
 
     // 1. AI 판단 (목적지나 타겟 설정)
@@ -159,8 +164,8 @@ void Monster::ProcessMove()
         return; 
     }
 
-
-    if (dist <= moveDist || dist < 1.0f)
+    Vector3 Normlizeddir = dir * (1.0f / dist);
+    if (dist <= moveDist || dist < 0.01f)
     {
         // 목적지에 정확히 안착 (오차 누적 방지)
         _pos.set_x(nextPos.x);
@@ -170,6 +175,18 @@ void Monster::ProcessMove()
         _path.erase(_path.begin());
         if (_path.empty()) SetState(CreatureState::Idle);
 
+        
+        float yaw = CalculateYaw(Normlizeddir);
+            // Yaw 값 범위 강제 제한 (0~360)
+            if (std::isnan(yaw)) 
+            { 
+                //std::cout << "yaw isnan" << std::endl;
+                yaw = 0.0f;
+            }
+
+            //std::cout << "yaw: "<<yaw << std::endl;
+            _pos.set_yaw(yaw);
+         
         // [중요] 위치가 변했으므로 무조건 알림
         SyncPosAndBroadcast(currentPos, nextPos);
         return;
@@ -181,10 +198,10 @@ void Monster::ProcessMove()
         std::cout << "Wrong dist" << std::endl;
         return;
     }
-    dir = dir * (1.0f / dist);
-
-    // 3. 실제 이동 및 유효성 검사
-    Vector3 newPos = currentPos + (dir * moveDist);
+    
+    //FindPath에서 계산된 next pos 이 멀어서 도착을 한번에 못하면 이 로직으로 오게됨
+    
+    Vector3 newPos = currentPos + (Normlizeddir * moveDist);
 
     if (std::isfinite(newPos.x) && std::isfinite(newPos.y) && std::isfinite(newPos.z))
     {
@@ -192,13 +209,21 @@ void Monster::ProcessMove()
         _pos.set_y(newPos.y);
         _pos.set_z(newPos.z);
 
-        float yaw = CalculateYaw(dir);
+        float yaw = CalculateYaw(Normlizeddir);
         // Yaw 값 범위 강제 제한 (0~360)
-        if (std::isnan(yaw)) yaw = 0.0f;
+        if (std::isnan(yaw)) 
+        { 
+            std::cout << "yaw isnan" << std::endl;
+            yaw = 0.0f;
+        }
+
+        //std::cout << "yaw: "<<yaw << std::endl;
         _pos.set_yaw(yaw);
 
         SyncPosAndBroadcast(currentPos, newPos);
     }
+    
+
 }
 
 // 헬퍼 함수: 그리드 갱신과 브로드캐스트를 묶어서 처리

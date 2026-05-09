@@ -25,12 +25,14 @@ public class Managers : MonoBehaviour
     private DataManager _dataManager = new DataManager();
     private SceneManagerEx SceneManagerEx = new SceneManagerEx();
     private UIManager UIManager = new UIManager();
+    private PoolingManager PoolingManager = new PoolingManager();
 
     //외부 접근용 property
     public static ObjectManager objectManager => Instance._objectManager;
     public static DataManager dataManager => Instance._dataManager;
     public static SceneManagerEx sceneManagerEx => Instance.SceneManagerEx;
     public static UIManager uiManager => Instance.UIManager;
+    public static PoolingManager poolingManager => Instance.PoolingManager;
     #endregion
 
     void Start()

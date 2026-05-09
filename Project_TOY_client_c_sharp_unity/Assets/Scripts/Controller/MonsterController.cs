@@ -12,7 +12,7 @@ public class MonsterController : CreatureController
 
     void InterpolateMovement()
     {
-        // 타인 캐릭터가 뚝뚝 끊기지 않게 Lerp 처리
+        //캐릭터가 뚝뚝 끊기지 않게 Lerp 처리
         transform.position = Vector3.Lerp(transform.position, _targetPos, Time.deltaTime * 10f);
 
         Quaternion targetRot = Quaternion.Euler(0, _targetYaw, 0);

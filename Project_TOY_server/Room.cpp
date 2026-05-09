@@ -149,7 +149,7 @@ void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Sessi
     }
 
     if (targets.empty()) {
-        std::cout << "[DEBUG] Broadcast: No targets" << std::endl;
+        //std::cout << "[DEBUG] Broadcast: No targets" << std::endl;
         return;
     }
     // Capture self to keep the room alive during job execution
@@ -158,8 +158,8 @@ void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Sessi
 
 
     this->Push([self, sendBuffer, targets, bufferSize]() {
-        std::cout << "[Broadcast Job] Sending to " << targets.size()
-            << " targets, buffer size: " << bufferSize<< " Now, sendBufferSize:  "<< sendBuffer->Size() << std::endl;
+        //std::cout << "[Broadcast Job] Sending to " << targets.size()
+        //    << " targets, buffer size: " << bufferSize<< " Now, sendBufferSize:  "<< sendBuffer->Size() << std::endl;
 
         for (auto& session : targets) {
             if (!session) continue;
@@ -470,7 +470,7 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
     {
     case SkillType::Melee:
     {
-        //distance 체크 , 그리드 방식으로 수정예정
+        
         for (auto obj : _objects) 
         {
             GameObjectPtr target = obj.second;
@@ -538,18 +538,18 @@ void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
     BroadcastAround(sendBuffer, player->Getpos_As_Vector3());
 }
 
-void Room::MonsterSpawn(int32 NumOfMonster)
+void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
 {
     // [수정] 외부 쓰레드(ConsoleThread 등)에서 호출될 것을 대비해 
     // 실제 로직을 람다로 묶어 JobQueue에 넣습니다.
     RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
 
-    this->Push([self, NumOfMonster]() {
+    this->Push([self, NumOfMonster, templatedId]() {
         std::vector<MonsterPtr> monsters;
         for (int i = 0; i < NumOfMonster; i++)
         {
             MonsterPtr monster = std::static_pointer_cast<Monster>(
-                GObjcetManager.Create(GameObjectType::Monster, nullptr, 2)
+                GObjcetManager.Create(GameObjectType::Monster, nullptr, templatedId)
             );
 
             // 좌표 설정 등 로직 수행

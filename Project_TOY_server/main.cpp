@@ -61,7 +61,7 @@ void ConsoleThread(RoomPtr room)
             
             std::cout << "Admin: Spawning test five monsters..." << std::endl;
 
-            room->MonsterSpawn(5);
+            room->MonsterSpawn(5,1);
         }
         else if (command == "exit")
         {
