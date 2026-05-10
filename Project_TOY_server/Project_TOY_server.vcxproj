@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DBConnection.cpp" />
     <ClCompile Include="GameSessionManager.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="JobQueue.cpp" />
@@ -153,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="DataContents.h" />
     <ClInclude Include="DataManager.h" />
+    <ClInclude Include="DBConnection.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="IocpCore.h" />

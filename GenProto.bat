@@ -18,7 +18,8 @@ echo [Info] Target Proto: %COMMON_DIR%\%PROTO_NAME%
 :: 2. 출력 디렉토리 확인 및 생성
 if not exist "%COMMON_PROTO_OUT%" mkdir "%COMMON_PROTO_OUT%"
 if not exist "%SERVER_DEST%" mkdir "%SERVER_DEST%"
-if not exist "%CLIENT_DEST%" mkdir "%CLIENT_DEST%"
+if not exist "%CLIENT_DEST1%" mkdir "%CLIENT_DEST1%"
+if not exist "%CLIENT_DEST2%" mkdir "%CLIENT_DEST2%"
 
 echo [Info] Compiling .proto files...
 

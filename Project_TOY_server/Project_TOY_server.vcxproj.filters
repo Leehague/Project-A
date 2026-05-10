@@ -28,6 +28,12 @@
     <Filter Include="Source Files\Job">
       <UniqueIdentifier>{fb04f9d3-f447-4c7c-9528-0236fce77d7c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\For DB">
+      <UniqueIdentifier>{ac528b77-b42e-4d11-abd8-b46ea8e7b3ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\For DB">
+      <UniqueIdentifier>{149e40ba-6303-4ecc-8274-876967d5d531}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -80,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="JobSerializer.cpp">
       <Filter>Source Files\Job</Filter>
+    </ClCompile>
+    <ClCompile Include="DBConnection.cpp">
+      <Filter>Source Files\For DB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="JobSerializer.h">
       <Filter>Header Files\Job</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConnection.h">
+      <Filter>Header Files\For DB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

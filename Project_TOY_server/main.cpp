@@ -22,10 +22,34 @@
 #include "GameObject.h"
 #include "ObjectManager.h"
 #include "JobSerializer.h"
+#include <sqlext.h>
+#include "DBConnection.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
-//JobSerializer GJobSerializer;
+void DB_connect() 
+{
+    // 1. 전역 혹은 매니저에서 환경 핸들(Environment)을 하나 생성 (서버당 1개)
+    SQLHENV hEnv;
+    ::SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
+    ::SQLSetEnvAttr(hEnv, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
+
+    // 2. 연결 클래스 생성
+    DBConnection dbConn;
+
+    // LocalDB용 커넥션 스트링 (인스턴스 이름 확인 필요)
+    //ODBC Driver 17 for SQL Server
+    std::wstring connStr = L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=Master;Trusted_Connection=yes;";
+
+    if (dbConn.Connect(hEnv, connStr))
+    {
+        std::cout << "DB 연결 성공!" << std::endl;
+    }
+    else
+    {
+        std::cout << "DB 연결 실패..." << std::endl;
+    }
+}
 
 
 void WorkerThread(IocpCore& iocp)
@@ -76,6 +100,9 @@ int main()
     GMapManager.Init();
     IocpCore iocp;
     Listener listener;
+
+    DB_connect();
+
 
     std::cout << GRoomManager.Create(1) << "번 방 생성" << std::endl;
 
