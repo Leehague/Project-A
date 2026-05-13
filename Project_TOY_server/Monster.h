@@ -52,4 +52,5 @@ public:
 private:
     void ProcessMove();  // 이동 중일 때 좌표 갱신 처리
     void SyncPosAndBroadcast(Vector3 oldPos, Vector3 newPos); // 헬퍼 함수: 그리드 갱신과 브로드캐스트를 묶어서 처리
+    void UseSkill(GameObjectPtr targetobj, Vector3 targetPos, int32 skillid);
 };

@@ -9,7 +9,8 @@
       "cost": 0,
       "damage": 50,
       "range": 2.0,
-      "animName": "Attack_Melee_01"
+      "animName": "Attack_Melee_01",
+      "targetTypeId": 1
     },
     {
       "id": 201,
@@ -22,7 +23,8 @@
       "range": 15.0,
       "projectileSpeed": 10.0,
       "projectileId": 5001,
-      "animName": "Cast_Fireball"
+      "animName": "Cast_Fireball",
+      "targetTypeId": 1
     },
     {
       "id": 301,
@@ -33,7 +35,8 @@
       "coolTime": 5.0,
       "animName": "Dash_Start",
       "CostTypeId": 1,
-      "cost": 10
+      "cost": 10,
+      "targetTypeId": 1
     }
   ],
 
@@ -73,5 +76,17 @@
       "costType": "Hp",
       "costTypeId": 2
     }
+  ],
+
+  "targetType":[
+    {
+      "targetType": "objectTarget",
+      "targetTypeId": 0
+    },
+    {
+      "targetType": "positionTarget",
+      "targetTypeId": 1
+    }
+
   ]
 }

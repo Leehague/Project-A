@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DBConnection.cpp" />
+    <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="GameSessionManager.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="JobQueue.cpp" />
@@ -144,6 +145,7 @@
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Protocol\Protocol.pb.cc" />
     <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="Room.cpp" />
@@ -155,6 +157,7 @@
     <ClInclude Include="DataContents.h" />
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="DBConnection.h" />
+    <ClInclude Include="DBManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="IocpCore.h" />
@@ -167,6 +170,7 @@
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Protocol\Protocol.pb.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="Room.h" />

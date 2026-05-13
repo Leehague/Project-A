@@ -2,7 +2,6 @@
 #include "RoomManager.h"
 #include "Map.h"
 #include "Player.h"
-#include "GameObject.h"
 #include "Room.h"
 
 
@@ -38,13 +37,14 @@ std::vector<float> Monster::GatherContext()
 
 void Monster::ExecuteHighLevelAction(int actionId, Vector3 targetPos)
 {
+    //TODO: actionId - action 맵핑을 해야됨 (강화학습 MDP 설정)
     switch (actionId)
     {
     case 0: // MoveTo
         this->MoveTo(targetPos);
         break;
     case 1: // Basic Attack
-        //this->UseSkill(1); // 일반 공격 스킬 ID
+        this->UseSkill(nullptr,Vector3(0,0,0),1); // 일반 공격 스킬 ID
         break;
     case 2: // Flee
         //this->FleeFrom(targetPos);
@@ -54,7 +54,7 @@ void Monster::ExecuteHighLevelAction(int actionId, Vector3 targetPos)
 
 void Monster::MoveTo(Vector3 targetPos)
 {
-    // [TODO] A* 알고리즘 연동
+    // A* 알고리즘 연동
     // 1. Map::FindPath(myPos, targetPos) 호출하여 경로 리스트 획득
     // 2. 경로의 첫 번째 지점으로 이동 시작
     // 3. CreatureState를 Moving으로 변경 및 주변에 SC_MOVE 브로드캐스트
@@ -235,4 +235,9 @@ void Monster::SyncPosAndBroadcast(Vector3 oldPos, Vector3 newPos)
         // 클라이언트에 이동 알림
         room->BroadcastMove(shared_from_this());
     }
+}
+
+void Monster::UseSkill(GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
+{
+    this->Getroomptr()->HandleSkill(shared_from_this(), targetobj, targetPos, skillid);
 }

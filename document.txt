@@ -487,3 +487,17 @@ TODO: Use skill구현 DB 연결 구현
 TODO: 
 1. DB 설계 및 서버에서 DB와의 통신이 필요한 영역 수정
 2. 투사체 소환 , 대쉬 등 다른 스킬 구현
+
+2026/05/12
+
+-DB적용 ,DB스키마 설계
+-SkillData에 targetType 추가 , objectTarget : 오브젝트 타겟팅 ,positionTarget :위치 목표
+
+TODO: job 방식으로 handleskill 내부 수정
+
+2026/05/13
+
+
+job push 방식으로 room 내부 메소드들 수정
+[server]투사체 클래스 projectile class 구현
+TODO: [client] 클라에서 투사체 소환등 로직 구현

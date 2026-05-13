@@ -128,6 +128,8 @@ private:
                 if (item.contains("dashSpeed")) skill.dashSpeed = item["dashSpeed"];
             }
 
+            skill.targetType = static_cast<SkillTargetType>(item["targetTypeId"]);
+
             _skillTable[skill.id] = skill;
         }
     }

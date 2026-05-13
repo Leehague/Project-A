@@ -19,6 +19,7 @@ enum class GameObjectType
 	None,
 	Player,
 	Monster,
+	Projectile,
 };
 
 enum class CreatureState
@@ -104,7 +105,7 @@ protected:
 		}
 	}
 public:
-	void OnAttacked(PlayerPtr player, int32 damage)
+	void OnAttacked(int32 damage)
 	{
 		CurrentHp = CurrentHp - damage;
 
@@ -169,6 +170,10 @@ protected:
 
 	//기본 스탯 정보. 참고만해야함. 변화하는 정보가 아님
 	const StatData* _basestatData = nullptr; //templeteId 는 여기에 포함되어 있음
+
+public:
+	uint64 lastMoveTick = 0; // 마지막 이동 검증 시간 (ms)
+	std::map<int32, int64> _skillCooltimes; // <SkillID, LastUsedTick>
 
 public:
 	float CalculateYaw(Vector3 dir)

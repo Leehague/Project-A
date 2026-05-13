@@ -14,8 +14,8 @@
 
 Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(roomId)
 {
-    // ¹æÀÌ »ý¼ºµÉ ¶§ ¸Ê ¸Å´ÏÀú¸¦ ÅëÇØ ¸ÊÀ» ÇÒ´ç¹Þ½À´Ï´Ù.
-    // GMapManager´Â Àü¿ª È¤Àº ½Ì±ÛÅæÀ¸·Î ¼±¾ðµÇ¾î ÀÖ¾î¾ß ÇÕ´Ï´Ù.
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Å´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½Þ½ï¿½ï¿½Ï´ï¿½.
+    // GMapManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¤ï¿½ï¿½ ï¿½Ì±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½Ö¾ï¿½ï¿½ ï¿½Õ´Ï´ï¿½.
     _map = GMapManager.LoadMap(mapId);
 
     if (_map == nullptr)
@@ -28,17 +28,17 @@ Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(r
 
 void Room::Enter(GameObjectPtr go)
 {
-    //¼­¹ö ³»ºÎ ¸Þ¸ð¸®¿¡ Á¤º¸ ÀúÀå(¹æ ÀÔÀå Ã³¸®)
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ð¸®¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½)
     {
         std::lock_guard<std::mutex> lock(_lock);
         _objects[go->GetObjectId()] = go;
         go->SetroomId(_Selfroomid);
 
-        auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // ÁÂÇ¥·Î ÀÎµ¦½º ÃßÃâ
+        auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         _sectors[cellZ][cellX].insert(go);
 
     }
-    //º»ÀÎ¿¡°Ô ÀÔÀå ¼º°ø ¹× ÁÂÇ¥ ¾Ë¸² (SC_ENTER_GAME)
+    //ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½Ë¸ï¿½ (SC_ENTER_GAME)
     if (go->GetType() == GameObjectType::Player )
     {       
         auto player = std::static_pointer_cast<Player>(go);
@@ -49,11 +49,11 @@ void Room::Enter(GameObjectPtr go)
             session->SetPlayerPtr(player);
         }
         Protocol::SC_ENTER_GAME enterPkt;     
-        *enterPkt.mutable_pos_info() = *(player->Getpos()); // ¼­¹ö°¡ °áÁ¤ÇÑ ÁÂÇ¥
+        *enterPkt.mutable_pos_info() = *(player->Getpos()); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥
 
-        enterPkt.set_templeteid(go->GetTempleteId()); //ÇÚµé·¯¿¡¼­ °áÁ¤µÈ ÅÛÇÃ¸´ ¾ÆÀÌµð
+        enterPkt.set_templeteid(go->GetTempleteId()); //ï¿½Úµé·¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½Ìµï¿½
         
-        enterPkt.set_mapid(_map->GetMapId()); //Å¬¶ó¿¡ º¸³»ÁÙ ¸Ê Id
+        enterPkt.set_mapid(_map->GetMapId()); //Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Id
         auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
         
         if (!sendBuffer) return;
@@ -65,13 +65,13 @@ void Room::Enter(GameObjectPtr go)
         MonsterPtr monster= std::static_pointer_cast<Monster>(go);
         SpawnBroadcast(monster);
     }
-    // ¼öÁ¤ : ½ºÆù ÆÐÅ¶Àº Room::Enter ¿¡¼­ Àü¼ÛÇÏÁö ¾Ê°í ³ªÁß¿¡ ·¹µð ÆÐÅ¶À» ¼ö½ÅÇØ¼­ Àü¼ÛÇÔ
+    // ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ï¿½ï¿½ Room::Enter ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     
 }
 
 void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
 {
-    //¼­¹ö ³»ºÎ ¸Þ¸ð¸®¿¡ Á¤º¸ ÀúÀå(¹æ ÀÔÀå Ã³¸®)
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ð¸®¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½)
     {
         for (MonsterPtr monster : monsters) 
         {
@@ -94,18 +94,18 @@ void Room::Leave(PlayerPtr player)
         
         auto it = _objects.find(playerId);
         if (it == _objects.end())
-            return; // ÀÌ¹Ì ³ª°¬°Å³ª ¾ø´Â °´Ã¼¸é ¹«½Ã
+            return; // ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         GameObjectPtr go = it->second;
 
-        // ±×¸®µå¿¡¼­ Á¦°Å
+        // ï¿½×¸ï¿½ï¿½å¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos()));
         _sectors[cellZ][cellX].erase(go);
 
-        _objects.erase(playerId); // 1. ·ëÀÇ °ü¸® ¸ñ·Ï¿¡¼­ Á¦°Å
+        _objects.erase(playerId); // 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    // 2. Å¸ÀÎµé¿¡°Ô ÀÌ À¯Àú°¡ ³ª°¬À½À» ¾Ë¸² (SC_DESPAWN)
+    // 2. Å¸ï¿½Îµé¿¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½ (SC_DESPAWN)
     Protocol::SC_PLAYER_DESPAWN despawnPkt;
     despawnPkt.add_player_id(playerId);
     
@@ -113,7 +113,7 @@ void Room::Leave(PlayerPtr player)
     auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_PLAYER_DESPAWN);
     if (!sendBuffer) return;
     
-    Broadcast(sendBuffer, playerId); // º»ÀÎÀº ÀÌ¹Ì ³ª°¬À¸¹Ç·Î Á¦¿Ü
+    Broadcast(sendBuffer, playerId); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
 }
@@ -137,7 +137,7 @@ void Room::Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id)
             }
         }
     }
-    Broadcast(sendBuffer,targets);//targetÀÌ ÀÖ´Â ¹öÀüÀÇ Braodcast¸¦ È£ÃâÇÔ
+    Broadcast(sendBuffer,targets);//targetï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Braodcastï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½
     
 }
 void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Session>> targets)
@@ -175,7 +175,7 @@ void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Sessi
 }
 void Room::SpawnBroadcast(PlayerPtr player)
 {
-    //(player ±âÁØ)Å¸ÀÎµé¿¡°Ô ³ª¸¦ ¾Ë¸² (SC_PLAYER_SPAWN ºê·ÎµåÄ³½ºÆ®)
+    //(player ï¿½ï¿½ï¿½ï¿½)Å¸ï¿½Îµé¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½ (SC_PLAYER_SPAWN ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ®)
     {
         Protocol::SC_PLAYER_SPAWN spawnPkt;
               
@@ -185,20 +185,20 @@ void Room::SpawnBroadcast(PlayerPtr player)
         spawnInfo->set_templeteid(player->GetTempleteId());
 
 
-        if (spawnPkt.players_spawn_info_size() > 0) // µ¥ÀÌÅÍ°¡ ÀÖÀ» ¶§¸¸ Àü¼Û
+        if (spawnPkt.players_spawn_info_size() > 0) // ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
             
             SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
 
             if (!sendBuffer) return;
 
-            // ³ª¸¦ Á¦¿ÜÇÑ ¸ðµÎ¿¡°Ô Àü¼Û (±âÁ¸¿¡ ¸¸µç Broadcast ÇÔ¼ö È°¿ë)
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Broadcast ï¿½Ô¼ï¿½ È°ï¿½ï¿½)
             Broadcast(sendBuffer, player->GetObjectId());
         }
 
     }
 
-    //(player ±âÁØ)³ª¿¡°Ô ±âÁ¸ ¿ÀºêÁ§Æ®µéÀ» ¾Ë¸² (SC_PLAYER_SPAWN ¸ñ·Ï Àü¼Û)
+    //(player ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½ (SC_PLAYER_SPAWN ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     {
         Protocol::SC_PLAYER_SPAWN playerspawnPkt;
         Protocol::SC_MONSTER_SPAWN monsterspawnPkt;
@@ -260,13 +260,13 @@ void Room::SpawnBroadcast(const std::vector<MonsterPtr>& monsters)
         spawnInfo->set_templeteid(monster->GetTempleteId());
     }
 
-    if (monsterspawn_pkt.monsters_spawn_info_size() > 0) // µ¥ÀÌÅÍ°¡ ÀÖÀ» ¶§¸¸ Àü¼Û
+    if (monsterspawn_pkt.monsters_spawn_info_size() > 0) // ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     {
 
         auto sendBuffer = ServerUtils::MakeSendBuffer(monsterspawn_pkt, Protocol::PKT_SC_MONSTER_SPAWN);
 
         if (sendBuffer) {
-            //ÀüÃ¼¿¡°Ô Àü¼Û
+            //ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             Broadcast(sendBuffer);
         }
 
@@ -311,12 +311,12 @@ void Room::BroadcastMove(const std::vector<GameObjectPtr>& gameobjects)
         {
             if (gameobjects.size() == 1) 
             {
-                //ÁÖº¯¿¡ ¹æ¼Û (º»ÀÎ Á¦¿Ü ·ÎÁ÷Àº BroadcastAround¿¡ ±¸ÇöµÈ passing_object_id È°¿ë)
+                //ï¿½Öºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ BroadcastAroundï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ passing_object_id È°ï¿½ï¿½)
                 BroadcastAround(sendBuffer, Vector3::PosInfoToVector3(gameobjects[0]->Getpos()), gameobjects[0]->GetObjectId());
             }
             else 
             { 
-                //TODO BroadcastAround ¸¦ ÇÏ³ªÀÇ À§Ä¡ ±âÁØÀ¸·Î ÇÏ´Â°Ô ¾Æ´Ï¶ó ¿©·¯°³ÀÇ À§Ä¡¸¦ ±â¹ÝÀ¸·Î Àû´çÇÑ ¹üÀ§¿¡ ¹æ¼ÛÇÏµµ·Ï ¿À¹ö·ÎµùÇÊ¿ä
+                //TODO BroadcastAround ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´Â°ï¿½ ï¿½Æ´Ï¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Îµï¿½ï¿½Ê¿ï¿½
                 Broadcast(sendBuffer);
             }
             //Broadcast(sendBuffer);
@@ -325,6 +325,7 @@ void Room::BroadcastMove(const std::vector<GameObjectPtr>& gameobjects)
     }
 
 }
+
 
 void Room::BroadcastMove(GameObjectPtr go)
 {
@@ -363,185 +364,272 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
         return;
     }
 
-    // 1. [°ËÁõ] ÀÌÀü À§Ä¡¿Í »õ À§Ä¡ÀÇ °Å¸® Â÷ÀÌ°¡ ³Ê¹« Å©¸é ¹«½ÃÇÏ°Å³ª º¸Á¤ (ÇÙ ¹æÁö)
+    Protocol::PosInfo posInfo = pkt.pos_info();
+    RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
+
+    this->Push([self, player, posInfo]() {
+    // 1. [ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½Ê¹ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     Vector3 currentPos = Vector3::PosInfoToVector3(player->Getpos());
-    Vector3 newPos = Vector3(pkt.pos_info().x(), pkt.pos_info().y(), pkt.pos_info().z());
+    Vector3 newPos = Vector3(posInfo.x(), posInfo.y(), posInfo.z());
 
-    uint64 currentTick = ::GetTickCount64(); // ÇöÀç ¼­¹ö ½Ã°£ (Windows ±âÁØ)
+    uint64 currentTick = ::GetTickCount64(); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ (Windows ï¿½ï¿½ï¿½ï¿½)
 
-    // Ã³À½¿¡¸¸ 0ÀÏ ¼ö ÀÖÀ¸¹Ç·Î ¿¹¿Ü Ã³¸®
+    // Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
     if (player->lastMoveTick == 0) player->lastMoveTick = currentTick - 100;
 
-    // deltaTime °è»ê (ÃÊ ´ÜÀ§·Î º¯È¯)
+    // deltaTime ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯)
     float deltaTime = (currentTick - player->lastMoveTick) / 1000.0f;
-    player->lastMoveTick = currentTick; // ÇöÀç ½Ã°£À» ´ÙÀ½ °ËÁõÀ» À§ÇØ ÀúÀå
+    player->lastMoveTick = currentTick; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
     float dist = Vector3::Distance(currentPos, newPos);
-    float maxAllowedDist = player->GetSpeed() * deltaTime * 1.2f; // ¿ÀÂ÷¹üÀ§ 20%
+    float maxAllowedDist = player->GetSpeed() * deltaTime * 1.2f; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 20%
 
-    //¼Óµµ °ËÁõ
+    //ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
     if (dist > maxAllowedDist) {
-        // ³Ê¹« ¸Ö¸® ÀÌµ¿ÇÔ (ÆÐÅ¶ ¹«½Ã È¤Àº °­Á¦ À§Ä¡ º¹±¸)
-        std::cout << "ºñÁ¤»ó ÀÌµ¿ ¿äÃ» ÀÎ½Ä" << std::endl;
+        // ï¿½Ê¹ï¿½ ï¿½Ö¸ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ (ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½ È¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½)
+        std::cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½Ã» ï¿½Î½ï¿½" << std::endl;
 
-        SendMoveResync(player);
+        self->SendMoveResync(player);
         return;
     }
     
-    // ÁöÇü °ËÁõ 
-    if (_map != nullptr)
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+    MapPtr currentmap = self->GetMapptr();
+    if (currentmap != nullptr)
     {
-        if (_map->CanGo(newPos) == false)
+        if (currentmap->CanGo(newPos) == false)
         {
-            // Ãæµ¹ ¹ß»ý! Å¬¶óÀÌ¾ðÆ®¿¡°Ô °­Á¦ À§Ä¡ º¹±¸ ÆÐÅ¶ Àü¼Û
-            SendMoveResync(player);
+            // ï¿½æµ¹ ï¿½ß»ï¿½! Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½
+            self->SendMoveResync(player);
             return;
         }
     }
 
-    //[°»½Å] ±×¸®µå ¾÷µ¥ÀÌÆ®
+    //[ï¿½ï¿½ï¿½ï¿½] ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
     {
-        UpdateObjectGrid(player, currentPos, newPos);
+        self->UpdateObjectGrid(player, currentPos, newPos);
     }
 
 
-    // 2. [°»½Å] ¼­¹ö ¸Þ¸ð¸®¿¡ ÇÃ·¹ÀÌ¾î À§Ä¡ Á¤º¸ ¾÷µ¥ÀÌÆ®
-    player->Setpos(pkt.pos_info());
+    // 2. [ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ð¸®¿ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+    player->Setpos(posInfo);
 
-    // 3. [Àü´Þ] ¹æ ¾ÈÀÇ ´Ù¸¥ À¯Àúµé¿¡°Ô ÀÌµ¿ »ç½Ç ºê·ÎµåÄ³½ºÆ®
+    // 3. [ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½é¿¡ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ®
     
-    BroadcastMove(player);
-    //Loging
-    /*std::cout << "RoomId: " << _Selfroomid << std::endl
-        << "object Id : " << resPos->object_id() << "HandleMove : (" << resPos->x() << resPos->y() << resPos->z() << ")" << std::endl;*/
-
+    self->BroadcastMove(player);
+    
+    });
 }
 
-void Room::HandleSkill(PlayerPtr player, Protocol::CS_SKILL& pkt)
+void Room::HandleSkillForPlayer(PlayerPtr player, Protocol::CS_SKILL& pkt)
 {
-    //TODO: [ÇÙ ¹æÁö]_skillCooltimes ¸¦ ÀÌ¿ëÇÏ´ø ¾Æ´Ï¸é ´Ù¸¥ ¸Þ¸ð¸®¿µ¿ªÀ» Ãß°¡ÇÏ´ø ÇØ¼­ ½ºÅ³ÀÌ ÁøÂ¥ ±× Ä³¸¯ÅÍ°¡ ¾µ¼ö ÀÖ´Â ½ºÅ³ÀÎÁö Ã¼Å©ÇÏ´Â ·ÎÁ÷ÇÊ¿ä
+    int32 skillid = pkt.skill_id();
+    int32 targetObjectId = pkt.has_target() ? pkt.target().target_object_id() : -1;
+    bool hasDestPos = pkt.has_dest_pos();
+    Vector3 targetPos = hasDestPos ? Vector3(pkt.dest_pos().x(), pkt.dest_pos().y(), pkt.dest_pos().z()) : Vector3(0, 0, 0);
 
-    const SkillData* skilldata = DataManager::GetInstance().GetSkill(pkt.skill_id());
+    // Job ï¿½È¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ shared_ptrï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½
+    RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
+    
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ JobQueueï¿½ï¿½ Push
+    this->Push([self, player, targetObjectId, targetPos, skillid]() {
+        
+        GameObjectPtr targetobj = nullptr;
+        if (targetObjectId != -1)
+        {
+            // Jobï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½Â¸ï¿½ Ã£ï¿½ï¿½
+            targetobj = GObjcetManager.Find(targetObjectId);
+        }
+        
+        self->HandleSkill(player, targetobj, targetPos, skillid);
+    });
+}
+
+void Room::HandleSkillForMonster(MonsterPtr monster, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
+{
+    RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
+
+    this->Push([self, monster, targetobj, targetPos, skillid]() {
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ ï¿½Ã¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(HandleSkill)ï¿½ï¿½ ï¿½Â¿ï¿½Ï´ï¿½.
+        self->HandleSkill(monster, targetobj, targetPos, skillid);
+    });
+}
+
+void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
+{
+    // [ï¿½ï¿½ï¿½ï¿½] ï¿½Ã·ï¿½ï¿½Ì¾î¸¸ ï¿½ï¿½ï¿½ -> ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµï¿½
+    // TODO: [DBï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Ê¿ï¿½][ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½]_skillCooltimes ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½Ï´ï¿½ ï¿½Æ´Ï¸ï¿½ ï¿½Ù¸ï¿½ ï¿½Þ¸ð¸®¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ï´ï¿½ ï¿½Ø¼ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½Â¥ ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Å³ï¿½ï¿½ï¿½ï¿½ Ã¼Å©ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿ï¿½
+
+    const SkillData* skilldata = DataManager::GetInstance().GetSkill(skillid);
     int64 now = GetTickCount64();
-    int64 lastUsed = player->_skillCooltimes[skilldata->id];
-    int64 coolTime = skilldata->coolTime * 1000; // ÃÊ ´ÜÀ§¸¦ ms·Î º¯È¯
+    int64 lastUsed = SKillUser->_skillCooltimes[skilldata->id];
+    int64 coolTime = skilldata->coolTime * 1000; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ msï¿½ï¿½ ï¿½ï¿½È¯
 
     if (now - lastUsed < coolTime) {
-        // ¾ÆÁ÷ ÄðÅ¸ÀÓ Áß! ¿äÃ» ¹«½Ã È¤Àº ¿¡·¯ ÆÐÅ¶ Àü¼Û
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½! ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½ È¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½
         return;
     }
 
-    // °ËÁõ Åë°ú ÈÄ »ç¿ë ½ÃÁ¡ °»½Å
-    player->_skillCooltimes[skilldata->id] = now;
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    SKillUser->_skillCooltimes[skilldata->id] = now;
 
-    // 3. ÄÚ½ºÆ®(¸¶³ª µî) Ã¼Å© ¹× Â÷°¨
-    // (Player Å¬·¡½º¿¡ GetStat(), SetStat() È¤Àº Á÷Á¢ Á¢±Ù °¡´ÉÇÑ ¸â¹ö°¡ ÀÖ´Ù°í °¡Á¤)
+    // 3. ï¿½Ú½ï¿½Æ®(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½) Ã¼Å© ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    // (Player Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ GetStat(), SetStat() È¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½)
     if (skilldata->costType == CostType::Mana) {
-        int32 currentMp = player->GetCurrentMp(); // ÇÃ·¹ÀÌ¾î ÇöÀç MP °¡Á®¿À±â
-        int32 requiredMp = skilldata->cost; // ¿¹½Ã: ½ºÅ³ µ¥ÀÌÅÍ¿¡ ÄÚ½ºÆ® ¼öÄ¡¸¦ Ãß°¡ÇÏ¸é ´õ ÁÁ½À´Ï´Ù.
+        int32 currentMp = SKillUser->GetCurrentMp(); // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ MP ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        int32 requiredMp = skilldata->cost; // ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½Ú½ï¿½Æ® ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
 
-        
-        if (player->UseMp(currentMp - requiredMp) == false) 
+
+        if (SKillUser->UseMp(currentMp - requiredMp) == false)
         {
-            //¸¶³ª ºÎÁ·, º»ÀÎ¿¡°Ô ¸Þ½ÃÁöµîÀ» º¸³¾¼ö ÀÖÀ»°ÍÀÓ
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             return;
         }
 
-        //º»ÀÎ¿¡°Ô MP º¯°æ ÆÐÅ¶ Àü¼Û 
-        Protocol::SC_CHANGE_MP mp_Change_pkt;
-        mp_Change_pkt.set_object_id ( player->GetObjectId());
-        mp_Change_pkt.set_current_mp(player->GetCurrentMp());
-        auto sendBuffer = ServerUtils::MakeSendBuffer(mp_Change_pkt, Protocol::PKT_SC_CHANGE_MP);
-
-        if (!sendBuffer) return;
-
-        if (auto s = player->session.lock())
-            s->Send(sendBuffer);
     }
 
-    // 4. °ËÁõ Åë°ú ÈÄ »ç¿ë ½ÃÁ¡ °»½Å
-    player->_skillCooltimes[skilldata->id] = now;
+    // 4. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    SKillUser->_skillCooltimes[skilldata->id] = now;
 
-    // 5. ½ºÅ³ Å¸ÀÔº° ÇÇ°Ý ÆÇÁ¤
+    // 5. ï¿½ï¿½Å³ Å¸ï¿½Ôºï¿½ ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½
     bool isHit = false;
 
     switch (skilldata->skillType)
     {
     case SkillType::Melee:
     {
-        
-        for (auto obj : _objects) 
+        for (auto obj : _objects)
         {
             GameObjectPtr target = obj.second;
-            if (target && target->GetObjectId() != player->GetObjectId()) {
-                // °Å¸® °è»ê (Vector3::Distance)
-                float dist = Vector3::Distance(Vector3::PosInfoToVector3(player->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
+            if (target && target->GetObjectId() != SKillUser->GetObjectId()) {
+                // ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ (Vector3::Distance)
+                float dist = Vector3::Distance(Vector3::PosInfoToVector3(SKillUser->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
 
-
-
-                // »ç°Å¸® °ËÁõ (¾à°£ÀÇ ¸¶Áø ºÎ¿©: 0.5f)
+                // ï¿½ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½à°£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½: 0.5f)
                 if (dist <= skilldata->range + 0.5f) {
                     isHit = true;
 
-                    // µ¥¹ÌÁö °è»ê ¹× Àû¿ë
-                    int32 damage = skilldata->damage + player->GetAttack(); // ½ºÅ³µ¥¹ÌÁö + Ä³¸¯ÅÍ°ø°Ý·Â ¼öÁ¤ °¡´É
-                    target->OnAttacked(player, damage); // ´ë»óÀÇ HP¸¦ ±ð´Â ÇÔ¼ö È£Ãâ
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®)
+                    int32 damage = skilldata->damage + SKillUser->GetAttack(); // ï¿½ï¿½Å³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ + Ä³ï¿½ï¿½ï¿½Í°ï¿½ï¿½Ý·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+                    target->OnAttacked(damage); // ï¿½ï¿½ï¿½ï¿½ï¿½ HPï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ È£ï¿½ï¿½
 
-                    //Hp º¯È­ ¹æ¼Û
-                    Protocol::SC_CHANGE_HP hp_changed_pkt;
-                    hp_changed_pkt.set_object_id(target->GetObjectId());
-                    hp_changed_pkt.set_current_hp(target->GetCurrentHp());
-                    hp_changed_pkt.set_damage(damage);
-                    hp_changed_pkt.set_attacker_id(player->GetObjectId());
-                    auto sendBuffer = ServerUtils::MakeSendBuffer(hp_changed_pkt, Protocol::PKT_SC_CHANGE_HP);
-                    if (!sendBuffer) return;
-                    
-                    BroadcastAround(sendBuffer,player->Getpos_As_Vector3());
+                    UpdateHPToOthers(target, SKillUser, damage, SKillUser->Getpos_As_Vector3());
 
-                    std::cout << "[Melee Hit] " << player->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
+                    std::cout << "[Melee Hit] " << SKillUser->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
                 }
             }
         }
-
 
     }
     break;
 
     case SkillType::Projectile:
-        // Åõ»çÃ¼´Â Áï½Ã ÇÇ°ÝÀÌ ¾Æ´Ï¶ó Projectile °´Ã¼¸¦ »ý¼ºÇÏ¿© Update¿¡¼­ Ã³¸®
+        // ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ç°ï¿½ï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ Projectile ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ Updateï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
         // SpawnProjectile(player, skilldata, pkt.target_pos());
         break;
 
     case SkillType::Dash:
-        // ÀÌµ¿ °¡´É Áö¿ªÀÎÁö È®ÀÎ ÈÄ ÁÂÇ¥ °­Á¦ °»½Å
+        // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         break;
     }
 
-    // 6. °á°ú ºê·ÎµåÄ³½ºÆ® (ÁÖº¯ ¸ðµÎ¿¡°Ô ¾Ö´Ï¸ÞÀÌ¼Ç ¾Ë¸²)
-    Protocol::SC_SKILL resPkt;
-    resPkt.set_object_id(player->GetObjectId());
-    resPkt.set_skill_id(skilldata->id);
-    
-    if (pkt.has_target())
+    // 6. ï¿½ï¿½ï¿½ ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ® (ï¿½Öºï¿½ ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Ë¸ï¿½)
+    if (SKillUser->GetType() == GameObjectType::Player)
     {
-        // mutable_target()À» ÅëÇØ TargetobjectInfo °´Ã¼ÀÇ Æ÷ÀÎÅÍ¸¦ ¾ò¾î °ª ¼³Á¤
-        resPkt.mutable_target()->set_target_object_id(pkt.target().target_object_id());
+        PlayerPtr player = std::static_pointer_cast<Player>(SKillUser);
+        //ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ MP ï¿½ï¿½È­ ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½
+        UpdateMPToSelf(player);
     }
-    else if (pkt.has_dest_pos())
+    
+
+    Protocol::SC_SKILL resPkt;
+    resPkt.set_object_id(SKillUser->GetObjectId());
+    resPkt.set_skill_id(skilldata->id);
+
+    bool Istargetpos = (skilldata->targetType == SkillTargetType::positionTarget);
+
+    if (targetobj)
     {
-        resPkt.mutable_dest_pos()->CopyFrom(pkt.dest_pos());
+        // mutable_target()ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TargetobjectInfo ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        resPkt.mutable_target()->set_target_object_id(targetobj->GetObjectId());
+    }
+    else if (Istargetpos)
+    {
+
+        resPkt.mutable_dest_pos()->set_x(targetPos.x);
+        resPkt.mutable_dest_pos()->set_y(targetPos.y);
+        resPkt.mutable_dest_pos()->set_z(targetPos.z);
     }
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_SKILL);
     if (!sendBuffer) return;
-    BroadcastAround(sendBuffer, player->Getpos_As_Vector3());
+    BroadcastAround(sendBuffer, SKillUser->Getpos_As_Vector3());
+    
+}
+
+//ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ MP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½ 
+void Room::UpdateMPToSelf(PlayerPtr player)
+{
+    
+    Protocol::SC_CHANGE_MP mp_Change_pkt;
+    mp_Change_pkt.set_object_id(player->GetObjectId());
+    mp_Change_pkt.set_current_mp(player->GetCurrentMp());
+    auto sendBuffer = ServerUtils::MakeSendBuffer(mp_Change_pkt, Protocol::PKT_SC_CHANGE_MP);
+
+    if (!sendBuffer) return;
+
+    SendTo(player, sendBuffer);
+
+}
+
+//ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ HP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½
+void Room::UpdateHPToSelf(PlayerPtr player)
+{
+    Protocol::SC_CHANGE_HP hp_Change_pkt;
+    hp_Change_pkt.set_object_id(player->GetObjectId());
+    hp_Change_pkt.set_current_hp(player->GetCurrentHp());
+    auto sendBuffer = ServerUtils::MakeSendBuffer(hp_Change_pkt, Protocol::PKT_SC_CHANGE_HP);
+
+    if (!sendBuffer) return;
+
+    SendTo(player, sendBuffer);
+}
+
+void Room::UpdateMPToOthers(GameObjectPtr target, Vector3 broadcastcenter)
+{
+    //Mp ï¿½ï¿½È­ ï¿½ï¿½ï¿½
+    Protocol::SC_CHANGE_MP mp_changed_pkt;
+    mp_changed_pkt.set_object_id(target->GetObjectId());
+    mp_changed_pkt.set_current_mp(target->GetCurrentHp());
+    
+    auto sendBuffer = ServerUtils::MakeSendBuffer(mp_changed_pkt, Protocol::PKT_SC_CHANGE_MP);
+    if (!sendBuffer) return;
+
+    BroadcastAround(sendBuffer, broadcastcenter);
+
+}
+
+
+void Room::UpdateHPToOthers(GameObjectPtr target, GameObjectPtr attacker, int damage, Vector3 broadcastcenter)
+{
+    //Hp ï¿½ï¿½È­ ï¿½ï¿½ï¿½
+    Protocol::SC_CHANGE_HP hp_changed_pkt;
+    hp_changed_pkt.set_object_id(target->GetObjectId());
+    hp_changed_pkt.set_current_hp(target->GetCurrentHp());
+    hp_changed_pkt.set_damage(damage);
+    hp_changed_pkt.set_attacker_id(attacker->GetObjectId());
+    auto sendBuffer = ServerUtils::MakeSendBuffer(hp_changed_pkt, Protocol::PKT_SC_CHANGE_HP);
+    if (!sendBuffer) return;
+
+    BroadcastAround(sendBuffer, broadcastcenter);
+
 }
 
 void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
 {
-    // [¼öÁ¤] ¿ÜºÎ ¾²·¹µå(ConsoleThread µî)¿¡¼­ È£ÃâµÉ °ÍÀ» ´ëºñÇØ 
-    // ½ÇÁ¦ ·ÎÁ÷À» ¶÷´Ù·Î ¹­¾î JobQueue¿¡ ³Ö½À´Ï´Ù.
+    // [ï¿½ï¿½ï¿½ï¿½] ï¿½Üºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ConsoleThread ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ù·ï¿½ ï¿½ï¿½ï¿½ï¿½ JobQueueï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.
     RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
 
     this->Push([self, NumOfMonster, templatedId]() {
@@ -552,15 +640,15 @@ void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
                 GObjcetManager.Create(GameObjectType::Monster, nullptr, templatedId)
             );
 
-            // ÁÂÇ¥ ¼³Á¤ µî ·ÎÁ÷ ¼öÇà
+            // ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             monster->Set_x(10.0f + i * 2.0f);
             monster->Set_z(10.0f);
 
             monsters.push_back(monster);
         }
 
-        // EnterMonsters ³»ºÎ¿¡¼­µµ ¶ôÀ» Àâ°í µ¥ÀÌÅÍ¸¦ ¼öÁ¤ÇÏ¹Ç·Î 
-        // Job ³»ºÎ¿¡¼­ ½ÇÇàµÇ´Â °ÍÀÌ ¾ÈÀüÇÕ´Ï´Ù.
+        // EnterMonsters ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¹Ç·ï¿½ 
+        // Job ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
         self->EnterMonsters(monsters);
 
         std::cout << "[Job] MonsterSpawn completed: " << NumOfMonster << " monsters." << std::endl;
@@ -570,21 +658,21 @@ void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
 PlayerPtr Room::GetNearestPlayer(Vector3 pos, float maxRange)
 {
     PlayerPtr nearestPlayer = nullptr;
-    float bestDistSq = maxRange * maxRange; // Á¦°ö±Ù ¿¬»êÀ» ÇÇÇÏ±â À§ÇØ °Å¸®ÀÇ Á¦°ö »ç¿ë
+    float bestDistSq = maxRange * maxRange; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 
-    // 1. ÁÖº¯ 9°³ ±×¸®µå¿¡ ÀÖ´Â ÇÃ·¹ÀÌ¾î ¸®½ºÆ®¸¦ °¡Á®¿È (ÀÌ¹Ì ±¸ÇöµÈ ÇÔ¼ö È°¿ë)
+    // 1. ï¿½Öºï¿½ 9ï¿½ï¿½ ï¿½×¸ï¿½ï¿½å¿¡ ï¿½Ö´ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ È°ï¿½ï¿½)
     std::vector<PlayerPtr> adjacentPlayers = GetAdjacentPlayers(pos);
 
-    // 2. ¸®½ºÆ®¸¦ ¼øÈ¸ÇÏ¸ç °¡Àå °¡±î¿î ÇÃ·¹ÀÌ¾î Å½»ö
+    // 2. ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Å½ï¿½ï¿½
     for (const PlayerPtr& player : adjacentPlayers)
     {
-        // »ç¸Á »óÅÂÀÎ ÇÃ·¹ÀÌ¾î´Â Á¦¿Ü (ÇÊ¿ä ½Ã)
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ê¿ï¿½ ï¿½ï¿½)
         if (player->GetState() == CreatureState::Dead)
             continue;
 
         Vector3 playerPos = Vector3::PosInfoToVector3(player->Getpos());
 
-        // µÎ ÁöÁ¡ »çÀÌÀÇ °Å¸® Á¦°ö °è»ê (sqrt¸¦ ¾È ½á¼­ ¼º´É ÀÌµæ)
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (sqrtï¿½ï¿½ ï¿½ï¿½ ï¿½á¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½)
         float distSq = Vector3::DistanceSquared(pos, playerPos);
 
         if (distSq < bestDistSq)
@@ -597,44 +685,47 @@ PlayerPtr Room::GetNearestPlayer(Vector3 pos, float maxRange)
     return nearestPlayer;
 }
 
-//À§Ä¡ µÇ°¨±â
+//ï¿½ï¿½Ä¡ ï¿½Ç°ï¿½ï¿½ï¿½
 void Room::SendMoveResync(PlayerPtr player)
 {
-    // 1. ¼­¹ö¿¡ ÀúÀåµÈ 'ÀÌÀü' ÁÂÇ¥¸¦ ´ãÀº ÆÐÅ¶ »ý¼º
+    Protocol::PosInfo beforepos = *(player->Getpos());
+    
+    this->Push([beforepos, player]() {
+    // 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ï¿½ï¿½' ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½ï¿½
     Protocol::SC_MOVING resPkt;
 
     Protocol::PosInfo* resPos = resPkt.add_pos_info();
-    resPos->CopyFrom(*(player->Getpos())); // ¾÷µ¥ÀÌÆ® ÀüÀÇ ¼­¹ö ÁÂÇ¥
+    resPos->CopyFrom(beforepos); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥
     resPos->set_state((int)CreatureState::Idle);
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
 
     if (!sendBuffer) return;
 
-    // 2. ÇØ´ç À¯Àú¿¡°Ô¸¸ °­Á¦·Î Àü¼Û (À§Ä¡ µÇ°¨±â)
-    if (auto s = player->session.lock())
-        s->Send(sendBuffer);
-
+    // 2. ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½Ä¡ ï¿½Ç°ï¿½ï¿½ï¿½)
+    if (auto playersession = player->session.lock())
+        playersession->Send(sendBuffer);
+    });
 }
 
 std::pair<int, int> Room::GetSectorPos(Vector3 pos)
 {
-    // 1. ¸ÕÀú ¹°¸® Å¸ÀÏ ÁÂÇ¥·Î º¯È¯
+    // 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½È¯
     int cellX = static_cast<int>(std::floor((pos.x - _minX) / _cellSize));
     int cellZ = static_cast<int>(std::floor((pos.z - _minZ) / _cellSize));
 
-    // 2. ¹°¸® ÁÂÇ¥¸¦ ¼½ÅÍ Å©±â·Î ³ª´©¾î ¼½ÅÍ ÀÎµ¦½º »êÃâ
+    // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     int sectorX = cellX / _sectorSize;
     int sectorZ = cellZ / _sectorSize;
 
-    // ¹üÀ§ Á¦ÇÑ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     sectorX = std::clamp(sectorX, 0, _sectorCountX - 1);
     sectorZ = std::clamp(sectorZ, 0, _sectorCountZ - 1);
 
     return { sectorX, sectorZ };
 }
 
-//ÀÎÁ¢ ÇÃ·¹ÀÌ¾î ÃßÃâ (Interest Management)
+//ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ (Interest Management)
 std::vector<std::shared_ptr<Session>> Room::GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id)
 {
     std::vector<std::shared_ptr<Session>> SessionsOfadjacentPlayers;
@@ -769,7 +860,7 @@ void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
 
 void Room::BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id)
 {
-    // ¸ðµç ÇÃ·¹ÀÌ¾î°¡ ¾Æ´Ï¶ó ÀÎÁ¢ÇÑ ÇÃ·¹ÀÌ¾î¿¡°Ô¸¸ º¸³¿
+    // ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½Æ´Ï¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î¿¡ï¿½Ô¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     std::vector<std::shared_ptr<Session>> targets = GetAdjacentPlayersSessions(centerPos, passing_object_id);
 
     
@@ -781,7 +872,7 @@ void Room::InitGridData(const MapData* mapdata)
     _cellSize = mapdata->CellSize;
     _minX = mapdata->MinX;
     _minZ = mapdata->MinZ;
-    // ¼½ÅÍ °³¼ö °è»ê (ÀüÃ¼ °¡·Î/¼¼·Î Å¸ÀÏ ¼ö / ¼½ÅÍ Å©±â)
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½)
     _sectorCountX = (mapdata->width / _sectorSize) + 1;
     _sectorCountZ = (mapdata->height / _sectorSize) + 1;
 
@@ -798,7 +889,7 @@ void Room::Execute()
 
     // 2. Collect monsters under lock to avoid concurrent-modification while iterating
     
-    //¿©±â¼­ »ç¸Á »óÅÂ ÆÐÅ¶ ¹æ¼Û
+    //ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¶ ï¿½ï¿½ï¿½
     Protocol::SC_MONSTER_DEAD deadpkt; bool anyDead = false;
 
     std::vector<MonsterPtr> monstersToUpdate;
@@ -815,7 +906,7 @@ void Room::Execute()
                 
                 deadpkt.add_dead_object_id_list(item.second->GetObjectId());
                 item.second->SetState(CreatureState::Dead);
-                anyDead = true; // Á×Àº ¸ó½ºÅÍ°¡ ÀÖÀ» ¶§¸¸ ÇÃ·¡±× È°¼ºÈ­
+                anyDead = true; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­
             }
 
         }

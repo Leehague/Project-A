@@ -34,6 +34,12 @@ enum class SkillType {
     Dash = 3        // 이동기
 };
 
+enum class SkillTargetType 
+{
+    objectTarget =0, // 타겟팅, 오브젝트 타겟
+    positionTarget =1 // 지역 목표 , 특정 위치가 타겟
+};
+
 enum class CostType 
 {
     None = 0,
@@ -59,4 +65,7 @@ struct SkillData {
     //Dash
     float dashDistance;
     float dashSpeed;
+
+    //targetType
+    SkillTargetType targetType;
 };

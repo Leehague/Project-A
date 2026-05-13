@@ -3,6 +3,7 @@
 #include "RoomManager.h"
 #include "Player.h"
 #include "Monster.h"
+#include "Projectile.h"
 
 ObjcetManager GObjcetManager;
 
@@ -12,6 +13,8 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
     int32 objcetId = ++GameobjcetCounter;
 
     GameObjectPtr go = nullptr;
+
+    
 
     if (type == GameObjectType::Player) {
         PlayerPtr player = std::make_shared<Player>(objcetId, session);
@@ -23,6 +26,12 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
         MonsterPtr monster = std::make_shared<Monster>(objcetId);
         monster->Init(templateId);
         go = std::static_pointer_cast<GameObject>(monster);
+    }
+    else if (type == GameObjectType::Projectile) 
+    {
+        ProjectilePtr projectile = std::make_shared<Projectile>(objcetId);
+        //Init 은 SpawnProjectile 에서 해주고 있음
+        go = std::static_pointer_cast<GameObject>(projectile);
     }
     else 
     {

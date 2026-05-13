@@ -27,6 +27,8 @@ public:
     
     void BroadcastMove(GameObjectPtr go);
     void BroadcastMove(const std::vector<GameObjectPtr>& gameobjects);
+    
+
 
     void SendTo(PlayerPtr player, SendBufferPtr sendBuffer);
     void SendMoveResync(PlayerPtr player);
@@ -36,9 +38,25 @@ public:
     void HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt);
 
 
-
     // 스킬 패킷 처리 
-    void HandleSkill(PlayerPtr player , Protocol::CS_SKILL& pkt);
+    void HandleSkillForPlayer(PlayerPtr player , Protocol::CS_SKILL& pkt);
+    void HandleSkillForMonster(MonsterPtr monster, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid);
+    void HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos , int32 skillid);
+
+    
+    //본인에게 MP 변경 패킷 전송
+    void UpdateMPToSelf(PlayerPtr player);
+    //본인에게 HP 변경 패킷 전송
+    void UpdateHPToSelf(PlayerPtr player);
+    //대상(target)의 MP 변화를 broadcastcenter의 주변에 알림
+    void UpdateMPToOthers(GameObjectPtr target, Vector3 broadcastcenter);
+    //대상(target)의 HP 변화를 broadcastcenter의 주변에 알림
+    void UpdateHPToOthers(GameObjectPtr target, GameObjectPtr attacker, int damage, Vector3 broadcastcenter);
+
+    //투사체 관련 함수
+    void SpawnProjectile(GameObjectPtr attacker, const SkillData *skillData, Vector3 targetPos);
+    void UpdateProjectile(std::shared_ptr<Projectile> projectile);
+
 
     void SetRoomid(int32 roomid) { _Selfroomid = roomid; }
     int32 GetRoomid() {return _Selfroomid;}
@@ -93,8 +111,7 @@ private:
 
 
 private:
-    ////방송 주기 관련 변수들
-    //uint64 _nextBroadcastTick = 0;
-    //const uint32 BROADCAST_INTERVAL_MS = 500; //0.5초 = 500 ms마다 방송
+    //방송관련 함수들
+     
 };
 

@@ -35,8 +35,5 @@ public:
     }
 
 
-public:
-    uint64 lastMoveTick = 0; // 마지막 이동 검증 시간 (ms)
-    std::map<int32, int64> _skillCooltimes; // <SkillID, LastUsedTick>
 
 };

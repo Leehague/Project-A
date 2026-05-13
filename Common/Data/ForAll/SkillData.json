@@ -2,18 +2,19 @@
   "skills": [
     {
       "id": 101,
-      "name": "ÏùºÎ∞ò Í≥µÍ≤©",
+      "name": "¿œπ› ∞¯∞›",
       "skillTypeId": 1,
       "coolTime": 0.5,
       "CostTypeId": 0,
       "cost": 0,
       "damage": 50,
       "range": 2.0,
-      "animName": "Attack_Melee_01"
+      "animName": "Attack_Melee_01",
+      "targetTypeId": 1
     },
     {
       "id": 201,
-      "name": "ÌôîÏóºÍµ¨",
+      "name": "»≠ø∞±∏",
       "skillTypeId": 2,
       "coolTime": 2.0,
       "CostTypeId": 1,
@@ -22,18 +23,20 @@
       "range": 15.0,
       "projectileSpeed": 10.0,
       "projectileId": 5001,
-      "animName": "Cast_Fireball"
+      "animName": "Cast_Fireball",
+      "targetTypeId": 1
     },
     {
       "id": 301,
-      "name": "ÎèåÏßÑ",
+      "name": "µπ¡¯",
       "skillTypeId": 3,
       "dashDistance": 5.0,
       "dashSpeed": 15.0,
       "coolTime": 5.0,
       "animName": "Dash_Start",
       "CostTypeId": 1,
-      "cost": 10
+      "cost": 10,
+      "targetTypeId": 1
     }
   ],
 
@@ -73,5 +76,17 @@
       "costType": "Hp",
       "costTypeId": 2
     }
+  ],
+
+  "targetType":[
+    {
+      "targetType": "objectTarget",
+      "targetTypeId": 0
+    },
+    {
+      "targetType": "positionTarget",
+      "targetTypeId": 1
+    }
+
   ]
 }
