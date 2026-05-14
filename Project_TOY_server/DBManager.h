@@ -1,4 +1,4 @@
-// DBManager.h
+ï»¿// DBManager.h
 #pragma once
 #include "DBConnection.h"
 #include "JobQueue.h"
@@ -12,27 +12,27 @@ class DBManager {
 public:
     static DBManager& GetInstance() { static DBManager instance; return instance; }
 
-    // ÃÊ±âÈ­: È¯°æ ÇÚµé »ı¼º ¹× Ç® »ı¼º
+    // ì´ˆê¸°í™”: í™˜ê²½ í•¸ë“¤ ìƒì„± ë° í’€ ìƒì„±
     bool Init(int poolSize, const std::wstring& connStr);
 
-    // DB Àü¿ë ¾²·¹µå ¸ŞÀÎ ·çÇÁ
+    // DB ì „ìš© ì“°ë ˆë“œ ë©”ì¸ ë£¨í”„
     void DBThreadMain();
 
-    // ÀÏ°¨ Ãß°¡
+    // ì¼ê° ì¶”ê°€
     void Push(JobFn&& job);
 
-    // Ç®¿¡¼­ ¿¬°á ÇÏ³ª¸¦ ºô·Á¿È
+    // í’€ì—ì„œ ì—°ê²° í•˜ë‚˜ë¥¼ ë¹Œë ¤ì˜´
     DBConnection* PopConnection();
-    // »ç¿ë ÈÄ ¿¬°áÀ» ´Ù½Ã Ç®¿¡ ³ÖÀ½
+    // ì‚¬ìš© í›„ ì—°ê²°ì„ ë‹¤ì‹œ í’€ì— ë„£ìŒ
     void PushConnection(DBConnection* conn);
 
 private:
     SQLHENV _hEnv = SQL_NULL_HENV;
-    std::vector<DBConnection*> _pool; // ÀüÃ¼ ¿¬°á ¸®½ºÆ®
-    std::queue<DBConnection*> _freePool; // ÇöÀç »ç¿ë °¡´ÉÇÑ ¿¬°á Å¥
+    std::vector<DBConnection*> _pool; // ì „ì²´ ì—°ê²° ë¦¬ìŠ¤íŠ¸
+    std::queue<DBConnection*> _freePool; // í˜„ì¬ ì‚¬ìš© ê°€ëŠ¥í•œ ì—°ê²° í
 
-    std::queue<JobFn> _dbJobs; // DB ÀÛ¾÷ ´ë±â¿­
+    std::queue<JobFn> _dbJobs; // DB ì‘ì—… ëŒ€ê¸°ì—´
     std::mutex _mutex;
     std::condition_variable _condVar;
-    std::vector<std::thread> _threads; // DB Àü¿ë ¾²·¹µå Ç®
+    std::vector<std::thread> _threads; // DB ì „ìš© ì“°ë ˆë“œ í’€
 };

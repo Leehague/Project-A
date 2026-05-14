@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Protocol/Protocol.pb.h"
 
 class Vector3 
@@ -33,45 +33,45 @@ public:
 
     }
 
-    // ´õÇÏ±â
+    // ë”í•˜ê¸°
     Vector3 operator+(const Vector3& other) const {
         return Vector3(x + other.x, y + other.y, z + other.z);
     }
 
-    // »©±â (¹æÇâ º¤ÅÍ ±¸ÇÒ ¶§ ÇÙ½É: P2 - P1)
+    // ë¹¼ê¸° (ë°©í–¥ ë²¡í„° êµ¬í•  ë•Œ í•µì‹¬: P2 - P1)
     Vector3 operator-(const Vector3& other) const {
         return Vector3(x - other.x, y - other.y, z - other.z);
     }
 
-    // ½ºÄ®¶ó °ö (¼Óµµ Á¶Àı ½Ã »ç¿ë)
+    // ìŠ¤ì¹¼ë¼ ê³± (ì†ë„ ì¡°ì ˆ ì‹œ ì‚¬ìš©)
     Vector3 operator*(float scalar) const {
         return Vector3(x * scalar, y * scalar, z * scalar);
     }
 
-    // º¹ÇÕ ´ëÀÔ ¿¬»êÀÚ
+    // ë³µí•© ëŒ€ì… ì—°ì‚°ì
     Vector3& operator+=(const Vector3& other) {
         x += other.x; y += other.y; z += other.z;
         return *this;
     }
 
-    // ºñ±³ ¿¬»ê (A* ±×¸®µå Ã¼Å© µî)
+    // ë¹„êµ ì—°ì‚° (A* ê·¸ë¦¬ë“œ ì²´í¬ ë“±)
     bool operator==(const Vector3& other) const {
         return x == other.x && y == other.y && z == other.z;
     }
 
-    // º¤ÅÍÀÇ ±æÀÌ¸¦ ¹İÈ¯
+    // ë²¡í„°ì˜ ê¸¸ì´ë¥¼ ë°˜í™˜
     float Length() const
     {
         return std::sqrt(x * x + y * y + z * z);
     }
 
-    // º¤ÅÍÀÇ ±æÀÌÀÇ Á¦°öÀ» ¹İÈ¯ (·çÆ® ¿¬»êÀÌ ¾ø¾î ¼º´É»ó À¯¸®)
+    // ë²¡í„°ì˜ ê¸¸ì´ì˜ ì œê³±ì„ ë°˜í™˜ (ë£¨íŠ¸ ì—°ì‚°ì´ ì—†ì–´ ì„±ëŠ¥ìƒ ìœ ë¦¬)
     float LengthSquared() const
     {
         return x * x + y * y + z * z;
     }
 
-    // ÀÚ±â ÀÚ½ÅÀ» Á¤±ÔÈ­
+    // ìê¸° ìì‹ ì„ ì •ê·œí™”
     void Normalize()
     {
         float len = Length();
@@ -83,7 +83,7 @@ public:
         }
     }
 
-    // Á¤±ÔÈ­µÈ º¹»çº» º¤ÅÍ¸¦ ¹İÈ¯
+    // ì •ê·œí™”ëœ ë³µì‚¬ë³¸ ë²¡í„°ë¥¼ ë°˜í™˜
     Vector3 GetNormalized() const
     {
         float len = Length();

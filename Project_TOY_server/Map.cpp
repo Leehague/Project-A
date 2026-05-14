@@ -12,29 +12,29 @@ bool Map::Load(const MapData* mapdata)
     std::ifstream ifs(path);
     if (!ifs.is_open()) 
     { 
-        std::cout << "¸Ê ÆÄÀÏ ¿­±â ½ÇÆĞ" << std::endl;
+        std::cout << "ë§µ íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨" << std::endl;
         return false;
     }
        
 
-    // 1. Ã¹ ¹øÂ° ÁÙ: Å¸ÀÏ °³¼ö ÀĞ±â
+    // 1. ì²« ë²ˆì§¸ ì¤„: íƒ€ì¼ ê°œìˆ˜ ì½ê¸°
     if (!(ifs >> _width >> _height)) 
     {
-        std::cout << "Å¸ÀÏ °³¼ö ÀĞ±â ½ÇÆĞ" << std::endl;
+        std::cout << "íƒ€ì¼ ê°œìˆ˜ ì½ê¸° ì‹¤íŒ¨" << std::endl;
         return false;
     }
 
-    // 2. [¼öÁ¤] µÎ ¹øÂ° ÁÙ: ±âÁØ ÁÂÇ¥ ¹× ¼¿ Å©±â ÀĞ±â
+    // 2. [ìˆ˜ì •] ë‘ ë²ˆì§¸ ì¤„: ê¸°ì¤€ ì¢Œí‘œ ë° ì…€ í¬ê¸° ì½ê¸°
     if (!(ifs >> _minX >> _minZ >> _cellSize)) 
     {
-        std::cout << "_minX  _minZ  _cellSize ÀĞ±â ½ÇÆĞ" << std::endl;
+        std::cout << "_minX  _minZ  _cellSize ì½ê¸° ì‹¤íŒ¨" << std::endl;
         return false;
     }
 
-    //[Ãß°¡] DataManager¿¡¼­ jsonÆÄÀÏÀ» ÅëÇØ °¡Á®¿Â mapdata¿Í MinxµîÀÌ ÀÏÄ¡ÇÏ´ÂÁö È®ÀÎ
+    //[ì¶”ê°€] DataManagerì—ì„œ jsoníŒŒì¼ì„ í†µí•´ ê°€ì ¸ì˜¨ mapdataì™€ Minxë“±ì´ ì¼ì¹˜í•˜ëŠ”ì§€ í™•ì¸
     if (mapdata->MinX != _minX || mapdata->MinZ != _minZ || mapdata->CellSize != _cellSize)
     {
-        std::cout << "MapData ºÒÀÏÄ¡" << std::endl;
+        std::cout << "MapData ë¶ˆì¼ì¹˜" << std::endl;
 
         std::cout << "mapdata->MinX :"<< mapdata->MinX<<"_minX: "<< _minX << std::endl;
 
@@ -43,14 +43,14 @@ bool Map::Load(const MapData* mapdata)
         std::cout << "mapdata->CellSize: "<< mapdata->CellSize<<"_cellSize: "<< _cellSize << std::endl;
         return false;
     }
-    //[Ãß°¡] mapdata Æ÷ÀÎÅÍ¸¦ Map¿¡¼­ ±â¾ï
+    //[ì¶”ê°€] mapdata í¬ì¸í„°ë¥¼ Mapì—ì„œ ê¸°ì–µ
     _mapdata = mapdata;
 
-    // 3. µ¥ÀÌÅÍ °ø°£ È®º¸
+    // 3. ë°ì´í„° ê³µê°„ í™•ë³´
     _collisionData.assign(_height, std::vector<bool>(_width, false));
-    _heightData.assign(_height, std::vector<float>(_width, 0.0f)); // °ø°£ È®º¸
+    _heightData.assign(_height, std::vector<float>(_width, 0.0f)); // ê³µê°„ í™•ë³´
 
-    // 4. ¸Ê µ¥ÀÌÅÍ ÆÄ½Ì
+    // 4. ë§µ ë°ì´í„° íŒŒì‹±
     for (int z = 0; z < _height; z++)
     {
         for (int x = 0; x < _width; x++)
@@ -58,7 +58,7 @@ bool Map::Load(const MapData* mapdata)
             std::string cellInfo;
             if (ifs >> cellInfo)
             {
-                // "0|1.5" ÇüÅÂÀÇ ¹®ÀÚ¿­ ÆÄ½Ì
+                // "0|1.5" í˜•íƒœì˜ ë¬¸ìì—´ íŒŒì‹±
                 size_t pos = cellInfo.find('|');
                 if (pos != std::string::npos)
                 {
@@ -78,8 +78,8 @@ bool Map::Load(const MapData* mapdata)
 
 bool Map::CanGo_Old(Vector3 pos)
 {
-    // ¿ùµå ÁÂÇ¥ -> ÀÎµ¦½º º¯È¯ °ø½Ä
-    // (ÇöÀçÁÂÇ¥ - ½ÃÀÛÁÂÇ¥) / ÇÑ Ä­ÀÇ Å©±â
+    // ì›”ë“œ ì¢Œí‘œ -> ì¸ë±ìŠ¤ ë³€í™˜ ê³µì‹
+    // (í˜„ì¬ì¢Œí‘œ - ì‹œì‘ì¢Œí‘œ) / í•œ ì¹¸ì˜ í¬ê¸°
     int x = static_cast<int>((pos.x - _minX) / _cellSize);
     int z = static_cast<int>((pos.z - _minZ) / _cellSize);
 
@@ -105,12 +105,12 @@ uint64 Map::GetMapId()
 }
 std::pair<int, int> Map::GetGridPos(Vector3 pos)
 {
-    // 1. ±âÁØ ÁÂÇ¥(_minX, _minZ)·ÎºÎÅÍÀÇ °Å¸®¸¦ ¼¿ Å©±â·Î ³ª´¯´Ï´Ù.
+    // 1. ê¸°ì¤€ ì¢Œí‘œ(_minX, _minZ)ë¡œë¶€í„°ì˜ ê±°ë¦¬ë¥¼ ì…€ í¬ê¸°ë¡œ ë‚˜ëˆ•ë‹ˆë‹¤.
     int x = static_cast<int>((pos.x - _minX) / _cellSize);
     int z = static_cast<int>((pos.z - _minZ) / _cellSize);
 
-    // 2. ¸ÊÀÇ ¹üÀ§¸¦ ¹ş¾î³ªÁö ¾Êµµ·Ï º¸Á¤(Clamp)ÇØÁİ´Ï´Ù.
-    // _width¿Í _height´Â ¸Ê ·Îµå ½Ã °áÁ¤µÈ Å¸ÀÏÀÇ °³¼öÀÔ´Ï´Ù.
+    // 2. ë§µì˜ ë²”ìœ„ë¥¼ ë²—ì–´ë‚˜ì§€ ì•Šë„ë¡ ë³´ì •(Clamp)í•´ì¤ë‹ˆë‹¤.
+    // _widthì™€ _heightëŠ” ë§µ ë¡œë“œ ì‹œ ê²°ì •ëœ íƒ€ì¼ì˜ ê°œìˆ˜ì…ë‹ˆë‹¤.
     x = std::max(0, std::min(x, _width - 1));
     z = std::max(0, std::min(z, _height - 1));
 
@@ -121,14 +121,14 @@ std::vector<Vector3> Map::FindPath(Vector3 startPos, Vector3 endPos)
 {
     std::vector<Vector3> path;
 
-    // 1. °¥ ¼ö ¾ø´Â ¸ñÀûÁö¶ó¸é ¹Ù·Î ¸®ÅÏ
+    // 1. ê°ˆ ìˆ˜ ì—†ëŠ” ëª©ì ì§€ë¼ë©´ ë°”ë¡œ ë¦¬í„´
     if (!CanGo(endPos)) return path;
 
-    // 2. ¿ì¼±¼øÀ§ Å¥ ¹× ¹æ¹® ±â·Ï¿ë µ¥ÀÌÅÍ ±¸Á¶
+    // 2. ìš°ì„ ìˆœìœ„ í ë° ë°©ë¬¸ ê¸°ë¡ìš© ë°ì´í„° êµ¬ì¡°
     std::priority_queue<PQNode> pq;
-    // key: ±×¸®µå ÁÂÇ¥(pair<int, int>), value: ÇØ´ç ÁöÁ¡±îÁöÀÇ ÃÖ¼Ò ºñ¿ë g
+    // key: ê·¸ë¦¬ë“œ ì¢Œí‘œ(pair<int, int>), value: í•´ë‹¹ ì§€ì ê¹Œì§€ì˜ ìµœì†Œ ë¹„ìš© g
     std::map<std::pair<int, int>, int32> bestG;
-    // ºÎ¸ğ ³ëµå ±â·Ï (°æ·Î ¿ªÃßÀû¿ë)
+    // ë¶€ëª¨ ë…¸ë“œ ê¸°ë¡ (ê²½ë¡œ ì—­ì¶”ì ìš©)
     std::map<std::pair<int, int>, std::pair<int, int>> parent;
 
     auto startIdx = GetGridPos(startPos);
@@ -146,10 +146,10 @@ std::vector<Vector3> Map::FindPath(Vector3 startPos, Vector3 endPos)
 
         std::pair<int, int> nowIdx = GetGridPos(node.pos);
 
-        // ¸ñÀûÁö µµÂø È®ÀÎ
+        // ëª©ì ì§€ ë„ì°© í™•ì¸
         if (nowIdx == endIdx)
         {
-            // °æ·Î ¿ªÃßÀûÇÏ¿© path º¤ÅÍ Ã¤¿ì±â
+            // ê²½ë¡œ ì—­ì¶”ì í•˜ì—¬ path ë²¡í„° ì±„ìš°ê¸°
             std::pair<int, int> curr = endIdx;
             while (curr != startIdx)
             {
@@ -164,7 +164,7 @@ std::vector<Vector3> Map::FindPath(Vector3 startPos, Vector3 endPos)
             return path;
         }
 
-        // 8¹æÇâ Å½»ö
+        // 8ë°©í–¥ íƒìƒ‰
         static int dx[] = { 1, -1, 0, 0, 1, 1, -1, -1 };
         static int dz[] = { 0, 0, 1, -1, 1, -1, 1, -1 };
 
@@ -179,14 +179,14 @@ std::vector<Vector3> Map::FindPath(Vector3 startPos, Vector3 endPos)
 
             if (!CanGo(nextPos)) continue;
 
-            // °¡·Î/¼¼·Î´Â 10, ´ë°¢¼±Àº 14 (Á¤¼ö ¿¬»ê ÃÖÀûÈ­)
+            // ê°€ë¡œ/ì„¸ë¡œëŠ” 10, ëŒ€ê°ì„ ì€ 14 (ì •ìˆ˜ ì—°ì‚° ìµœì í™”)
             int32 moveCost = (i < 4) ? 10 : 14;
             int32 nextG = node.g + moveCost;
 
             if (bestG.find(nextIdx) == bestG.end() || nextG < bestG[nextIdx])
             {
                 bestG[nextIdx] = nextG;
-                // Heuristic: ¸ÇÇØÆ° °Å¸® 
+                // Heuristic: ë§¨í•´íŠ¼ ê±°ë¦¬ 
                 int32 h = static_cast<int32>(std::abs(nextX - endIdx.first) + std::abs(nextZ - endIdx.second)) * 10;
                 pq.push({ nextG + h, nextG, nextPos });
                 parent[nextIdx] = nowIdx;
@@ -200,40 +200,40 @@ std::vector<Vector3> Map::FindPath(Vector3 startPos, Vector3 endPos)
 bool Map::LoadNavMesh(const std::string& path) {
     std::ifstream ifs(path, std::ios::binary);
     if (!ifs.is_open()) {
-        std::cout << "ÆÄÀÏ ¿­±â ½ÇÆĞ: " << path << std::endl;
+        std::cout << "íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨: " << path << std::endl;
         return false;
     }
 
-    // 1. Á¤Á¡ °³¼ö ÀĞ±â
+    // 1. ì •ì  ê°œìˆ˜ ì½ê¸°
     int32 vertCount = 0;
     ifs.read(reinterpret_cast<char*>(&vertCount), sizeof(int32));
 
 
 
     if (vertCount <= 0) {
-        std::cout << "Vertex Count°¡ 0ÀÔ´Ï´Ù." << std::endl;
+        std::cout << "Vertex Countê°€ 0ì…ë‹ˆë‹¤." << std::endl;
         return false;
     }
 
 
 
-    // 2. Á¤Á¡ ¸ñ·Ï ÀĞ±â (ÇÏ³ª¾¿ ÀĞ¾î¼­ Vector3¿¡ ³Ö±â)
+    // 2. ì •ì  ëª©ë¡ ì½ê¸° (í•˜ë‚˜ì”© ì½ì–´ì„œ Vector3ì— ë„£ê¸°)
     std::vector<Vector3> vertices(vertCount);
     for (int i = 0; i < vertCount; i++) {
-        // À¯´ÏÆ¼ float 3°³¸¦ ¼ø¼­´ë·Î ÀĞÀ½
+        // ìœ ë‹ˆí‹° float 3ê°œë¥¼ ìˆœì„œëŒ€ë¡œ ì½ìŒ
         ifs.read((char*)&vertices[i].x, sizeof(float));
         ifs.read((char*)&vertices[i].y, sizeof(float));
         ifs.read((char*)&vertices[i].z, sizeof(float));
     }
 
-    // 3. ÀÎµ¦½º °³¼ö ÀĞ±â
+    // 3. ì¸ë±ìŠ¤ ê°œìˆ˜ ì½ê¸°
     int32 indexCount = 0;
     ifs.read((char*)&indexCount, sizeof(int32));
 
-    // 4. ±×¸®µå °ø°£ È®º¸ (Áß¿ä: Load()¿¡¼­ ÀĞÀº _width, _height ±âÁØ)
+    // 4. ê·¸ë¦¬ë“œ ê³µê°„ í™•ë³´ (ì¤‘ìš”: Load()ì—ì„œ ì½ì€ _width, _height ê¸°ì¤€)
     _gridIndices.assign(_height, std::vector<std::vector<int>>(_width));
 
-    // 5. »ï°¢Çü ±¸¼º ¹× ±×¸®µå µî·Ï
+    // 5. ì‚¼ê°í˜• êµ¬ì„± ë° ê·¸ë¦¬ë“œ ë“±ë¡
     _navTriangles.clear();
     for (int i = 0; i < indexCount; i += 3) {
         int32 i1, i2, i3;
@@ -241,14 +241,14 @@ bool Map::LoadNavMesh(const std::string& path) {
         ifs.read((char*)&i2, sizeof(int32));
         ifs.read((char*)&i3, sizeof(int32));
 
-        // ¾ÈÀüÇÑ ÀÎµ¦½º Ã¼Å©
+        // ì•ˆì „í•œ ì¸ë±ìŠ¤ ì²´í¬
         if (i1 < 0 || i1 >= vertCount || i2 < 0 || i2 >= vertCount || i3 < 0 || i3 >= vertCount)
             continue;
 
         Triangle tri;
         tri.v1 = vertices[i1]; tri.v2 = vertices[i2]; tri.v3 = vertices[i3];
 
-        // AABB °è»ê
+        // AABB ê³„ì‚°
         tri.minX = std::min({ tri.v1.x, tri.v2.x, tri.v3.x });
         tri.maxX = std::max({ tri.v1.x, tri.v2.x, tri.v3.x });
         tri.minZ = std::min({ tri.v1.z, tri.v2.z, tri.v3.z });
@@ -257,13 +257,13 @@ bool Map::LoadNavMesh(const std::string& path) {
         int triIndex = static_cast<int>(_navTriangles.size());
         _navTriangles.push_back(tri);
 
-        // --- [´©¶ôµÇ¾ú´ø ÇÙ½É ·ÎÁ÷: ±×¸®µå µî·Ï] ---
+        // --- [ëˆ„ë½ë˜ì—ˆë˜ í•µì‹¬ ë¡œì§: ê·¸ë¦¬ë“œ ë“±ë¡] ---
         int startX = static_cast<int>((tri.minX - _minX) / _cellSize);
         int endX = static_cast<int>((tri.maxX - _minX) / _cellSize);
         int startZ = static_cast<int>((tri.minZ - _minZ) / _cellSize);
         int endZ = static_cast<int>((tri.maxZ - _minZ) / _cellSize);
 
-        // ±×¸®µå ¹üÀ§ Å¬·¥ÇÎ (·±Å¸ÀÓ ¿¡·¯ ¹æÁö)
+        // ê·¸ë¦¬ë“œ ë²”ìœ„ í´ë¨í•‘ (ëŸ°íƒ€ì„ ì—ëŸ¬ ë°©ì§€)
         startX = std::max(0, std::min(startX, _width - 1));
         endX = std::max(0, std::min(endX, _width - 1));
         startZ = std::max(0, std::min(startZ, _height - 1));
@@ -280,34 +280,34 @@ bool Map::LoadNavMesh(const std::string& path) {
     return true;
 }
 
-// Á¡ÀÌ »ï°¢Çü ³»ºÎ¿¡ ÀÖ´ÂÁö ÆÇ´ÜÇÏ´Â ÇÔ¼ö (Barycentric coordinate ¹æ½Ä)
+// ì ì´ ì‚¼ê°í˜• ë‚´ë¶€ì— ìˆëŠ”ì§€ íŒë‹¨í•˜ëŠ” í•¨ìˆ˜ (Barycentric coordinate ë°©ì‹)
 bool IsPointInTriangle(Vector3 p, Triangle tri) {
-    // 1. ³ôÀÌ(Y) °ËÁõ: Á¡ P°¡ »ï°¢ÇüÀÇ Æò¸é ³ôÀÌ¿Í ³Ê¹« ¸Ö¸® ¶³¾îÁ® ÀÖÀ¸¸é false
-    // NavMesh µ¥ÀÌÅÍÀÌ¹Ç·Î »ï°¢Çü Á¤Á¡µéÀÇ Æò±Õ Y°ªÀÌ³ª 
-    // ÃÖ¼Ò/ÃÖ´ë Y ¹üÀ§¸¦ ±âÁØÀ¸·Î Çã¿ë ¿ÀÂ÷¸¦ µÓ´Ï´Ù.
+    // 1. ë†’ì´(Y) ê²€ì¦: ì  Pê°€ ì‚¼ê°í˜•ì˜ í‰ë©´ ë†’ì´ì™€ ë„ˆë¬´ ë©€ë¦¬ ë–¨ì–´ì ¸ ìˆìœ¼ë©´ false
+    // NavMesh ë°ì´í„°ì´ë¯€ë¡œ ì‚¼ê°í˜• ì •ì ë“¤ì˜ í‰ê·  Yê°’ì´ë‚˜ 
+    // ìµœì†Œ/ìµœëŒ€ Y ë²”ìœ„ë¥¼ ê¸°ì¤€ìœ¼ë¡œ í—ˆìš© ì˜¤ì°¨ë¥¼ ë‘¡ë‹ˆë‹¤.
     float minY = std::min({ tri.v1.y, tri.v2.y, tri.v3.y }) - 0.5f;
     float maxY = std::max({ tri.v1.y, tri.v2.y, tri.v3.y }) + 0.5f;
     if (p.y < minY || p.y > maxY) return false;
 
-    // 2. XZ Æò¸é ÆÇÁ¤ (Barycentric Coordinate)
-    // º¤ÅÍ Á¤ÀÇ
+    // 2. XZ í‰ë©´ íŒì • (Barycentric Coordinate)
+    // ë²¡í„° ì •ì˜
     float v0x = tri.v3.x - tri.v1.x; float v0z = tri.v3.z - tri.v1.z; // AC
     float v1x = tri.v2.x - tri.v1.x; float v1z = tri.v2.z - tri.v1.z; // AB
     float v2x = p.x - tri.v1.x;      float v2z = p.z - tri.v1.z;      // AP
 
-    // µµÆ® ÇÁ·Î´öÆ®(³»Àû) °è»ê (XZ Æò¸é¿ë)
+    // ë„íŠ¸ í”„ë¡œë•íŠ¸(ë‚´ì ) ê³„ì‚° (XZ í‰ë©´ìš©)
     float dot00 = v0x * v0x + v0z * v0z;
     float dot01 = v0x * v1x + v0z * v1z;
     float dot02 = v0x * v2x + v0z * v2z;
     float dot11 = v1x * v1x + v1z * v1z;
     float dot12 = v1x * v2x + v1z * v2z;
 
-    // Barycentric ÁÂÇ¥(u, v) °è»ê
+    // Barycentric ì¢Œí‘œ(u, v) ê³„ì‚°
     float denom = (dot00 * dot11 - dot01 * dot01);
-    // ºĞ¸ğ°¡ 0¿¡ °¡±õ´Ù¸é (»ï°¢ÇüÀÌ ÀÏÁ÷¼±ÀÌ°Å³ª µ¥ÀÌÅÍ°¡ ±úÁø °æ¿ì)
+    // ë¶„ëª¨ê°€ 0ì— ê°€ê¹ë‹¤ë©´ (ì‚¼ê°í˜•ì´ ì¼ì§ì„ ì´ê±°ë‚˜ ë°ì´í„°ê°€ ê¹¨ì§„ ê²½ìš°)
     if (std::abs(denom) < 0.000001f)
     {
-        // NaNÀ» ¹İÈ¯ÇÏÁö ¸»°í, °è»êÀÌ ºÒ°¡´ÉÇÔÀ» ¾Ë¸®°Å³ª ±âº»°ª ¹İÈ¯ 
+        // NaNì„ ë°˜í™˜í•˜ì§€ ë§ê³ , ê³„ì‚°ì´ ë¶ˆê°€ëŠ¥í•¨ì„ ì•Œë¦¬ê±°ë‚˜ ê¸°ë³¸ê°’ ë°˜í™˜ 
         return false;
     }
 
@@ -315,8 +315,8 @@ bool IsPointInTriangle(Vector3 p, Triangle tri) {
     float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
     float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
-    // ÃÖÁ¾ ÆÇÁ¤: u >= 0, v >= 0, u + v <= 1 ÀÌ¸é ³»ºÎ
-    // ºÎµ¿ ¼Ò¼öÁ¡ ¿ÀÂ÷¸¦ °í·ÁÇÏ¿© ¾ÆÁÖ ÀÛÀº °ª(EPSILON)À» Àû¿ëÇÕ´Ï´Ù.
+    // ìµœì¢… íŒì •: u >= 0, v >= 0, u + v <= 1 ì´ë©´ ë‚´ë¶€
+    // ë¶€ë™ ì†Œìˆ˜ì  ì˜¤ì°¨ë¥¼ ê³ ë ¤í•˜ì—¬ ì•„ì£¼ ì‘ì€ ê°’(EPSILON)ì„ ì ìš©í•©ë‹ˆë‹¤.
     const float EPSILON = 0.001f;
     return (u >= -EPSILON) && (v >= -EPSILON) && (u + v <= 1.0f + EPSILON);
 }
@@ -327,7 +327,7 @@ bool Map::CanGo(Vector3 pos) {
 
     if (x < 0 || x >= _width || z < 0 || z >= _height) return false;
 
-    // ÇöÀç À§Ä¡ÇÑ ±×¸®µå ¼¿¿¡ µî·ÏµÈ »ï°¢Çüµé¸¸ ·çÇÁ
+    // í˜„ì¬ ìœ„ì¹˜í•œ ê·¸ë¦¬ë“œ ì…€ì— ë“±ë¡ëœ ì‚¼ê°í˜•ë“¤ë§Œ ë£¨í”„
     const auto& candidateIndices = _gridIndices[z][x];
     for (int index : candidateIndices) {
         if (IsPointInTriangle(pos, _navTriangles[index])) {

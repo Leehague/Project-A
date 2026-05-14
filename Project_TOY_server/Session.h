@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <memory>
 #include <winsock2.h>
 #include <queue>
@@ -18,9 +18,9 @@
 enum class IO_TYPE { RECV, SEND };
 
 struct OverlappedEx {
-    WSAOVERLAPPED overlapped; // OS°¡ ¿ä±¸ÇÏ´Â ±âº» ±¸Á¶Ã¼ (¹İµå½Ã ¸Ç ¾Õ)
-    IO_TYPE type;             // ¾î¶² ÀÛ¾÷ÀÎÁö ±¸ºĞ
-    SessionPtr owner;   // ÀÌ ÀÛ¾÷À» ¿äÃ»ÇÑ Session °´Ã¼ ÁÖ¼Ò
+    WSAOVERLAPPED overlapped; // OSê°€ ìš”êµ¬í•˜ëŠ” ê¸°ë³¸ êµ¬ì¡°ì²´ (ë°˜ë“œì‹œ ë§¨ ì•)
+    IO_TYPE type;             // ì–´ë–¤ ì‘ì—…ì¸ì§€ êµ¬ë¶„
+    SessionPtr owner;   // ì´ ì‘ì—…ì„ ìš”ì²­í•œ Session ê°ì²´ ì£¼ì†Œ
 };
 
 class Session :public std::enable_shared_from_this<Session>
@@ -30,27 +30,27 @@ public:
     Session(SOCKET socket);
     ~Session(); 
 
-    // ¿ÜºÎ¿¡¼­ È£ÃâÇÏ´Â ¼Û¼ö½Å ¸í·É
+    // ì™¸ë¶€ì—ì„œ í˜¸ì¶œí•˜ëŠ” ì†¡ìˆ˜ì‹  ëª…ë ¹
     void Send(SendBufferPtr sendBuffer);
     void Receive();
 
-    // IOCP ¿öÄ¿ ½º·¹µå°¡ ¿Ï·á Åëº¸¸¦ ¹Ş¾ÒÀ» ¶§ È£ÃâÇÒ Äİ¹é
+    // IOCP ì›Œì»¤ ìŠ¤ë ˆë“œê°€ ì™„ë£Œ í†µë³´ë¥¼ ë°›ì•˜ì„ ë•Œ í˜¸ì¶œí•  ì½œë°±
     void OnRecv(int bytesTransferred);
     void OnSend(int bytesTransferred);
     void Disconnect();
     void OnDisconnected();
 
-    // ÀÚ±â ÀÚ½ÅÀ» SessionPtr·Î ¹İÈ¯ÇÏ´Â ÇïÆÛ ÇÔ¼ö
+    // ìê¸° ìì‹ ì„ SessionPtrë¡œ ë°˜í™˜í•˜ëŠ” í—¬í¼ í•¨ìˆ˜
     SessionPtr GetSessionPtr() { return shared_from_this(); }
 
     uint64 GetGuid() { return static_cast<uint64>(_socket); }
 
-    // PlayerId ¼³Á¤ ¹× °¡Á®¿À±â
+    // PlayerId ì„¤ì • ë° ê°€ì ¸ì˜¤ê¸°
     void SetPlayerId(uint64 id) { _playerId = id; }
     uint64 GetPlayerId() { return _playerId; }
 
 
-    // ¼ÒÄÏ ¼³Á¤ ¹× °ÔÅÍ
+    // ì†Œì¼“ ì„¤ì • ë° ê²Œí„°
     void SetSocket(SOCKET socket) { _socket = socket; }
     SOCKET GetSocket() { return _socket; }
 
@@ -60,28 +60,28 @@ public:
         return _playerptr;
     }
 
-    // Á¢¼Ó ¿Ï·á Ã³¸®
+    // ì ‘ì† ì™„ë£Œ ì²˜ë¦¬
     void OnConnected();
 
 private:
-    uint64 _playerId = 0; // ÃÊ±â°ªÀº 0 È¤Àº À¯È¿ÇÏÁö ¾ÊÀº °ª
+    uint64 _playerId = 0; // ì´ˆê¸°ê°’ì€ 0 í˜¹ì€ ìœ íš¨í•˜ì§€ ì•Šì€ ê°’
     PlayerPtr _playerptr = nullptr;
 private:
     SOCKET      _socket= INVALID_SOCKET;
     RecvBuffer  _recvBuffer;
     
     
-    std::atomic<bool> _disconnected = false; //Remove Áßº¹½ÇÇà ¹æÁö ÇÃ·¡±×
+    std::atomic<bool> _disconnected = false; //Remove ì¤‘ë³µì‹¤í–‰ ë°©ì§€ í”Œë˜ê·¸
     
 private:
     std::mutex              _lock;
-    std::queue<SendBufferPtr> _sendQueue; // º¸³¾ µ¥ÀÌÅÍ ´ë±â¿­
-    bool                    _sendRegistered = false; // ÇöÀç Àü¼Û ¿¹¾à ÁßÀÎÁö ¿©ºÎ
+    std::queue<SendBufferPtr> _sendQueue; // ë³´ë‚¼ ë°ì´í„° ëŒ€ê¸°ì—´
+    bool                    _sendRegistered = false; // í˜„ì¬ ì „ì†¡ ì˜ˆì•½ ì¤‘ì¸ì§€ ì—¬ë¶€
 
     uint64 _lastSendTick = 0;
-    const uint64 SEND_TICK_INTERVAL = 20; // 20ms ÁÖ±â
+    const uint64 SEND_TICK_INTERVAL = 20; // 20ms ì£¼ê¸°
 
 private:
-    void RegisterSend(); // ½ÇÁ¦·Î WSASend¸¦ È£ÃâÇÏ´Â ÇÔ¼ö
+    void RegisterSend(); // ì‹¤ì œë¡œ WSASendë¥¼ í˜¸ì¶œí•˜ëŠ” í•¨ìˆ˜
     
 };

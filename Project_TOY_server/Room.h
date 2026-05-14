@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include "JobQueue.h"
 
@@ -7,18 +7,18 @@ class Room : public JobQueue
 {
 public:
     Room(int32 roomId, int32 mapId);
-    void Enter(GameObjectPtr go);//´ÜÀÏ ÀÔÀå , °¡´ÉÇÏ¸é ÇÃ·¹ÀÌ¾î¿¡°Ô¸¸ »ç¿ë
-    void EnterMonsters(const std::vector<MonsterPtr>& monsters); //º¹¼öÀÇ ¸ó½ºÅÍµé ÇÑ¹ø¿¡ ÀÔÀå
+    void Enter(GameObjectPtr go);//ë‹¨ì¼ ì…ì¥ , ê°€ëŠ¥í•˜ë©´ í”Œë ˆì´ì–´ì—ê²Œë§Œ ì‚¬ìš©
+    void EnterMonsters(const std::vector<MonsterPtr>& monsters); //ë³µìˆ˜ì˜ ëª¬ìŠ¤í„°ë“¤ í•œë²ˆì— ì…ì¥
 
     void Leave(PlayerPtr player);
 
-    //¹æ¾ÈÀÇ ¸ğµç ÇÃ·¹ÀÌ¾î(¼¼¼Çµé)¿¡°Ô ¹æ¼Û
+    //ë°©ì•ˆì˜ ëª¨ë“  í”Œë ˆì´ì–´(ì„¸ì…˜ë“¤)ì—ê²Œ ë°©ì†¡
     void Broadcast(SendBufferPtr sendBuffer);
-    //passing_object_id ¸¦ °¡Áö´Â ÇÃ·¹ÀÌ¾î(À¯Àú)¸¸ Á¦¿ÜÇÏ°í ºê·Îµå Ä³½ºÆÃ
+    //passing_object_id ë¥¼ ê°€ì§€ëŠ” í”Œë ˆì´ì–´(ìœ ì €)ë§Œ ì œì™¸í•˜ê³  ë¸Œë¡œë“œ ìºìŠ¤íŒ…
     void Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id);
-    //targets¿¡°Ô¸¸ ºê·ÎµåÄ³½ºÆÃ
+    //targetsì—ê²Œë§Œ ë¸Œë¡œë“œìºìŠ¤íŒ…
     void Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Session>> targets);
-    // ÀÎÁ¢ ÇÃ·¹ÀÌ¾î ¿¡°Ô ¹æ¼Û
+    // ì¸ì ‘ í”Œë ˆì´ì–´ ì—ê²Œ ë°©ì†¡
     void BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id = -1);
 
     void SpawnBroadcast(PlayerPtr player);
@@ -34,26 +34,26 @@ public:
     void SendMoveResync(PlayerPtr player);
 
 
-    // ÀÌµ¿ ÆĞÅ¶ Ã³¸® ·çÆ¾
+    // ì´ë™ íŒ¨í‚· ì²˜ë¦¬ ë£¨í‹´
     void HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt);
 
 
-    // ½ºÅ³ ÆĞÅ¶ Ã³¸® 
+    // ìŠ¤í‚¬ íŒ¨í‚· ì²˜ë¦¬ 
     void HandleSkillForPlayer(PlayerPtr player , Protocol::CS_SKILL& pkt);
     void HandleSkillForMonster(MonsterPtr monster, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid);
     void HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos , int32 skillid);
 
     
-    //º»ÀÎ¿¡°Ô MP º¯°æ ÆĞÅ¶ Àü¼Û
+    //ë³¸ì¸ì—ê²Œ MP ë³€ê²½ íŒ¨í‚· ì „ì†¡
     void UpdateMPToSelf(PlayerPtr player);
-    //º»ÀÎ¿¡°Ô HP º¯°æ ÆĞÅ¶ Àü¼Û
+    //ë³¸ì¸ì—ê²Œ HP ë³€ê²½ íŒ¨í‚· ì „ì†¡
     void UpdateHPToSelf(PlayerPtr player);
-    //´ë»ó(target)ÀÇ MP º¯È­¸¦ broadcastcenterÀÇ ÁÖº¯¿¡ ¾Ë¸²
+    //ëŒ€ìƒ(target)ì˜ MP ë³€í™”ë¥¼ broadcastcenterì˜ ì£¼ë³€ì— ì•Œë¦¼
     void UpdateMPToOthers(GameObjectPtr target, Vector3 broadcastcenter);
-    //´ë»ó(target)ÀÇ HP º¯È­¸¦ broadcastcenterÀÇ ÁÖº¯¿¡ ¾Ë¸²
+    //ëŒ€ìƒ(target)ì˜ HP ë³€í™”ë¥¼ broadcastcenterì˜ ì£¼ë³€ì— ì•Œë¦¼
     void UpdateHPToOthers(GameObjectPtr target, GameObjectPtr attacker, int damage, Vector3 broadcastcenter);
 
-    //Åõ»çÃ¼ °ü·Ã ÇÔ¼ö
+    //íˆ¬ì‚¬ì²´ ê´€ë ¨ í•¨ìˆ˜
     void SpawnProjectile(GameObjectPtr attacker, const SkillData *skillData, Vector3 targetPos);
     void UpdateProjectile(std::shared_ptr<Projectile> projectile);
 
@@ -61,7 +61,7 @@ public:
     void SetRoomid(int32 roomid) { _Selfroomid = roomid; }
     int32 GetRoomid() {return _Selfroomid;}
 
-    //¸ó½ºÅÍ ½ºÆù 
+    //ëª¬ìŠ¤í„° ìŠ¤í° 
     void MonsterSpawn(int32 NumOfMonster, int templatedId);
 
     MapPtr GetMapptr() { return _map; };
@@ -78,23 +78,23 @@ private:
 
     MapPtr _map;
 
-private: //±×¸®µå ½Ã½ºÅÛ °ü·Ã
-    // 1. ±×¸®µå ÀÎµ¦½º °è»ê (ÁÂÇ¥ -> ±×¸®µå ÁÂÇ¥)
+private: //ê·¸ë¦¬ë“œ ì‹œìŠ¤í…œ ê´€ë ¨
+    // 1. ê·¸ë¦¬ë“œ ì¸ë±ìŠ¤ ê³„ì‚° (ì¢Œí‘œ -> ê·¸ë¦¬ë“œ ì¢Œí‘œ)
     
     std::pair<int, int> GetSectorPos(Vector3 pos);
-    // 2. ³» ÁÖº¯ 9°³ Ä­¿¡ ¼ÓÇÑ ÇÃ·¹ÀÌ¾î ¸®½ºÆ® °¡Á®¿À±â (ºê·ÎµåÄ³½ºÆ® Å¸°Ù ÃßÃâ)
+    // 2. ë‚´ ì£¼ë³€ 9ê°œ ì¹¸ì— ì†í•œ í”Œë ˆì´ì–´ ë¦¬ìŠ¤íŠ¸ ê°€ì ¸ì˜¤ê¸° (ë¸Œë¡œë“œìºìŠ¤íŠ¸ íƒ€ê²Ÿ ì¶”ì¶œ)
     std::vector<std::shared_ptr<Session>> GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id =-1);
 
     std::vector<PlayerPtr> GetAdjacentPlayers(Vector3 pos, int32 passing_object_id = -1);
 
 public:
-    // 3. ¿ÀºêÁ§Æ® ÀÌµ¿ ½Ã ±×¸®µå °»½Å (Enter/Move/Leave ½Ã È£Ãâ)
+    // 3. ì˜¤ë¸Œì íŠ¸ ì´ë™ ì‹œ ê·¸ë¦¬ë“œ ê°±ì‹  (Enter/Move/Leave ì‹œ í˜¸ì¶œ)
     void UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos);
 
     
 private:
-    // [±×¸®µå µ¥ÀÌÅÍ ±¸Á¶] _objectGrid[z][x] = {ÇØ´ç Ä­¿¡ ÀÖ´Â ¿ÀºêÁ§Æ® ¼¼Æ®}
-    // std::setÀ» ¾²¸é Áßº¹ Á¦°Å ¹× Æ¯Á¤ ¿ÀºêÁ§Æ® Å½»öÀÌ ºü¸¨´Ï´Ù.
+    // [ê·¸ë¦¬ë“œ ë°ì´í„° êµ¬ì¡°] _objectGrid[z][x] = {í•´ë‹¹ ì¹¸ì— ìˆëŠ” ì˜¤ë¸Œì íŠ¸ ì„¸íŠ¸}
+    // std::setì„ ì“°ë©´ ì¤‘ë³µ ì œê±° ë° íŠ¹ì • ì˜¤ë¸Œì íŠ¸ íƒìƒ‰ì´ ë¹ ë¦…ë‹ˆë‹¤.
     std::vector<std::vector<std::set<GameObjectPtr>>> _sectors;
 
     int32 _sectorSize = 50;
@@ -103,7 +103,7 @@ private:
     int32 _sectorCountZ;
 
 
-    // MapÀÇ Á¤º¸¸¦ º¹»çÇØµÎ°Å³ª Á÷Á¢ ÂüÁ¶ÇÏ¿© ÀÎµ¦½º °è»ê¿¡ »ç¿ë
+    // Mapì˜ ì •ë³´ë¥¼ ë³µì‚¬í•´ë‘ê±°ë‚˜ ì§ì ‘ ì°¸ì¡°í•˜ì—¬ ì¸ë±ìŠ¤ ê³„ì‚°ì— ì‚¬ìš©
     float _minX=0, _minZ=0, _cellSize=0;
     int _gridWidth=0, _gridHeight=0;
 private:
@@ -111,7 +111,7 @@ private:
 
 
 private:
-    //¹æ¼Û°ü·Ã ÇÔ¼öµé
+    //ë°©ì†¡ê´€ë ¨ í•¨ìˆ˜ë“¤
      
 };
 

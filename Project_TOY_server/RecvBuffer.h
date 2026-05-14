@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 
 
@@ -9,25 +9,25 @@ public:
     RecvBuffer(int bufferSize);
     ~RecvBuffer();
 
-    // µ¥ÀÌÅÍ Á¤¸® (³²Àº µ¥ÀÌÅÍ¸¦ ¸Ç ¾ÕÀ¸·Î º¹»ç)
+    // ë°ì´í„° ì •ë¦¬ (ë‚¨ì€ ë°ì´í„°ë¥¼ ë§¨ ì•ìœ¼ë¡œ ë³µì‚¬)
     void Clean();
 
-    // µ¥ÀÌÅÍ ±â·Ï ¼º°ø ½Ã ¾²±â Ä¿¼­ ÀÌµ¿
+    // ë°ì´í„° ê¸°ë¡ ì„±ê³µ ì‹œ ì“°ê¸° ì»¤ì„œ ì´ë™
     bool OnWrite(int numOfBytes);
 
-    // µ¥ÀÌÅÍ Ã³¸® ¿Ï·á ½Ã ÀĞ±â Ä¿¼­ ÀÌµ¿
+    // ë°ì´í„° ì²˜ë¦¬ ì™„ë£Œ ì‹œ ì½ê¸° ì»¤ì„œ ì´ë™
     bool OnRead(int numOfBytes);
 
-    // ¾²±â À§Ä¡ ÁÖ¼Ò (WSARecv¿¡ ³Ñ°ÜÁÙ ¹öÆÛ ½ÃÀÛÁ¡)
+    // ì“°ê¸° ìœ„ì¹˜ ì£¼ì†Œ (WSARecvì— ë„˜ê²¨ì¤„ ë²„í¼ ì‹œì‘ì )
     //char* WritePos() { return &_buffer[_writePos]; }
-    char* WritePos() { return _buffer.data() + _writePos; } // ÀÎµ¦½Ì[] ´ë½Å Æ÷ÀÎÅÍ »ê¼ú ¿¬»ê »ç¿ë
+    char* WritePos() { return _buffer.data() + _writePos; } // ì¸ë±ì‹±[] ëŒ€ì‹  í¬ì¸í„° ì‚°ìˆ  ì—°ì‚° ì‚¬ìš©
     
-    // ÀĞ±â À§Ä¡ ÁÖ¼Ò (ÆĞÅ¶ ÇØ¼®À» ½ÃÀÛÇÒ ÁöÁ¡)
+    // ì½ê¸° ìœ„ì¹˜ ì£¼ì†Œ (íŒ¨í‚· í•´ì„ì„ ì‹œì‘í•  ì§€ì )
     char* ReadPos() { return &_buffer[_readPos]; }
 
-    // ÇöÀç ¹öÆÛ¿¡ ½×¿©ÀÖ´Â µ¥ÀÌÅÍ Å©±â
+    // í˜„ì¬ ë²„í¼ì— ìŒ“ì—¬ìˆëŠ” ë°ì´í„° í¬ê¸°
     int DataSize() { return _writePos - _readPos; }
-    // ³²Àº ºó °ø°£ Å©±â
+    // ë‚¨ì€ ë¹ˆ ê³µê°„ í¬ê¸°
     int FreeSize() { return _capacity - _writePos; }
 
 private:

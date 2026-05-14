@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using Google.Protobuf;
 using Protocol;
 
@@ -48,31 +48,31 @@ public class PacketHandler
             GameObject go = Managers.objectManager.Find(posInfo.ObjectId);
             if (go == null) return;
 
-            // 1. °øÅë ºÎ¸ğÀÎ CreatureController¸¦ ¸ÕÀú Ã£½À´Ï´Ù.
+            // 1. ê³µí†µ ë¶€ëª¨ì¸ CreatureControllerë¥¼ ë¨¼ì € ì°¾ìŠµë‹ˆë‹¤.
             CreatureController cc = go.GetComponent<CreatureController>();
             if (cc == null) return;
 
-            // 2. Å¸ÀÔ¿¡ µû¶ó ºĞ±â Ã³¸®
+            // 2. íƒ€ì…ì— ë”°ë¼ ë¶„ê¸° ì²˜ë¦¬
             if ((cc is PlayerController pc) && (pc.IsMyPlayer))
             {
 
-                // [³» Ä³¸¯ÅÍ] ¼­¹ö À§Ä¡¿Í µ¿±âÈ­ ¹× ¿ÀÂ÷ º¸Á¤
+                // [ë‚´ ìºë¦­í„°] ì„œë²„ ìœ„ì¹˜ì™€ ë™ê¸°í™” ë° ì˜¤ì°¨ ë³´ì •
                 Vector3 serverPos = new Vector3(posInfo.X, posInfo.Y, posInfo.Z);
                 float distance = Vector3.Distance(go.transform.position, serverPos);
 
                 if (distance > 0.5f)
                 {
-                    // ¼­¹ö°¡ °­Á¦·Î À§Ä¡¸¦ µÇµ¹·Á¾ß ÇÏ´Â »óÈ² (¿¹: °¥ ¼ö ¾ø´Â Áö¿ª)
+                    // ì„œë²„ê°€ ê°•ì œë¡œ ìœ„ì¹˜ë¥¼ ë˜ëŒë ¤ì•¼ í•˜ëŠ” ìƒí™© (ì˜ˆ: ê°ˆ ìˆ˜ ì—†ëŠ” ì§€ì—­)
                     pc.SyncPos(serverPos);
                 }
 
             }
             else
             {
-                // [¸ó½ºÅÍ] [Å¸ÀÎ Ä³¸¯ÅÍ] ¸ó½ºÅÍ, Å¸ÀÎÄ³¸¯ÅÍ´Â Ç×»ó ¼­¹ö°¡ ÁÖµµ±ÇÀ» °¡Áö¹Ç·Î RefreshPos·Î ¸ñÀûÁö¸¸ °»½Å
+                // [ëª¬ìŠ¤í„°] [íƒ€ì¸ ìºë¦­í„°] ëª¬ìŠ¤í„°, íƒ€ì¸ìºë¦­í„°ëŠ” í•­ìƒ ì„œë²„ê°€ ì£¼ë„ê¶Œì„ ê°€ì§€ë¯€ë¡œ RefreshPosë¡œ ëª©ì ì§€ë§Œ ê°±ì‹ 
                 cc.RefreshPos(posInfo);
 
-                //µğ¹ö±×
+                //ë””ë²„ê·¸
                 Debug.Log($"yaw of {posInfo.ObjectId} : {posInfo.Yaw}");
             }
         }
@@ -96,23 +96,23 @@ public class PacketHandler
         SC_ENTER_GAME enterGamePkt = packet as SC_ENTER_GAME;
 
 
-        //·Î±×ÀÎ ÆĞÅ¶¿¡¼­ ¹Ş¾Ò´ø playerId(obejcId)¿Í ÀÏÄ¡ÇÏ´ÂÁö È®ÀÎ
+        //ë¡œê·¸ì¸ íŒ¨í‚·ì—ì„œ ë°›ì•˜ë˜ playerId(obejcId)ì™€ ì¼ì¹˜í•˜ëŠ”ì§€ í™•ì¸
         if (enterGamePkt.PosInfo.ObjectId != Managers.objectManager.Myplayer_playerId) { return; }
 
-        //Map ·Îµå
+        //Map ë¡œë“œ
         string Mapname = "Map" + enterGamePkt.MapId.ToString();
         if (!GameObject.Find(Mapname))
         {
             Managers.resourceManager.Instantiate(Mapname);
         }
 
-        //¼­¹ö°¡ º¸³»ÁØ ³ªÀÇ ÃÊ±â À§Ä¡ Á¤º¸¸¦ ÀúÀå
+        //ì„œë²„ê°€ ë³´ë‚´ì¤€ ë‚˜ì˜ ì´ˆê¸° ìœ„ì¹˜ ì •ë³´ë¥¼ ì €ì¥
         Managers.objectManager.MyplayerPosInfo=enterGamePkt.PosInfo;
 
-        //³» Ä³¸¯ÅÍ ½ºÆù
+        //ë‚´ ìºë¦­í„° ìŠ¤í°
         Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo, enterGamePkt.TempleteId, true);
 
-        //CS_GAME_READY Àü¼Û ·ÎÁ÷
+        //CS_GAME_READY ì „ì†¡ ë¡œì§
         Protocol.CS_GAME_READY _CS_GAME_READY = new Protocol.CS_GAME_READY();
         _CS_GAME_READY.PlayerId = Managers.objectManager.Myplayer_playerId; // This playerId must equal to 'Real' player Id in server.
         Managers.networkManager.Send(_CS_GAME_READY);
@@ -124,19 +124,19 @@ public class PacketHandler
 
         foreach (int id in despawnPkt.PlayerId)
         {
-            Managers.objectManager.Remove(id); // ¿ÀºêÁ§Æ® ¸Å´ÏÀú¿¡ Á¦°Å ¿äÃ»
+            Managers.objectManager.Remove(id); // ì˜¤ë¸Œì íŠ¸ ë§¤ë‹ˆì €ì— ì œê±° ìš”ì²­
         }
     }
     public static void Handle_SC_SKILL(PacketSession session, IMessage packet)
     {
         SC_SKILL skillPkt = packet as SC_SKILL;
-        //½ºÅ³ Á¾·ù¿¡ µû¶ó ºĞ±âÇØ¾ßÇÒµí?
+        //ìŠ¤í‚¬ ì¢…ë¥˜ì— ë”°ë¼ ë¶„ê¸°í•´ì•¼í• ë“¯?
         Debug.Log($"skill used :{skillPkt.SkillId}");
-        Skill skilldata=Managers.dataManager.SkillDict[skillPkt.SkillId]; //¿©±â¼­ skilldata ´Â ¼öÁ¤ÇÏ¸é ¾ÈµÊ.
-        GameObject Caster=Managers.objectManager.Find(skillPkt.ObjectId); //½ºÅ³À» ¾´ »ç¶÷ (Caster)
+        Skill skilldata=Managers.dataManager.SkillDict[skillPkt.SkillId]; //ì—¬ê¸°ì„œ skilldata ëŠ” ìˆ˜ì •í•˜ë©´ ì•ˆë¨.
+        GameObject Caster=Managers.objectManager.Find(skillPkt.ObjectId); //ìŠ¤í‚¬ì„ ì“´ ì‚¬ëŒ (Caster)
         CreatureController cc = Caster.GetComponent<CreatureController>();
 
-        switch ((skillType)skilldata.skillTypeId) //¾Ö´Ï¸ÅÀÌ¼Ç Æ²°í UI ¾÷µ¥ÀÌÆ®ÇÏ°í 
+        switch ((skillType)skilldata.skillTypeId) //ì• ë‹ˆë§¤ì´ì…˜ í‹€ê³  UI ì—…ë°ì´íŠ¸í•˜ê³  
         {
             case skillType.Common:
                 break;
@@ -144,8 +144,14 @@ public class PacketHandler
                 cc.State = Define.CreatureState.Skill;
                 break;
             case skillType.Projectile:
+                cc.State = Define.CreatureState.Skill;
+
+                if (skillPkt.DestPos == null) { break; }
+                Vector3 targetpos = new Vector3(skillPkt.DestPos.X, skillPkt.DestPos.Y, skillPkt.DestPos.Z);
+                cc.spawnfireball(targetpos); //ì„ì‹œ í•¨ìˆ˜ ì‹¤ì œë¡œëŠ” ìŠ¤í‚¬ ì•„ì´ë”” ê¹Œì§€ ë°›ì•„ì„œ ê·¸ì— ë”°ë¼ ë¶„ê¸°í•´ì¤˜ì•¼í•¨
                 break;
             case skillType.Dash:
+                cc.State = Define.CreatureState.Skill;
                 break;
         }
 
@@ -158,9 +164,9 @@ public class PacketHandler
         if (HPChanger_cc != null)
         {
             HPChanger_cc.stat.hp = sc_change_hp_pkt.CurrentHp; 
-            //stat class¿¡ µî·ÏµÈ UIÀÇ ÇÔ¼öµé·Î ÀÚµ¿ Ã³¸®, UI¸¦ Á÷Á¢ È£ÃâÇÒ ÇÊ¿ä ¾øÀ½ }
+            //stat classì— ë“±ë¡ëœ UIì˜ í•¨ìˆ˜ë“¤ë¡œ ìë™ ì²˜ë¦¬, UIë¥¼ ì§ì ‘ í˜¸ì¶œí•  í•„ìš” ì—†ìŒ }
 
-            //attacker_id ¿Í damage ¸¦ ÀÌ¿ëÇÑ UI ÀÌº¥Æ® ¹ß»ıµî ÄÚµå Ãß°¡ °¡´É
+            //attacker_id ì™€ damage ë¥¼ ì´ìš©í•œ UI ì´ë²¤íŠ¸ ë°œìƒë“± ì½”ë“œ ì¶”ê°€ ê°€ëŠ¥
 
         }
     }
@@ -182,7 +188,7 @@ public class PacketHandler
 
         foreach (SpawnInfo info in sc_monster_spawn_pkt.MonstersSpawnInfo) 
         {
-            // ObjectManager¿¡¼­ ¸ó½ºÅÍ ½ºÆù Ã³¸® 
+            // ObjectManagerì—ì„œ ëª¬ìŠ¤í„° ìŠ¤í° ì²˜ë¦¬ 
             Managers.objectManager.SpawnMonster(info.Spawnposinfo, info.TempleteId);
         }
     }

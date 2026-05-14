@@ -1,4 +1,4 @@
-#include "RoomManager.h"
+ï»¿#include "RoomManager.h"
 
 RoomManager GRoomManager;
 
@@ -7,9 +7,9 @@ int32 RoomManager::Create(int32 mapId)
     std::lock_guard<std::mutex> lock(_lock);  
     int32 roomId = ++RoomCounter;
     RoomPtr room = std::make_shared<Room>(roomId,mapId);
-    // ... ÃÊ±âÈ­ ·ÎÁ÷ ...
+    // ... ì´ˆê¸°í™” ë¡œì§ ...
     _rooms[roomId] = room;
-    //room->SetRoomid(roomId); [¼öÁ¤] Room Å¬·¡½ºÀÇ »ı¼ºÀÚ¿¡¼­ ¼öÇàÇÔ
+    //room->SetRoomid(roomId); [ìˆ˜ì •] Room í´ë˜ìŠ¤ì˜ ìƒì„±ìì—ì„œ ìˆ˜í–‰í•¨
     return roomId;
 }
 

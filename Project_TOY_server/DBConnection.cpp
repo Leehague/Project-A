@@ -1,4 +1,4 @@
-#include "DBConnection.h"
+ï»¿#include "DBConnection.h"
 #include <iostream>
 
 DBConnection::DBConnection()
@@ -12,14 +12,14 @@ DBConnection::~DBConnection()
 
 bool DBConnection::Connect(SQLHENV hEnv, const std::wstring& connectionString)
 {
-    // 1. ¿¬°á ÇÚµé ÇÒ´ç
+    // 1. ì—°ê²° í•¸ë“¤ í• ë‹¹
     if (SQL_SUCCESS != ::SQLAllocHandle(SQL_HANDLE_DBC, hEnv, &_hDbc))
         return false;
 
-    // 2. Å¸ÀÓ¾Æ¿ô ¼³Á¤ (¿É¼Ç)
+    // 2. íƒ€ì„ì•„ì›ƒ ì„¤ì • (ì˜µì…˜)
     ::SQLSetConnectAttr(_hDbc, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0);
 
-    // 3. ½ÇÁ¦ ¿¬°á ½Ãµµ
+    // 3. ì‹¤ì œ ì—°ê²° ì‹œë„
     SQLWCHAR outConnStr[1024];
     SQLSMALLINT outConnStrLen;
 
@@ -36,7 +36,7 @@ bool DBConnection::Connect(SQLHENV hEnv, const std::wstring& connectionString)
 
     if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
     {
-        // ¿¡·¯ ¹ß»ı ½Ã ·Î±× Ãâ·Â ·ÎÁ÷ Ãß°¡ °¡´É
+        // ì—ëŸ¬ ë°œìƒ ì‹œ ë¡œê·¸ ì¶œë ¥ ë¡œì§ ì¶”ê°€ ê°€ëŠ¥
         Clear();
         return false;
     }

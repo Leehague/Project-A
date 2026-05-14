@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include <windows.h>
 #include <sqlext.h>
 #include <string>
 
-// ODBC ¶óÀÌºê·¯¸® ¸µÅ©
+// ODBC ë¼ì´ë¸ŒëŸ¬ë¦¬ ë§í¬
 #pragma comment(lib, "odbc32.lib")
 
 class DBConnection
@@ -12,16 +12,16 @@ public:
     DBConnection();
     ~DBConnection();
 
-    // ¿¬°á ½Ãµµ (LocalDB¿ë Ä¿³Ø¼Ç ½ºÆ®¸µ Æ÷ÇÔ)
+    // ì—°ê²° ì‹œë„ (LocalDBìš© ì»¤ë„¥ì…˜ ìŠ¤íŠ¸ë§ í¬í•¨)
     bool Connect(SQLHENV hEnv, const std::wstring& connectionString);
 
-    // ¿¬°á ÇØÁ¦
+    // ì—°ê²° í•´ì œ
     void Clear();
 
-    // Äõ¸® ½ÇÇà¿ë ÇÚµé ¹İÈ¯
+    // ì¿¼ë¦¬ ì‹¤í–‰ìš© í•¸ë“¤ ë°˜í™˜
     SQLHDBC GetConnectionHandle() { return _hDbc; }
 
 private:
-    SQLHDBC     _hDbc = SQL_NULL_HDBC;      // ¿¬°á ÇÚµé
+    SQLHDBC     _hDbc = SQL_NULL_HDBC;      // ì—°ê²° í•¸ë“¤
     bool        _isConnected = false;
 };

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "Room.h"
@@ -27,12 +27,12 @@ public:
 
 
 public:
-    uint64 lastMoveTick = 0; // ¸¶Áö¸· ÀÌµ¿ °ËÁõ ½Ã°£ (ms)
+    uint64 lastMoveTick = 0; // ë§ˆì§€ë§‰ ì´ë™ ê²€ì¦ ì‹œê°„ (ms)
     std::map<int32, int64> _skillCooltimes; // <SkillID, LastUsedTick>
 private:
-    // Ãß°¡: Çàµ¿ °áÁ¤ ÁÖ±â °ü¸®
+    // ì¶”ê°€: í–‰ë™ ê²°ì • ì£¼ê¸° ê´€ë¦¬
     uint64 _nextDecisionTick = 0;
-    const uint32 DECISION_INTERVAL_MS = 100; // 0.1ÃÊ = 100ms ¸¶´Ù ÆÇ´Ü
+    const uint32 DECISION_INTERVAL_MS = 100; // 0.1ì´ˆ = 100ms ë§ˆë‹¤ íŒë‹¨
 
     
 
@@ -45,12 +45,12 @@ public:
     void JobUpdate();
     void UpdateAction();
 public:
-    float _targetrange = 100.f; //TODO: DB ¿¬µ¿
+    float _targetrange = 100.f; //TODO: DB ì—°ë™
     std::vector<Vector3> _path;
 
   
 private:
-    void ProcessMove();  // ÀÌµ¿ ÁßÀÏ ¶§ ÁÂÇ¥ °»½Å Ã³¸®
-    void SyncPosAndBroadcast(Vector3 oldPos, Vector3 newPos); // ÇïÆÛ ÇÔ¼ö: ±×¸®µå °»½Å°ú ºê·ÎµåÄ³½ºÆ®¸¦ ¹­¾î¼­ Ã³¸®
+    void ProcessMove();  // ì´ë™ ì¤‘ì¼ ë•Œ ì¢Œí‘œ ê°±ì‹  ì²˜ë¦¬
+    void SyncPosAndBroadcast(Vector3 oldPos, Vector3 newPos); // í—¬í¼ í•¨ìˆ˜: ê·¸ë¦¬ë“œ ê°±ì‹ ê³¼ ë¸Œë¡œë“œìºìŠ¤íŠ¸ë¥¼ ë¬¶ì–´ì„œ ì²˜ë¦¬
     void UseSkill(GameObjectPtr targetobj, Vector3 targetPos, int32 skillid);
 };

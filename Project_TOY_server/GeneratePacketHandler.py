@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
+ï»¿# -*- coding: utf-8 -*-
 import re
 import os
 
 def generate():
-    # --- °æ·Î ¼³Á¤ (º»ÀÎ È¯°æ¿¡ ¸Â°Ô ¼öÁ¤ÇÏ¼¼¿ä) ---
+    # --- ê²½ë¡œ ì„¤ì • (ë³¸ì¸ í™˜ê²½ì— ë§ê²Œ ìˆ˜ì •í•˜ì„¸ìš”) ---
     proto_path = r"C:\Users\leehague\Desktop\Project A\Common\Protocol.proto"
     server_output_path = r"C:\Users\leehague\Desktop\Project A\Project_TOY_server\PacketHandler.h"
-    # Unity ÇÁ·ÎÁ§Æ® ³»ÀÇ ½ºÅ©¸³Æ® Æú´õ °æ·Î
+    # Unity í”„ë¡œì íŠ¸ ë‚´ì˜ ìŠ¤í¬ë¦½íŠ¸ í´ë” ê²½ë¡œ
     unity_output_path = r"C:\Users\leehague\Desktop\Project A\Project_TOY_client_c_sharp_unity\Assets\Scripts\Network"
     # ------------------------------------------
 
@@ -16,12 +16,12 @@ def generate():
     with open(proto_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # 1. Message ¹× Enum ÃßÃâ
+    # 1. Message ë° Enum ì¶”ì¶œ
     messages = re.findall(r'message\s+(\w+)\s*\{', content)
     packet_enums = re.findall(r'(PKT_\w+)\s*=\s*\d+', content)
 
     # ==========================================
-    # PART 1: ¼­¹ö¿ë C++ ÄÚµå »ı¼º (±âÁ¸ ·ÎÁ÷ À¯Áö)
+    # PART 1: ì„œë²„ìš© C++ ì½”ë“œ ìƒì„± (ê¸°ì¡´ ë¡œì§ ìœ ì§€)
     # ==========================================
     handler_decls = ""
     register_part = "inline void PacketHandler::Init()\n{\n"
@@ -83,10 +83,10 @@ private:
         f.write(server_full_content)
 
     # ==========================================
-    # PART 2: À¯´ÏÆ¼¿ë C# ÄÚµå »ı¼º (Ãß°¡µÊ)
+    # PART 2: ìœ ë‹ˆí‹°ìš© C# ì½”ë“œ ìƒì„± (ì¶”ê°€ë¨)
     # ==========================================
     
-    # C#¿ë Enum º¯È¯ (PKT_SC_LOGIN_OK -> PktScLoginOk)
+    # C#ìš© Enum ë³€í™˜ (PKT_SC_LOGIN_OK -> PktScLoginOk)
     def to_camel_case(s):
         return "".join(word.capitalize() for word in s.lower().split('_'))
 
@@ -97,10 +97,10 @@ private:
         msg_name = pkt_enum.replace("PKT_", "")
         if msg_name in messages:
             enum_name = to_camel_case(pkt_enum)
-            # ¸ğµç ¸Ş½ÃÁö(CS, SC »ó°ü¾øÀÌ) Å¸ÀÔ Á¤º¸¸¦ µî·Ï
+            # ëª¨ë“  ë©”ì‹œì§€(CS, SC ìƒê´€ì—†ì´) íƒ€ì… ì •ë³´ë¥¼ ë“±ë¡
             csharp_register_content += f"        _typeToId.Add(typeof({msg_name}), (ushort)PacketId.{enum_name});\n"
 
-            if "SC_" in msg_name: # Å¬¶óÀÌ¾ğÆ®°¡ ¼­¹ö·ÎºÎÅÍ ¹Ş´Â ÆĞÅ¶
+            if "SC_" in msg_name: # í´ë¼ì´ì–¸íŠ¸ê°€ ì„œë²„ë¡œë¶€í„° ë°›ëŠ” íŒ¨í‚·
                 enum_name = to_camel_case(pkt_enum)
                 
                 # csharp_register_content += f"        _onRecv.Add((ushort)PacketId.{enum_name}, MakePacket<{msg_name}>);\n"
@@ -115,7 +115,7 @@ private:
 
 """
 
-    # 2-1. PacketManager_Gen.cs (¸Å¹ø µ¤¾î¾¸)
+    # 2-1. PacketManager_Gen.cs (ë§¤ë²ˆ ë®ì–´ì”€)
     manager_gen_path = os.path.join(unity_output_path, "PacketManager_Gen.cs")
     manager_gen_code = f"""using System;
 using System.Collections.Generic;
@@ -132,7 +132,7 @@ public partial class PacketManager
     with open(manager_gen_path, 'w', encoding='utf-8') as f:
         f.write(manager_gen_code)
 
-    # 2-2. PacketHandler.cs (ÆÄÀÏÀÌ ¾øÀ» ¶§¸¸ »ı¼º - ·ÎÁ÷ º¸È£)
+    # 2-2. PacketHandler.cs (íŒŒì¼ì´ ì—†ì„ ë•Œë§Œ ìƒì„± - ë¡œì§ ë³´í˜¸)
     handler_path = os.path.join(unity_output_path, "PacketHandler.cs")
     if not os.path.exists(handler_path):
         handler_code = f"""using System;

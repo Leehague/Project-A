@@ -1,4 +1,4 @@
-#include "SendBuffer.h"
+ï»¿#include "SendBuffer.h"
 #include <iostream>
 
 SendBuffer::SendBuffer(int bufferSize) : _capacity(bufferSize)
@@ -15,7 +15,7 @@ void SendBuffer::Write(void* data, int size)
 {
     if (size > _capacity - _writeSize)
     {
-        //¿¹¿ÜÃ³¸® , ¹öÆÛÅ©±â Á¶Á¤
+        //ì˜ˆì™¸ì²˜ë¦¬ , ë²„í¼í¬ê¸° ì¡°ì •
         return;
     }
     /*if (isClosed) 
@@ -23,7 +23,7 @@ void SendBuffer::Write(void* data, int size)
         std::cout << "Already Closed SendBuffer" << std::endl;
         return;
     }*/
-    // µ¥ÀÌÅÍ¸¦ ÇöÀç ¾²±â À§Ä¡¿¡ º¹»ç
+    // ë°ì´í„°ë¥¼ í˜„ì¬ ì“°ê¸° ìœ„ì¹˜ì— ë³µì‚¬
     ::memcpy(&_buffer[_writeSize], data, size);
     _writeSize += size;
 }

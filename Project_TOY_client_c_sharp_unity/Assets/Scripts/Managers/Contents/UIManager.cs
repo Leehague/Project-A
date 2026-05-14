@@ -1,19 +1,19 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class UIManager
 {
-    // UI ·¹ÀÌ¾î ¼ø¼­¸¦ °ü¸® (PopupÀÌ ¶ã ¶§¸¶´Ù 1¾¿ Áõ°¡)
+    // UI ë ˆì´ì–´ ìˆœì„œë¥¼ ê´€ë¦¬ (Popupì´ ëœ° ë•Œë§ˆë‹¤ 1ì”© ì¦ê°€)
     int _order = 10;
 
-    // ÇöÀç ¶ç¿öÁ® ÀÖ´Â ÆË¾÷µéÀ» °ü¸®ÇÏ´Â ½ºÅÃ
+    // í˜„ì¬ ë„ì›Œì ¸ ìˆëŠ” íŒì—…ë“¤ì„ ê´€ë¦¬í•˜ëŠ” ìŠ¤íƒ
     Stack<UI_Popup> _popupStack = new Stack<UI_Popup>();
 
-    // ÇöÀç È°¼ºÈ­µÈ Scene UI
+    // í˜„ì¬ í™œì„±í™”ëœ Scene UI
     UI_Scene _sceneUI = null;
 
-    // UI°¡ ºÙÀ» ·çÆ® ¿ÀºêÁ§Æ® (Hierarchy Á¤¸®¿ë)
+    // UIê°€ ë¶™ì„ ë£¨íŠ¸ ì˜¤ë¸Œì íŠ¸ (Hierarchy ì •ë¦¬ìš©)
     public GameObject Root
     {
         get
@@ -25,7 +25,7 @@ public class UIManager
         }
     }
 
-    // 1. Äµ¹ö½º ¼³Á¤ (Sort Order ÀÚµ¿ ÁöÁ¤)
+    // 1. ìº”ë²„ìŠ¤ ì„¤ì • (Sort Order ìë™ ì§€ì •)
     public void SetCanvas(GameObject go, bool sort = true)
     {
         Canvas canvas = Extension.GetOrAddComponent<Canvas>(go);
@@ -43,7 +43,7 @@ public class UIManager
         }
     }
 
-    // 2. Scene UI ¶ç¿ì±â (È­¸é ÇÏ´Ü¹Ù, HP¹Ù µî)
+    // 2. Scene UI ë„ìš°ê¸° (í™”ë©´ í•˜ë‹¨ë°”, HPë°” ë“±)
     public T ShowSceneUI<T>(string name = null) where T : UI_Scene
     {
         if (string.IsNullOrEmpty(name))
@@ -58,7 +58,7 @@ public class UIManager
         return sceneUI;
     }
 
-    // 3. Popup UI ¶ç¿ì±â (ÀÎº¥Åä¸®, ¼³Á¤ µî)
+    // 3. Popup UI ë„ìš°ê¸° (ì¸ë²¤í† ë¦¬, ì„¤ì • ë“±)
     public T ShowPopupUI<T>(string name = null) where T : UI_Popup
     {
         if (string.IsNullOrEmpty(name))
@@ -73,7 +73,7 @@ public class UIManager
         return popup;
     }
 
-    // 4. ÆË¾÷ ´İ±â
+    // 4. íŒì—… ë‹«ê¸°
     public void ClosePopupUI(UI_Popup popup)
     {
         if (_popupStack.Count == 0) return;

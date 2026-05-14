@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_HPMPBar : UI_Scene
 {
-    // 1. ÇÁ¸®ÆÕÀÇ ÀÚ½Ä ¿ÀºêÁ§Æ® ÀÌ¸§°ú Á¤È®È÷ ÀÏÄ¡ÇØ¾ß ÇÔ
+    // 1. í”„ë¦¬íŒ¹ì˜ ìì‹ ì˜¤ë¸Œì íŠ¸ ì´ë¦„ê³¼ ì •í™•íˆ ì¼ì¹˜í•´ì•¼ í•¨
     enum Texts
     {
         PlayerNameText,
@@ -19,18 +19,18 @@ public class UI_HPMPBar : UI_Scene
 
     public override void Init()
     {
-        // ÀÌ¹Ì ÃÊ±âÈ­°¡ µÇ¾ú´Ù¸é ´Ù½Ã ÇÏÁö ¾ÊÀ½ (Áß¿ä)
+        // ì´ë¯¸ ì´ˆê¸°í™”ê°€ ë˜ì—ˆë‹¤ë©´ ë‹¤ì‹œ í•˜ì§€ ì•ŠìŒ (ì¤‘ìš”)
         if (_objects.ContainsKey(typeof(Text)))
             return;
-        base.Init(); // Äµ¹ö½º ¼³Á¤ µî ºÎ¸ğ ·ÎÁ÷ ¼öÇà
+        base.Init(); // ìº”ë²„ìŠ¤ ì„¤ì • ë“± ë¶€ëª¨ ë¡œì§ ìˆ˜í–‰
 
-        // 2. ÀÚµ¿ ¹ÙÀÎµù
+        // 2. ìë™ ë°”ì¸ë”©
         
         Bind<TMPro.TextMeshProUGUI>(typeof(Texts));
         Bind<Slider>(typeof(Sliders));
     }
 
-    // ¿ÜºÎ(PlayerController µî)¿¡¼­ Stat Á¤º¸¸¦ ³Ñ°ÜÁÜ
+    // ì™¸ë¶€(PlayerController ë“±)ì—ì„œ Stat ì •ë³´ë¥¼ ë„˜ê²¨ì¤Œ
     public void SetStat(Stat stat, string name)
     {
         Init();
@@ -39,12 +39,12 @@ public class UI_HPMPBar : UI_Scene
         if (nameText != null)
             nameText.text = name;
 
-        // 3. µ¥ÀÌÅÍ ¹ÙÀÎµù (ÀÌº¥Æ® ±¸µ¶)
-        // Stat Å¬·¡½º¿¡ OnHpChanged ¾×¼ÇÀÌ ÀÖ´Ù°í °¡Á¤
+        // 3. ë°ì´í„° ë°”ì¸ë”© (ì´ë²¤íŠ¸ êµ¬ë…)
+        // Stat í´ë˜ìŠ¤ì— OnHpChanged ì•¡ì…˜ì´ ìˆë‹¤ê³  ê°€ì •
         _stat.OnHpChanged -= UpdateHP;
         _stat.OnHpChanged += UpdateHP;
 
-        UpdateHP(_stat.MaxHp); // ÃÊ±â°ª ¼³Á¤
+        UpdateHP(_stat.MaxHp); // ì´ˆê¸°ê°’ ì„¤ì •
 
         _stat.OnMpChanged -= UpdateMp;
         _stat.OnMpChanged += UpdateMp;

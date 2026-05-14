@@ -1,4 +1,4 @@
-using Google.Protobuf;
+ï»¿using Google.Protobuf;
 using System;
 using System.Collections.Concurrent;
 using System.Net;
@@ -27,18 +27,18 @@ public class NetworkManager
         return false;
     }
 
-    // ¼­¹ö¿¡¼­ ¹ŞÀº ÆĞÅ¶À» ¸ŞÀÎ ½º·¹µå¿¡¼­ Ã³¸®ÇÏ±â À§ÇÑ Å¥
+    // ì„œë²„ì—ì„œ ë°›ì€ íŒ¨í‚·ì„ ë©”ì¸ ìŠ¤ë ˆë“œì—ì„œ ì²˜ë¦¬í•˜ê¸° ìœ„í•œ í
     private ConcurrentQueue<PacketMessage> _packetQueue = new ConcurrentQueue<PacketMessage>();
 
     public void Init()
     {
-        // ¼­¹ö ¿¬°á ½ÃÀÛ (¿¹½Ã IP: 127.0.0.1, Port: 7777)
+        // ì„œë²„ ì—°ê²° ì‹œì‘ (ì˜ˆì‹œ IP: 127.0.0.1, Port: 7777)
         Connect("127.0.0.1", 7777);
     }
 
     public void Connect(string ip, int port)
     {
-        //ÇÃ·¡±× ÃÊ±âÈ­
+        //í”Œë˜ê·¸ ì´ˆê¸°í™”
         Interlocked.Exchange(ref _disconnected, 0);
 
         IPAddress ipAddr = IPAddress.Parse(ip);
@@ -46,7 +46,7 @@ public class NetworkManager
 
         _socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-        // ºñµ¿±â ¿¬°á ½Ãµµ
+        // ë¹„ë™ê¸° ì—°ê²° ì‹œë„
         _socket.BeginConnect(endPoint, OnConnectCallback, _socket);
     }
 
@@ -63,7 +63,7 @@ public class NetworkManager
 
             _isConnectSuccess = true;
 
-            // ¼ö½Å ½ÃÀÛ
+            // ìˆ˜ì‹  ì‹œì‘
             _session.StartReceive();
 
             
@@ -74,7 +74,7 @@ public class NetworkManager
         }
     }
 
-    // ÆĞÅ¶ ¼ö½Å ½º·¹µå¿¡¼­ ÆĞÅ¶À» Å¥¿¡ ³ÖÀ» ¶§ »ç¿ë
+    // íŒ¨í‚· ìˆ˜ì‹  ìŠ¤ë ˆë“œì—ì„œ íŒ¨í‚·ì„ íì— ë„£ì„ ë•Œ ì‚¬ìš©
     public void PushPacket(PacketMessage packet)
     {
         if (CanPushPacket == false) return;
@@ -102,13 +102,13 @@ public class NetworkManager
         
     public void Close() 
     {
-        // 1. Áßº¹ È£Ãâ ¹æÁö
+        // 1. ì¤‘ë³µ í˜¸ì¶œ ë°©ì§€
         if (Interlocked.Exchange(ref _disconnected, 1) == 1)
             return;
 
         if (_session != null)
         {
-            _session.Disconnect(); // ¼ÒÄÏÀÇ Close³ª Shutdown È£Ãâ
+            _session.Disconnect(); // ì†Œì¼“ì˜ Closeë‚˜ Shutdown í˜¸ì¶œ
             _session = null;
         }
     }
@@ -117,7 +117,7 @@ public class NetworkManager
     {
         if (_session == null)
         {
-            Debug.LogError("¼¼¼Ç °´Ã¼°¡ ¾ø½À´Ï´Ù");
+            Debug.LogError("ì„¸ì…˜ ê°ì²´ê°€ ì—†ìŠµë‹ˆë‹¤");
             return;
         }
         _session.Send(packet);

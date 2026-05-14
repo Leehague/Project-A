@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include <vector>
 #include <memory>
@@ -10,16 +10,16 @@ public:
     SendBuffer(int bufferSize);
     ~SendBuffer();
 
-    // µ¥ÀÌÅÍ¸¦ ¹öÆÛ¿¡ ±â·Ï
+    // ë°ì´í„°ë¥¼ ë²„í¼ì— ê¸°ë¡
     void Write(void* data, int size);
 
-    // WSASend¿¡ ³Ñ°ÜÁÙ ¹öÆÛ ½ÃÀÛ ÁÖ¼Ò ¹× Å©±â
+    // WSASendì— ë„˜ê²¨ì¤„ ë²„í¼ ì‹œì‘ ì£¼ì†Œ ë° í¬ê¸°
     char* Buffer() { return _buffer.data(); }
     int Size() { return _writeSize; }
 
     int WriteSize() const { return _writeSize; }
 
-    // (¼±ÅÃ) º¸³¾ ÆĞÅ¶ µ¥ÀÌÅÍ ±¸Á¶Ã¼¸¦ Á÷Á¢ ³Ñ±â´Â ÆíÀÇ ÇÔ¼ö
+    // (ì„ íƒ) ë³´ë‚¼ íŒ¨í‚· ë°ì´í„° êµ¬ì¡°ì²´ë¥¼ ì§ì ‘ ë„˜ê¸°ëŠ” í¸ì˜ í•¨ìˆ˜
     template<typename T>
     void CopyData(T& data) { Write(&data, sizeof(T)); }
 

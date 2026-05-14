@@ -1,4 +1,4 @@
-#include "GameSessionManager.h"
+ï»¿#include "GameSessionManager.h"
 #include "Session.h"
 
 GameSessionManager GSessionManager;
@@ -16,7 +16,7 @@ void GameSessionManager::GlobalBroadcast(SendBufferPtr sendBuffer)
 
 void GameSessionManager::Add(SessionPtr session) {
     std::lock_guard<std::mutex> lock(_lock);
-    // ¼¼¼ÇÀÇ GUID¸¦ Å°·Î »ç¿ë (¼¼¼Ç¿¡ GetGuid() ÇÔ¼ö°¡ ÀÖ´Ù°í °¡Á¤)
+    // ì„¸ì…˜ì˜ GUIDë¥¼ í‚¤ë¡œ ì‚¬ìš© (ì„¸ì…˜ì— GetGuid() í•¨ìˆ˜ê°€ ìžˆë‹¤ê³  ê°€ì •)
     _sessions[session->GetGuid()] = session;
 }
 
@@ -28,7 +28,7 @@ void GameSessionManager::Remove(SessionPtr session) {
 void GameSessionManager::SendTo(uint64 playerSessionId, SendBufferPtr sendBuffer) {
     std::lock_guard<std::mutex> lock(_lock);
 
-    // ¸Ê¿¡¼­ ÇØ´ç ID¸¦ Ã£À½
+    // ë§µì—ì„œ í•´ë‹¹ IDë¥¼ ì°¾ìŒ
     auto it = _sessions.find(playerSessionId);
     if (it != _sessions.end()) {
         it->second->Send(sendBuffer);

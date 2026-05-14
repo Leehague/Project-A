@@ -1,4 +1,4 @@
-using Protocol;
+ï»¿using Protocol;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -6,18 +6,18 @@ using UnityEngine;
 
 public class ObjectManager
 {
-    // ³» Ä³¸¯ÅÍ´Â Æ¯º°ÇÏ´Ï±î µû·Î °ü¸®ÇÕ´Ï´Ù.
+    // ë‚´ ìºë¦­í„°ëŠ” íŠ¹ë³„í•˜ë‹ˆê¹Œ ë”°ë¡œ ê´€ë¦¬í•©ë‹ˆë‹¤.
     public GameObject MyPlayer { get; set; }
     public PosInfo MyplayerPosInfo { get; set; }
-    //¼­¹ö¿¡¼­ Àü¼ÛÇØÁØ ³» Ä³¸¯ÅÍÀÇ objectId
+    //ì„œë²„ì—ì„œ ì „ì†¡í•´ì¤€ ë‚´ ìºë¦­í„°ì˜ objectId
     public int Myplayer_playerId { get; set; }  
 
     private List<Protocol.SC_PLAYER_SPAWN> _spawnQueue = new List<Protocol.SC_PLAYER_SPAWN>();
-    // Game ¾ÀÀÌ ÁØºñµÇ¾ú´ÂÁö ³ªÅ¸³»´Â ÇÃ·¡±×
+    // Game ì”¬ì´ ì¤€ë¹„ë˜ì—ˆëŠ”ì§€ ë‚˜íƒ€ë‚´ëŠ” í”Œë˜ê·¸
     public bool IsSceneReady { get; set; } = false;
 
 
-    // ³ª¸ÓÁö °´Ã¼µéÀº ID·Î °ü¸®ÇÕ´Ï´Ù. ¿©±â¼­ ID´Â objectId·Î ¼­¹ö¿¡¼­ °ü¸®ÇÏ´Â ¹øÈ£ÀÔ´Ï´Ù.
+    // ë‚˜ë¨¸ì§€ ê°ì²´ë“¤ì€ IDë¡œ ê´€ë¦¬í•©ë‹ˆë‹¤. ì—¬ê¸°ì„œ IDëŠ” objectIdë¡œ ì„œë²„ì—ì„œ ê´€ë¦¬í•˜ëŠ” ë²ˆí˜¸ì…ë‹ˆë‹¤.
     Dictionary<int, GameObject> _objects = new Dictionary<int, GameObject>();
 
     public void Add(int objectid, GameObject go, bool isMyPlayer = false)
@@ -26,7 +26,7 @@ public class ObjectManager
         {
             MyPlayer = go;
         }
-        //ÀÌ¹Ì ÀÖ´Â ¿ÀºêÁ§Æ® ¾ÆÀÌµğ ¶ó¸é Ãß°¡ÇÏÁö ¾Ê°í ÆÄ±« ´ë½Å °æ°í ¸Ş½ÃÁö Ãâ·Â
+        //ì´ë¯¸ ìˆëŠ” ì˜¤ë¸Œì íŠ¸ ì•„ì´ë”” ë¼ë©´ ì¶”ê°€í•˜ì§€ ì•Šê³  íŒŒê´´ ëŒ€ì‹  ê²½ê³  ë©”ì‹œì§€ ì¶œë ¥
         if (_objects.ContainsKey(objectid))
         {
             Debug.LogWarning($"Object with ID {objectid} already exists. Skipping spawn.");
@@ -38,11 +38,11 @@ public class ObjectManager
 
     public void Remove(int objectid)
     {
-        if (objectid == 0) return; // ¿¹¿Ü Ã³¸®
+        if (objectid == 0) return; // ì˜ˆì™¸ ì²˜ë¦¬
 
         if (_objects.TryGetValue(objectid, out GameObject go))
         {
-            // ³» ÇÃ·¹ÀÌ¾î°¡ »èÁ¦µÇ´Â °æ¿ì¶ó¸é ÂüÁ¶ Á¦°Å
+            // ë‚´ í”Œë ˆì´ì–´ê°€ ì‚­ì œë˜ëŠ” ê²½ìš°ë¼ë©´ ì°¸ì¡° ì œê±°
             if (MyPlayer == go)
                 MyPlayer = null;
 
@@ -62,7 +62,7 @@ public class ObjectManager
         return Find(id).GetComponent<CreatureController>();
     }
 
-    // ¸ğµç °´Ã¼ »èÁ¦ (¾À ÀüÈ¯ µî¿¡¼­ »ç¿ë)
+    // ëª¨ë“  ê°ì²´ ì‚­ì œ (ì”¬ ì „í™˜ ë“±ì—ì„œ ì‚¬ìš©)
     public void Clear()
     {
         foreach (GameObject go in _objects.Values)
@@ -72,19 +72,19 @@ public class ObjectManager
         MyPlayer = null;
     }
 
-    // »ı¼º ¹× µî·ÏÀ» ÇÑ ¹ø¿¡ Ã³¸®ÇÏ´Â ÇÔ¼ö
+    // ìƒì„± ë° ë“±ë¡ì„ í•œ ë²ˆì— ì²˜ë¦¬í•˜ëŠ” í•¨ìˆ˜
     public GameObject SpawnPlayer(PosInfo postion, int templeteId , bool isMyPlayer = false)
     {
         int _templeteId = templeteId;
         int objectId = postion.ObjectId;
 
-        // µ¥ÀÌÅÍ ¸Å´ÏÀú¿¡¼­ Á¤º¸ ÃßÃâ ( Knight, Mage µî )
+        // ë°ì´í„° ë§¤ë‹ˆì €ì—ì„œ ì •ë³´ ì¶”ì¶œ ( Knight, Mage ë“± )
         if (Managers.dataManager.StatDict.TryGetValue(_templeteId, out Stat statInfo) == false)
         {
             Debug.Log("Spawn Fail : fail to take from stat info ");
             return null; 
         }
-        // ¸®¼Ò½º ¸Å´ÏÀú·Î ÇÁ¸®ÆÕ »ı¼º
+        // ë¦¬ì†ŒìŠ¤ ë§¤ë‹ˆì €ë¡œ í”„ë¦¬íŒ¹ ìƒì„±
         GameObject go = Managers.resourceManager.Instantiate(statInfo.modelPath);
         go.name = statInfo.name;
 
@@ -92,17 +92,17 @@ public class ObjectManager
         go.transform.position = spawnPos;
         
 
-        // ¿©±â¼­ Add¸¦ È£ÃâÇÏ¿© °ü¸® ¸ñ·Ï¿¡ Ãß°¡
+        // ì—¬ê¸°ì„œ Addë¥¼ í˜¸ì¶œí•˜ì—¬ ê´€ë¦¬ ëª©ë¡ì— ì¶”ê°€
         Add(objectId, go, isMyPlayer);
 
-        //ÄÁÆ®·Ñ·¯ ÃÊ±âÈ­
+        //ì»¨íŠ¸ë¡¤ëŸ¬ ì´ˆê¸°í™”
         PlayerController pc = go.GetOrAddComponent<PlayerController>();
         pc.stat = new Stat(statInfo);
 
-        pc.stat.hp = pc.stat.MaxHp; //½ºÆù½Ã Ç®ÇÇ·Î 
+        pc.stat.hp = pc.stat.MaxHp; //ìŠ¤í°ì‹œ í’€í”¼ë¡œ 
 
         pc.IsMyPlayer = isMyPlayer;
-        // ÇÙ½É: »ı¼º Á÷ÈÄ¿¡ ÄÁÆ®·Ñ·¯ÀÇ ³»ºÎ ¸ñÀûÁö ÁÂÇ¥µµ µ¿±âÈ­
+        // í•µì‹¬: ìƒì„± ì§í›„ì— ì»¨íŠ¸ë¡¤ëŸ¬ì˜ ë‚´ë¶€ ëª©ì ì§€ ì¢Œí‘œë„ ë™ê¸°í™”
         pc.SyncPos(spawnPos);
 
         return go;
@@ -113,7 +113,7 @@ public class ObjectManager
         int _templeteId = templeteId;
         int objectId = postion.ObjectId;
 
-        // µ¥ÀÌÅÍ ¸Å´ÏÀú¿¡¼­ Á¤º¸ ÃßÃâ ( Knight, Mage µî )
+        // ë°ì´í„° ë§¤ë‹ˆì €ì—ì„œ ì •ë³´ ì¶”ì¶œ ( Knight, Mage ë“± )
         if (Managers.dataManager.StatDict.TryGetValue(_templeteId, out Stat statInfo) == false)
         {
             Debug.Log("Spawn Fail : fail to take from stat info ");
@@ -123,13 +123,13 @@ public class ObjectManager
         GameObject go;
         if (Managers.poolingManager.TryPopcreatureObject(_templeteId, out CreatureController newcc))
         {
-            //Ç®¸µ µÇ¾î ÀÖ´Â°Ô ÀÖ´Ù¸é ±×°ÍÀ» ÅÃÇÔ
+            //í’€ë§ ë˜ì–´ ìˆëŠ”ê²Œ ìˆë‹¤ë©´ ê·¸ê²ƒì„ íƒí•¨
             go = newcc.gameObject;
-            Debug.Log("¿©±â?");
+            Debug.Log("ì—¬ê¸°?");
         }
         else
         {
-            // ¾Æ´Ï¸é ¸®¼Ò½º ¸Å´ÏÀú·Î ÇÁ¸®ÆÕ »ı¼º
+            // ì•„ë‹ˆë©´ ë¦¬ì†ŒìŠ¤ ë§¤ë‹ˆì €ë¡œ í”„ë¦¬íŒ¹ ìƒì„±
             go = Managers.resourceManager.Instantiate(statInfo.modelPath);
         }
         
@@ -141,16 +141,16 @@ public class ObjectManager
         go.transform.position = spawnPos;
 
 
-        // ¿©±â¼­ Add¸¦ È£ÃâÇÏ¿© °ü¸® ¸ñ·Ï¿¡ Ãß°¡
-        Add(objectId, go); //'¸ó½ºÅÍ' ½ºÆùÀÌ±â¶§¹®¿¡ IsMyplayer´Â ±âº»ÀÎ false »ç¿ë
+        // ì—¬ê¸°ì„œ Addë¥¼ í˜¸ì¶œí•˜ì—¬ ê´€ë¦¬ ëª©ë¡ì— ì¶”ê°€
+        Add(objectId, go); //'ëª¬ìŠ¤í„°' ìŠ¤í°ì´ê¸°ë•Œë¬¸ì— IsMyplayerëŠ” ê¸°ë³¸ì¸ false ì‚¬ìš©
 
-        //ÄÁÆ®·Ñ·¯ ÃÊ±âÈ­
+        //ì»¨íŠ¸ë¡¤ëŸ¬ ì´ˆê¸°í™”
         MonsterController mc = go.GetOrAddComponent<MonsterController>();
         mc.stat = new Stat(statInfo);
 
-        mc.stat.hp = mc.stat.MaxHp; //½ºÆù½Ã Ç®ÇÇ·Î 
+        mc.stat.hp = mc.stat.MaxHp; //ìŠ¤í°ì‹œ í’€í”¼ë¡œ 
 
-        // ÇÙ½É: »ı¼º Á÷ÈÄ¿¡ ÄÁÆ®·Ñ·¯ÀÇ ³»ºÎ ¸ñÀûÁö ÁÂÇ¥µµ µ¿±âÈ­
+        // í•µì‹¬: ìƒì„± ì§í›„ì— ì»¨íŠ¸ë¡¤ëŸ¬ì˜ ë‚´ë¶€ ëª©ì ì§€ ì¢Œí‘œë„ ë™ê¸°í™”
         mc.SyncPos(spawnPos);
 
         return go;
@@ -158,7 +158,7 @@ public class ObjectManager
 
     public void HandleSpawn(Protocol.SC_PLAYER_SPAWN packet)
     {
-        //pooling ½Ã½ºÅÛ µµÀÔÀ» °í¹ÎÇØ¾ß ÇÒ ¼öµµ?
+        //pooling ì‹œìŠ¤í…œ ë„ì…ì„ ê³ ë¯¼í•´ì•¼ í•  ìˆ˜ë„?
         SpawnFromPacket(packet);
     }
 

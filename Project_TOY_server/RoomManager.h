@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include "Room.h"
 
@@ -10,7 +10,7 @@ public:
 	RoomPtr FindLastRoom();
 	void RemoveRoom(int32 roomId);
 	int32 GetRoomCounter();
-	std::vector<RoomPtr> GetRooms(); // ¸ğµç ¹æ ¸ñ·Ï °¡Á®¿À±â Ãß°¡
+	std::vector<RoomPtr> GetRooms(); // ëª¨ë“  ë°© ëª©ë¡ ê°€ì ¸ì˜¤ê¸° ì¶”ê°€
 private:
 	std::mutex _lock;
 	std::map<int32, RoomPtr> _rooms;

@@ -1,4 +1,4 @@
-#include "Room.h"
+﻿#include "Room.h"
 #include "Player.h" 
 #include "Session.h" 
 #include "GameObject.h"
@@ -14,8 +14,8 @@
 
 Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(roomId)
 {
-    // ���� ������ �� �� �Ŵ����� ���� ���� �Ҵ�޽��ϴ�.
-    // GMapManager�� ���� Ȥ�� �̱������� ����Ǿ� �־�� �մϴ�.
+    // 방이 생성될 때 맵 매니저를 통해 맵을 할당받습니다.
+    // GMapManager는 전역 혹은 싱글톤으로 선언되어 있어야 합니다.
     _map = GMapManager.LoadMap(mapId);
 
     if (_map == nullptr)
@@ -28,17 +28,17 @@ Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(r
 
 void Room::Enter(GameObjectPtr go)
 {
-    //���� ���� �޸𸮿� ���� ����(�� ���� ó��)
+    //서버 내부 메모리에 정보 저장(방 입장 처리)
     {
         std::lock_guard<std::mutex> lock(_lock);
         _objects[go->GetObjectId()] = go;
         go->SetroomId(_Selfroomid);
 
-        auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // ��ǥ�� �ε��� ����
+        auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // 좌표로 인덱스 추출
         _sectors[cellZ][cellX].insert(go);
 
     }
-    //���ο��� ���� ���� �� ��ǥ �˸� (SC_ENTER_GAME)
+    //본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
     if (go->GetType() == GameObjectType::Player )
     {       
         auto player = std::static_pointer_cast<Player>(go);
@@ -49,11 +49,11 @@ void Room::Enter(GameObjectPtr go)
             session->SetPlayerPtr(player);
         }
         Protocol::SC_ENTER_GAME enterPkt;     
-        *enterPkt.mutable_pos_info() = *(player->Getpos()); // ������ ������ ��ǥ
+        *enterPkt.mutable_pos_info() = *(player->Getpos()); // 서버가 결정한 좌표
 
-        enterPkt.set_templeteid(go->GetTempleteId()); //�ڵ鷯���� ������ ���ø� ���̵�
+        enterPkt.set_templeteid(go->GetTempleteId()); //핸들러에서 결정된 템플릿 아이디
         
-        enterPkt.set_mapid(_map->GetMapId()); //Ŭ�� ������ �� Id
+        enterPkt.set_mapid(_map->GetMapId()); //클라에 보내줄 맵 Id
         auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
         
         if (!sendBuffer) return;
@@ -65,13 +65,13 @@ void Room::Enter(GameObjectPtr go)
         MonsterPtr monster= std::static_pointer_cast<Monster>(go);
         SpawnBroadcast(monster);
     }
-    // ���� : ���� ��Ŷ�� Room::Enter ���� �������� �ʰ� ���߿� ���� ��Ŷ�� �����ؼ� ������
+    // 수정 : 스폰 패킷은 Room::Enter 에서 전송하지 않고 나중에 레디 패킷을 수신해서 전송함
     
 }
 
 void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
 {
-    //���� ���� �޸𸮿� ���� ����(�� ���� ó��)
+    //서버 내부 메모리에 정보 저장(방 입장 처리)
     {
         for (MonsterPtr monster : monsters) 
         {
@@ -94,18 +94,18 @@ void Room::Leave(PlayerPtr player)
         
         auto it = _objects.find(playerId);
         if (it == _objects.end())
-            return; // �̹� �����ų� ���� ��ü�� ����
+            return; // 이미 나갔거나 없는 객체면 무시
 
         GameObjectPtr go = it->second;
 
-        // �׸��忡�� ����
+        // 그리드에서 제거
         auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos()));
         _sectors[cellZ][cellX].erase(go);
 
-        _objects.erase(playerId); // 1. ���� ���� ��Ͽ��� ����
+        _objects.erase(playerId); // 1. 룸의 관리 목록에서 제거
     }
 
-    // 2. Ÿ�ε鿡�� �� ������ �������� �˸� (SC_DESPAWN)
+    // 2. 타인들에게 이 유저가 나갔음을 알림 (SC_DESPAWN)
     Protocol::SC_PLAYER_DESPAWN despawnPkt;
     despawnPkt.add_player_id(playerId);
     
@@ -113,7 +113,7 @@ void Room::Leave(PlayerPtr player)
     auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_PLAYER_DESPAWN);
     if (!sendBuffer) return;
     
-    Broadcast(sendBuffer, playerId); // ������ �̹� �������Ƿ� ����
+    Broadcast(sendBuffer, playerId); // 본인은 이미 나갔으므로 제외
 
 
 }
@@ -137,7 +137,7 @@ void Room::Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id)
             }
         }
     }
-    Broadcast(sendBuffer,targets);//target�� �ִ� ������ Braodcast�� ȣ����
+    Broadcast(sendBuffer,targets);//target이 있는 버전의 Braodcast를 호출함
     
 }
 void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Session>> targets)
@@ -175,7 +175,7 @@ void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Sessi
 }
 void Room::SpawnBroadcast(PlayerPtr player)
 {
-    //(player ����)Ÿ�ε鿡�� ���� �˸� (SC_PLAYER_SPAWN ��ε�ĳ��Ʈ)
+    //(player 기준)타인들에게 나를 알림 (SC_PLAYER_SPAWN 브로드캐스트)
     {
         Protocol::SC_PLAYER_SPAWN spawnPkt;
               
@@ -185,20 +185,20 @@ void Room::SpawnBroadcast(PlayerPtr player)
         spawnInfo->set_templeteid(player->GetTempleteId());
 
 
-        if (spawnPkt.players_spawn_info_size() > 0) // �����Ͱ� ���� ���� ����
+        if (spawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
         {
             
             SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
 
             if (!sendBuffer) return;
 
-            // ���� ������ ��ο��� ���� (������ ���� Broadcast �Լ� Ȱ��)
+            // 나를 제외한 모두에게 전송 (기존에 만든 Broadcast 함수 활용)
             Broadcast(sendBuffer, player->GetObjectId());
         }
 
     }
 
-    //(player ����)������ ���� ������Ʈ���� �˸� (SC_PLAYER_SPAWN ��� ����)
+    //(player 기준)나에게 기존 오브젝트들을 알림 (SC_PLAYER_SPAWN 목록 전송)
     {
         Protocol::SC_PLAYER_SPAWN playerspawnPkt;
         Protocol::SC_MONSTER_SPAWN monsterspawnPkt;
@@ -260,13 +260,13 @@ void Room::SpawnBroadcast(const std::vector<MonsterPtr>& monsters)
         spawnInfo->set_templeteid(monster->GetTempleteId());
     }
 
-    if (monsterspawn_pkt.monsters_spawn_info_size() > 0) // �����Ͱ� ���� ���� ����
+    if (monsterspawn_pkt.monsters_spawn_info_size() > 0) // 데이터가 있을 때만 전송
     {
 
         auto sendBuffer = ServerUtils::MakeSendBuffer(monsterspawn_pkt, Protocol::PKT_SC_MONSTER_SPAWN);
 
         if (sendBuffer) {
-            //��ü���� ����
+            //전체에게 전송
             Broadcast(sendBuffer);
         }
 
@@ -311,12 +311,12 @@ void Room::BroadcastMove(const std::vector<GameObjectPtr>& gameobjects)
         {
             if (gameobjects.size() == 1) 
             {
-                //�ֺ��� ��� (���� ���� ������ BroadcastAround�� ������ passing_object_id Ȱ��)
+                //주변에 방송 (본인 제외 로직은 BroadcastAround에 구현된 passing_object_id 활용)
                 BroadcastAround(sendBuffer, Vector3::PosInfoToVector3(gameobjects[0]->Getpos()), gameobjects[0]->GetObjectId());
             }
             else 
             { 
-                //TODO BroadcastAround �� �ϳ��� ��ġ �������� �ϴ°� �ƴ϶� �������� ��ġ�� ������� ������ ������ ����ϵ��� �����ε��ʿ�
+                //TODO BroadcastAround 를 하나의 위치 기준으로 하는게 아니라 여러개의 위치를 기반으로 적당한 범위에 방송하도록 오버로딩필요
                 Broadcast(sendBuffer);
             }
             //Broadcast(sendBuffer);
@@ -368,57 +368,60 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
     RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
 
     this->Push([self, player, posInfo]() {
-    // 1. [����] ���� ��ġ�� �� ��ġ�� �Ÿ� ���̰� �ʹ� ũ�� �����ϰų� ���� (�� ����)
+    // 1. [검증] 이전 위치와 새 위치의 거리 차이가 너무 크면 무시하거나 보정 (핵 방지)
     Vector3 currentPos = Vector3::PosInfoToVector3(player->Getpos());
     Vector3 newPos = Vector3(posInfo.x(), posInfo.y(), posInfo.z());
 
-    uint64 currentTick = ::GetTickCount64(); // ���� ���� �ð� (Windows ����)
+    // 처음에만 0일 수 있으므로 예외 처리
+   
+    uint64 currentTick = ::GetTickCount64(); // 현재 서버 시간 (Windows 기준)
 
-    // ó������ 0�� �� �����Ƿ� ���� ó��
+    // 처음에만 0일 수 있으므로 예외 처리
     if (player->lastMoveTick == 0) player->lastMoveTick = currentTick - 100;
 
-    // deltaTime ��� (�� ������ ��ȯ)
+    // deltaTime 계산 (초 단위로 변환)
     float deltaTime = (currentTick - player->lastMoveTick) / 1000.0f;
-    player->lastMoveTick = currentTick; // ���� �ð��� ���� ������ ���� ����
+    player->lastMoveTick = currentTick; // 현재 시간을 다음 검증을 위해 저장
 
 
     float dist = Vector3::Distance(currentPos, newPos);
-    float maxAllowedDist = player->GetSpeed() * deltaTime * 1.2f; // �������� 20%
+    float maxAllowedDist = player->GetSpeed() * deltaTime * 1.2f; // 오차범위 20%
 
-    //�ӵ� ����
+    //속도 검증
     if (dist > maxAllowedDist) {
-        // �ʹ� �ָ� �̵��� (��Ŷ ���� Ȥ�� ���� ��ġ ����)
-        std::cout << "������ �̵� ��û �ν�" << std::endl;
+        // 너무 멀리 이동함 (패킷 무시 혹은 강제 위치 복구)
+        std::cout << "비정상 이동 요청 인식" << std::endl;
 
-        self->SendMoveResync(player);
+        SendMoveResync(player);
         return;
     }
     
-    // ���� ���� 
-    MapPtr currentmap = self->GetMapptr();
-    if (currentmap != nullptr)
+    // 지형 검증 
+    if (_map != nullptr)
     {
-        if (currentmap->CanGo(newPos) == false)
+        if (_map->CanGo(newPos) == false)
         {
-            // �浹 �߻�! Ŭ���̾�Ʈ���� ���� ��ġ ���� ��Ŷ ����
-            self->SendMoveResync(player);
+            // 충돌 발생! 클라이언트에게 강제 위치 복구 패킷 전송
+            SendMoveResync(player);
             return;
         }
     }
 
-    //[����] �׸��� ������Ʈ
+    //[갱신] 그리드 업데이트
     {
-        self->UpdateObjectGrid(player, currentPos, newPos);
+        UpdateObjectGrid(player, currentPos, newPos);
     }
 
 
-    // 2. [����] ���� �޸𸮿� �÷��̾� ��ġ ���� ������Ʈ
-    player->Setpos(posInfo);
+    // 2. [갱신] 서버 메모리에 플레이어 위치 정보 업데이트
+    player->Setpos(pkt.pos_info());
 
-    // 3. [����] �� ���� �ٸ� �����鿡�� �̵� ��� ��ε�ĳ��Ʈ
+    // 3. [전달] 방 안의 다른 유저들에게 이동 사실 브로드캐스트
     
-    self->BroadcastMove(player);
-    
+    BroadcastMove(player);
+    //Loging
+    /*std::cout << "RoomId: " << _Selfroomid << std::endl
+        << "object Id : " << resPos->object_id() << "HandleMove : (" << resPos->x() << resPos->y() << resPos->z() << ")" << std::endl;*/
     });
 }
 
@@ -429,16 +432,16 @@ void Room::HandleSkillForPlayer(PlayerPtr player, Protocol::CS_SKILL& pkt)
     bool hasDestPos = pkt.has_dest_pos();
     Vector3 targetPos = hasDestPos ? Vector3(pkt.dest_pos().x(), pkt.dest_pos().y(), pkt.dest_pos().z()) : Vector3(0, 0, 0);
 
-    // Job �ȿ��� �����ϰ� �� �ڽ��� �����ϱ� ���� shared_ptr�� ĳ����
+    // Job 안에서 안전하게 룸 자신을 참조하기 위해 shared_ptr로 캐스팅
     RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
     
-    // ���� ���� ������ �����ϰ� ���� �����忡�� ���������� ó���ϱ� ���� JobQueue�� Push
+    // 상태 변경 로직을 안전하게 단일 스레드에서 순차적으로 처리하기 위해 JobQueue에 Push
     this->Push([self, player, targetObjectId, targetPos, skillid]() {
         
         GameObjectPtr targetobj = nullptr;
         if (targetObjectId != -1)
         {
-            // Job�� ������ ����Ǵ� ������ �ֽ� ������Ʈ ���¸� ã��
+            // Job이 실제로 실행되는 시점에 최신 오브젝트 상태를 찾음
             targetobj = GObjcetManager.Find(targetObjectId);
         }
         
@@ -451,48 +454,48 @@ void Room::HandleSkillForMonster(MonsterPtr monster, GameObjectPtr targetobj, Ve
     RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
 
     this->Push([self, monster, targetobj, targetPos, skillid]() {
-        // ���� ��ų ��� �ÿ��� ���� ��ų ó�� ����(HandleSkill)�� �¿�ϴ�.
+        // 몬스터 스킬 사용 시에도 공용 스킬 처리 로직(HandleSkill)을 태웁니다.
         self->HandleSkill(monster, targetobj, targetPos, skillid);
     });
 }
 
 void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
 {
-    // [����] �÷��̾ ��� -> ��� ��ų�� ���� �ִ� ���� ������Ʈ�� ����ϴ� �޼ҵ�
-    // TODO: [DB������ �߰� �ʿ�][�� ����]_skillCooltimes �� �̿��ϴ� �ƴϸ� �ٸ� �޸𸮿����� �߰��ϴ� �ؼ� ��ų�� ��¥ �� ĳ���Ͱ� ���� �ִ� ��ų���� üũ�ϴ� �����ʿ�
+    // [수정] 플레이어만 사용 -> 모든 스킬을 쓸수 있는 게임 오브젝트가 사용하는 메소드
+    // TODO: [DB컨텐츠 추가 필요][핵 방지]_skillCooltimes 를 이용하던 아니면 다른 메모리영역을 추가하던 해서 스킬이 진짜 그 캐릭터가 쓸수 있는 스킬인지 체크하는 로직필요
 
     const SkillData* skilldata = DataManager::GetInstance().GetSkill(skillid);
     int64 now = GetTickCount64();
     int64 lastUsed = SKillUser->_skillCooltimes[skilldata->id];
-    int64 coolTime = skilldata->coolTime * 1000; // �� ������ ms�� ��ȯ
+    int64 coolTime = skilldata->coolTime * 1000; // 초 단위를 ms로 변환
 
     if (now - lastUsed < coolTime) {
-        // ���� ��Ÿ�� ��! ��û ���� Ȥ�� ���� ��Ŷ ����
+        // 아직 쿨타임 중! 요청 무시 혹은 에러 패킷 전송
         return;
     }
 
-    // ���� ��� �� ��� ���� ����
+    // 검증 통과 후 사용 시점 갱신
     SKillUser->_skillCooltimes[skilldata->id] = now;
 
-    // 3. �ڽ�Ʈ(���� ��) üũ �� ����
-    // (Player Ŭ������ GetStat(), SetStat() Ȥ�� ���� ���� ������ ����� �ִٰ� ����)
+    // 3. 코스트(마나 등) 체크 및 차감
+    // (Player 클래스에 GetStat(), SetStat() 혹은 직접 접근 가능한 멤버가 있다고 가정)
     if (skilldata->costType == CostType::Mana) {
-        int32 currentMp = SKillUser->GetCurrentMp(); // �÷��̾� ���� MP ��������
-        int32 requiredMp = skilldata->cost; // ����: ��ų �����Ϳ� �ڽ�Ʈ ��ġ�� �߰��ϸ� �� �����ϴ�.
+        int32 currentMp = SKillUser->GetCurrentMp(); // 플레이어 현재 MP 가져오기
+        int32 requiredMp = skilldata->cost; // 예시: 스킬 데이터에 코스트 수치를 추가하면 더 좋습니다.
 
 
         if (SKillUser->UseMp(currentMp - requiredMp) == false)
         {
-            //���� ����, ���ο��� �޽������� ������ ��������
+            //마나 부족, 본인에게 메시지등을 보낼수 있을것임
             return;
         }
 
     }
 
-    // 4. ���� ��� �� ��� ���� ����
+    // 4. 검증 통과 후 사용 시점 갱신
     SKillUser->_skillCooltimes[skilldata->id] = now;
 
-    // 5. ��ų Ÿ�Ժ� �ǰ� ����
+    // 5. 스킬 타입별 피격 판정
     bool isHit = false;
 
     switch (skilldata->skillType)
@@ -503,16 +506,16 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
         {
             GameObjectPtr target = obj.second;
             if (target && target->GetObjectId() != SKillUser->GetObjectId()) {
-                // �Ÿ� ��� (Vector3::Distance)
+                // 거리 계산 (Vector3::Distance)
                 float dist = Vector3::Distance(Vector3::PosInfoToVector3(SKillUser->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
 
-                // ��Ÿ� ���� (�ణ�� ���� �ο�: 0.5f)
+                // 사거리 검증 (약간의 마진 부여: 0.5f)
                 if (dist <= skilldata->range + 0.5f) {
                     isHit = true;
 
-                    // ������ ��� �� ����(���� �޸� ������Ʈ)
-                    int32 damage = skilldata->damage + SKillUser->GetAttack(); // ��ų������ + ĳ���Ͱ��ݷ� ���� ����
-                    target->OnAttacked(damage); // ����� HP�� ��� �Լ� ȣ��
+                    // 데미지 계산 및 적용(서버 메모리 업데이트)
+                    int32 damage = skilldata->damage + SKillUser->GetAttack(); // 스킬데미지 + 캐릭터공격력 수정 가능
+                    target->OnAttacked(damage); // 대상의 HP를 깎는 함수 호출
 
                     UpdateHPToOthers(target, SKillUser, damage, SKillUser->Getpos_As_Vector3());
 
@@ -525,20 +528,20 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
     break;
 
     case SkillType::Projectile:
-        // ����ü�� ��� �ǰ��� �ƴ϶� Projectile ��ü�� �����Ͽ� Update���� ó��
+        // 투사체는 즉시 피격이 아니라 Projectile 객체를 생성하여 Update에서 처리
         // SpawnProjectile(player, skilldata, pkt.target_pos());
         break;
 
     case SkillType::Dash:
-        // �̵� ���� �������� Ȯ�� �� ��ǥ ���� ����
+        // 이동 가능 지역인지 확인 후 좌표 강제 갱신
         break;
     }
 
-    // 6. ��� ��ε�ĳ��Ʈ (�ֺ� ��ο��� �ִϸ��̼� �˸�)
+    // 6. 결과 브로드캐스트 (주변 모두에게 애니메이션 알림)
     if (SKillUser->GetType() == GameObjectType::Player)
     {
         PlayerPtr player = std::static_pointer_cast<Player>(SKillUser);
-        //���ο��� MP ��ȭ ��Ŷ ����
+        //본인에게 MP 변화 패킷 전송
         UpdateMPToSelf(player);
     }
     
@@ -551,7 +554,7 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
 
     if (targetobj)
     {
-        // mutable_target()�� ���� TargetobjectInfo ��ü�� �����͸� ��� �� ����
+        // mutable_target()을 통해 TargetobjectInfo 객체의 포인터를 얻어 값 설정
         resPkt.mutable_target()->set_target_object_id(targetobj->GetObjectId());
     }
     else if (Istargetpos)
@@ -568,7 +571,7 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
     
 }
 
-//���ο��� MP ���� ��Ŷ ���� 
+//본인에게 MP 변경 패킷 전송 
 void Room::UpdateMPToSelf(PlayerPtr player)
 {
     
@@ -583,7 +586,7 @@ void Room::UpdateMPToSelf(PlayerPtr player)
 
 }
 
-//���ο��� HP ���� ��Ŷ ����
+//본인에게 HP 변경 패킷 전송
 void Room::UpdateHPToSelf(PlayerPtr player)
 {
     Protocol::SC_CHANGE_HP hp_Change_pkt;
@@ -598,7 +601,7 @@ void Room::UpdateHPToSelf(PlayerPtr player)
 
 void Room::UpdateMPToOthers(GameObjectPtr target, Vector3 broadcastcenter)
 {
-    //Mp ��ȭ ���
+    //Mp 변화 방송
     Protocol::SC_CHANGE_MP mp_changed_pkt;
     mp_changed_pkt.set_object_id(target->GetObjectId());
     mp_changed_pkt.set_current_mp(target->GetCurrentHp());
@@ -613,7 +616,7 @@ void Room::UpdateMPToOthers(GameObjectPtr target, Vector3 broadcastcenter)
 
 void Room::UpdateHPToOthers(GameObjectPtr target, GameObjectPtr attacker, int damage, Vector3 broadcastcenter)
 {
-    //Hp ��ȭ ���
+    //Hp 변화 방송
     Protocol::SC_CHANGE_HP hp_changed_pkt;
     hp_changed_pkt.set_object_id(target->GetObjectId());
     hp_changed_pkt.set_current_hp(target->GetCurrentHp());
@@ -628,8 +631,8 @@ void Room::UpdateHPToOthers(GameObjectPtr target, GameObjectPtr attacker, int da
 
 void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
 {
-    // [����] �ܺ� ������(ConsoleThread ��)���� ȣ��� ���� ����� 
-    // ���� ������ ���ٷ� ���� JobQueue�� �ֽ��ϴ�.
+    // [수정] 외부 쓰레드(ConsoleThread 등)에서 호출될 것을 대비해 
+    // 실제 로직을 람다로 묶어 JobQueue에 넣습니다.
     RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
 
     this->Push([self, NumOfMonster, templatedId]() {
@@ -640,15 +643,15 @@ void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
                 GObjcetManager.Create(GameObjectType::Monster, nullptr, templatedId)
             );
 
-            // ��ǥ ���� �� ���� ����
+            // 좌표 설정 등 로직 수행
             monster->Set_x(10.0f + i * 2.0f);
             monster->Set_z(10.0f);
 
             monsters.push_back(monster);
         }
 
-        // EnterMonsters ���ο����� ���� ��� �����͸� �����ϹǷ� 
-        // Job ���ο��� ����Ǵ� ���� �����մϴ�.
+        // EnterMonsters 내부에서도 락을 잡고 데이터를 수정하므로 
+        // Job 내부에서 실행되는 것이 안전합니다.
         self->EnterMonsters(monsters);
 
         std::cout << "[Job] MonsterSpawn completed: " << NumOfMonster << " monsters." << std::endl;
@@ -658,21 +661,21 @@ void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
 PlayerPtr Room::GetNearestPlayer(Vector3 pos, float maxRange)
 {
     PlayerPtr nearestPlayer = nullptr;
-    float bestDistSq = maxRange * maxRange; // ������ ������ ���ϱ� ���� �Ÿ��� ���� ���
+    float bestDistSq = maxRange * maxRange; // 제곱근 연산을 피하기 위해 거리의 제곱 사용
 
-    // 1. �ֺ� 9�� �׸��忡 �ִ� �÷��̾� ����Ʈ�� ������ (�̹� ������ �Լ� Ȱ��)
+    // 1. 주변 9개 그리드에 있는 플레이어 리스트를 가져옴 (이미 구현된 함수 활용)
     std::vector<PlayerPtr> adjacentPlayers = GetAdjacentPlayers(pos);
 
-    // 2. ����Ʈ�� ��ȸ�ϸ� ���� ����� �÷��̾� Ž��
+    // 2. 리스트를 순회하며 가장 가까운 플레이어 탐색
     for (const PlayerPtr& player : adjacentPlayers)
     {
-        // ��� ������ �÷��̾�� ���� (�ʿ� ��)
+        // 사망 상태인 플레이어는 제외 (필요 시)
         if (player->GetState() == CreatureState::Dead)
             continue;
 
         Vector3 playerPos = Vector3::PosInfoToVector3(player->Getpos());
 
-        // �� ���� ������ �Ÿ� ���� ��� (sqrt�� �� �Ἥ ���� �̵�)
+        // 두 지점 사이의 거리 제곱 계산 (sqrt를 안 써서 성능 이득)
         float distSq = Vector3::DistanceSquared(pos, playerPos);
 
         if (distSq < bestDistSq)
@@ -685,47 +688,44 @@ PlayerPtr Room::GetNearestPlayer(Vector3 pos, float maxRange)
     return nearestPlayer;
 }
 
-//��ġ �ǰ���
+//위치 되감기
 void Room::SendMoveResync(PlayerPtr player)
 {
-    Protocol::PosInfo beforepos = *(player->Getpos());
-    
-    this->Push([beforepos, player]() {
-    // 1. ������ ����� '����' ��ǥ�� ���� ��Ŷ ����
+    // 1. 서버에 저장된 '이전' 좌표를 담은 패킷 생성
     Protocol::SC_MOVING resPkt;
 
     Protocol::PosInfo* resPos = resPkt.add_pos_info();
-    resPos->CopyFrom(beforepos); // ������Ʈ ���� ���� ��ǥ
+    resPos->CopyFrom(*(player->Getpos())); // 업데이트 전의 서버 좌표
     resPos->set_state((int)CreatureState::Idle);
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
 
     if (!sendBuffer) return;
 
-    // 2. �ش� �������Ը� ������ ���� (��ġ �ǰ���)
-    if (auto playersession = player->session.lock())
-        playersession->Send(sendBuffer);
-    });
+    // 2. 해당 유저에게만 강제로 전송 (위치 되감기)
+    if (auto s = player->session.lock())
+        s->Send(sendBuffer);
+
 }
 
 std::pair<int, int> Room::GetSectorPos(Vector3 pos)
 {
-    // 1. ���� ���� Ÿ�� ��ǥ�� ��ȯ
+    // 1. 먼저 물리 타일 좌표로 변환
     int cellX = static_cast<int>(std::floor((pos.x - _minX) / _cellSize));
     int cellZ = static_cast<int>(std::floor((pos.z - _minZ) / _cellSize));
 
-    // 2. ���� ��ǥ�� ���� ũ��� ������ ���� �ε��� ����
+    // 2. 물리 좌표를 섹터 크기로 나누어 섹터 인덱스 산출
     int sectorX = cellX / _sectorSize;
     int sectorZ = cellZ / _sectorSize;
 
-    // ���� ����
+    // 범위 제한
     sectorX = std::clamp(sectorX, 0, _sectorCountX - 1);
     sectorZ = std::clamp(sectorZ, 0, _sectorCountZ - 1);
 
     return { sectorX, sectorZ };
 }
 
-//���� �÷��̾� ���� (Interest Management)
+//인접 플레이어 추출 (Interest Management)
 std::vector<std::shared_ptr<Session>> Room::GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id)
 {
     std::vector<std::shared_ptr<Session>> SessionsOfadjacentPlayers;
@@ -860,7 +860,7 @@ void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
 
 void Room::BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id)
 {
-    // ��� �÷��̾ �ƴ϶� ������ �÷��̾�Ը� ����
+    // 모든 플레이어가 아니라 인접한 플레이어에게만 보냄
     std::vector<std::shared_ptr<Session>> targets = GetAdjacentPlayersSessions(centerPos, passing_object_id);
 
     
@@ -872,7 +872,7 @@ void Room::InitGridData(const MapData* mapdata)
     _cellSize = mapdata->CellSize;
     _minX = mapdata->MinX;
     _minZ = mapdata->MinZ;
-    // ���� ���� ��� (��ü ����/���� Ÿ�� �� / ���� ũ��)
+    // 섹터 개수 계산 (전체 가로/세로 타일 수 / 섹터 크기)
     _sectorCountX = (mapdata->width / _sectorSize) + 1;
     _sectorCountZ = (mapdata->height / _sectorSize) + 1;
 
@@ -889,7 +889,7 @@ void Room::Execute()
 
     // 2. Collect monsters under lock to avoid concurrent-modification while iterating
     
-    //���⼭ ��� ���� ��Ŷ ���
+    //여기서 사망 상태 패킷 방송
     Protocol::SC_MONSTER_DEAD deadpkt; bool anyDead = false;
 
     std::vector<MonsterPtr> monstersToUpdate;
@@ -906,7 +906,7 @@ void Room::Execute()
                 
                 deadpkt.add_dead_object_id_list(item.second->GetObjectId());
                 item.second->SetState(CreatureState::Dead);
-                anyDead = true; // ���� ���Ͱ� ���� ���� �÷��� Ȱ��ȭ
+                anyDead = true; // 죽은 몬스터가 있을 때만 플래그 활성화
             }
 
         }

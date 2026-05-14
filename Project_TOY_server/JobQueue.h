@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include <functional>
 #include <queue>
 #include <mutex>
 
-class JobSerializer; // Àü¹æ ¼±¾ğ
-//extern JobSerializer GJobSerializer; // ¿ÜºÎ ¾îµò°¡(main.cpp µî)¿¡ ¼±¾ğµÈ °´Ã¼ÀÓÀ» ¾Ë¸²
+class JobSerializer; // ì „ë°© ì„ ì–¸
+//extern JobSerializer GJobSerializer; // ì™¸ë¶€ ì–´ë”˜ê°€(main.cpp ë“±)ì— ì„ ì–¸ëœ ê°ì²´ì„ì„ ì•Œë¦¼
 
 using JobFn = std::function<void()>;
 
@@ -14,11 +14,11 @@ public:
     JobQueue(JobSerializer* jobserializer): _jobserializer(jobserializer){}
     virtual ~JobQueue() {}
 
-    // ÀÏ°¨À» Å¥¿¡ Ãß°¡
+    // ì¼ê°ì„ íì— ì¶”ê°€
     void Push(JobFn&& fn);
     
 
-    // ½×ÀÎ ÀÏ°¨µéÀ» ½ÇÇà (ÇÑ ¾²·¹µå¸¸ ÁøÀÔÇÏµµ·Ï ¼³°è)
+    // ìŒ“ì¸ ì¼ê°ë“¤ì„ ì‹¤í–‰ (í•œ ì“°ë ˆë“œë§Œ ì§„ì…í•˜ë„ë¡ ì„¤ê³„)
     virtual void Execute();
     
 

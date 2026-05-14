@@ -1,4 +1,4 @@
-#include "Session.h"
+ï»¿#include "Session.h"
 #include <iostream>
 #include "RoomManager.h"
 #include "ObjectManager.h"
@@ -10,7 +10,7 @@ Session::Session() : _recvBuffer(1024 * 64)
 
 }
 
-Session::Session(SOCKET socket) : _socket(socket), _recvBuffer(1024 * 64) // 64KB ¹öÆÛ
+Session::Session(SOCKET socket) : _socket(socket), _recvBuffer(1024 * 64) // 64KB ë²„í¼
 {
     
 }
@@ -21,16 +21,16 @@ Session::~Session()
         closesocket(_socket);
 }
 
-//¼ö½Å ¿¹¾à (WSARecv)
+//ìˆ˜ì‹  ì˜ˆì•½ (WSARecv)
 void Session::Receive()
 {
     if (_socket == INVALID_SOCKET || _disconnected.load()) return;
 
-    // [Ãß°¡] ¸¸¾à ¿©À¯ °ø°£ÀÌ ¾øÀ¸¸é CleanÀ» ÇÑ ¹ø ´õ ½ÃµµÇÏ°Å³ª ¿¡·¯ Ã³¸®
+    // [ì¶”ê°€] ë§Œì•½ ì—¬ìœ  ê³µê°„ì´ ì—†ìœ¼ë©´ Cleanì„ í•œ ë²ˆ ë” ì‹œë„í•˜ê±°ë‚˜ ì—ëŸ¬ ì²˜ë¦¬
     if (_recvBuffer.FreeSize() < sizeof(PacketHeader))
     {
         _recvBuffer.Clean();
-        // Clean ÈÄ¿¡µµ °ø°£ÀÌ ¾ø´Ù¸é ¹öÆÛ Å©±â ÀÚÃ¼°¡ ³Ê¹« ÀÛÀº °Í
+        // Clean í›„ì—ë„ ê³µê°„ì´ ì—†ë‹¤ë©´ ë²„í¼ í¬ê¸° ìì²´ê°€ ë„ˆë¬´ ì‘ì€ ê²ƒ
         if (_recvBuffer.FreeSize() < sizeof(PacketHeader))
         { 
             std::cout << "Session::Receive , recvBuffer is small" << std::endl;
@@ -39,13 +39,13 @@ void Session::Receive()
         }
     }
 
-    // Overlapped Á¤º¸¸¦ ¼³Á¤ (³ªÁß¿¡ IOCP¿¡¼­ ÀÌ Á¤º¸¸¦ º¸°í Ã³¸®ÇÔ)
-    OverlappedEx* overlapped = new OverlappedEx(); // ½ÇÁ¦·Î´Â Ç®¸µÇØ¼­ ½á¾ß ÇÔ
+    // Overlapped ì •ë³´ë¥¼ ì„¤ì • (ë‚˜ì¤‘ì— IOCPì—ì„œ ì´ ì •ë³´ë¥¼ ë³´ê³  ì²˜ë¦¬í•¨)
+    OverlappedEx* overlapped = new OverlappedEx(); // ì‹¤ì œë¡œëŠ” í’€ë§í•´ì„œ ì¨ì•¼ í•¨
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));
     overlapped->type = IO_TYPE::RECV;
     overlapped->owner = shared_from_this();
 
-    // WSABUF ¼³Á¤: RecvBuffer¿¡¼­ ¾µ ¼ö ÀÖ´Â °ø°£À» OS¿¡ ³Ñ°ÜÁÜ
+    // WSABUF ì„¤ì •: RecvBufferì—ì„œ ì“¸ ìˆ˜ ìˆëŠ” ê³µê°„ì„ OSì— ë„˜ê²¨ì¤Œ
     WSABUF wsaBuf;
     wsaBuf.buf = _recvBuffer.WritePos();
     wsaBuf.len = _recvBuffer.FreeSize();
@@ -53,7 +53,7 @@ void Session::Receive()
     DWORD bytesReceived = 0;
     DWORD flags = 0;
 
-    // ºñµ¿±â ¼ö½Å È£Ãâ
+    // ë¹„ë™ê¸° ìˆ˜ì‹  í˜¸ì¶œ
     int errorCode = ::WSARecv(_socket, &wsaBuf, 1, &bytesReceived, &flags, &overlapped->overlapped, nullptr);
 
     if (errorCode == SOCKET_ERROR)
@@ -61,14 +61,14 @@ void Session::Receive()
         int err = ::WSAGetLastError();
         if (err != WSA_IO_PENDING)
         {
-            // [°­È­] ¿¡·¯ ÄÚµå¿Í ÇÔ²² ÇöÀç ¼¼¼Ç Á¤º¸ Ãâ·Â
+            // [ê°•í™”] ì—ëŸ¬ ì½”ë“œì™€ í•¨ê»˜ í˜„ì¬ ì„¸ì…˜ ì •ë³´ ì¶œë ¥
             std::cout << "WSARecv Error [Socket: " << _socket << "]: " << err << std::endl;
-            delete overlapped; // ¿¡·¯ ½Ã ¸Ş¸ğ¸® ´©¼ö ¹æÁö
+            delete overlapped; // ì—ëŸ¬ ì‹œ ë©”ëª¨ë¦¬ ëˆ„ìˆ˜ ë°©ì§€
         }
     }
 }
 
-//¼ö½Å ¿Ï·á Äİ¹é (IOCP Worker Thread¿¡ ÀÇÇØ È£ÃâµÊ)
+//ìˆ˜ì‹  ì™„ë£Œ ì½œë°± (IOCP Worker Threadì— ì˜í•´ í˜¸ì¶œë¨)
 void Session::OnRecv(int bytesTransferred)
 {
     if (bytesTransferred == 0) 
@@ -92,26 +92,26 @@ void Session::OnRecv(int bytesTransferred)
     {
         int dataSize = _recvBuffer.DataSize();
 
-        // 1. Çì´õ(4¹ÙÀÌÆ®)¸¸Å­Àº ¿Ô´ÂÁö È®ÀÎ
+        // 1. í—¤ë”(4ë°”ì´íŠ¸)ë§Œí¼ì€ ì™”ëŠ”ì§€ í™•ì¸
         if (dataSize < sizeof(PacketHeader)) {
            // std::cout << "Wait for Header... (Current: " << dataSize << ")" << std::endl;
             break;
         }
-        // 2. ÆĞÅ¶ Çì´õ¸¦ ÀĞ¾î ÀüÃ¼ Å©±â È®ÀÎ
+        // 2. íŒ¨í‚· í—¤ë”ë¥¼ ì½ì–´ ì „ì²´ í¬ê¸° í™•ì¸
         PacketHeader* header = reinterpret_cast<PacketHeader*>(_recvBuffer.ReadPos());
 
         
                 
-        // ¼­¹öÀÇ OnRecv È¤Àº ÆĞÅ¶ ºĞ±â ·ÎÁ÷
+        // ì„œë²„ì˜ OnRecv í˜¹ì€ íŒ¨í‚· ë¶„ê¸° ë¡œì§
 
         uint16_t packetId = header->id;
 
         
-        // GPacketHandler Å©±â Ã¼Å©
+        // GPacketHandler í¬ê¸° ì²´í¬
         if (packetId >= MAX_PACKET_ID) {
             std::cout << "Error: Invalid Packet ID " << packetId << std::endl;
             OnDisconnected();
-            return; // ¿©±â¼­ °É¸°´Ù¸é º¤ÅÍ Å©±â ÃÊ±âÈ­ ¹®Á¦!
+            return; // ì—¬ê¸°ì„œ ê±¸ë¦°ë‹¤ë©´ ë²¡í„° í¬ê¸° ì´ˆê¸°í™” ë¬¸ì œ!
         }
 
         if (GPacketHandler[packetId] == nullptr) {
@@ -119,7 +119,7 @@ void Session::OnRecv(int bytesTransferred)
             OnDisconnected();
             return;
         }
-        // [Áß¿ä] ºñÁ¤»óÀûÀÎ ´ëÇü ÆĞÅ¶ ¹æ¾î
+        // [ì¤‘ìš”] ë¹„ì •ìƒì ì¸ ëŒ€í˜• íŒ¨í‚· ë°©ì–´
         if (header->size > 1024 * 5) 
         {
             OnDisconnected();
@@ -127,7 +127,7 @@ void Session::OnRecv(int bytesTransferred)
             return;
         }
 
-        // 3. ÀüÃ¼ ÆĞÅ¶ÀÌ ´Ù ¿Ô´ÂÁö È®ÀÎ
+        // 3. ì „ì²´ íŒ¨í‚·ì´ ë‹¤ ì™”ëŠ”ì§€ í™•ì¸
         if (dataSize < header->size)
         {
             std::cout << "Wait for Data... (Need: " << header->size << " / Have: " << dataSize << ")" << std::endl;
@@ -136,7 +136,7 @@ void Session::OnRecv(int bytesTransferred)
         uint16 id = header->id;
         uint16 size = header->size;
 
-        // [µğ¹ö±ë ·Î±×]
+        // [ë””ë²„ê¹… ë¡œê·¸]
         //std::cout << "Processing Packet ID: " << header->id << " / Size: " << header->size << std::endl;
         
 
@@ -149,7 +149,7 @@ void Session::OnRecv(int bytesTransferred)
             return;
         }
 
-        // 5. Ã³¸®ÇÑ ÆĞÅ¶ Å©±â¸¸Å­ ÀĞ±â Ä¿¼­ ÀÌµ¿
+        // 5. ì²˜ë¦¬í•œ íŒ¨í‚· í¬ê¸°ë§Œí¼ ì½ê¸° ì»¤ì„œ ì´ë™
         _recvBuffer.OnRead(header->size);
         //std::cout << "Packet Processed Successfully." << std::endl;
     }
@@ -163,13 +163,13 @@ void Session::Send(SendBufferPtr sendBuffer)
 {
     std::lock_guard<std::mutex> lock(_lock);
 
-    // 1. º¸³¾ µ¥ÀÌÅÍ¸¦ Å¥¿¡ »ğÀÔ
+    // 1. ë³´ë‚¼ ë°ì´í„°ë¥¼ íì— ì‚½ì…
     _sendQueue.push(sendBuffer);
 
-    // 2. ¸¸¾à ÇöÀç Àü¼Û ÁßÀÎ ÀÛ¾÷ÀÌ ¾ø´Ù¸é Àü¼Û ¿¹¾à ½ÇÇà
+    // 2. ë§Œì•½ í˜„ì¬ ì „ì†¡ ì¤‘ì¸ ì‘ì—…ì´ ì—†ë‹¤ë©´ ì „ì†¡ ì˜ˆì•½ ì‹¤í–‰
     if (_sendRegistered == false)
     {
-        //Æ½ Ã¼Å©, ÆĞÅ¶Àü¼ÛÀÌ '³Ê¹« ÀÚÁÖ' µÇ´Â °Í ¹æÁö
+        //í‹± ì²´í¬, íŒ¨í‚·ì „ì†¡ì´ 'ë„ˆë¬´ ìì£¼' ë˜ëŠ” ê²ƒ ë°©ì§€
         uint64 currentTick = ::GetTickCount64();
         if (currentTick - _lastSendTick >= SEND_TICK_INTERVAL)
         {
@@ -179,7 +179,7 @@ void Session::Send(SendBufferPtr sendBuffer)
     }
 }
 
-// ½ÇÁ¦·Î WSASend¸¦ È£ÃâÇÏ´Â ÇÔ¼ö
+// ì‹¤ì œë¡œ WSASendë¥¼ í˜¸ì¶œí•˜ëŠ” í•¨ìˆ˜
 void Session::RegisterSend()
 {
     if (_socket == INVALID_SOCKET || _disconnected.load()) return;
@@ -188,8 +188,8 @@ void Session::RegisterSend()
 
     _sendRegistered = true;
 
-    // Å¥¿¡ ½×ÀÎ ¹öÆÛµéÀ» ÇÏ³ª·Î ¹­¾î¼­ º¸³¾ ¼ö ÀÖÀ½ (Scatter-Gather)
-    // ¿©±â¼­´Â ´Ü¼øÈ­¸¦ À§ÇØ ÇÏ³ª¸¸ ²¨³» º¸³¿
+    // íì— ìŒ“ì¸ ë²„í¼ë“¤ì„ í•˜ë‚˜ë¡œ ë¬¶ì–´ì„œ ë³´ë‚¼ ìˆ˜ ìˆìŒ (Scatter-Gather)
+    // ì—¬ê¸°ì„œëŠ” ë‹¨ìˆœí™”ë¥¼ ìœ„í•´ í•˜ë‚˜ë§Œ êº¼ë‚´ ë³´ëƒ„
     SendBufferPtr sendBuffer = _sendQueue.front();
 
     if (!sendBuffer) {
@@ -201,7 +201,7 @@ void Session::RegisterSend()
     }
 
 
-    OverlappedEx* overlapped = new OverlappedEx(); // Ç®¸µ ±ÇÀå
+    OverlappedEx* overlapped = new OverlappedEx(); // í’€ë§ ê¶Œì¥
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));
     overlapped->type = IO_TYPE::SEND;
     overlapped->owner = shared_from_this();
@@ -211,7 +211,7 @@ void Session::RegisterSend()
     wsaBuf.len = sendBuffer->Size();
 
     DWORD bytesSent = 0;
-    // ºñµ¿±â Àü¼Û È£Ãâ
+    // ë¹„ë™ê¸° ì „ì†¡ í˜¸ì¶œ
     if (::WSASend(_socket, &wsaBuf, 1, &bytesSent, 0, &overlapped->overlapped, nullptr) == SOCKET_ERROR)
     {
         int err = ::WSAGetLastError();
@@ -231,7 +231,7 @@ void Session::OnSend(int bytesTransferred)
 
     _sendRegistered = false;
 
-    // 1. Àü¼ÛÀÌ ¿Ï·áµÈ ¹öÆÛ´Â Å¥¿¡¼­ Á¦°Å
+    // 1. ì „ì†¡ì´ ì™„ë£Œëœ ë²„í¼ëŠ” íì—ì„œ ì œê±°
     if (_sendQueue.empty() == false)
     {
        
@@ -239,7 +239,7 @@ void Session::OnSend(int bytesTransferred)
         
     }
 
-    // 2. ¸¸¾à Å¥¿¡ ´õ º¸³¾ µ¥ÀÌÅÍ°¡ ½×¿©ÀÖ´Ù¸é ´Ù½Ã Àü¼Û ¿¹¾à
+    // 2. ë§Œì•½ íì— ë” ë³´ë‚¼ ë°ì´í„°ê°€ ìŒ“ì—¬ìˆë‹¤ë©´ ë‹¤ì‹œ ì „ì†¡ ì˜ˆì•½
     if (_sendQueue.empty() == false)
     {
         RegisterSend();
@@ -248,11 +248,11 @@ void Session::OnSend(int bytesTransferred)
 
 void Session::Disconnect()
 {
-    // Áßº¹ È£Ãâ ¹æÁö
+    // ì¤‘ë³µ í˜¸ì¶œ ë°©ì§€
     if (_socket == INVALID_SOCKET) return;
 
-    // ¼ÒÄÏÀ» ´İÀ¸¸é ÁøÇà ÁßÀÌ´ø ¸ğµç ºñµ¿±â IO(WSARecv, WSASend)°¡ 
-    // ¿¡·¯¸¦ ¹ß»ı½ÃÅ°¸ç GQCS(Dispatch)¿¡¼­ °¨ÁöµË´Ï´Ù.
+    // ì†Œì¼“ì„ ë‹«ìœ¼ë©´ ì§„í–‰ ì¤‘ì´ë˜ ëª¨ë“  ë¹„ë™ê¸° IO(WSARecv, WSASend)ê°€ 
+    // ì—ëŸ¬ë¥¼ ë°œìƒì‹œí‚¤ë©° GQCS(Dispatch)ì—ì„œ ê°ì§€ë©ë‹ˆë‹¤.
     ::closesocket(_socket);
     _socket = INVALID_SOCKET;
 
@@ -260,12 +260,12 @@ void Session::Disconnect()
 
 void Session::OnDisconnected()
 {
-    // ¿øÀÚÀûÀ¸·Î Ã¼Å©ÇÏ¿© µü ÇÑ ¹ø¸¸ ½ÇÇàµÇµµ·Ï º¸Àå
+    // ì›ìì ìœ¼ë¡œ ì²´í¬í•˜ì—¬ ë”± í•œ ë²ˆë§Œ ì‹¤í–‰ë˜ë„ë¡ ë³´ì¥
     if (_disconnected.exchange(true) == true)
         return;
     std::cout << "OnDisconnected Called. Stack Trace Trace..." << std::endl;
     std::cout << "Client Disconnected: " << GetGuid() << std::endl;
-    // ¿©±â¼­ ¼¼¼Ç ¸Å´ÏÀú¿¡¼­ Á¦°Å
+    // ì—¬ê¸°ì„œ ì„¸ì…˜ ë§¤ë‹ˆì €ì—ì„œ ì œê±°
     auto self = shared_from_this();
     GSessionManager.Remove(self);
 
@@ -274,24 +274,24 @@ void Session::OnDisconnected()
         _socket = INVALID_SOCKET;
     }
     
-    //°ÔÀÓ ¿ÀºêÁ§Æ® ÇØÁ¦
+    //ê²Œì„ ì˜¤ë¸Œì íŠ¸ í•´ì œ
 
     PlayerPtr player = GetPlayerPtr();
     if (player)
     {
         RoomPtr room = GRoomManager.FindRoom(player->GetroomId());
         if (room)
-            room->Leave(player); // ·ë¿¡¼­ ÅğÀå Ã³¸®
+            room->Leave(player); // ë£¸ì—ì„œ í‡´ì¥ ì²˜ë¦¬
 
-        GObjcetManager.Removeobjcet(player->GetObjectId()); // Àü¿ª ¸Å´ÏÀú¿¡¼­µµ Á¦°Å
+        GObjcetManager.Removeobjcet(player->GetObjectId()); // ì „ì—­ ë§¤ë‹ˆì €ì—ì„œë„ ì œê±°
     }
 
 }
 
 void Session::OnConnected()
 {
-    // Á¢¼ÓÇÑ »ó´ë¹æÀÇ Á¤º¸¸¦ ·Î±×·Î Ãâ·ÂÇÏ°Å³ª 
-    // ¼­¹ö È¯°æ¿¡ ¸Â´Â ÃÊ±âÈ­ ÆĞÅ¶ Àü¼Û µîÀÇ ·ÎÁ÷À» ³Ö½À´Ï´Ù.
+    // ì ‘ì†í•œ ìƒëŒ€ë°©ì˜ ì •ë³´ë¥¼ ë¡œê·¸ë¡œ ì¶œë ¥í•˜ê±°ë‚˜ 
+    // ì„œë²„ í™˜ê²½ì— ë§ëŠ” ì´ˆê¸°í™” íŒ¨í‚· ì „ì†¡ ë“±ì˜ ë¡œì§ì„ ë„£ìŠµë‹ˆë‹¤.
     std::cout << "Session Connected: [GUID " << GetGuid() << "]" << std::endl;
 
     

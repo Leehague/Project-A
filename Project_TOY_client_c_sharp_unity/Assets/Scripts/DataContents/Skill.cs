@@ -1,10 +1,10 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 
 [Serializable]
 public class Skill
 {
-    // °øÅë ÇÊµå (JSON Å°°ª°ú Á¤È®È÷ ÀÏÄ¡½ÃÄÑ¾ß ÇÔ)
+    // ê³µí†µ í•„ë“œ (JSON í‚¤ê°’ê³¼ ì •í™•íˆ ì¼ì¹˜ì‹œì¼œì•¼ í•¨)
     public int id;
     public string name;
     public int skillTypeId;
@@ -13,15 +13,15 @@ public class Skill
     public float cost;
     public string animName;
 
-    // »ó¼¼ ÇÊµå (JSON¿¡ ÀÖ´Â ¸ğµç °¡´É¼º Ãß°¡)
+    // ìƒì„¸ í•„ë“œ (JSONì— ìˆëŠ” ëª¨ë“  ê°€ëŠ¥ì„± ì¶”ê°€)
     public int damage;
     public float range;
 
-    // Projectile Àü¿ë
+    // Projectile ì „ìš©
     public float projectileSpeed;
     public int projectileId;
 
-    // Dash Àü¿ë
+    // Dash ì „ìš©
     public float dashDistance;
     public float dashSpeed;
 }

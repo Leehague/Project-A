@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Diagnostics;
@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public abstract class UI_Base : MonoBehaviour
 {
-    // Å¸ÀÔº°·Î ¿ÀºêÁ§Æ®µéÀ» ´ã¾ÆµÑ µñ¼Å³Ê¸® (Key: ÀÌ¸§, Value: ÄÄÆ÷³ÍÆ®µé)
+    // íƒ€ì…ë³„ë¡œ ì˜¤ë¸Œì íŠ¸ë“¤ì„ ë‹´ì•„ë‘˜ ë”•ì…”ë„ˆë¦¬ (Key: ì´ë¦„, Value: ì»´í¬ë„ŒíŠ¸ë“¤)
     protected Dictionary<Type, UnityEngine.Object[]> _objects = new Dictionary<Type, UnityEngine.Object[]>();
 
     protected void Bind<T>(Type type) where T : UnityEngine.Object
@@ -37,7 +37,7 @@ public abstract class UI_Base : MonoBehaviour
         return objects[idx] as T;
     }
 
-    // ÀÚÁÖ ¾²´Â ÄÄÆ÷³ÍÆ®µéÀ» ÆíÇÏ°Ô °¡Á®¿À±â À§ÇÑ ÇïÆÛ ÇÔ¼öµé
+    // ìì£¼ ì“°ëŠ” ì»´í¬ë„ŒíŠ¸ë“¤ì„ í¸í•˜ê²Œ ê°€ì ¸ì˜¤ê¸° ìœ„í•œ í—¬í¼ í•¨ìˆ˜ë“¤
     protected TMPro.TextMeshProUGUI GetText(int idx) => Get<TMPro.TextMeshProUGUI>(idx);
     protected Button GetButton(int idx) => Get<Button>(idx);
     protected Image GetImage(int idx) => Get<Image>(idx);

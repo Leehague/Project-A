@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "Room.h"
@@ -19,7 +19,7 @@ public:
 
     
 
-    std::weak_ptr<Session> session; // ¼øÈ¯ ÂüÁ¶ ¹æÁö
+    std::weak_ptr<Session> session; // ìˆœí™˜ ì°¸ì¡° ë°©ì§€
 
     virtual void Init(int32 templateId)
     {
@@ -27,7 +27,7 @@ public:
         auto sessionPtr = session.lock();
         if (sessionPtr)
         {
-            // ÀÌÁ¦ shared_ptr·Î °ü¸®µÇ´Â »óÅÂÀÌ¹Ç·Î ¾ÈÀüÇÏ°Ô È£Ãâ °¡´ÉÇÕ´Ï´Ù.
+            // ì´ì œ shared_ptrë¡œ ê´€ë¦¬ë˜ëŠ” ìƒíƒœì´ë¯€ë¡œ ì•ˆì „í•˜ê²Œ í˜¸ì¶œ ê°€ëŠ¥í•©ë‹ˆë‹¤.
             sessionPtr->SetPlayerPtr(std::static_pointer_cast<Player>(shared_from_this()));
 
         }

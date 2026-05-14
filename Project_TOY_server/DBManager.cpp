@@ -1,16 +1,16 @@
-// DBManager.cpp
+ï»¿// DBManager.cpp
 #include "DBManager.h"
 #include <iostream>
 
 bool DBManager::Init(int poolSize, const std::wstring& connStr) {
-    // 1. ODBC È¯°æ ÇÚµé »ı¼º
+    // 1. ODBC í™˜ê²½ í•¸ë“¤ ìƒì„±
     if (SQL_SUCCESS != ::SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &_hEnv))
         return false;
 
     if (SQL_SUCCESS != ::SQLSetEnvAttr(_hEnv, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0))
         return false;
 
-    // 2. ¿¬°á Ç® »ı¼º
+    // 2. ì—°ê²° í’€ ìƒì„±
     for (int i = 0; i < poolSize; i++) {
         DBConnection* conn = new DBConnection();
         if (conn->Connect(_hEnv, connStr)) {
@@ -23,7 +23,7 @@ bool DBManager::Init(int poolSize, const std::wstring& connStr) {
         }
     }
 
-    // 3. DB Àü¿ë ¾²·¹µå ½ÇÇà (º¸Åë 1~2°³¸é ÃæºĞÇÕ´Ï´Ù)
+    // 3. DB ì „ìš© ì“°ë ˆë“œ ì‹¤í–‰ (ë³´í†µ 1~2ê°œë©´ ì¶©ë¶„í•©ë‹ˆë‹¤)
     for (int i = 0; i < 1; i++) {
         _threads.push_back(std::thread(&DBManager::DBThreadMain, this));
     }
@@ -42,7 +42,7 @@ void DBManager::DBThreadMain() {
             _dbJobs.pop();
         }
 
-        if (job) job(); // PushµÈ ¶÷´Ù/ÇÔ¼ö ½ÇÇà
+        if (job) job(); // Pushëœ ëŒë‹¤/í•¨ìˆ˜ ì‹¤í–‰
     }
 }
 

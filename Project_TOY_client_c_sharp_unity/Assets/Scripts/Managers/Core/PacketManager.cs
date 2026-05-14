@@ -1,5 +1,5 @@
-using Google.Protobuf;
-using Protocol; // Protobuf·Î »ı¼ºµÈ ³×ÀÓ½ºÆäÀÌ½º
+ï»¿using Google.Protobuf;
+using Protocol; // Protobufë¡œ ìƒì„±ëœ ë„¤ì„ìŠ¤í˜ì´ìŠ¤
 using System;
 using System.Collections.Generic;
 
@@ -11,10 +11,10 @@ public partial class PacketManager
 {
     
 
-    // [Ãß°¡] TypeÀ» Å°·Î ÇÏ¿© PacketId(ushort)¸¦ ÀúÀå
+    // [ì¶”ê°€] Typeì„ í‚¤ë¡œ í•˜ì—¬ PacketId(ushort)ë¥¼ ì €ì¥
     Dictionary<Type, ushort> _typeToId = new Dictionary<Type, ushort>();
 
-    // [Ãß°¡] ¿ÜºÎ¿¡¼­ ID¸¦ Á¶È¸ÇÒ ¼ö ÀÖ´Â ÇÔ¼ö
+    // [ì¶”ê°€] ì™¸ë¶€ì—ì„œ IDë¥¼ ì¡°íšŒí•  ìˆ˜ ìˆëŠ” í•¨ìˆ˜
     public ushort GetId(Type type)
     {
         if (_typeToId.TryGetValue(type, out ushort id))
@@ -23,18 +23,18 @@ public partial class PacketManager
     }
 
 
-    // ÆĞÅ¶ ID¿¡ µû¸¥ ÆÄ½Ì ÇÔ¼ö¸¦ ´ã´Â µñ¼Å³Ê¸®
+    // íŒ¨í‚· IDì— ë”°ë¥¸ íŒŒì‹± í•¨ìˆ˜ë¥¼ ë‹´ëŠ” ë”•ì…”ë„ˆë¦¬
     Dictionary<ushort, Action<PacketSession, byte[],int, ushort>> _onRecv = new Dictionary<ushort, Action<PacketSession, byte[],int, ushort>>();
 
-    // À¯´ÏÆ¼ ¸ŞÀÎ ½º·¹µå¿¡¼­ ½ÇÇàµÉ ÇÚµé·¯ ÇÔ¼öµé
+    // ìœ ë‹ˆí‹° ë©”ì¸ ìŠ¤ë ˆë“œì—ì„œ ì‹¤í–‰ë  í•¸ë“¤ëŸ¬ í•¨ìˆ˜ë“¤
     Dictionary<ushort, Action<PacketSession, IMessage>> _handler = new Dictionary<ushort, Action<PacketSession, IMessage>>();
 
     public PacketManager()
     {
-        Register(); //Partial class¿¡¼­ Á¤ÀÇ (PacketManager_Gen.cs ¿¡ Á¤ÀÇ µÇ¾î ÀÖÀ½)
+        Register(); //Partial classì—ì„œ ì •ì˜ (PacketManager_Gen.cs ì— ì •ì˜ ë˜ì–´ ìˆìŒ)
     }
       
-    // ¹ÙÀÌÆ® ¹è¿­À» ½ÇÁ¦ Protobuf °´Ã¼·Î º¯È¯
+    // ë°”ì´íŠ¸ ë°°ì—´ì„ ì‹¤ì œ Protobuf ê°ì²´ë¡œ ë³€í™˜
     public void OnRecvPacket(ushort id, byte[] buffer, int offset, ushort size, PacketSession session)
     {
         if (_onRecv.TryGetValue(id, out var action))
@@ -43,7 +43,7 @@ public partial class PacketManager
         }
     }
 
-    // Á¦³×¸¯À» ÀÌ¿ëÇÑ ÆĞÅ¶ »ı¼º ÇïÆÛ ÇÔ¼ö
+    // ì œë„¤ë¦­ì„ ì´ìš©í•œ íŒ¨í‚· ìƒì„± í—¬í¼ í•¨ìˆ˜
     void MakePacket<T>(PacketSession session, byte[] buffer, int offset, ushort size, ushort id ) where T : IMessage, new()
     {
         T pkt = new T();
@@ -56,7 +56,7 @@ public partial class PacketManager
         }
         catch (Exception ex)
         {
-            // ¿¡·¯ ¹ß»ı ½Ã ¹öÆÛÀÇ »óÅÂ¸¦ ½º³À¼¦À¸·Î ÂïÀ½
+            // ì—ëŸ¬ ë°œìƒ ì‹œ ë²„í¼ì˜ ìƒíƒœë¥¼ ìŠ¤ëƒ…ìƒ·ìœ¼ë¡œ ì°ìŒ
             Debug.LogError($"[Packet Error] ID: {id}, Size: {size}");
             Debug.LogError(ex.Message);
             //Debug.LogError($"Current Buffer State: ReadPos={buffer.ReadPos}, WritePos={buffer.WritePos}");
@@ -64,7 +64,7 @@ public partial class PacketManager
         }
         
         
-        // ·ÎÁ÷ Ã³¸®¸¦ À§ÇØ NetworkManager Å¥¿¡ »ğÀÔ
+        // ë¡œì§ ì²˜ë¦¬ë¥¼ ìœ„í•´ NetworkManager íì— ì‚½ì…
         Managers.networkManager.PushPacket(new PacketMessage { Id = id, Message = pkt});
     }
 
@@ -86,7 +86,7 @@ public partial class PacketManager
         }
         else
         {
-            // ÇÚµé·¯°¡ µî·ÏµÇÁö ¾ÊÀº °æ¿ì ·Î±× Ãâ·Â
+            // í•¸ë“¤ëŸ¬ê°€ ë“±ë¡ë˜ì§€ ì•Šì€ ê²½ìš° ë¡œê·¸ ì¶œë ¥
             Debug.LogWarning($"No handler registered for Packet ID: {id}");
         }
     }

@@ -1,21 +1,21 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ResourceManager
 {
-    // ¸®¼Ò½º¸¦ ·ÎµåÇÕ´Ï´Ù. T´Â ·ÎµåÇÒ ¿¡¼ÂÀÇ Å¸ÀÔ(GameObject, AudioClip µî)ÀÔ´Ï´Ù.
+    // ë¦¬ì†ŒìŠ¤ë¥¼ ë¡œë“œí•©ë‹ˆë‹¤. TëŠ” ë¡œë“œí•  ì—ì…‹ì˜ íƒ€ì…(GameObject, AudioClip ë“±)ì…ë‹ˆë‹¤.
     public T Load<T>(string path) where T : Object
     {
-        // ³ªÁß¿¡ °æ·Î ¾Õ¿¡ °øÅë Æú´õ¸íÀ» ºÙÀÌ°Å³ª, 
-        // ·ÎµåµÈ ¿¡¼ÂÀ» µñ¼Å³Ê¸®¿¡ Ä³½Ì(Caching)ÇÏ¿© ÃÖÀûÈ­ÇÒ ¼ö ÀÖ½À´Ï´Ù.
+        // ë‚˜ì¤‘ì— ê²½ë¡œ ì•ì— ê³µí†µ í´ë”ëª…ì„ ë¶™ì´ê±°ë‚˜, 
+        // ë¡œë“œëœ ì—ì…‹ì„ ë”•ì…”ë„ˆë¦¬ì— ìºì‹±(Caching)í•˜ì—¬ ìµœì í™”í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
         return Resources.Load<T>(path);
     }
 
-    // ÇÁ¸®ÆÕÀ» »ı¼ºÇÕ´Ï´Ù.
+    // í”„ë¦¬íŒ¹ì„ ìƒì„±í•©ë‹ˆë‹¤.
     public GameObject Instantiate(string path, Transform parent = null)
     {
-        // 1. ÇÁ¸®ÆÕ ¸®¼Ò½º¸¦ °¡Á®¿É´Ï´Ù.
+        // 1. í”„ë¦¬íŒ¹ ë¦¬ì†ŒìŠ¤ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
         GameObject prefab = Load<GameObject>($"Prefabs/{path}");
         if (prefab == null)
         {
@@ -23,11 +23,11 @@ public class ResourceManager
             return null;
         }
 
-        // 2. »ı¼ºÇÕ´Ï´Ù.
+        // 2. ìƒì„±í•©ë‹ˆë‹¤.
         return Object.Instantiate(prefab, parent);
     }
 
-    // ¿ÀºêÁ§Æ®¸¦ ÆÄ±«ÇÕ´Ï´Ù.
+    // ì˜¤ë¸Œì íŠ¸ë¥¼ íŒŒê´´í•©ë‹ˆë‹¤.
     public void Destroy(GameObject go)
     {
         if (go == null)

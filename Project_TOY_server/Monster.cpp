@@ -1,4 +1,4 @@
-#include "Monster.h"
+ï»¿#include "Monster.h"
 #include "RoomManager.h"
 #include "Map.h"
 #include "Player.h"
@@ -9,18 +9,18 @@ std::vector<float> Monster::GatherContext()
 {
     std::vector<float> context;
 
-    // 1. º»ÀÎ »óÅÂ (Á¤±ÔÈ­ ±ÇÀå)
+    // 1. ë³¸ì¸ ìƒíƒœ (ì •ê·œí™” ê¶Œì¥)
     context.push_back(static_cast<float>(GetCurrentHp()) / GetMaxHP());
     context.push_back(static_cast<float>(GetCurrentMp()) / GetMaxMP());
 
-    // 2. °¡Àå °¡±î¿î Å¸°Ù(ÇÃ·¹ÀÌ¾î) Á¤º¸
-    PlayerPtr target =this->Getroomptr()->GetNearestPlayer(this->Getpos_As_Vector3(), this->_targetrange); // ½Ã¾ß(±×¸®µå) ³»¿¡¼­ Å½»ö
+    // 2. ê°€ì¥ ê°€ê¹Œìš´ íƒ€ê²Ÿ(í”Œë ˆì´ì–´) ì •ë³´
+    PlayerPtr target =this->Getroomptr()->GetNearestPlayer(this->Getpos_As_Vector3(), this->_targetrange); // ì‹œì•¼(ê·¸ë¦¬ë“œ) ë‚´ì—ì„œ íƒìƒ‰
     if (target)
     {
         Vector3 myPos = Vector3::PosInfoToVector3(this->Getpos());
         Vector3 targetPos = Vector3::PosInfoToVector3(target->Getpos());
 
-        // »ó´ë °Å¸® ¹× ¹æÇâ
+        // ìƒëŒ€ ê±°ë¦¬ ë° ë°©í–¥
         context.push_back(targetPos.x - myPos.x);
         context.push_back(targetPos.z - myPos.z);
         context.push_back(static_cast<float>(target->GetCurrentHp()) / target->GetMaxHP());
@@ -28,7 +28,7 @@ std::vector<float> Monster::GatherContext()
     }
     else
     {
-        // Å¸°ÙÀÌ ¾øÀ» ¶§ÀÇ ÆĞµù°ª
+        // íƒ€ê²Ÿì´ ì—†ì„ ë•Œì˜ íŒ¨ë”©ê°’
         context.insert(context.end(), { 0.0f, 0.0f, 0.0f });
     }
 
@@ -37,14 +37,14 @@ std::vector<float> Monster::GatherContext()
 
 void Monster::ExecuteHighLevelAction(int actionId, Vector3 targetPos)
 {
-    //TODO: actionId - action ¸ÊÇÎÀ» ÇØ¾ßµÊ (°­È­ÇĞ½À MDP ¼³Á¤)
+    //TODO: actionId - action ë§µí•‘ì„ í•´ì•¼ë¨ (ê°•í™”í•™ìŠµ MDP ì„¤ì •)
     switch (actionId)
     {
     case 0: // MoveTo
         this->MoveTo(targetPos);
         break;
     case 1: // Basic Attack
-        this->UseSkill(nullptr,Vector3(0,0,0),1); // ÀÏ¹İ °ø°İ ½ºÅ³ ID
+        this->UseSkill(nullptr,Vector3(0,0,0),1); // ì¼ë°˜ ê³µê²© ìŠ¤í‚¬ ID
         break;
     case 2: // Flee
         //this->FleeFrom(targetPos);
@@ -54,10 +54,10 @@ void Monster::ExecuteHighLevelAction(int actionId, Vector3 targetPos)
 
 void Monster::MoveTo(Vector3 targetPos)
 {
-    // A* ¾Ë°í¸®Áò ¿¬µ¿
-    // 1. Map::FindPath(myPos, targetPos) È£ÃâÇÏ¿© °æ·Î ¸®½ºÆ® È¹µæ
-    // 2. °æ·ÎÀÇ Ã¹ ¹øÂ° ÁöÁ¡À¸·Î ÀÌµ¿ ½ÃÀÛ
-    // 3. CreatureState¸¦ MovingÀ¸·Î º¯°æ ¹× ÁÖº¯¿¡ SC_MOVE ºê·ÎµåÄ³½ºÆ®
+    // A* ì•Œê³ ë¦¬ì¦˜ ì—°ë™
+    // 1. Map::FindPath(myPos, targetPos) í˜¸ì¶œí•˜ì—¬ ê²½ë¡œ ë¦¬ìŠ¤íŠ¸ íšë“
+    // 2. ê²½ë¡œì˜ ì²« ë²ˆì§¸ ì§€ì ìœ¼ë¡œ ì´ë™ ì‹œì‘
+    // 3. CreatureStateë¥¼ Movingìœ¼ë¡œ ë³€ê²½ ë° ì£¼ë³€ì— SC_MOVE ë¸Œë¡œë“œìºìŠ¤íŠ¸
 
     RoomPtr myroom = this->Getroomptr();
     if (myroom == nullptr) return;
@@ -79,7 +79,7 @@ void Monster::MoveTo(Vector3 targetPos)
     {
         if (std::isnan(vec.x) || std::isnan(vec.y) || std::isnan(vec.z))
         { 
-            std::cout << "Àß¸øµÈ path ÀÔ´Ï´Ù." << std::endl;
+            std::cout << "ì˜ëª»ëœ path ì…ë‹ˆë‹¤." << std::endl;
             return; 
         }
     }
@@ -92,41 +92,41 @@ void Monster::JobUpdate()
 {
     uint64 now = ::GetTickCount64();
     if (now < _nextDecisionTick)
-        return; // ¾ÆÁ÷ ÁÖ±â°¡ ¾È µÇ¾úÀ¸¸é ½ºÅµ
+        return; // ì•„ì§ ì£¼ê¸°ê°€ ì•ˆ ë˜ì—ˆìœ¼ë©´ ìŠ¤í‚µ
     
     if (GetState() == CreatureState::OnDead || GetState() == CreatureState::Dead)
     {
-        return; // ¹æ±İ Á×Àº »óÅÂ (OnDead) È¤Àº Á×¾î ÀÖ´Â »óÅÂ (Dead) ÀÌ¸é ½ºÅµ
+        return; // ë°©ê¸ˆ ì£½ì€ ìƒíƒœ (OnDead) í˜¹ì€ ì£½ì–´ ìˆëŠ” ìƒíƒœ (Dead) ì´ë©´ ìŠ¤í‚µ
     }
 
     _nextDecisionTick = now + DECISION_INTERVAL_MS;
 
-    // 1. AI ÆÇ´Ü (¸ñÀûÁö³ª Å¸°Ù ¼³Á¤)
-    // ³»ºÎ¿¡¼­ FindPath µîÀ» È£ÃâÇÏ¿© _path¸¦ Ã¤¿ò
+    // 1. AI íŒë‹¨ (ëª©ì ì§€ë‚˜ íƒ€ê²Ÿ ì„¤ì •)
+    // ë‚´ë¶€ì—ì„œ FindPath ë“±ì„ í˜¸ì¶œí•˜ì—¬ _pathë¥¼ ì±„ì›€
     UpdateAction();
 
-    // 2. ½ÇÁ¦ ÀÌµ¿ Ã³¸® (°Ë¹®¼Ò)
-    // ¿©±â¼­ ÀÌÀü¿¡ ÀÛ¼ºÇÑ isfinite °Ë»ç ·ÎÁ÷ÀÌ µ¹¾Æ°¨
+    // 2. ì‹¤ì œ ì´ë™ ì²˜ë¦¬ (ê²€ë¬¸ì†Œ)
+    // ì—¬ê¸°ì„œ ì´ì „ì— ì‘ì„±í•œ isfinite ê²€ì‚¬ ë¡œì§ì´ ëŒì•„ê°
     ProcessMove();
 }
 
 void Monster::UpdateAction()
 {
-    // [ÆÇ´Ü] GatherContext¸¦ ÅëÇØ ÁÖº¯ »óÈ² ÆÄ¾Ç
+    // [íŒë‹¨] GatherContextë¥¼ í†µí•´ ì£¼ë³€ ìƒí™© íŒŒì•…
     std::vector<float> context = GatherContext();
 
-    // °¡Àå °¡±î¿î ÇÃ·¹ÀÌ¾î Å½»ö
+    // ê°€ì¥ ê°€ê¹Œìš´ í”Œë ˆì´ì–´ íƒìƒ‰
     PlayerPtr target = Getroomptr()->GetNearestPlayer(Getpos_As_Vector3(), _targetrange);
 
     if (target)
     {
 
-        // Å¸°ÙÀÌ ÀÖÀ¸¸é µû¶ó°¨ (ActionId 0: MoveTo)
+        // íƒ€ê²Ÿì´ ìˆìœ¼ë©´ ë”°ë¼ê° (ActionId 0: MoveTo)
         ExecuteHighLevelAction(0, target->Getpos_As_Vector3());
     }
     else
     {
-        // Å¸°ÙÀÌ ¾øÀ¸¸é ¸ØÃã
+        // íƒ€ê²Ÿì´ ì—†ìœ¼ë©´ ë©ˆì¶¤
         if (GetState() == CreatureState::Moving)
         {
             SetState(CreatureState::Idle);
@@ -148,26 +148,26 @@ void Monster::ProcessMove()
     Vector3 dir = nextPos - currentPos;
     float dist = dir.Length();
 
-    // 1. µµ´Ş ÆÇÁ¤ (°Å¸®°¡ ÀÌµ¿ ¼Óµµº¸´Ù ÀÛ°Å³ª ¸Å¿ì °¡±î¿ì¸é Áï½Ã µµ´Ş Ã³¸®)
-    float moveDist = GetSpeed() * 1.0f; //1000ms ±âÁØ ÀÌµ¿ °Å¸® DECISION_INTERVAL_MS = 1000 = 1s =1000ms
+    // 1. ë„ë‹¬ íŒì • (ê±°ë¦¬ê°€ ì´ë™ ì†ë„ë³´ë‹¤ ì‘ê±°ë‚˜ ë§¤ìš° ê°€ê¹Œìš°ë©´ ì¦‰ì‹œ ë„ë‹¬ ì²˜ë¦¬)
+    float moveDist = GetSpeed() * 1.0f; //1000ms ê¸°ì¤€ ì´ë™ ê±°ë¦¬ DECISION_INTERVAL_MS = 1000 = 1s =1000ms
 
     if (std::isnan(currentPos.x) || std::isnan(currentPos.y) || std::isnan(currentPos.z))
     {
-        std::cout << "ProcessMove ::(currentPos) Àß¸øµÈ Æ÷Áö¼Ç ¿äÃ»" << std::endl;
+        std::cout << "ProcessMove ::(currentPos) ì˜ëª»ëœ í¬ì§€ì…˜ ìš”ì²­" << std::endl;
         return;
     }
 
     if (std::isnan(nextPos.x) || std::isnan(nextPos.y) || std::isnan(nextPos.z))
     {
-        std::cout << "ProcessMove ::(nextPos) Àß¸øµÈ Æ÷Áö¼Ç ¿äÃ»" << std::endl;
-        _path.erase(_path.begin()); // ÅÍÁø ÁÂÇ¥´Â Á¦°Å
+        std::cout << "ProcessMove ::(nextPos) ì˜ëª»ëœ í¬ì§€ì…˜ ìš”ì²­" << std::endl;
+        _path.erase(_path.begin()); // í„°ì§„ ì¢Œí‘œëŠ” ì œê±°
         return; 
     }
 
     Vector3 Normlizeddir = dir * (1.0f / dist);
     if (dist <= moveDist || dist < 0.01f)
     {
-        // ¸ñÀûÁö¿¡ Á¤È®È÷ ¾ÈÂø (¿ÀÂ÷ ´©Àû ¹æÁö)
+        // ëª©ì ì§€ì— ì •í™•íˆ ì•ˆì°© (ì˜¤ì°¨ ëˆ„ì  ë°©ì§€)
         _pos.set_x(nextPos.x);
         _pos.set_y(nextPos.y);
         _pos.set_z(nextPos.z);
@@ -177,7 +177,7 @@ void Monster::ProcessMove()
 
         
         float yaw = CalculateYaw(Normlizeddir);
-            // Yaw °ª ¹üÀ§ °­Á¦ Á¦ÇÑ (0~360)
+            // Yaw ê°’ ë²”ìœ„ ê°•ì œ ì œí•œ (0~360)
             if (std::isnan(yaw)) 
             { 
                 //std::cout << "yaw isnan" << std::endl;
@@ -187,19 +187,19 @@ void Monster::ProcessMove()
             //std::cout << "yaw: "<<yaw << std::endl;
             _pos.set_yaw(yaw);
          
-        // [Áß¿ä] À§Ä¡°¡ º¯ÇßÀ¸¹Ç·Î ¹«Á¶°Ç ¾Ë¸²
+        // [ì¤‘ìš”] ìœ„ì¹˜ê°€ ë³€í–ˆìœ¼ë¯€ë¡œ ë¬´ì¡°ê±´ ì•Œë¦¼
         SyncPosAndBroadcast(currentPos, nextPos);
         return;
     }
 
-    // 2. ¹æÇâ º¤ÅÍ Á¤±ÔÈ­ (NaN ¹æÁö)
+    // 2. ë°©í–¥ ë²¡í„° ì •ê·œí™” (NaN ë°©ì§€)
     if (dist < 0.001f) {
         _path.erase(_path.begin());
         std::cout << "Wrong dist" << std::endl;
         return;
     }
     
-    //FindPath¿¡¼­ °è»êµÈ next pos ÀÌ ¸Ö¾î¼­ µµÂøÀ» ÇÑ¹ø¿¡ ¸øÇÏ¸é ÀÌ ·ÎÁ÷À¸·Î ¿À°ÔµÊ
+    //FindPathì—ì„œ ê³„ì‚°ëœ next pos ì´ ë©€ì–´ì„œ ë„ì°©ì„ í•œë²ˆì— ëª»í•˜ë©´ ì´ ë¡œì§ìœ¼ë¡œ ì˜¤ê²Œë¨
     
     Vector3 newPos = currentPos + (Normlizeddir * moveDist);
 
@@ -210,7 +210,7 @@ void Monster::ProcessMove()
         _pos.set_z(newPos.z);
 
         float yaw = CalculateYaw(Normlizeddir);
-        // Yaw °ª ¹üÀ§ °­Á¦ Á¦ÇÑ (0~360)
+        // Yaw ê°’ ë²”ìœ„ ê°•ì œ ì œí•œ (0~360)
         if (std::isnan(yaw)) 
         { 
             std::cout << "yaw isnan" << std::endl;
@@ -226,13 +226,13 @@ void Monster::ProcessMove()
 
 }
 
-// ÇïÆÛ ÇÔ¼ö: ±×¸®µå °»½Å°ú ºê·ÎµåÄ³½ºÆ®¸¦ ¹­¾î¼­ Ã³¸®
+// í—¬í¼ í•¨ìˆ˜: ê·¸ë¦¬ë“œ ê°±ì‹ ê³¼ ë¸Œë¡œë“œìºìŠ¤íŠ¸ë¥¼ ë¬¶ì–´ì„œ ì²˜ë¦¬
 void Monster::SyncPosAndBroadcast(Vector3 oldPos, Vector3 newPos)
 {
     if (auto room = Getroomptr()) {
-        // ¼½ÅÍ º¯°æ ¹× ±×¸®µå µ¿±âÈ­
+        // ì„¹í„° ë³€ê²½ ë° ê·¸ë¦¬ë“œ ë™ê¸°í™”
         room->UpdateObjectGrid(shared_from_this(), oldPos, newPos);
-        // Å¬¶óÀÌ¾ğÆ®¿¡ ÀÌµ¿ ¾Ë¸²
+        // í´ë¼ì´ì–¸íŠ¸ì— ì´ë™ ì•Œë¦¼
         room->BroadcastMove(shared_from_this());
     }
 }

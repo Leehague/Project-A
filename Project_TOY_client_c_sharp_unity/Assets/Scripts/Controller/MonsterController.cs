@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +12,7 @@ public class MonsterController : CreatureController
 
     void InterpolateMovement()
     {
-        //Ä³¸¯ÅÍ°¡ ¶Ò¶Ò ²÷±âÁö ¾Ê°Ô Lerp Ã³¸®
+        //ìºë¦­í„°ê°€ ëšëš ëŠê¸°ì§€ ì•Šê²Œ Lerp ì²˜ë¦¬
         transform.position = Vector3.Lerp(transform.position, _targetPos, Time.deltaTime * 10f);
 
         Quaternion targetRot = Quaternion.Euler(0, _targetYaw, 0);

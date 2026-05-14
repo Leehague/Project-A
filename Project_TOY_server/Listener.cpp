@@ -1,4 +1,4 @@
-#include "Listener.h"
+ï»¿#include "Listener.h"
 #include "Session.h"
 #include "IocpCore.h"
 #include <iostream>
@@ -16,24 +16,24 @@ Listener::~Listener()
 
 bool Listener::StartAccept(int port, SessionFactory factory, IocpCore& iocp)
 {
-    _sessionFactory = factory; // Àü´Þ¹ÞÀº ¶÷´Ù º¸°ü
-    _iocp = &iocp;             // Àü´Þ¹ÞÀº IOCP °´Ã¼ ÁÖ¼Ò º¸°ü
-    // 1. À©¼Ó ÃÊ±âÈ­
+    _sessionFactory = factory; // ì „ë‹¬ë°›ì€ ëžŒë‹¤ ë³´ê´€
+    _iocp = &iocp;             // ì „ë‹¬ë°›ì€ IOCP ê°ì²´ ì£¼ì†Œ ë³´ê´€
+    // 1. ìœˆì† ì´ˆê¸°í™”
     WSAData wsaData;
     if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) return false;
 
-    // 2. ¸®½¼ ¼ÒÄÏ »ý¼º
+    // 2. ë¦¬ìŠ¨ ì†Œì¼“ ìƒì„±
     _listenSocket = ::socket(AF_INET, SOCK_STREAM, 0);
     if (_listenSocket == INVALID_SOCKET) return false;
 
-    // 3. ÁÖ¼Ò ¼³Á¤
+    // 3. ì£¼ì†Œ ì„¤ì •
     SOCKADDR_IN serverAddr;
     ::memset(&serverAddr, 0, sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = ::htonl(INADDR_ANY);
     serverAddr.sin_port = ::htons(port);
 
-    // 4. ¹ÙÀÎµå ¹× ¸®½¼
+    // 4. ë°”ì¸ë“œ ë° ë¦¬ìŠ¨
     if (::bind(_listenSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) return false;
     if (::listen(_listenSocket, SOMAXCONN) == SOCKET_ERROR) return false;
 
@@ -49,15 +49,15 @@ void Listener::Execute(IocpCore& iocp) {
         SOCKET clientSocket = ::accept(_listenSocket, (SOCKADDR*)&clientAddr, &addrLen);
 
         if (clientSocket != INVALID_SOCKET) {
-            // 1. µî·ÏµÈ ÆÑÅä¸®·Î ¼¼¼Ç »ý¼º
+            // 1. ë“±ë¡ëœ íŒ©í† ë¦¬ë¡œ ì„¸ì…˜ ìƒì„±
             SessionPtr session = _sessionFactory();
             session->SetSocket(clientSocket);
             
-            // 2. °ü¸®ÀÚ µî·Ï ¹× IOCP µî·ÏÀ» ¿©±â¼­ Àü´ã
+            // 2. ê´€ë¦¬ìž ë“±ë¡ ë° IOCP ë“±ë¡ì„ ì—¬ê¸°ì„œ ì „ë‹´
             GSessionManager.Add(session);
             if (iocp.Register(session)) {
                 session->OnConnected();
-                session->Receive(); // ÃÖÃÊ ¼ö½Å ¿¹¾à
+                session->Receive(); // ìµœì´ˆ ìˆ˜ì‹  ì˜ˆì•½
             }
         }
     }

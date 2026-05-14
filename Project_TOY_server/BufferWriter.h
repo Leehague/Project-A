@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 
 class BufferWriter {
@@ -20,9 +20,9 @@ public:
     bool Write(T* src, uint32 len) {
         if (FreeSize() < len) return false;
 
-        // Ãß°¡µÈ ¹æ¾î ÄÚµå: ½Ç¼ö Å¸ÀÔÀÏ °æ¿ì À¯È¿¼º °Ë»ç
+        // ì¶”ê°€ëœ ë°©ì–´ ì½”ë“œ: ì‹¤ìˆ˜ íƒ€ì…ì¼ ê²½ìš° ìœ íš¨ì„± ê²€ì‚¬
         if constexpr (std::is_floating_point_v<T>) {
-            if (!std::isfinite(*src)) { // src¸¦ Á÷Á¢ ¿ªÂüÁ¶ÇØ¼­ Ã¼Å©
+            if (!std::isfinite(*src)) { // srcë¥¼ ì§ì ‘ ì—­ì°¸ì¡°í•´ì„œ ì²´í¬
                 float safeValue = 0.0f;
                 ::memcpy(&_buffer[_pos], &safeValue, sizeof(float));
                 _pos += len;
@@ -34,7 +34,7 @@ public:
         return true;
     }
 
-    // ÆíÀÇ¸¦ À§ÇÑ ¿¬»êÀÚ ¿À¹ö·Îµù
+    // í¸ì˜ë¥¼ ìœ„í•œ ì—°ì‚°ì ì˜¤ë²„ë¡œë”©
     template<typename T>
     BufferWriter& operator<<(T dest) {
         Write(&dest, sizeof(T));

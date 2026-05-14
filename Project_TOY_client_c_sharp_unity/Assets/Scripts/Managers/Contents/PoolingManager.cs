@@ -1,33 +1,33 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PoolingManager 
 {
-    Dictionary<int,Pool> pools = new Dictionary<int,Pool>(); //ÇÁ¸®ÆÕ Id (templated id) , pool
+    Dictionary<int,Pool> pools = new Dictionary<int,Pool>(); //í”„ë¦¬íŒ¹ Id (templated id) , pool
 
-    //»õ·Ó°Ô Ç®¸µ ½ÃÅ³ CreatureObject°¡ ÀÖ´Ù¸é »ç¿ëÇÒ ÇÔ¼ö
+    //ìƒˆë¡­ê²Œ í’€ë§ ì‹œí‚¬ CreatureObjectê°€ ìˆë‹¤ë©´ ì‚¬ìš©í•  í•¨ìˆ˜
     public void AddcreatureObejct(CreatureController cc)
     {
         Pool pool;
         if (!pools.TryGetValue(cc.stat.id, out pool)) 
         {
-            //PoolingManagerÀÇ ³»ºÎÀÎÀÚ pools¿¡ ÇØ´çÇÏ´Â templateId ¸¦ °¡Áö´Â creature controllerµéÀÇ PoolÀÌ ¾ø´Ù¸é »õ·Ó°Ô ¸¸µé¾î¼­ Ãß°¡ÇÔ
+            //PoolingManagerì˜ ë‚´ë¶€ì¸ì poolsì— í•´ë‹¹í•˜ëŠ” templateId ë¥¼ ê°€ì§€ëŠ” creature controllerë“¤ì˜ Poolì´ ì—†ë‹¤ë©´ ìƒˆë¡­ê²Œ ë§Œë“¤ì–´ì„œ ì¶”ê°€í•¨
             Pool Newpool = new Pool(cc.stat.id);
             pools[cc.stat.id] = Newpool;
 
             //pool = Newpool;
         }
         pool = pools[cc.stat.id];
-        //ÇØ´ç Creature¿¡ ´ëÇÑ Ç®¸µ Ã³¸®(ÃÊ±âÈ­)
+        //í•´ë‹¹ Creatureì— ëŒ€í•œ í’€ë§ ì²˜ë¦¬(ì´ˆê¸°í™”)
         cc.gameObject.SetActive(false);
         cc.stat.Init();
-        //´Ù¸¥ ÃÊ±âÈ­ Ã³¸®°¡ ¹ÌºñÇØ¼­ ¹®Á¦°¡ »ı±æÁöµµ?
+        //ë‹¤ë¥¸ ì´ˆê¸°í™” ì²˜ë¦¬ê°€ ë¯¸ë¹„í•´ì„œ ë¬¸ì œê°€ ìƒê¸¸ì§€ë„?
 
         pool.AddCreatureController(cc);
     }
     
-    //Ç®¸µÇÏ°í ÀÖ´Â °´Ã¼ Áß¿¡ ÇØ´çÇÏ´Â TemplateIdÀÇ °´Ã¼°¡ ÀÖ´Ù¸é ¹İÈ¯
+    //í’€ë§í•˜ê³  ìˆëŠ” ê°ì²´ ì¤‘ì— í•´ë‹¹í•˜ëŠ” TemplateIdì˜ ê°ì²´ê°€ ìˆë‹¤ë©´ ë°˜í™˜
     public bool TryPopcreatureObject(int templateId , out CreatureController cc) 
     {
         if (pools.TryGetValue(templateId, out Pool pool)) 

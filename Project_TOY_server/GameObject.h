@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <memory>
 #include <string>
 #include "Types.h"
@@ -10,7 +10,7 @@
 #include "RoomManager.h"
 
 struct SkillRecord {
-	int64 lastUseTime = 0; // ¹Ğ¸®ÃÊ(ms) ´ÜÀ§
+	int64 lastUseTime = 0; // ë°€ë¦¬ì´ˆ(ms) ë‹¨ìœ„
 };
 
 
@@ -27,8 +27,8 @@ enum class CreatureState
 	Idle,
 	Moving,
 	Skill,
-	OnDead, //¹æ±İ »ç¸Á
-	Dead, //Á×¾îÀÖ¾ú´ø »óÅÂ
+	OnDead, //ë°©ê¸ˆ ì‚¬ë§
+	Dead, //ì£½ì–´ìˆì—ˆë˜ ìƒíƒœ
 };
 
 
@@ -98,9 +98,9 @@ protected:
 
 			CurrentHp = _maxHp;
 			CurrentMp = _maxMp;
-			// ³ªÁß¿¡ DB°¡ ºÙÀ¸¸é ¿©±â¼­ _level = db.GetLevel() µîÀ» È£ÃâÇÏ¸é µË´Ï´Ù.
-			// + something À» ¿©±â¼­ ÇØÁÖ¸é µÊ
-			//Áï ½ºÅİ ÃÊ±âÈ­
+			// ë‚˜ì¤‘ì— DBê°€ ë¶™ìœ¼ë©´ ì—¬ê¸°ì„œ _level = db.GetLevel() ë“±ì„ í˜¸ì¶œí•˜ë©´ ë©ë‹ˆë‹¤.
+			// + something ì„ ì—¬ê¸°ì„œ í•´ì£¼ë©´ ë¨
+			//ì¦‰ ìŠ¤í…Ÿ ì´ˆê¸°í™”
 
 		}
 	}
@@ -141,54 +141,54 @@ public:
 	}
 
 protected:
-	//GameObject »ç¸Á ÆÇÁ¤½Ã È£ÃâµÉ ÇÔ¼ö
+	//GameObject ì‚¬ë§ íŒì •ì‹œ í˜¸ì¶œë  í•¨ìˆ˜
 	virtual void OnDead() 
 	{
-		//»ç¸Á »óÅÂ ¹æ¼Û ÆĞÅ¶ Àü¼ÛÀº RoomÀÇ Execute ¿¡¼­ ´ã´ç
+		//ì‚¬ë§ ìƒíƒœ ë°©ì†¡ íŒ¨í‚· ì „ì†¡ì€ Roomì˜ Execute ì—ì„œ ë‹´ë‹¹
 
-		//Dead ·Î Creature state ¼öÁ¤
+		//Dead ë¡œ Creature state ìˆ˜ì •
 		SetState(CreatureState::OnDead);
 
 	}
 protected:
 
 	int32 _objectId = 0;
-	int32 _roomId = 0; //¼Ò¼ÓµÈ RoomÀÇ roomId, initialized to 0
+	int32 _roomId = 0; //ì†Œì†ëœ Roomì˜ roomId, initialized to 0
 
-	Protocol::PosInfo _pos; //¿©±â¿¡ objectIdµµ ÀÖÀ½
+	Protocol::PosInfo _pos; //ì—¬ê¸°ì— objectIdë„ ìˆìŒ
 	GameObjectType _type;
 
 
-	//stat Data , °ÔÀÓ ÁøÇà¿¡ µû¶ó º¯È­ ÇÒ¼ö ÀÖÀ½. UI´Â ÀÌ Á¤º¸¸¦ ¹ÙÅÁÀ¸·Î ±×·ÁÁ®¾ß ÇÏ°í ÆÇÁ¤¿ª½Ã ¸¶Âù°¡ÁöÀÓ
-	int32 _maxHp = 0; //ÃÖ´ë Ã¼·Â = ±âº» ÃÖ´ëÃ¼·Â + something
-	int32 _maxMp = 0; //ÃÖ´ë ¸¶³ª = ±âº» ÃÖ´ë¸¶³ª + something
-	int32 _attack = 0; // °ø°İ·Â = ±âº» °ø°İ·Â(baseAttack) + something
-	float _speed = 1; // ÀÌµ¿ ¼Óµµ (°íÁ¤°ª È¤Àº ±âº»°ª)
+	//stat Data , ê²Œì„ ì§„í–‰ì— ë”°ë¼ ë³€í™” í• ìˆ˜ ìˆìŒ. UIëŠ” ì´ ì •ë³´ë¥¼ ë°”íƒ•ìœ¼ë¡œ ê·¸ë ¤ì ¸ì•¼ í•˜ê³  íŒì •ì—­ì‹œ ë§ˆì°¬ê°€ì§€ì„
+	int32 _maxHp = 0; //ìµœëŒ€ ì²´ë ¥ = ê¸°ë³¸ ìµœëŒ€ì²´ë ¥ + something
+	int32 _maxMp = 0; //ìµœëŒ€ ë§ˆë‚˜ = ê¸°ë³¸ ìµœëŒ€ë§ˆë‚˜ + something
+	int32 _attack = 0; // ê³µê²©ë ¥ = ê¸°ë³¸ ê³µê²©ë ¥(baseAttack) + something
+	float _speed = 1; // ì´ë™ ì†ë„ (ê³ ì •ê°’ í˜¹ì€ ê¸°ë³¸ê°’)
 	std::string _name ="NOPE";
-	int32 CurrentHp = 0; //ÇöÀç Ã¼·Â
-	int32 CurrentMp = 0; // ÇöÀç ¸¶³ª
+	int32 CurrentHp = 0; //í˜„ì¬ ì²´ë ¥
+	int32 CurrentMp = 0; // í˜„ì¬ ë§ˆë‚˜
 
-	//±âº» ½ºÅÈ Á¤º¸. Âü°í¸¸ÇØ¾ßÇÔ. º¯È­ÇÏ´Â Á¤º¸°¡ ¾Æ´Ô
-	const StatData* _basestatData = nullptr; //templeteId ´Â ¿©±â¿¡ Æ÷ÇÔµÇ¾î ÀÖÀ½
+	//ê¸°ë³¸ ìŠ¤íƒ¯ ì •ë³´. ì°¸ê³ ë§Œí•´ì•¼í•¨. ë³€í™”í•˜ëŠ” ì •ë³´ê°€ ì•„ë‹˜
+	const StatData* _basestatData = nullptr; //templeteId ëŠ” ì—¬ê¸°ì— í¬í•¨ë˜ì–´ ìˆìŒ
 
 public:
-	uint64 lastMoveTick = 0; // ¸¶Áö¸· ÀÌµ¿ °ËÁõ ½Ã°£ (ms)
+	uint64 lastMoveTick = 0; // ë§ˆì§€ë§‰ ì´ë™ ê²€ì¦ ì‹œê°„ (ms)
 	std::map<int32, int64> _skillCooltimes; // <SkillID, LastUsedTick>
 
 public:
 	float CalculateYaw(Vector3 dir)
 	{
-		// ÀÌµ¿ °Å¸®°¡ °ÅÀÇ ¾øÀ¸¸é °¢µµ¸¦ º¯°æÇÏÁö ¾ÊÀ½ (0À¸·Î ³ª´©±â ¹æÁö)
+		// ì´ë™ ê±°ë¦¬ê°€ ê±°ì˜ ì—†ìœ¼ë©´ ê°ë„ë¥¼ ë³€ê²½í•˜ì§€ ì•ŠìŒ (0ìœ¼ë¡œ ë‚˜ëˆ„ê¸° ë°©ì§€)
 		if (std::abs(dir.x) < EPSILON && std::abs(dir.z) < EPSILON)
-			return 0.0f; // È¤Àº ±âÁ¸ yaw À¯Áö
+			return 0.0f; // í˜¹ì€ ê¸°ì¡´ yaw ìœ ì§€
 
-		// atan2´Â ¶óµğ¾È °ªÀ» ¹İÈ¯ (-PI ~ PI)
+		// atan2ëŠ” ë¼ë””ì•ˆ ê°’ì„ ë°˜í™˜ (-PI ~ PI)
 		float radian = std::atan2(dir.x, dir.z);
 
-		// ¶óµğ¾È -> µµ º¯È¯
+		// ë¼ë””ì•ˆ -> ë„ ë³€í™˜
 		float degree = radian * (180.0f / 3.1415926535f);
 
-		// °á°ú¸¦ 0~360 ¹üÀ§·Î Á¤±ÔÈ­ (¼±ÅÃ »çÇ×)
+		// ê²°ê³¼ë¥¼ 0~360 ë²”ìœ„ë¡œ ì •ê·œí™” (ì„ íƒ ì‚¬í•­)
 		if (degree < 0) degree += 360.0f;
 
 		if (!std::isfinite(degree))

@@ -1,15 +1,15 @@
-#pragma once
+ï»¿#pragma once
 #include <map>
 #include <vector>
-#include "Types.h" // float, int32 µî Á¤ÀÇµÈ Çì´õ
+#include "Types.h" // float, int32 ë“± ì •ì˜ëœ í—¤ë”
 #include <string>
 
 struct StatData {
-    int32 templateId; // Ä³¸¯ÅÍ Á¾·ù °íÀ¯ ¹øÈ£ , Å¬¶ó¿¡¼­ ¾î¶² ÇÁ¸®ÆÕ(Æ¯È÷ ¾ÆÆ®¸®¼Ò½º)¸¦ °¡Á®¿Í¾ßÇÏ´ÂÁö ÆÇº°ÇÏ´Âµ¥ ¾²ÀÓ
-    int32 baseHp;     // ±âº» Ã¼·Â
-    int32 baseMp;     // ±âº» ¸¶³ª  
-    int32 baseAttack; // ±âº» °ø°İ·Â
-    float speed;      // ÀÌµ¿ ¼Óµµ (°íÁ¤°ª È¤Àº ±âº»°ª)
+    int32 templateId; // ìºë¦­í„° ì¢…ë¥˜ ê³ ìœ  ë²ˆí˜¸ , í´ë¼ì—ì„œ ì–´ë–¤ í”„ë¦¬íŒ¹(íŠ¹íˆ ì•„íŠ¸ë¦¬ì†ŒìŠ¤)ë¥¼ ê°€ì ¸ì™€ì•¼í•˜ëŠ”ì§€ íŒë³„í•˜ëŠ”ë° ì“°ì„
+    int32 baseHp;     // ê¸°ë³¸ ì²´ë ¥
+    int32 baseMp;     // ê¸°ë³¸ ë§ˆë‚˜  
+    int32 baseAttack; // ê¸°ë³¸ ê³µê²©ë ¥
+    float speed;      // ì´ë™ ì†ë„ (ê³ ì •ê°’ í˜¹ì€ ê¸°ë³¸ê°’)
     std::string name;
     
 };
@@ -28,16 +28,16 @@ struct MapData
 };
 
 enum class SkillType {
-    Common = 0,     // °øÅëÅ¸ÀÔ, °¡Àå ±âº»Å¸ÀÔ
-    Melee = 1,      // ±ÙÁ¢
-    Projectile = 2, // Åõ»çÃ¼
-    Dash = 3        // ÀÌµ¿±â
+    Common = 0,     // ê³µí†µíƒ€ì…, ê°€ì¥ ê¸°ë³¸íƒ€ì…
+    Melee = 1,      // ê·¼ì ‘
+    Projectile = 2, // íˆ¬ì‚¬ì²´
+    Dash = 3        // ì´ë™ê¸°
 };
 
 enum class SkillTargetType 
 {
-    objectTarget =0, // Å¸°ÙÆÃ, ¿ÀºêÁ§Æ® Å¸°Ù
-    positionTarget =1 // Áö¿ª ¸ñÇ¥ , Æ¯Á¤ À§Ä¡°¡ Å¸°Ù
+    objectTarget =0, // íƒ€ê²ŸíŒ…, ì˜¤ë¸Œì íŠ¸ íƒ€ê²Ÿ
+    positionTarget =1 // ì§€ì—­ ëª©í‘œ , íŠ¹ì • ìœ„ì¹˜ê°€ íƒ€ê²Ÿ
 };
 
 enum class CostType 

@@ -1,4 +1,4 @@
-using Google.Protobuf;
+ï»¿using Google.Protobuf;
 using Protocol;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ public class PacketSession
     
     readonly System.Object _lock = new System.Object();
     Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
-    List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>(); // ÇöÀç Àü¼Û ÁßÀÎ ¸ñ·Ï
+    List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>(); // í˜„ì¬ ì „ì†¡ ì¤‘ì¸ ëª©ë¡
     bool _pending = false;
 
 
@@ -46,11 +46,11 @@ public class PacketSession
             if (dataSize < 4) break;
 
             ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset + processLen);
-            if (size < 4 || size > 1024 * 10) // 10KB ÃÊ°ú ½Ã Â÷´Ü
+            if (size < 4 || size > 1024 * 10) // 10KB ì´ˆê³¼ ì‹œ ì°¨ë‹¨
             {
-                // ÀÌ·± °æ¿ì°¡ ¹ß»ıÇÑ´Ù¸é ¼­¹öÀÇ µ¥ÀÌÅÍ°¡ ¿À¿°µÇ¾ú°Å³ª Çì´õ ¼³°è°¡ Àß¸øµÈ °ÍÀÓ
+                // ì´ëŸ° ê²½ìš°ê°€ ë°œìƒí•œë‹¤ë©´ ì„œë²„ì˜ ë°ì´í„°ê°€ ì˜¤ì—¼ë˜ì—ˆê±°ë‚˜ í—¤ë” ì„¤ê³„ê°€ ì˜ëª»ëœ ê²ƒì„
                 Debug.LogError($"Invalid Packet Size: {size}");
-                Disconnect(); // ½ºÆ®¸² ¿À¿°À¸·Î °£ÁÖÇÏ°í ¿¬°á Á¾·á
+                Disconnect(); // ìŠ¤íŠ¸ë¦¼ ì˜¤ì—¼ìœ¼ë¡œ ê°„ì£¼í•˜ê³  ì—°ê²° ì¢…ë£Œ
                 return 0;
                 
             }
@@ -60,16 +60,16 @@ public class PacketSession
 
             
 
-            //[°ËÁõ ·Î±×] ÆĞÅ¶ ÆÄ½Ì ½Ãµµ Á÷ÀüÀÇ Raw µ¥ÀÌÅÍ¸¦ Ãâ·Â
+            //[ê²€ì¦ ë¡œê·¸] íŒ¨í‚· íŒŒì‹± ì‹œë„ ì§ì „ì˜ Raw ë°ì´í„°ë¥¼ ì¶œë ¥
             //string hex = BitConverter.ToString(buffer.Array, buffer.Offset + processLen, size);
             //Debug.Log($"[Recv Dump] ID: {id}, TotalSize: {size}, Hex: {hex}");
 
-            // [Á¡°Ë¿ë ·Î±×] ¸ğµç ÆĞÅ¶ÀÇ Çì´õ Á¤º¸¸¦ Âï½À´Ï´Ù.
+            // [ì ê²€ìš© ë¡œê·¸] ëª¨ë“  íŒ¨í‚·ì˜ í—¤ë” ì •ë³´ë¥¼ ì°ìŠµë‹ˆë‹¤.
             //Debug.Log($"[Recv Check] ID: {id}, Size: {size}, CurrentProcessLen: {processLen}, BufferTotal: {buffer.Count}");
             if (size < 4 || size > 1024)
             {
-                // ¿©±â¼­ ºê·¹ÀÌÅ© Æ÷ÀÎÆ®¸¦ °É°í Hex µ¥ÀÌÅÍ¸¦ È®ÀÎÇÏ¼¼¿ä.
-                Debug.LogError($"[Broken Packet] À§Ä¡: {processLen}, ÀĞÀº Size: {size}");
+                // ì—¬ê¸°ì„œ ë¸Œë ˆì´í¬ í¬ì¸íŠ¸ë¥¼ ê±¸ê³  Hex ë°ì´í„°ë¥¼ í™•ì¸í•˜ì„¸ìš”.
+                Debug.LogError($"[Broken Packet] ìœ„ì¹˜: {processLen}, ì½ì€ Size: {size}");
             }
             Managers.packetManager.OnRecvPacket(id, buffer.Array, buffer.Offset + processLen, size, this);
 
@@ -87,27 +87,27 @@ public class PacketSession
             if (bytesRead > 0)
             {
 
-                // ¾²±â Ä¿¼­ ÀÌµ¿ (µ¥ÀÌÅÍ¸¦ ¹Ş¾ÒÀ¸¹Ç·Î)
+                // ì“°ê¸° ì»¤ì„œ ì´ë™ (ë°ì´í„°ë¥¼ ë°›ì•˜ìœ¼ë¯€ë¡œ)
                 if (_recvBuffer.OnWrite(bytesRead) == false)
                 {
                     Disconnect();
                     return;
                 }
 
-                // [·Î±× Ãß°¡] ÇöÀç ¼ö½ÅµÈ ÃÑ ¹ÙÀÌÆ®¿Í ÆÄ½Ì Àü »óÅÂ
+                // [ë¡œê·¸ ì¶”ê°€] í˜„ì¬ ìˆ˜ì‹ ëœ ì´ ë°”ì´íŠ¸ì™€ íŒŒì‹± ì „ ìƒíƒœ
                 int beforeDataSize = _recvBuffer.DataSize;
 
-                // 2. ÆĞÅ¶ Á¶¸³ ½Ãµµ (OnRecv È£Ãâ)
+                // 2. íŒ¨í‚· ì¡°ë¦½ ì‹œë„ (OnRecv í˜¸ì¶œ)
                 int processLen = OnReceive(_recvBuffer.ReadSegment);
 
-                // ÀĞ±â Ä¿¼­ ÀÌµ¿ (ÆĞÅ¶ ÆÄ½Ì ¿Ï·á)
+                // ì½ê¸° ì»¤ì„œ ì´ë™ (íŒ¨í‚· íŒŒì‹± ì™„ë£Œ)
                 if (_recvBuffer.OnRead(processLen) == false)
                 {
                     Disconnect();
                     return;
                 }
 
-                // [·Î±× Ãß°¡] ¸ó½ºÅÍ ½ºÆù ½Ã ÆĞÅ¶ÀÌ Â©·È´ÂÁö È®ÀÎ
+                // [ë¡œê·¸ ì¶”ê°€] ëª¬ìŠ¤í„° ìŠ¤í° ì‹œ íŒ¨í‚·ì´ ì§¤ë ¸ëŠ”ì§€ í™•ì¸
                 if (processLen < beforeDataSize)
                 {
                     Debug.Log($"[PacketSession] Partial Packet: Processed={processLen}, Remaining={beforeDataSize - processLen}");
@@ -115,7 +115,7 @@ public class PacketSession
 
                 _recvBuffer.Clean();
 
-                StartReceive(); // ´Ù½Ã ¼ö½Å ´ë±â
+                StartReceive(); // ë‹¤ì‹œ ìˆ˜ì‹  ëŒ€ê¸°
             }
             else 
             {
@@ -143,7 +143,7 @@ public class PacketSession
 
         byte[] sendBuffer = NetworkUtils.MakeSendBuffer(packet, packetId);
 
-        // Å¥ ±â¹İ Send È£Ãâ
+        // í ê¸°ë°˜ Send í˜¸ì¶œ
         SendInternal(new ArraySegment<byte>(sendBuffer));
         
     }
@@ -155,7 +155,7 @@ public class PacketSession
         {
             _sendQueue.Enqueue(sendBuffer);
 
-            // Àü¼Û ÁßÀÌ ¾Æ´Ï¶ó¸é Àü¼Û ÇÁ·Î¼¼½º ½ÃÀÛ
+            // ì „ì†¡ ì¤‘ì´ ì•„ë‹ˆë¼ë©´ ì „ì†¡ í”„ë¡œì„¸ìŠ¤ ì‹œì‘
             if (_pending == false)
                 RegisterSend();
         }
@@ -164,14 +164,14 @@ public class PacketSession
     private void RegisterSend()
     {
         _pending = true;
-        // Å¥¿¡ ÀÖ´Â ¸ğµç µ¥ÀÌÅÍ¸¦ ÇÏ³ªÀÇ ¸®½ºÆ®·Î ÀÌµ¿
+        // íì— ìˆëŠ” ëª¨ë“  ë°ì´í„°ë¥¼ í•˜ë‚˜ì˜ ë¦¬ìŠ¤íŠ¸ë¡œ ì´ë™
         _pendingList.Clear();
         while (_sendQueue.Count > 0)
             _pendingList.Add(_sendQueue.Dequeue());
 
         try
         {
-            // Socket.BeginSend´Â BufferList¸¦ Áö¿øÇÏ¿© ¿©·¯ ¼¼±×¸ÕÆ®¸¦ ÇÑ ¹ø¿¡ º¸³¾ ¼ö ÀÖ½À´Ï´Ù.
+            // Socket.BeginSendëŠ” BufferListë¥¼ ì§€ì›í•˜ì—¬ ì—¬ëŸ¬ ì„¸ê·¸ë¨¼íŠ¸ë¥¼ í•œ ë²ˆì— ë³´ë‚¼ ìˆ˜ ìˆìŠµë‹ˆë‹¤.
             _socket.BeginSend(_pendingList, SocketFlags.None, OnSendCallback, null);
         }
         catch (Exception e)
@@ -192,7 +192,7 @@ public class PacketSession
             {
                 if (_sendQueue.Count > 0)
                 {
-                    // ¾ÆÁ÷ º¸³¾ °Ô ´õ ÀÖ´Ù¸é ´Ù½Ã µî·Ï
+                    // ì•„ì§ ë³´ë‚¼ ê²Œ ë” ìˆë‹¤ë©´ ë‹¤ì‹œ ë“±ë¡
                     RegisterSend();
                 }
                 else
@@ -220,7 +220,7 @@ public class PacketSession
             {
                 _socket.Shutdown(SocketShutdown.Both);
                 _socket.Close();
-                _socket = null; // DisposeµÈ °´Ã¼ Á¢±Ù ¹æÁö
+                _socket = null; // Disposeëœ ê°ì²´ ì ‘ê·¼ ë°©ì§€
             }
             catch (Exception e)
             {
@@ -235,7 +235,7 @@ public class PacketSession
 
     }
 
-    // ¿¬°á ¼º°ø ½Ã È£ÃâµÉ ÇÔ¼ö
+    // ì—°ê²° ì„±ê³µ ì‹œ í˜¸ì¶œë  í•¨ìˆ˜
     public virtual void OnConnected(EndPoint endPoint)
     {
         Debug.Log($"OnConnected : {endPoint}");
@@ -247,7 +247,7 @@ public class PacketSession
 
         Managers.networkManager.Send(loginPacket);
 
-        //·Î±×ÀÎ ¾À ·Îµå
+        //ë¡œê·¸ì¸ ì”¬ ë¡œë“œ
         Managers.sceneManagerEx.LoadScene(Define.SceneType.Login);
 
 

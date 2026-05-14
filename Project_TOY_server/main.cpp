@@ -1,4 +1,4 @@
-#ifndef ABSL_CONSUME_DLL
+ï»¿#ifndef ABSL_CONSUME_DLL
 #define ABSL_CONSUME_DLL
 #endif
 
@@ -29,25 +29,25 @@
 
 void DB_connect() 
 {
-    // 1. Àü¿ª È¤Àº ¸Å´ÏÀú¿¡¼­ È¯°æ ÇÚµé(Environment)À» ÇÏ³ª »ı¼º (¼­¹ö´ç 1°³)
+    // 1. ì „ì—­ í˜¹ì€ ë§¤ë‹ˆì €ì—ì„œ í™˜ê²½ í•¸ë“¤(Environment)ì„ í•˜ë‚˜ ìƒì„± (ì„œë²„ë‹¹ 1ê°œ)
     SQLHENV hEnv;
     ::SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);
     ::SQLSetEnvAttr(hEnv, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
 
-    // 2. ¿¬°á Å¬·¡½º »ı¼º
+    // 2. ì—°ê²° í´ë˜ìŠ¤ ìƒì„±
     DBConnection dbConn;
 
-    // LocalDB¿ë Ä¿³Ø¼Ç ½ºÆ®¸µ (ÀÎ½ºÅÏ½º ÀÌ¸§ È®ÀÎ ÇÊ¿ä)
+    // LocalDBìš© ì»¤ë„¥ì…˜ ìŠ¤íŠ¸ë§ (ì¸ìŠ¤í„´ìŠ¤ ì´ë¦„ í™•ì¸ í•„ìš”)
     //ODBC Driver 17 for SQL Server
     std::wstring connStr = L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=Master;Trusted_Connection=yes;";
 
     if (dbConn.Connect(hEnv, connStr))
     {
-        std::cout << "DB ¿¬°á ¼º°ø!" << std::endl;
+        std::cout << "DB ì—°ê²° ì„±ê³µ!" << std::endl;
     }
     else
     {
-        std::cout << "DB ¿¬°á ½ÇÆĞ..." << std::endl;
+        std::cout << "DB ì—°ê²° ì‹¤íŒ¨..." << std::endl;
     }
 }
 
@@ -56,16 +56,16 @@ void WorkerThread(IocpCore& iocp)
 {
     while (true)
     {
-        // [³×Æ®¿öÅ© ÀÏ°¨] ¿ì¼± ¼øÀ§ 1
-        // Å¸ÀÓ¾Æ¿ôÀ» Âª°Ô ÁÖ¾î(¿¹: 10ms) ³×Æ®¿öÅ©°¡ ¾øÀ¸¸é ºü¸£°Ô ´ÙÀ½À¸·Î ³Ñ¾î°©´Ï´Ù.
+        // [ë„¤íŠ¸ì›Œí¬ ì¼ê°] ìš°ì„  ìˆœìœ„ 1
+        // íƒ€ì„ì•„ì›ƒì„ ì§§ê²Œ ì£¼ì–´(ì˜ˆ: 10ms) ë„¤íŠ¸ì›Œí¬ê°€ ì—†ìœ¼ë©´ ë¹ ë¥´ê²Œ ë‹¤ìŒìœ¼ë¡œ ë„˜ì–´ê°‘ë‹ˆë‹¤.
         iocp.Dispatch(10);
 
-        // [°ÔÀÓ ·ÎÁ÷ ÀÏ°¨] ¿ì¼± ¼øÀ§ 2
-        // ½ÇÇà ´ë±â ÁßÀÎ JobQueue(Room µî)¸¦ ²¨³»¾î Ã³¸®ÇÕ´Ï´Ù.
+        // [ê²Œì„ ë¡œì§ ì¼ê°] ìš°ì„  ìˆœìœ„ 2
+        // ì‹¤í–‰ ëŒ€ê¸° ì¤‘ì¸ JobQueue(Room ë“±)ë¥¼ êº¼ë‚´ì–´ ì²˜ë¦¬í•©ë‹ˆë‹¤.
         while (auto jobQueue = GJobSerializer.Pop())
         {
             
-            // Monster µî ´Ù¸¥ JobQueueÀÎ °æ¿ì Ã³¸®
+            // Monster ë“± ë‹¤ë¥¸ JobQueueì¸ ê²½ìš° ì²˜ë¦¬
             jobQueue->Execute();
             
         }
@@ -104,7 +104,7 @@ int main()
     DB_connect();
 
 
-    std::cout << GRoomManager.Create(1) << "¹ø ¹æ »ı¼º" << std::endl;
+    std::cout << GRoomManager.Create(1) << "ë²ˆ ë°© ìƒì„±" << std::endl;
 
     RoomPtr defaultRoom = GRoomManager.FindRoom(1);
     std::thread consoleThread(ConsoleThread, defaultRoom);
@@ -121,26 +121,26 @@ int main()
         std::thread t(&Listener::Execute, &listener, std::ref(iocp));
         t.detach();
 
-        // [¼öÁ¤] 3. Worker Thread Ç® ±¸¼º 
-        // Á¤ÀÇÇØµĞ WorkerThread ÇÔ¼ö¸¦ »ç¿ëÇÏ¿© ³×Æ®¿öÅ©¿Í ·ÎÁ÷À» ¸ğµÎ Ã³¸®ÇÏ°Ô ÇÕ´Ï´Ù.
+        // [ìˆ˜ì •] 3. Worker Thread í’€ êµ¬ì„± 
+        // ì •ì˜í•´ë‘” WorkerThread í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•˜ì—¬ ë„¤íŠ¸ì›Œí¬ì™€ ë¡œì§ì„ ëª¨ë‘ ì²˜ë¦¬í•˜ê²Œ í•©ë‹ˆë‹¤.
         std::vector<std::thread> workerThreads;
         for (int i = 0; i < 4; i++)
         {
             workerThreads.push_back(std::thread(WorkerThread, std::ref(iocp)));
         }
 
-        // 4. [Main Thread Àü¿ë] ÁÖ±âÀûÀÎ ·ÎÁ÷ ¾÷µ¥ÀÌÆ® (Tick °ü¸®)
-        // main.cppÀÇ while ·çÇÁ
+        // 4. [Main Thread ì „ìš©] ì£¼ê¸°ì ì¸ ë¡œì§ ì—…ë°ì´íŠ¸ (Tick ê´€ë¦¬)
+        // main.cppì˜ while ë£¨í”„
         while (true)
         {
             auto rooms = GRoomManager.GetRooms();
             for (auto& room : rooms)
             {
-                // ·ë ÀÚÃ¼¸¦ ½Ã¸®¾ó¶óÀÌÀú¿¡ µî·ÏÇÏ¿© ¿öÄ¿ ¾²·¹µå°¡ Ã³¸®ÇÏ°Ô ÇÔ
+                // ë£¸ ìì²´ë¥¼ ì‹œë¦¬ì–¼ë¼ì´ì €ì— ë“±ë¡í•˜ì—¬ ì›Œì»¤ ì“°ë ˆë“œê°€ ì²˜ë¦¬í•˜ê²Œ í•¨
                 GJobSerializer.Push(room);
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(10)); // ÀûÀıÇÑ Æ½ °£°İ
+            std::this_thread::sleep_for(std::chrono::milliseconds(10)); // ì ì ˆí•œ í‹± ê°„ê²©
         }
 
         for (auto& t : workerThreads)

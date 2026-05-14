@@ -1,11 +1,11 @@
-#include "PacketHandler.h"
+ï»¿#include "PacketHandler.h"
 #include "Session.h"
 #include "Player.h"
 #include "ObjectManager.h"
 #include "RoomManager.h"
 #include "DataContents.h"
 
-// Çì´õ¿¡ ÀÖ´Â extern ¼±¾ğ°ú Å¸ÀÔÀÌ Á¤È®È÷ ÀÏÄ¡ÇØ¾ß ÇÕ´Ï´Ù.
+// í—¤ë”ì— ìˆëŠ” extern ì„ ì–¸ê³¼ íƒ€ì…ì´ ì •í™•íˆ ì¼ì¹˜í•´ì•¼ í•©ë‹ˆë‹¤.
 PacketHandlerFunc GPacketHandler[65535];
 
 bool Handle_INVALID(SessionPtr& session, BYTE* buffer, int32 len)
@@ -16,23 +16,23 @@ bool Handle_INVALID(SessionPtr& session, BYTE* buffer, int32 len)
 
 bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 {
-    std::cout << "·Î±×ÀÎ ¿äÃ» ID: " << pkt.user_id() << std::endl;
+    std::cout << "ë¡œê·¸ì¸ ìš”ì²­ ID: " << pkt.user_id() << std::endl;
 
-    //TODO ·Î±×ÀÎ À¯È¿¼º °ËÁõ ·ÎÁ÷ Ãß°¡ 
+    //TODO ë¡œê·¸ì¸ ìœ íš¨ì„± ê²€ì¦ ë¡œì§ ì¶”ê°€ 
 
-    // ÀÀ´ä Àü¼Û 
+    // ì‘ë‹µ ì „ì†¡ 
     Protocol::SC_LOGIN_OK resPkt;
 
     resPkt.set_success(true);
     
-    //TODO : [DB ÇÊ¿ä]DB¿Í Åë½ÅÇØ¼­ ÅÛÇÃ¸´ ¾ÆÀÌµğ µî Á¤º¸ °¡Á®¿À±â ±×·¡¼­ createÇÒ¶§ µ¿ÀûÀ¸·Î ¿¬°á
+    //TODO : [DB í•„ìš”]DBì™€ í†µì‹ í•´ì„œ í…œí”Œë¦¿ ì•„ì´ë”” ë“± ì •ë³´ ê°€ì ¸ì˜¤ê¸° ê·¸ë˜ì„œ createí• ë•Œ ë™ì ìœ¼ë¡œ ì—°ê²°
     
     GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session,1);
 
 
-    resPkt.set_player_id(go->GetObjectId()); //¹İµå½Ã ·Î±×ÀÎ ¿äÃ»À» ÇÑ À¯ÀúÀÇ playerId(objectId)·Î ´äÀ» ÇØÁÖ¾î¾ßÇÔ
+    resPkt.set_player_id(go->GetObjectId()); //ë°˜ë“œì‹œ ë¡œê·¸ì¸ ìš”ì²­ì„ í•œ ìœ ì €ì˜ playerId(objectId)ë¡œ ë‹µì„ í•´ì£¼ì–´ì•¼í•¨
 
-    //Âü°í SC_LOGIN_OK ¿¡¼­ÀÇ player Id´Â ObjectManager¿¡¼­ °ü¸®ÇÏ´Â objectId¿Í µ¿ÀÏÇÔ
+    //ì°¸ê³  SC_LOGIN_OK ì—ì„œì˜ player IdëŠ” ObjectManagerì—ì„œ ê´€ë¦¬í•˜ëŠ” objectIdì™€ ë™ì¼í•¨
     
     if (resPkt.success()) { std::cout << "success is true" << std::endl; }
     else { std::cout << "success is not true" << std::endl; }
@@ -48,24 +48,24 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 
 bool Handle_CS_CHAT(SessionPtr& session, Protocol::CS_CHAT& pkt)
 {
-    // 1. ¹ŞÀº ÆĞÅ¶¿¡¼­ µ¥ÀÌÅÍ ÃßÃâ (pkt->chatMsg ´ë½Å pkt.msg() µî »ç¿ë)
-    // .proto ÆÄÀÏ¿¡ Á¤ÀÇÇÑ ÇÊµå¸í¿¡ µû¶ó ÇÔ¼ö¸íÀÌ °áÁ¤µË´Ï´Ù. (¿¹: string msg -> msg())
+    // 1. ë°›ì€ íŒ¨í‚·ì—ì„œ ë°ì´í„° ì¶”ì¶œ (pkt->chatMsg ëŒ€ì‹  pkt.msg() ë“± ì‚¬ìš©)
+    // .proto íŒŒì¼ì— ì •ì˜í•œ í•„ë“œëª…ì— ë”°ë¼ í•¨ìˆ˜ëª…ì´ ê²°ì •ë©ë‹ˆë‹¤. (ì˜ˆ: string msg -> msg())
     std::string receivedMsg = pkt.msg();
 
-    // 2. º¸³¾ ÀÀ´ä ÆĞÅ¶ »ı¼º ¹× µ¥ÀÌÅÍ Ã¤¿ì±â
+    // 2. ë³´ë‚¼ ì‘ë‹µ íŒ¨í‚· ìƒì„± ë° ë°ì´í„° ì±„ìš°ê¸°
     Protocol::SC_CHAT_BROADCAST res;
 
-    // ÇÃ·¹ÀÌ¾î ID ¼³Á¤ 
+    // í”Œë ˆì´ì–´ ID ì„¤ì • 
     //res.set_player_id(static_cast<uint64>(session->Session::GetSocket()));
     res.set_player_id(session->GetPlayerId());
-    // Ã¤ÆÃ ³»¿ë ¼³Á¤ (Protobuf°¡ ³»ºÎÀûÀ¸·Î ¸Ş¸ğ¸® ÇÒ´çÀ» °ü¸®ÇÏ¹Ç·Î strcpy_s°¡ ÇÊ¿ä ¾ø½À´Ï´Ù)
+    // ì±„íŒ… ë‚´ìš© ì„¤ì • (Protobufê°€ ë‚´ë¶€ì ìœ¼ë¡œ ë©”ëª¨ë¦¬ í• ë‹¹ì„ ê´€ë¦¬í•˜ë¯€ë¡œ strcpy_sê°€ í•„ìš” ì—†ìŠµë‹ˆë‹¤)
     res.set_msg(receivedMsg);
 
-    // 3. ServerUtils¸¦ »ç¿ëÇÏ¿© °¡º¯ Å©±â¿ë SendBuffer »ı¼º
-    // ³»ºÎ¿¡¼­ ByteSizeLong() È£Ãâ, Çì´õ ±âÀÔ, Á÷·ÄÈ­°¡ ¸ğµÎ Ã³¸®µË´Ï´Ù.
+    // 3. ServerUtilsë¥¼ ì‚¬ìš©í•˜ì—¬ ê°€ë³€ í¬ê¸°ìš© SendBuffer ìƒì„±
+    // ë‚´ë¶€ì—ì„œ ByteSizeLong() í˜¸ì¶œ, í—¤ë” ê¸°ì…, ì§ë ¬í™”ê°€ ëª¨ë‘ ì²˜ë¦¬ë©ë‹ˆë‹¤.
     SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(res, Protocol::PKT_SC_CHAT_BROADCAST);
 
-    // 4. ºê·ÎµåÄ³½ºÆÃ
+    // 4. ë¸Œë¡œë“œìºìŠ¤íŒ…
     if (sendBuffer)
     {
         RoomPtr room = GRoomManager.FindRoom(session->GetPlayerPtr()->GetroomId());
@@ -81,28 +81,28 @@ bool Handle_CS_WHISPER(SessionPtr& session, Protocol::CS_WHISPER& pkt)
     uint64 targetId = pkt.targetplayer_id(); // Protobuf getter
     std::string msg = pkt.msg();
 
-    // 1. Å¸°Ù¿¡°Ô º¸³¾ ÆĞÅ¶ »ı¼º (SC_WHISPER ±ÇÀå)
+    // 1. íƒ€ê²Ÿì—ê²Œ ë³´ë‚¼ íŒ¨í‚· ìƒì„± (SC_WHISPER ê¶Œì¥)
     Protocol::SC_WHISPER res;
-    res.set_fromplayer_id(session->GetPlayerId()); // º¸³½ »ç¶÷ ID
+    res.set_fromplayer_id(session->GetPlayerId()); // ë³´ë‚¸ ì‚¬ëŒ ID
     res.set_msg(msg);
 
-    // 2. ¹öÆÛ »ı¼º
+    // 2. ë²„í¼ ìƒì„±
     SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(res, Protocol::PKT_SC_WHISPER);
 
     if (sendBuffer)
     {
-        // 3. Å¸°Ù¿¡°Ô Àü¼Û
+        // 3. íƒ€ê²Ÿì—ê²Œ ì „ì†¡
         GSessionManager.SendTo(targetId, sendBuffer);
 
-        // 4. (¿É¼Ç) º¸³½ »ç¶÷ º»ÀÎ¿¡°Ôµµ "Àü¼Û ¼º°ø" ÇÇµå¹é ÆĞÅ¶À» º¸³»¸é ÁÁ½À´Ï´Ù.
-        // ¶Ç´Â ±×³É Å¬¶ó°¡ º¸³½ ¸Ş½ÃÁö¸¦ º»ÀÎ È­¸é¿¡ ¹Ù·Î ¶ç¿ìµµ·Ï ¼³°èÇÒ ¼öµµ ÀÖ½À´Ï´Ù.
+        // 4. (ì˜µì…˜) ë³´ë‚¸ ì‚¬ëŒ ë³¸ì¸ì—ê²Œë„ "ì „ì†¡ ì„±ê³µ" í”¼ë“œë°± íŒ¨í‚·ì„ ë³´ë‚´ë©´ ì¢‹ìŠµë‹ˆë‹¤.
+        // ë˜ëŠ” ê·¸ëƒ¥ í´ë¼ê°€ ë³´ë‚¸ ë©”ì‹œì§€ë¥¼ ë³¸ì¸ í™”ë©´ì— ë°”ë¡œ ë„ìš°ë„ë¡ ì„¤ê³„í•  ìˆ˜ë„ ìˆìŠµë‹ˆë‹¤.
     }
     return true;
 }
 
 bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt) 
 {
-    //¼¼¼Ç¿¡¼­ ÇÃ·¹ÀÌ¾î °´Ã¼ °¡Á®¿À±â (¼¼¼Ç¿¡ Player ¸â¹ö°¡ ÀÖ´Ù°í °¡Á¤)
+    //ì„¸ì…˜ì—ì„œ í”Œë ˆì´ì–´ ê°ì²´ ê°€ì ¸ì˜¤ê¸° (ì„¸ì…˜ì— Player ë©¤ë²„ê°€ ìˆë‹¤ê³  ê°€ì •)
     PlayerPtr player = session->GetPlayerPtr();
     if (player == nullptr) 
     { 
@@ -130,19 +130,19 @@ bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt)
         return true;
     }
 
-    // Temp , TODO: FindLastRoom Àº ¼­¹ö ÀÔÀå¿¡¼­ ¸¶Áö¸·À¸·Î ¸¸µé¾îÁø Room À» Ã£¾Æ¼­ ÀÔÀå ½ÃÅ°´Â °Í, 
-    // µû¶ó¼­ ÇØ´ç Å¬¶ó¿¡ ¾Ë¸Â´Â ·ëÀ» Ã£¾Æ¼­ ÀÔÀå½ÃÅ°´Â ·ÎÁ÷ÀÌ ÇÊ¿äÇÔ 
-    // ÀÌ´Â ±âÈ¹¿¡ µû¶ó ´Ş¶óÁú ¿ä¼Ò°¡ ÀÖÀ½
-    GRoomManager.FindLastRoom()->Enter(player); //Enter ·ÎÁ÷ ¼Ó¿¡ Àü¼Û·ÎÁ÷ÀÌ Æ÷ÇÔµÇ¾î ÀÖÀ¸¹Ç·Î ÀÌ°ÍÀ¸·Î ÃæºĞÇÔ
+    // Temp , TODO: FindLastRoom ì€ ì„œë²„ ì…ì¥ì—ì„œ ë§ˆì§€ë§‰ìœ¼ë¡œ ë§Œë“¤ì–´ì§„ Room ì„ ì°¾ì•„ì„œ ì…ì¥ ì‹œí‚¤ëŠ” ê²ƒ, 
+    // ë”°ë¼ì„œ í•´ë‹¹ í´ë¼ì— ì•Œë§ëŠ” ë£¸ì„ ì°¾ì•„ì„œ ì…ì¥ì‹œí‚¤ëŠ” ë¡œì§ì´ í•„ìš”í•¨ 
+    // ì´ëŠ” ê¸°íšì— ë”°ë¼ ë‹¬ë¼ì§ˆ ìš”ì†Œê°€ ìˆìŒ
+    GRoomManager.FindLastRoom()->Enter(player); //Enter ë¡œì§ ì†ì— ì „ì†¡ë¡œì§ì´ í¬í•¨ë˜ì–´ ìˆìœ¼ë¯€ë¡œ ì´ê²ƒìœ¼ë¡œ ì¶©ë¶„í•¨
 
-    //¼öÁ¤ : Room ::Enter ¿¡¼­´Â ½ºÆù ÆĞÅ¶À» ´õÀÌ»ó Àü¼ÛÇÏÁö ¾ÊÀ½.
+    //ìˆ˜ì • : Room ::Enter ì—ì„œëŠ” ìŠ¤í° íŒ¨í‚·ì„ ë”ì´ìƒ ì „ì†¡í•˜ì§€ ì•ŠìŒ.
 
     return true;
 }
 
 bool Handle_CS_GAME_READY(SessionPtr& session, Protocol::CS_GAME_READY& pkt)
 {
-    //session ¿¡¼­ µé°í ÀÖ´Â playerId(objectId) ¿Í ÆĞÅ¶ÀÇ playerId(obejctId)°¡ ÀÏÄ¡ÇÏ´ÂÁö È®ÀÎ
+    //session ì—ì„œ ë“¤ê³  ìˆëŠ” playerId(objectId) ì™€ íŒ¨í‚·ì˜ playerId(obejctId)ê°€ ì¼ì¹˜í•˜ëŠ”ì§€ í™•ì¸
     if (session->GetPlayerId() != pkt.player_id()) 
     {
         std::cout << "Handle_CS_GAME_READY: session playerId and packet playerId is not same" << std::endl;
@@ -153,7 +153,7 @@ bool Handle_CS_GAME_READY(SessionPtr& session, Protocol::CS_GAME_READY& pkt)
     return true;
 }
 
-//Å¬¶ó¿¡¼­¿Â ½ºÅ³»ç¿ë ¿äÃ» ÇÚµé·¯ ÇÔ¼ö
+//í´ë¼ì—ì„œì˜¨ ìŠ¤í‚¬ì‚¬ìš© ìš”ì²­ í•¸ë“¤ëŸ¬ í•¨ìˆ˜
 bool Handle_CS_SKILL(SessionPtr& session, Protocol::CS_SKILL& pkt)
 {
     PlayerPtr player = session->GetPlayerPtr();

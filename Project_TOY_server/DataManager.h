@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "json.hpp" // nlohmann/json
 #include <fstream>
 #include "DataContents.h"
 using json = nlohmann::json;
 
-//µ¥ÀÌÅÍ¸¦ ÃÊ±âÈ­ ½Ã °¡Á®¿Í¼­ ¸Ş¸ğ¸®¿¡ ¿Ã·Á ³õ´Â ¿ªÇÒ ¹× ÇÊ¿ä½Ã ÇØ´ç µ¥ÀÌÅÍ¸¦ °Ç³×ÁÖ´Â Å¬·¡½º
+//ë°ì´í„°ë¥¼ ì´ˆê¸°í™” ì‹œ ê°€ì ¸ì™€ì„œ ë©”ëª¨ë¦¬ì— ì˜¬ë ¤ ë†“ëŠ” ì—­í•  ë° í•„ìš”ì‹œ í•´ë‹¹ ë°ì´í„°ë¥¼ ê±´ë„¤ì£¼ëŠ” í´ë˜ìŠ¤
 class DataManager {
 public:
     static DataManager& GetInstance() {
@@ -23,12 +23,12 @@ private:
         std::ifstream f(path);
 
         if (!f.is_open()) {
-            // ÀÌ ¸Ş½ÃÁö°¡ ¶ß¸é °æ·Î°¡ Àß¸øµÈ °ÍÀÔ´Ï´Ù.
+            // ì´ ë©”ì‹œì§€ê°€ ëœ¨ë©´ ê²½ë¡œê°€ ì˜ëª»ëœ ê²ƒì…ë‹ˆë‹¤.
             std::cout << "Cannot find file at: " << path << std::endl;
             return;
         }
 
-        // ÆÄÀÏÀÌ ºñ¾îÀÖ´ÂÁöµµ È®ÀÎÇÏ¸é ÁÁ½À´Ï´Ù.
+        // íŒŒì¼ì´ ë¹„ì–´ìˆëŠ”ì§€ë„ í™•ì¸í•˜ë©´ ì¢‹ìŠµë‹ˆë‹¤.
         if (f.peek() == std::ifstream::traits_type::eof()) {
             std::cout << "File is empty!" << std::endl;
             return;
@@ -38,7 +38,7 @@ private:
         
         for (auto& item : data["stats"]) {
             StatData stat;
-            stat.templateId = item["id"]; //json ÆÄÀÏ¿¡¼­ÀÇ id´Â templateId ¸¦ ¸»ÇÏ´Â °ÍÀÓ
+            stat.templateId = item["id"]; //json íŒŒì¼ì—ì„œì˜ idëŠ” templateId ë¥¼ ë§í•˜ëŠ” ê²ƒì„
             stat.baseHp = item["MaxHp"];
             stat.baseMp = item["MaxMp"];
             stat.baseAttack = item["attack"];
@@ -53,12 +53,12 @@ private:
         std::ifstream f(path);
 
         if (!f.is_open()) {
-            // ÀÌ ¸Ş½ÃÁö°¡ ¶ß¸é °æ·Î°¡ Àß¸øµÈ °ÍÀÔ´Ï´Ù.
+            // ì´ ë©”ì‹œì§€ê°€ ëœ¨ë©´ ê²½ë¡œê°€ ì˜ëª»ëœ ê²ƒì…ë‹ˆë‹¤.
             std::cout << "Cannot find file at: " << path << std::endl;
             return;
         }
 
-        // ÆÄÀÏÀÌ ºñ¾îÀÖ´ÂÁöµµ È®ÀÎÇÏ¸é ÁÁ½À´Ï´Ù.
+        // íŒŒì¼ì´ ë¹„ì–´ìˆëŠ”ì§€ë„ í™•ì¸í•˜ë©´ ì¢‹ìŠµë‹ˆë‹¤.
         if (f.peek() == std::ifstream::traits_type::eof()) {
             std::cout << "File is empty!" << std::endl;
             return;
@@ -85,26 +85,26 @@ private:
         if (!f.is_open()) return;
 
         json data = json::parse(f);
-        //1. ½ºÅ³ Å¸ÀÔº°·Î Á¤¸® , ÇöÀç·Î½á´Â '°¡ÀÌµå ¶óÀÎ' ÀÇ ¿ªÇÒ
+        //1. ìŠ¤í‚¬ íƒ€ì…ë³„ë¡œ ì •ë¦¬ , í˜„ì¬ë¡œì¨ëŠ” 'ê°€ì´ë“œ ë¼ì¸' ì˜ ì—­í• 
         std::map<int32, std::vector<std::string>> infoMap;
         std::vector<std::string> commonInfo;
         for (auto& st : data["skillType"]) {
             int32 typeId = st["TypeId"];
             std::vector<std::string> info = st["Infolist"].get<std::vector<std::string>>();
 
-            if (typeId == 0) commonInfo = info; // 0¹øÀº °øÅë
+            if (typeId == 0) commonInfo = info; // 0ë²ˆì€ ê³µí†µ
             else infoMap[typeId] = info;
         }
 
-        // 2. ½ÇÁ¦ ½ºÅ³ µ¥ÀÌÅÍ ·Îµå
+        // 2. ì‹¤ì œ ìŠ¤í‚¬ ë°ì´í„° ë¡œë“œ
         for (auto& item : data["skills"]) {
             SkillData skill;
 
-            // JSON °´Ã¼ ÇüÅÂÀÌ¹Ç·Î ÇÊµå¸íÀ» Á÷Á¢ ÂüÁ¶ÇÏ¿© ¾ÈÀüÇÏ°Ô ·Îµå
-            // (Infolist¿¡ ÀÖ´Â ÇÊµåµéÀ» ¼øÈ¸ÇÏ¸ç ·ÎµåÇÏ´Â ¹æ½Äµµ °¡´ÉÇÏÁö¸¸, 
-            //  ±¸Á¶Ã¼ ¸â¹ö°¡ °íÁ¤µÇ¾î ÀÖÀ¸¹Ç·Î ¾Æ·¡ ¹æ½ÄÀÌ ´õ Á÷°üÀûÀÔ´Ï´Ù.)
+            // JSON ê°ì²´ í˜•íƒœì´ë¯€ë¡œ í•„ë“œëª…ì„ ì§ì ‘ ì°¸ì¡°í•˜ì—¬ ì•ˆì „í•˜ê²Œ ë¡œë“œ
+            // (Infolistì— ìˆëŠ” í•„ë“œë“¤ì„ ìˆœíšŒí•˜ë©° ë¡œë“œí•˜ëŠ” ë°©ì‹ë„ ê°€ëŠ¥í•˜ì§€ë§Œ, 
+            //  êµ¬ì¡°ì²´ ë©¤ë²„ê°€ ê³ ì •ë˜ì–´ ìˆìœ¼ë¯€ë¡œ ì•„ë˜ ë°©ì‹ì´ ë” ì§ê´€ì ì…ë‹ˆë‹¤.)
 
-            // [°øÅë ÇÊµå]
+            // [ê³µí†µ í•„ë“œ]
             skill.id = item["id"];
             skill.name = item["name"].get<std::string>();
             skill.skillType = static_cast<SkillType>(item["skillTypeId"].get<int>());
@@ -112,17 +112,17 @@ private:
             skill.costType = static_cast<CostType>(item["CostTypeId"].get<int>());
             skill.animName = item["animName"].get<std::string>();
 
-            // [Å¸ÀÔº° ¼±ÅÃÀû ÇÊµå] - item.contains() ¶Ç´Â item.value() »ç¿ë
+            // [íƒ€ì…ë³„ ì„ íƒì  í•„ë“œ] - item.contains() ë˜ëŠ” item.value() ì‚¬ìš©
             if (item.contains("damage")) skill.damage = item["damage"];
             if (item.contains("range")) skill.range = item["range"];
 
-            // Projectile Àü¿ë
+            // Projectile ì „ìš©
             if (skill.skillType == SkillType::Projectile) {
                 if (item.contains("projectileSpeed")) skill.projectileSpeed = item["projectileSpeed"];
                 if (item.contains("projectileId")) skill.projectileId = item["projectileId"];
             }
 
-            // Dash Àü¿ë
+            // Dash ì „ìš©
             if (skill.skillType == SkillType::Dash) {
                 if (item.contains("dashDistance")) skill.dashDistance = item["dashDistance"];
                 if (item.contains("dashSpeed")) skill.dashSpeed = item["dashSpeed"];

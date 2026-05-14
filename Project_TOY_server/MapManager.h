@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 
 
@@ -7,7 +7,7 @@ class MapManager
 {
 public:
     void Init();
-    MapPtr LoadMap(int mapId); // DataManager¸¦ ÅëÇØ °æ·Î¸¦ ¾ò¾î¿Í Map °´Ã¼ »ı¼º
+    MapPtr LoadMap(int mapId); // DataManagerë¥¼ í†µí•´ ê²½ë¡œë¥¼ ì–»ì–´ì™€ Map ê°ì²´ ìƒì„±
     MapPtr GetMap(int mapId);
 
 private:

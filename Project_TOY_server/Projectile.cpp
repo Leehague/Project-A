@@ -1,4 +1,4 @@
-#include "Projectile.h"
+ï»¿#include "Projectile.h"
 #include "Vector3.h"
 #include "Protocol/Protocol.pb.h"
 #include "Room.h"
@@ -12,9 +12,9 @@ void Projectile::Init(GameObjectPtr attacker, const SkillData* skillData, Vector
     _skillData = skillData;
     _startPos = Vector3::PosInfoToVector3(Getpos());
 
-    // Å¸°Ù ¹æÇâ º¤ÅÍ °è»ê
+    // íƒ€ê²Ÿ ë°©í–¥ ë²¡í„° ê³„ì‚°
     _direction = targetPos - _startPos;
-    _direction.y = 0; // Áö¸é°ú ÆòÇàÇÏ°Ô ³¯¾Æ°¡µµ·Ï °íÁ¤
+    _direction.y = 0; // ì§€ë©´ê³¼ í‰í–‰í•˜ê²Œ ë‚ ì•„ê°€ë„ë¡ ê³ ì •
     _direction.Normalize();
 
     _lastTick = ::GetTickCount64();
@@ -32,7 +32,7 @@ void Projectile::TickMove()
     float moveDist = _speed * deltaTime;
     _traveledDistance += moveDist;
 
-    // ÇöÀç À§Ä¡¿¡¼­ ¹æÇâÀ¸·Î ¼Óµµ¸¸Å­ ÀÌµ¿
+    // í˜„ì¬ ìœ„ì¹˜ì—ì„œ ë°©í–¥ìœ¼ë¡œ ì†ë„ë§Œí¼ ì´ë™
     Vector3 currentPos = Vector3::PosInfoToVector3(Getpos());
     Vector3 newPos = currentPos + (_direction * moveDist);
 

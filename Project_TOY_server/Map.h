@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include "Vector3.h"
 #include <vector>
@@ -13,7 +13,7 @@ struct Triangle {
 struct PQNode {
     bool operator<(const PQNode& other) const { return f > other.f; }
     int32 f; // g + h
-    int32 g; // ½ÃÀÛÁ¡ºÎÅÍÀÇ ºñ¿ë
+    int32 g; // ì‹œì‘ì ë¶€í„°ì˜ ë¹„ìš©
     Vector3 pos;
 };
 
@@ -25,8 +25,8 @@ public:
     bool Load(const MapData* mapdata);
     bool LoadNavMesh(const std::string& path);
     bool CanGo_Old(Vector3 pos);
-    bool CanGo(Vector3 pos); // ÇÙ½É ·ÎÁ÷
-    float GetHeight(Vector3 pos); // [Ãß°¡] Æ¯Á¤ ÁÂÇ¥ÀÇ ÁöÇü ³ôÀÌ ¹İÈ¯
+    bool CanGo(Vector3 pos); // í•µì‹¬ ë¡œì§
+    float GetHeight(Vector3 pos); // [ì¶”ê°€] íŠ¹ì • ì¢Œí‘œì˜ ì§€í˜• ë†’ì´ ë°˜í™˜
     uint64 GetMapId();
 
     const MapData* GetMapData() {return _mapdata;}
@@ -40,22 +40,22 @@ private:
 
     const MapData* _mapdata =nullptr;
     std::vector<std::vector<bool>> _collisionData;
-    std::vector<std::vector<float>> _heightData; // [Ãß°¡] ³ôÀÌ µ¥ÀÌÅÍ ÀúÀå¿ë
+    std::vector<std::vector<float>> _heightData; // [ì¶”ê°€] ë†’ì´ ë°ì´í„° ì €ì¥ìš©
 
 
     std::vector<Triangle> _navTriangles;
-    // °¢ ±×¸®µå ÁÂÇ¥(z, x)¿¡ ¼ÓÇÑ »ï°¢ÇüµéÀÇ ÀÎµ¦½º ¸®½ºÆ®
+    // ê° ê·¸ë¦¬ë“œ ì¢Œí‘œ(z, x)ì— ì†í•œ ì‚¼ê°í˜•ë“¤ì˜ ì¸ë±ìŠ¤ ë¦¬ìŠ¤íŠ¸
     std::vector<std::vector<std::vector<int>>> _gridIndices;
 
 
     
 
 public:
-    // ½ÃÀÛÁ¡¿¡¼­ ¸ñÀûÁö±îÁöÀÇ °æ·Î¸¦ Vector3 ¸®½ºÆ®·Î ¹İÈ¯
+    // ì‹œì‘ì ì—ì„œ ëª©ì ì§€ê¹Œì§€ì˜ ê²½ë¡œë¥¼ Vector3 ë¦¬ìŠ¤íŠ¸ë¡œ ë°˜í™˜
     std::vector<Vector3> FindPath(Vector3 startPos, Vector3 endPos);
 
 private:
-    // ÁÂÇ¥¸¦ Á¤¼öÇü ±×¸®µå ÀÎµ¦½º·Î º¯È¯ÇÏ´Â ÇïÆÛ (±âÁ¸ GetGridPos È°¿ë)
-    // ÀÎÁ¢ ³ëµå Å½»ö ½Ã »ç¿ë
+    // ì¢Œí‘œë¥¼ ì •ìˆ˜í˜• ê·¸ë¦¬ë“œ ì¸ë±ìŠ¤ë¡œ ë³€í™˜í•˜ëŠ” í—¬í¼ (ê¸°ì¡´ GetGridPos í™œìš©)
+    // ì¸ì ‘ ë…¸ë“œ íƒìƒ‰ ì‹œ ì‚¬ìš©
 };
 

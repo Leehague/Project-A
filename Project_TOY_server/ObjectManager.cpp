@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "ObjectManager.h"
 #include "RoomManager.h"
 #include "Player.h"
@@ -30,7 +30,7 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
     else if (type == GameObjectType::Projectile) 
     {
         ProjectilePtr projectile = std::make_shared<Projectile>(objcetId);
-        //Init Àº SpawnProjectile ¿¡¼­ ÇØÁÖ°í ÀÖÀ½
+        //Init ì€ SpawnProjectile ì—ì„œ í•´ì£¼ê³  ìˆìŒ
         go = std::static_pointer_cast<GameObject>(projectile);
     }
     else 

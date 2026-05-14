@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include "GameObject.h"
 
@@ -6,7 +6,7 @@
 class ObjcetManager 
 {
 public:
-	//»ı¼ºÀÚ È£Ãâ, ÃÊ±âÈ­(Init È£Ãâ) , _objects¿¡ Ãß°¡
+	//ìƒì„±ì í˜¸ì¶œ, ì´ˆê¸°í™”(Init í˜¸ì¶œ) , _objectsì— ì¶”ê°€
 	GameObjectPtr Create(GameObjectType type, std::shared_ptr<Session> session, int32 templateId);
 	
 	GameObjectPtr Find(int32 objectId);
@@ -15,7 +15,7 @@ public:
 	
 private:
 	std::mutex _lock;
-	std::map<int32, GameObjectPtr> _objects; //ÀÌ µñ¼Å³Ê¸®¿¡¼­ÀÇ key °ªÀÌ °ğ objectId ÀÓ _pos.objectId ¿Í °°¾Æ¾ßÇÔ
+	std::map<int32, GameObjectPtr> _objects; //ì´ ë”•ì…”ë„ˆë¦¬ì—ì„œì˜ key ê°’ì´ ê³§ objectId ì„ _pos.objectId ì™€ ê°™ì•„ì•¼í•¨
 	int32 GameobjcetCounter = 0;
 };
 

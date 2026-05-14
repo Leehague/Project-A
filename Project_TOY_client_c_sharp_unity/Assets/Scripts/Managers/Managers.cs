@@ -1,33 +1,33 @@
-using Unity.VisualScripting;
+ï»¿using Unity.VisualScripting;
 using UnityEngine;
 
 public class Managers : MonoBehaviour
 {
-    // ´Ü ÇÏ³ª¸¸ Á¸ÀçÇÏ°Ô ¸¸µå´Â ½Ì±ÛÅæ
+    // ë‹¨ í•˜ë‚˜ë§Œ ì¡´ì¬í•˜ê²Œ ë§Œë“œëŠ” ì‹±ê¸€í†¤
     private static Managers _instance;
     public static Managers Instance { get { Init(); return _instance; } }
 
-    #region Core (³×Æ®¿öÅ©, ¸®¼Ò½º µî °ÔÀÓ ÀÎÇÁ¶ó)
-    //³»ºÎ »ı¼º
+    #region Core (ë„¤íŠ¸ì›Œí¬, ë¦¬ì†ŒìŠ¤ ë“± ê²Œì„ ì¸í”„ë¼)
+    //ë‚´ë¶€ ìƒì„±
     private NetworkManager _networkManager = new NetworkManager();
     private PacketManager _packetManager = new PacketManager();
     private ResourceManager _resourceManager = new ResourceManager();
 
-    //¿ÜºÎ Á¢±Ù¿ë property
+    //ì™¸ë¶€ ì ‘ê·¼ìš© property
     public static NetworkManager networkManager => Instance._networkManager;
     public static PacketManager packetManager => Instance._packetManager;
     public static ResourceManager resourceManager => Instance._resourceManager;
     #endregion
 
-    #region Contents (¿ÀºêÁ§Æ®, UI, ¾À µî ½ÇÁ¦ °ÔÀÓ µ¥ÀÌÅÍ)
-    //³»ºÎ »ı¼º
+    #region Contents (ì˜¤ë¸Œì íŠ¸, UI, ì”¬ ë“± ì‹¤ì œ ê²Œì„ ë°ì´í„°)
+    //ë‚´ë¶€ ìƒì„±
     private ObjectManager _objectManager = new ObjectManager();
     private DataManager _dataManager = new DataManager();
     private SceneManagerEx SceneManagerEx = new SceneManagerEx();
     private UIManager UIManager = new UIManager();
     private PoolingManager PoolingManager = new PoolingManager();
 
-    //¿ÜºÎ Á¢±Ù¿ë property
+    //ì™¸ë¶€ ì ‘ê·¼ìš© property
     public static ObjectManager objectManager => Instance._objectManager;
     public static DataManager dataManager => Instance._dataManager;
     public static SceneManagerEx sceneManagerEx => Instance.SceneManagerEx;
@@ -42,10 +42,10 @@ public class Managers : MonoBehaviour
 
     void Update()
     {
-        //instance¸¦ »ç¿ëÇÑ Á¢±Ù (Å¸ÀÌ¹Ö ÀÌ½´ ¹æÁö)
+        //instanceë¥¼ ì‚¬ìš©í•œ ì ‘ê·¼ (íƒ€ì´ë° ì´ìŠˆ ë°©ì§€)
         if (_instance == null) return;
 
-        // ¾À ÀüÈ¯ Áß¿¡´Â È£Ãâ ÀÚÃ¼¸¦ ÇÏÁö ¾ÊÀ½À¸·Î½á ¸ŞÀÎ ½º·¹µå Á¡À¯À²À» 0À¸·Î ¸¸µì´Ï´Ù.
+        // ì”¬ ì „í™˜ ì¤‘ì—ëŠ” í˜¸ì¶œ ìì²´ë¥¼ í•˜ì§€ ì•ŠìŒìœ¼ë¡œì¨ ë©”ì¸ ìŠ¤ë ˆë“œ ì ìœ ìœ¨ì„ 0ìœ¼ë¡œ ë§Œë“­ë‹ˆë‹¤.
         if (_instance._networkManager.enabled)
         {
             _instance._networkManager.Update();
@@ -56,25 +56,25 @@ public class Managers : MonoBehaviour
     {
         if (_instance == null)
         {
-            // °ÔÀÓ ³»¿¡ @Managers¶ó´Â ÀÌ¸§ÀÇ ¿ÀºêÁ§Æ®°¡ ÀÖ´ÂÁö È®ÀÎ
+            // ê²Œì„ ë‚´ì— @Managersë¼ëŠ” ì´ë¦„ì˜ ì˜¤ë¸Œì íŠ¸ê°€ ìˆëŠ”ì§€ í™•ì¸
             GameObject go = GameObject.Find("@Managers");
             if (go == null)
             {
-                // 2. ¸¸¾à Á¤¸»·Î ¾ø´Ù¸é »õ·Î »ı¼º
+                // 2. ë§Œì•½ ì •ë§ë¡œ ì—†ë‹¤ë©´ ìƒˆë¡œ ìƒì„±
                 go = new GameObject { name = "@Managers" };
                 _instance = go.AddComponent<Managers>();
                 DontDestroyOnLoad(go);
 
-                // ÃÊ±âÈ­ ·ÎÁ÷Àº ¿©±â¼­ µü ÇÑ ¹ø¸¸!
+                // ì´ˆê¸°í™” ë¡œì§ì€ ì—¬ê¸°ì„œ ë”± í•œ ë²ˆë§Œ!
                 _instance._networkManager.Init();
                 _instance._dataManager.Init();
-                Debug.Log("@Managers ½Å±Ô »ı¼º ¹× ÃÊ±âÈ­ ¿Ï·á");
+                Debug.Log("@Managers ì‹ ê·œ ìƒì„± ë° ì´ˆê¸°í™” ì™„ë£Œ");
             }
             else
             {
-                // 3. ÀÌ¸§Àº ÀÖ´Âµ¥ _instance°¡ ¿¬°á ¾È µÈ °æ¿ì (¾À ÀüÈ¯ Á÷ÈÄ µî)
+                // 3. ì´ë¦„ì€ ìˆëŠ”ë° _instanceê°€ ì—°ê²° ì•ˆ ëœ ê²½ìš° (ì”¬ ì „í™˜ ì§í›„ ë“±)
                 _instance = go.GetComponent<Managers>();
-                if (_instance == null) // ÀÌ¸§¸¸ °°°í ÄÄÆ÷³ÍÆ®°¡ ¾ø´Â °æ¿ì ´ëºñ
+                if (_instance == null) // ì´ë¦„ë§Œ ê°™ê³  ì»´í¬ë„ŒíŠ¸ê°€ ì—†ëŠ” ê²½ìš° ëŒ€ë¹„
                 {
                     _instance = go.AddComponent<Managers>();
                 }
@@ -86,7 +86,7 @@ public class Managers : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        // ¼ÒÄÏÀ» ´İ°í ¼¼¼ÇÀ» Á¤¸®ÇÏ´Â ÇÔ¼ö È£Ãâ
+        // ì†Œì¼“ì„ ë‹«ê³  ì„¸ì…˜ì„ ì •ë¦¬í•˜ëŠ” í•¨ìˆ˜ í˜¸ì¶œ
         _networkManager.Close();
     }
 }

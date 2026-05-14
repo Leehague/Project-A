@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 SETLOCAL
 
 :: 1. 기준 경로 설정 (배치 파일 위치를 절대 경로로 고정)

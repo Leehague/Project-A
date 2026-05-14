@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include <map>
 #include <set>
@@ -16,7 +16,7 @@ class GameSessionManager
 public:
     void Add(SessionPtr session);
     void Remove(SessionPtr session);
-    void GlobalBroadcast(SendBufferPtr sendBuffer); //Æ¯¼öÇÑ »óÈ²¿¡¼­ ¼­¹ö ÀüÃ¼¿¡ ÆĞÅ¶À» º¸³»¾ßÇÒ¶§¸¸ »ç¿ë.
+    void GlobalBroadcast(SendBufferPtr sendBuffer); //íŠ¹ìˆ˜í•œ ìƒí™©ì—ì„œ ì„œë²„ ì „ì²´ì— íŒ¨í‚·ì„ ë³´ë‚´ì•¼í• ë•Œë§Œ ì‚¬ìš©.
     void SendTo(uint64 playerSessionId, SendBufferPtr sendBuffer);
 
 

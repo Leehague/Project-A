@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include <winsock2.h>
 #include <functional>
 #include "Types.h"
 #include "GameSessionManager.h"
 
-// ¼¼¼ÇÀ» »ı¼ºÇÏ´Â ÇÔ¼ö Å¸ÀÔÀ» Á¤ÀÇÇÕ´Ï´Ù.
+// ì„¸ì…˜ì„ ìƒì„±í•˜ëŠ” í•¨ìˆ˜ íƒ€ì…ì„ ì •ì˜í•©ë‹ˆë‹¤.
 using SessionFactory = std::function<SessionPtr()>;
 
 
@@ -15,18 +15,18 @@ public:
     Listener();
     ~Listener();
 
-    // ¼­¹ö ¼ÒÄÏ ÃÊ±âÈ­ ¹× ¹ÙÀÎµå/¸®½¼
+    // ì„œë²„ ì†Œì¼“ ì´ˆê¸°í™” ë° ë°”ì¸ë“œ/ë¦¬ìŠ¨
     /*bool StartAccept(int port);*/
 
-    //// Á¢¼ÓµÈ ¼ÒÄÏÀ» Ã³¸®ÇÒ Äİ¹é µî·Ï (º¸Åë Session »ı¼º ·ÎÁ÷)
+    //// ì ‘ì†ëœ ì†Œì¼“ì„ ì²˜ë¦¬í•  ì½œë°± ë“±ë¡ (ë³´í†µ Session ìƒì„± ë¡œì§)
     //void SetAcceptHandler(std::function<void(SOCKET)> handler) { _onAcceptHandler = handler; }
 
-    //// ½ÇÁ¦ Á¢¼ÓÀ» ´ë±âÇÏ´Â ·çÇÁ (º°µµ ½º·¹µå¿¡¼­ ½ÇÇà)
+    //// ì‹¤ì œ ì ‘ì†ì„ ëŒ€ê¸°í•˜ëŠ” ë£¨í”„ (ë³„ë„ ìŠ¤ë ˆë“œì—ì„œ ì‹¤í–‰)
     //void Execute();
 
-    // Äİ¹é ´ë½Å ÆÑÅä¸®¸¦ µî·Ï¹Ş½À´Ï´Ù.
+    // ì½œë°± ëŒ€ì‹  íŒ©í† ë¦¬ë¥¼ ë“±ë¡ë°›ìŠµë‹ˆë‹¤.
     bool StartAccept(int port, SessionFactory factory, class IocpCore& iocp);
-    void Execute(IocpCore& iocp); // iocp¸¦ ÀÎÀÚ·Î ¹Ş¾Æ ³»ºÎ¿¡¼­ µî·Ï±îÁö Ã³¸®
+    void Execute(IocpCore& iocp); // iocpë¥¼ ì¸ìë¡œ ë°›ì•„ ë‚´ë¶€ì—ì„œ ë“±ë¡ê¹Œì§€ ì²˜ë¦¬
 
 private:
     /*SOCKET _listenSocket = INVALID_SOCKET;

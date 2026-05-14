@@ -1,4 +1,4 @@
-using Protocol;
+ï»¿using Protocol;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,13 +7,13 @@ public class CreatureController : MonoBehaviour
 {
     public Stat stat { get; set; }
 
-    // Å¸ÀÎÀÏ ¶§ »ç¿ëÇÒ º¯¼öµé
+    // íƒ€ì¸ì¼ ë•Œ ì‚¬ìš©í•  ë³€ìˆ˜ë“¤
     protected Vector3 _targetPos;
     protected float _targetYaw;
 
     [SerializeField]
     protected Define.CreatureState _state = Define.CreatureState.Idle;
-    // »óÅÂ º¯°æ ½Ã ¾Ö´Ï¸ŞÀÌ¼Ç Ã³¸®¸¦ À§ÇØ °¡»ó ÇÔ¼ö·Î ¸¸µê
+    // ìƒíƒœ ë³€ê²½ ì‹œ ì• ë‹ˆë©”ì´ì…˜ ì²˜ë¦¬ë¥¼ ìœ„í•´ ê°€ìƒ í•¨ìˆ˜ë¡œ ë§Œë“¦
     public virtual Define.CreatureState State
     {
         get { return _state; }
@@ -43,10 +43,10 @@ public class CreatureController : MonoBehaviour
         UpdateController();
     }
 
-    // ÀÚ½Äµé(Player, Monster)ÀÌ °¢ÀÚ »óÈ²¿¡ ¸Â°Ô ¿À¹ö¶óÀÌµù
+    // ìì‹ë“¤(Player, Monster)ì´ ê°ì ìƒí™©ì— ë§ê²Œ ì˜¤ë²„ë¼ì´ë”©
     protected virtual void UpdateController() { }
 
-    // »óÅÂ¿¡ µû¸¥ ¾Ö´Ï¸ŞÀÌ¼Ç ÆÄ¶ó¹ÌÅÍ Á¶Àı
+    // ìƒíƒœì— ë”°ë¥¸ ì• ë‹ˆë©”ì´ì…˜ íŒŒë¼ë¯¸í„° ì¡°ì ˆ
     protected virtual void UpdateAnimation()
     {
         if (_animator == null) return;
@@ -71,16 +71,16 @@ public class CreatureController : MonoBehaviour
 
     }
 
-    // ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®¿¡¼­ È£ÃâµÉ ÇÔ¼ö
+    // ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ì—ì„œ í˜¸ì¶œë  í•¨ìˆ˜
     public void OnAttackEnded()
     {
-        // °ø°İ µ¿ÀÛÀÌ ³¡³µÀ¸¹Ç·Î ´Ù½Ã Idle »óÅÂ·Î µ¹·ÁÁÜ
+        // ê³µê²© ë™ì‘ì´ ëë‚¬ìœ¼ë¯€ë¡œ ë‹¤ì‹œ Idle ìƒíƒœë¡œ ëŒë ¤ì¤Œ
         State = Define.CreatureState.Idle;
 
         
     }
 
-    // ÇÚµé·¯¿¡¼­ È£ÃâÇÒ µ¥ÀÌÅÍ °»½Å ÇÔ¼ö
+    // í•¸ë“¤ëŸ¬ì—ì„œ í˜¸ì¶œí•  ë°ì´í„° ê°±ì‹  í•¨ìˆ˜
     public void RefreshPos(PosInfo info)
     {
         _targetPos = new Vector3(info.X, info.Y, info.Z);
@@ -94,18 +94,29 @@ public class CreatureController : MonoBehaviour
     {
         transform.position = pos;
     }
-    //ÇØ´ç Creautre°¡ »ç¸Á½Ã È£ÃâµÉ ÇÔ¼ö
+    //í•´ë‹¹ Creautreê°€ ì‚¬ë§ì‹œ í˜¸ì¶œë  í•¨ìˆ˜
     public virtual void OnDead() 
     {
-        if(_state == Define.CreatureState.Dead) return; //'»ì¾ÆÀÖ´Â' »óÅÂ¿´À»¶§¸¸ ½ÇÇàµÇ¾î¾ß ÇÔ
+        if(_state == Define.CreatureState.Dead) return; //'ì‚´ì•„ìˆëŠ”' ìƒíƒœì˜€ì„ë•Œë§Œ ì‹¤í–‰ë˜ì–´ì•¼ í•¨
         
         
         _state = Define.CreatureState.Dead;
 
-        //Ç®¸µ ½Ã½ºÅÛ »ç¿ë
+        //í’€ë§ ì‹œìŠ¤í…œ ì‚¬ìš©
         Managers.poolingManager.AddcreatureObejct(this);
 
-        //Creatue Á¾·ù¿¡ µû¶ó ÇØ´çÇÏ´Â »ç¸Á ·ÎÁ÷ ½ÇÇà
-        //ex ) ¾Ö´Ï¸ÅÀÌ¼Ç, Æ¯Á¤ ÄÁÅÙÃ÷ ½ÇÇà µî
+        //Creatue ì¢…ë¥˜ì— ë”°ë¼ í•´ë‹¹í•˜ëŠ” ì‚¬ë§ ë¡œì§ ì‹¤í–‰
+        //ex ) ì• ë‹ˆë§¤ì´ì…˜, íŠ¹ì • ì»¨í…ì¸  ì‹¤í–‰ ë“±
+    }
+
+    //ì„ì‹œ í•¨ìˆ˜, ìŠ¤í‚¬ë§ˆë‹¤ í•¨ìˆ˜ë¥¼ ë§Œë“¤ê±´ ì•„ë‹ˆì§€ë§Œ ì¼ë‹¨ í…ŒìŠ¤íŠ¸ìš©
+    public void spawnfireball(Vector3 targetpos) 
+    {
+        GameObject fireball = Managers.resourceManager.Instantiate("Effect/FX_Fire_03");
+        ProjectileController fireballcontroller;
+        if (fireball.TryGetComponent<ProjectileController>(out fireballcontroller))
+        {
+            fireballcontroller.Init(transform.position, targetpos);
+        }
     }
 }

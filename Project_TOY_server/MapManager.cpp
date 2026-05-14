@@ -1,4 +1,4 @@
-#include "MapManager.h"
+ï»¿#include "MapManager.h"
 #include "DataManager.h"
 #include "Map.h"
 
@@ -11,15 +11,15 @@ void MapManager::Init()
 
 MapPtr MapManager::LoadMap(int mapId)
 {
-    // ÀÌ¹Ì ·ÎµåµÈ ¸ÊÀÎÁö È®ÀÎ
+    // ì´ë¯¸ ë¡œë“œëœ ë§µì¸ì§€ í™•ì¸
     if (_maps.find(mapId) != _maps.end())
         return _maps[mapId];
 
-    // DataManager¿¡¼­ °æ·Î °¡Á®¿À±â
+    // DataManagerì—ì„œ ê²½ë¡œ ê°€ì ¸ì˜¤ê¸°
     const MapData* data = DataManager::GetInstance().GetMapData(mapId);
     if (data == nullptr) return nullptr;
 
-    // »õ·Î¿î Map °´Ã¼ »ı¼º ¹× ·Îµå
+    // ìƒˆë¡œìš´ Map ê°ì²´ ìƒì„± ë° ë¡œë“œ
     MapPtr map = std::make_shared<Map>();
     if (map->Load(data) && map->LoadNavMesh(data->NavMeshPath))
     {

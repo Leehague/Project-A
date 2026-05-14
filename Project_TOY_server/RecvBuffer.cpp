@@ -1,4 +1,4 @@
-#include "RecvBuffer.h"
+ï»¿#include "RecvBuffer.h"
 #include <algorithm>
 
 
@@ -8,7 +8,7 @@ RecvBuffer::RecvBuffer()
 
 RecvBuffer::RecvBuffer(int bufferSize) : _capacity(bufferSize)
 {
-    //¹öÆÛ Å©±â¸¦ ÁöÁ¤ (º¸Åë ÇÑ ÆĞÅ¶ ÃÖ´ë Å©±âÀÇ ¸î ¹è)
+    //ë²„í¼ í¬ê¸°ë¥¼ ì§€ì • (ë³´í†µ í•œ íŒ¨í‚· ìµœëŒ€ í¬ê¸°ì˜ ëª‡ ë°°)
     _buffer.resize(bufferSize);
 }
 
@@ -16,18 +16,18 @@ RecvBuffer::~RecvBuffer()
 { 
 }
 
-//ÀÌ¹Ì ÀĞ¾î¼­ À¯È¿ÇÏÁö ¾ÊÀº µ¥ÀÌÅÍ Á¦°Å 
+//ì´ë¯¸ ì½ì–´ì„œ ìœ íš¨í•˜ì§€ ì•Šì€ ë°ì´í„° ì œê±° 
 void RecvBuffer::Clean()
 {
     int dataSize = DataSize();
     if (dataSize == 0)
     {
-        // ³²Àº µ¥ÀÌÅÍ°¡ ¾øÀ¸¸é Ä¿¼­¸¸ ÃÊ±âÈ­
+        // ë‚¨ì€ ë°ì´í„°ê°€ ì—†ìœ¼ë©´ ì»¤ì„œë§Œ ì´ˆê¸°í™”
         _readPos = _writePos = 0;
     }
     else
     {
-        // ³²Àº µ¥ÀÌÅÍ°¡ ÀÖ´Ù¸é ¸Ç ¾ÕÀ¸·Î º¹»ç (µ¥ÀÌÅÍ ¹Ğ±â)
+        // ë‚¨ì€ ë°ì´í„°ê°€ ìˆë‹¤ë©´ ë§¨ ì•ìœ¼ë¡œ ë³µì‚¬ (ë°ì´í„° ë°€ê¸°)
         std::copy(_buffer.begin() + _readPos, _buffer.begin() + _writePos, _buffer.begin());
         _readPos = 0;
         _writePos = dataSize;

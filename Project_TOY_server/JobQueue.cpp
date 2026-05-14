@@ -1,4 +1,4 @@
-#include "JobQueue.h"
+Ôªø#include "JobQueue.h"
 #include "JobSerializer.h"
 
 void JobQueue::Push(JobFn&& fn)
@@ -7,7 +7,7 @@ void JobQueue::Push(JobFn&& fn)
         std::lock_guard<std::mutex> lock(_mutex);
         _jobs.push(std::move(fn));
 
-        // ¿ÃπÃ Ω««‡ ¥Î±‚ ¡ﬂ¿Ã∞≈≥™ Ω««‡ ¡ﬂ¿Ã∏È ¡ﬂ∫π µÓ∑œ æ» «‘
+        // Ïù¥ÎØ∏ Ïã§Ìñâ ÎåÄÍ∏∞ Ï§ëÏù¥Í±∞ÎÇò Ïã§Ìñâ Ï§ëÏù¥Î©¥ Ï§ëÎ≥µ Îì±Î°ù Ïïà Ìï®
         if (_isInsideJobQueue == false) {
             _isInsideJobQueue = true;
             _jobserializer->Push(shared_from_this());
@@ -29,14 +29,14 @@ void JobQueue::Execute()
             _jobs.pop();
         }
 
-        job(); // Ω«¡¶ ∑Œ¡˜ Ω««‡
+        job(); // Ïã§Ï†ú Î°úÏßÅ Ïã§Ìñâ
     }
 
     {
         std::lock_guard<std::mutex> lock(_mutex);
-        _isInsideJobQueue = false; // ¿€æ˜ øœ∑· »ƒ «√∑°±◊ «ÿ¡¶
+        _isInsideJobQueue = false; // ÏûëÏóÖ ÏôÑÎ£å ÌõÑ ÌîåÎûòÍ∑∏ Ìï¥Ï†ú
 
-        // ∏∏æ‡ ±◊ªÁ¿Ã ªı∑ŒøÓ ¿€æ˜¿Ã µÈæÓø‘¥Ÿ∏È ¥ŸΩ√ Serializerø° µÓ∑œ
+        // ÎßåÏïΩ Í∑∏ÏÇ¨Ïù¥ ÏÉàÎ°úÏö¥ ÏûëÏóÖÏù¥ Îì§Ïñ¥ÏôîÎã§Î©¥ Îã§Ïãú SerializerÏóê Îì±Î°ù
         if (!_jobs.empty()) {
             _isInsideJobQueue = true;
             _jobserializer->Push(shared_from_this());

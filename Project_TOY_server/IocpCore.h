@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include <winsock2.h>
 
@@ -8,13 +8,13 @@ public:
     IocpCore();
     ~IocpCore();
 
-    // IOCP ÇÚµé »ı¼º ¹× °ü¸®
+    // IOCP í•¸ë“¤ ìƒì„± ë° ê´€ë¦¬
     HANDLE GetHandle() { return _iocpHandle; }
 
-    // ¼ÒÄÏ(¼¼¼Ç)À» IOCP ÇÚµé¿¡ µî·Ï
+    // ì†Œì¼“(ì„¸ì…˜)ì„ IOCP í•¸ë“¤ì— ë“±ë¡
     bool Register(SessionPtr session);
 
-    // ¿Ï·á Åëº¸¸¦ È®ÀÎÇÏ´Â ÇÙ½É ÇÔ¼ö (Worker Thread°¡ È£Ãâ)
+    // ì™„ë£Œ í†µë³´ë¥¼ í™•ì¸í•˜ëŠ” í•µì‹¬ í•¨ìˆ˜ (Worker Threadê°€ í˜¸ì¶œ)
     bool Dispatch(unsigned int timeoutMs = INFINITE);
 
 private:

@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 setlocal enabledelayedexpansion
 
 :: 1. 경로 설정 (등호 앞뒤 공백 제거 및 상대 경로 명확화)

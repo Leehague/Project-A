@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 #include "DataContents.h"
 #include "Types.h"
@@ -13,7 +13,7 @@ public:
     virtual ~Projectile();
 
     void Init(GameObjectPtr attacker, const SkillData* skillData, Vector3 targetPos);
-    void TickMove(); // ½Ã°£ °æ°ú¿¡ µû¸¥ À§Ä¡ °»½Å
+    void TickMove(); // ì‹œê°„ ê²½ê³¼ì— ë”°ë¥¸ ìœ„ì¹˜ ê°±ì‹ 
 
     GameObjectPtr GetAttacker() { return _attacker; }
     const SkillData* GetSkillData() { return _skillData; }
@@ -25,7 +25,7 @@ private:
 
     Vector3 _startPos;
     Vector3 _direction;
-    float _speed = 20.0f; // ÀÓ½Ã ¼Óµµ (ÃßÈÄ SkillData json¿¡ Ãß°¡ ±ÇÀå)
+    float _speed = 20.0f; // ì„ì‹œ ì†ë„ (ì¶”í›„ SkillData jsonì— ì¶”ê°€ ê¶Œì¥)
     float _traveledDistance = 0.0f;
     uint64 _lastTick = 0;
 };

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -23,7 +23,7 @@ using int64 = std::int64_t;
 class Session; class SendBuffer; class Player; class Room; 
 class GameObject; class Map; class Monster; class Vector3; struct MapData; struct SkillData;
 class Projectile;
-// ½º¸¶Æ® Æ÷ÀÎÅÍ º°Äª Á¤ÀÇ
+// ìŠ¤ë§ˆíŠ¸ í¬ì¸í„° ë³„ì¹­ ì •ì˜
 using SessionPtr = std::shared_ptr<Session>;
 using SendBufferPtr = std::shared_ptr<SendBuffer>;
 using PlayerPtr = std::shared_ptr<Player>;

@@ -1,15 +1,15 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Util
 {
-    // 1. ÀÚ½Ä ¿ÀºêÁ§Æ®¿¡¼­ Æ¯Á¤ ÄÄÆ÷³ÍÆ®¸¦ Ã£¾ÆÁÖ´Â ÇÔ¼ö
+    // 1. ìì‹ ì˜¤ë¸Œì íŠ¸ì—ì„œ íŠ¹ì • ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì•„ì£¼ëŠ” í•¨ìˆ˜
     public static T FindChild<T>(GameObject go, string name = null, bool recursive = false) where T : UnityEngine.Object
     {
         if (go == null) return null;
 
-        if (recursive == false) // Á÷°è ÀÚ½Ä¸¸ °Ë»ö
+        if (recursive == false) // ì§ê³„ ìì‹ë§Œ ê²€ìƒ‰
         {
             for (int i = 0; i < go.transform.childCount; i++)
             {
@@ -21,7 +21,7 @@ public class Util
                 }
             }
         }
-        else // ¸ğµç ÀÚ½Ä(¼ÕÀÚ Æ÷ÇÔ) °Ë»ö
+        else // ëª¨ë“  ìì‹(ì†ì í¬í•¨) ê²€ìƒ‰
         {
             foreach (T component in go.GetComponentsInChildren<T>(true))
             {
@@ -33,7 +33,7 @@ public class Util
         return null;
     }
 
-    // 2. ÀÚ½Ä ¿ÀºêÁ§Æ®(GameObject ÀÚÃ¼)¸¦ Ã£¾ÆÁÖ´Â ÇÔ¼ö
+    // 2. ìì‹ ì˜¤ë¸Œì íŠ¸(GameObject ìì²´)ë¥¼ ì°¾ì•„ì£¼ëŠ” í•¨ìˆ˜
     public static GameObject FindChild(GameObject go, string name = null, bool recursive = false)
     {
         Transform transform = FindChild<Transform>(go, name, recursive);
@@ -42,10 +42,10 @@ public class Util
     }
 }
 
-// 3. Æí¸®ÇÑ ÄÚµùÀ» À§ÇÑ È®Àå ¸Ş¼­µå (Extension Methods)
+// 3. í¸ë¦¬í•œ ì½”ë”©ì„ ìœ„í•œ í™•ì¥ ë©”ì„œë“œ (Extension Methods)
 public static class Extension
 {
-    // ÄÄÆ÷³ÍÆ®°¡ ÀÖÀ¸¸é °¡Á®¿À°í, ¾øÀ¸¸é ºÙ¿©¼­ ¹İÈ¯ (Null ¹æÁö)
+    // ì»´í¬ë„ŒíŠ¸ê°€ ìˆìœ¼ë©´ ê°€ì ¸ì˜¤ê³ , ì—†ìœ¼ë©´ ë¶™ì—¬ì„œ ë°˜í™˜ (Null ë°©ì§€)
     public static T GetOrAddComponent<T>(this GameObject go) where T : UnityEngine.Component
     {
         T component = go.GetComponent<T>();
@@ -54,7 +54,7 @@ public static class Extension
         return component;
     }
     
-    // UI ÀÌº¥Æ®¸¦ µî·ÏÇÏ´Â µµ¿ì¹Ì (³ªÁß¿¡ UI_EventHandler ¿¬µ¿ ½Ã »ç¿ë)
+    // UI ì´ë²¤íŠ¸ë¥¼ ë“±ë¡í•˜ëŠ” ë„ìš°ë¯¸ (ë‚˜ì¤‘ì— UI_EventHandler ì—°ë™ ì‹œ ì‚¬ìš©)
     // public static void AddUIEvent(this GameObject go, Action<PointerEventData> action, Define.UIEvent type = Define.UIEvent.Click)
     // {
     //     UI_Base.BindEvent(go, action, type);

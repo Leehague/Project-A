@@ -1,16 +1,16 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "SendBuffer.h"
 #include "BufferWriter.h"
 
-#pragma comment(lib, "libprotobufd.lib") // ¶Ç´Â libprotobufd.lib
+#pragma comment(lib, "libprotobufd.lib") // ë˜ëŠ” libprotobufd.lib
 
-#pragma pack(push, 1) // 1¹ÙÀÌÆ® ´ÜÀ§·Î Á¤·Ä
-// ÆĞÅ¶ÀÇ °¡Àå ¾Õ¿¡ ºÙ´Â ¸ŞÅ¸µ¥ÀÌÅÍ
+#pragma pack(push, 1) // 1ë°”ì´íŠ¸ ë‹¨ìœ„ë¡œ ì •ë ¬
+// íŒ¨í‚·ì˜ ê°€ì¥ ì•ì— ë¶™ëŠ” ë©”íƒ€ë°ì´í„°
 struct PacketHeader {
-    uint16 size; // ÆĞÅ¶ÀÇ ÀüÃ¼ Å©±â (Çì´õ + µ¥ÀÌÅÍ)
-    uint16 id;   // ÆĞÅ¶ Á¾·ù (Protocol.protoÀÇ PacketId)
+    uint16 size; // íŒ¨í‚·ì˜ ì „ì²´ í¬ê¸° (í—¤ë” + ë°ì´í„°)
+    uint16 id;   // íŒ¨í‚· ì¢…ë¥˜ (Protocol.protoì˜ PacketId)
 };
 #pragma pack(pop)
 
@@ -24,24 +24,24 @@ public:
         const uint16 headerSize = sizeof(PacketHeader);
         const uint16 totalSize = dataSize + headerSize;
 
-        // [µğ¹ö±ë ·Î±× Ãß°¡]
+        // [ë””ë²„ê¹… ë¡œê·¸ ì¶”ê°€]
         //std::cout << "[Send] ID: " << pktId << ", DataSize: " << dataSize << ", TotalSize: " << totalSize << std::endl;
 
 
         SendBufferPtr sendBuffer = std::make_shared<SendBuffer>(totalSize);
 
-        // 1. Çì´õ Á÷Á¢ ±âÀÔ
+        // 1. í—¤ë” ì§ì ‘ ê¸°ì…
         PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer->Buffer());
         header->size = totalSize;
         header->id = pktId;
 
-        // 2. µ¥ÀÌÅÍ Á÷·ÄÈ­
+        // 2. ë°ì´í„° ì§ë ¬í™”
         BYTE* dataStart = reinterpret_cast<BYTE*>(sendBuffer->Buffer()) + headerSize;
         if (pkt.SerializeToArray(dataStart, dataSize) == false)
             return nullptr;
 
-        // [ÇÙ½É Ãß°¡] 3. ¹öÆÛÀÇ »ç¿ëµÈ Å©±â¸¦ °­Á¦·Î ¼³Á¤ÇØÁÜ
-        // SendBuffer Å¬·¡½º¿¡ publicÀ¸·Î Ãß°¡ÇÏ°Å³ª, Write ÇÔ¼ö¸¦ È°¿ëÇØ¾ß ÇÕ´Ï´Ù.
+        // [í•µì‹¬ ì¶”ê°€] 3. ë²„í¼ì˜ ì‚¬ìš©ëœ í¬ê¸°ë¥¼ ê°•ì œë¡œ ì„¤ì •í•´ì¤Œ
+        // SendBuffer í´ë˜ìŠ¤ì— publicìœ¼ë¡œ ì¶”ê°€í•˜ê±°ë‚˜, Write í•¨ìˆ˜ë¥¼ í™œìš©í•´ì•¼ í•©ë‹ˆë‹¤.
         sendBuffer->Close(totalSize);
 
         return sendBuffer;

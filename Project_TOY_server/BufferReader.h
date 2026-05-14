@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Types.h"
 
 class BufferReader {
@@ -21,11 +21,11 @@ public:
         if (FreeSize() < len) return false;
         ::memcpy(dest, &_buffer[_pos], len);
 
-        // ¹æ¾î ÄÚµå: ÀÐ¾î¿Â °ªÀÌ ½Ç¼öÀÎµ¥ À¯È¿ÇÏÁö ¾Ê´Ù¸é
+        // ë°©ì–´ ì½”ë“œ: ì½ì–´ì˜¨ ê°’ì´ ì‹¤ìˆ˜ì¸ë° ìœ íš¨í•˜ì§€ ì•Šë‹¤ë©´
         if constexpr (std::is_floating_point_v<T>) {
             if (!std::isfinite(*dest)) {
                 _pos += len;
-                *dest = 0.0f; // ¾ÈÀüÇÑ °ªÀ¸·Î °­Á¦ Ä¡È¯ÇÏ°Å³ª false ¹ÝÈ¯
+                *dest = 0.0f; // ì•ˆì „í•œ ê°’ìœ¼ë¡œ ê°•ì œ ì¹˜í™˜í•˜ê±°ë‚˜ false ë°˜í™˜
                 return false;
             }
         }
