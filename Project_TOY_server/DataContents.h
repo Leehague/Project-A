@@ -48,24 +48,24 @@ enum class CostType
 };
 
 struct SkillData {
-    int32 id;
+    int32 id = 0;
     std::string name;
-    SkillType skillType;
-    CostType costType;
-    int32 damage;
-    float range;
-    float coolTime;
+    SkillType skillType = SkillType::Common;
+    CostType costType = CostType::None;
+    int32 damage = 0;
+    float range = 0.0f;
+    float coolTime = 0.0f;
     std::string animName;
-    int32 cost;
+    int32 cost = 0;
 
     //Projectile
-    float projectileSpeed;
-    int32 projectileId;
+    float projectileSpeed = 0.0f;
+    int32 projectileId = 0;
     
     //Dash
-    float dashDistance;
-    float dashSpeed;
+    float dashDistance = 0.0f;
+    float dashSpeed = 0.0f;
 
     //targetType
-    SkillTargetType targetType;
+    SkillTargetType targetType = SkillTargetType::objectTarget;
 };

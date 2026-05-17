@@ -1,11 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
-#include "Room.h"
 #include "GameObject.h"
-#include "Session.h"
-#include "DataContents.h"
-#include "DataManager.h"
+
 
 
 class Monster : public GameObject

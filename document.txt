@@ -499,5 +499,8 @@ TODO: job 방식으로 handleskill 내부 수정
 
 
 job push 방식으로 room 내부 메소드들 수정
-[server]투사체 클래스 projectile class 구현
+[server] 투사체 클래스 projectile class 구현
 TODO: [client] 클라에서 투사체 소환등 로직 구현
+
+2026/05/17
+

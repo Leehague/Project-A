@@ -111,6 +111,7 @@ private:
             skill.coolTime = item["coolTime"];
             skill.costType = static_cast<CostType>(item["CostTypeId"].get<int>());
             skill.animName = item["animName"].get<std::string>();
+            if (item.contains("cost")) skill.cost = item["cost"];
 
             // [타입별 선택적 필드] - item.contains() 또는 item.value() 사용
             if (item.contains("damage")) skill.damage = item["damage"];

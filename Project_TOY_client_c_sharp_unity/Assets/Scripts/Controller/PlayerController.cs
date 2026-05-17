@@ -1,4 +1,4 @@
-﻿using Cinemachine;
+using Cinemachine;
 using Protocol;
 using System;
 using System.Collections.Generic;
@@ -202,7 +202,7 @@ public class PlayerController : CreatureController
         // 예시: 숫자 2키를 누르면 '화염구(201)' 사용
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            
+            Debug.Log("201 스킬 요청");
             // 논타겟팅: 현재 마우스 위치나 캐릭터 정면 좌표를 전송
             Vector3 targetPos = transform.position + transform.forward * 10.0f;
             SendSkillPacket(201,targetPos);

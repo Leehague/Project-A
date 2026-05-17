@@ -34,7 +34,7 @@ bool Map::Load(const MapData* mapdata)
     //[추가] DataManager에서 json파일을 통해 가져온 mapdata와 Minx등이 일치하는지 확인
     if (mapdata->MinX != _minX || mapdata->MinZ != _minZ || mapdata->CellSize != _cellSize)
     {
-        std::cout << "MapData 불일치" << std::endl;
+        std::cout << "MapData mismatch " << std::endl;
 
         std::cout << "mapdata->MinX :"<< mapdata->MinX<<"_minX: "<< _minX << std::endl;
 

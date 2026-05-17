@@ -1,8 +1,8 @@
-{
+Ôªø{
   "skills": [
     {
       "id": 101,
-      "name": "¿œπ› ∞¯∞›",
+      "name": "ÏùºÎ∞ò Í≥µÍ≤©",
       "skillTypeId": 1,
       "coolTime": 0.5,
       "CostTypeId": 0,
@@ -14,7 +14,7 @@
     },
     {
       "id": 201,
-      "name": "»≠ø∞±∏",
+      "name": "ÌôîÏóºÍµ¨",
       "skillTypeId": 2,
       "coolTime": 2.0,
       "CostTypeId": 1,
@@ -28,7 +28,7 @@
     },
     {
       "id": 301,
-      "name": "µπ¡¯",
+      "name": "ÎèåÏßÑ",
       "skillTypeId": 3,
       "dashDistance": 5.0,
       "dashSpeed": 15.0,
