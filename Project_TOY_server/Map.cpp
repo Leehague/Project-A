@@ -337,3 +337,11 @@ bool Map::CanGo(Vector3 pos) {
 
     return false;
 }
+
+bool Map::CheckProjectileCollision(Vector3 pos) 
+{
+    // 투사체 지형 충돌 검사
+    // 현재는 이동 가능 여부(CanGo)의 결과를 반전시켜 반환합니다.
+    // 갈 수 없는 곳(!CanGo)이면 투사체가 충돌(true)했다고 판정.
+    return !CanGo(pos);
+}

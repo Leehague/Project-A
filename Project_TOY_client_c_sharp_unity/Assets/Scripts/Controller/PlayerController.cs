@@ -1,4 +1,4 @@
-using Cinemachine;
+﻿using Cinemachine;
 using Protocol;
 using System;
 using System.Collections.Generic;
@@ -55,6 +55,9 @@ public class PlayerController : CreatureController
             // UI 생성 및 데이터 연결
             UI_HPMPBar hpBar = Managers.uiManager.ShowSceneUI<UI_HPMPBar>();
             hpBar.SetStat(this.stat, "내 캐릭터");
+
+            // 채팅 UI 동적 생성 (UI_Root 자식으로 자동 할당됨)
+            Managers.uiManager.ShowSceneUI<UI_Chat>();
         }
     }
 
@@ -78,6 +81,18 @@ public class PlayerController : CreatureController
             _stuckTimer -= Time.deltaTime;
             if (_stuckTimer <= 0) _isStuckByServer = false;
             return; // 서버가 보정한 직후에는 키 입력을 무시함
+        }
+
+        // [추가] UI 입력 필드(채팅창)에 포커스가 맞춰져 있다면 모든 조작 입력을 무시합니다.
+        if (UnityEngine.EventSystems.EventSystem.current != null && 
+            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
+        {
+            TMPro.TMP_InputField inputField = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>();
+            if (inputField != null && inputField.isFocused)
+            {
+                State = Define.CreatureState.Idle; // 이동 중이었다면 즉시 대기 상태로 멈추도록 처리
+                return; 
+            }
         }
 
         float h = Input.GetAxisRaw("Horizontal");
@@ -202,11 +217,18 @@ public class PlayerController : CreatureController
         // 예시: 숫자 2키를 누르면 '화염구(201)' 사용
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            Debug.Log("201 스킬 요청");
+            
             // 논타겟팅: 현재 마우스 위치나 캐릭터 정면 좌표를 전송
             Vector3 targetPos = transform.position + transform.forward * 10.0f;
             SendSkillPacket(201,targetPos);
             
+        }
+
+        //Dash (301)사용
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            Vector3 targetPos = transform.position + transform.forward * 10.0f;
+            SendSkillPacket(301, targetPos);
         }
     }
 
@@ -230,4 +252,3 @@ public class PlayerController : CreatureController
         Managers.networkManager.Send(skillPkt);
     }
 }
-

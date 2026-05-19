@@ -26,6 +26,7 @@ public:
     bool LoadNavMesh(const std::string& path);
     bool CanGo_Old(Vector3 pos);
     bool CanGo(Vector3 pos); // 핵심 로직
+    bool CheckProjectileCollision(Vector3 pos); // 투사체 지형 충돌 검사
     float GetHeight(Vector3 pos); // [추가] 특정 좌표의 지형 높이 반환
     uint64 GetMapId();
 
@@ -55,7 +56,5 @@ public:
     std::vector<Vector3> FindPath(Vector3 startPos, Vector3 endPos);
 
 private:
-    // 좌표를 정수형 그리드 인덱스로 변환하는 헬퍼 (기존 GetGridPos 활용)
-    // 인접 노드 탐색 시 사용
+    
 };
-

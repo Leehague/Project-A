@@ -90,6 +90,7 @@ public class CreatureController : MonoBehaviour
 
         State = (Define.CreatureState)info.State;
     }
+    //위치를 강제로 조정하는 함수
     public virtual void SyncPos(Vector3 pos) 
     {
         transform.position = pos;
@@ -119,4 +120,38 @@ public class CreatureController : MonoBehaviour
             fireballcontroller.Init(transform.position, targetpos);
         }
     }
+
+    // 대쉬 연출을 시작하는 public 함수
+public void PlayDashAnimation(Vector3 targetPos, float duration = 0.15f)
+{
+    // 이미 다른 대쉬가 진행 중일 수도 있으니 코루틴을 중복 실행하지 않도록 관리할 수도 있습니다.
+    // 여기서는 단순하게 바로 코루틴을 실행합니다.
+    StartCoroutine(DashRoutine(targetPos, duration));
+}
+
+// 실제 부드러운 이동을 처리하는 코루틴
+private System.Collections.IEnumerator DashRoutine(Vector3 targetPos, float duration)
+{
+    Vector3 startPos = transform.position;
+    float elapsedTime = 0f;
+
+    // TODO: 대쉬 시작 시 파티클 이펙트나 사운드를 재생하는 코드를 여기에 추가하면 좋습니다.
+    // 예: dashEffect.Play();
+
+    while (elapsedTime < duration)
+    {
+        // 시간에 따라 startPos에서 targetPos로 부드럽게 보간
+        transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime / duration);
+        elapsedTime += Time.deltaTime;
+        
+        yield return null; // 다음 프레임까지 대기
+    }
+
+    // 루프가 끝난 후 정확한 최종 위치로 보정
+    transform.position = targetPos;
+    
+    // (선택 사항) 대쉬가 끝난 후 상태를 Idle 등으로 되돌릴 수 있습니다.
+    // State = Define.CreatureState.Idle;
+}
+
 }

@@ -101,4 +101,15 @@ public class UIManager
         while (_popupStack.Count > 0)
             ClosePopupUI();
     }
+
+    // UIManager.cs 내부에 추가할 메소드
+    public T FindUI<T>() where T : UI_Base
+    {
+        // 만약 UIManager 내부에서 생성된 UI들을 Dictionary나 Stack/List 등으로 관리하고 있다면, 
+        // Object.FindObjectOfType 대신 해당 컬렉션에서 검색하여 반환하도록 최적화하는 것이 가장 좋습니다.
+        // (아래는 임시로 FindObjectOfType을 래핑해 둔 예시입니다)
+
+        return UnityEngine.Object.FindObjectOfType<T>();
+    }
+
 }

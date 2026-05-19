@@ -26,11 +26,32 @@ public class PacketHandler
         
     }
 
+    //public static void Handle_SC_CHAT_BROADCAST(PacketSession session, IMessage packet)
+    //{
+    //    SC_CHAT_BROADCAST pkt = packet as SC_CHAT_BROADCAST;
+    //    // 씬에 띄워져 있는 UI_Chat 스크립트를 찾아 내용을 갱신
+    //    UI_Chat chatUI = Object.FindObjectOfType<UI_Chat>();
+    //    if (chatUI != null)
+    //    {
+    //        chatUI.AddChat(chatPkt.PlayerId, chatPkt.Msg);
+    //    }
+    //}
+
+    // PacketHandler.cs 내부 수정
     public static void Handle_SC_CHAT_BROADCAST(PacketSession session, IMessage packet)
     {
-        SC_CHAT_BROADCAST pkt = packet as SC_CHAT_BROADCAST;
-        Debug.Log($"Handle_SC_CHAT_BROADCAST: {pkt.ToString()}");
+        SC_CHAT_BROADCAST chatPkt = packet as SC_CHAT_BROADCAST; // 변수명을 chatPkt로 통일
+
+        // UIManager에 추가한 메소드를 통해 UI_Chat 스크립트를 찾아서 가져옵니다.
+        UI_Chat chatUI = Managers.uiManager.FindUI<UI_Chat>();
+
+        if (chatUI != null)
+        {
+            chatUI.AddChat(chatPkt.PlayerId, chatPkt.Msg);
+        }
     }
+
+
 
     public static void Handle_SC_WHISPER(PacketSession session, IMessage packet)
     {
@@ -138,6 +159,7 @@ public class PacketHandler
 
         switch ((skillType)skilldata.skillTypeId) //애니매이션 틀고 UI 업데이트하고 
         {
+            
             case skillType.Common:
                 break;
             case skillType.Melee:
@@ -148,10 +170,12 @@ public class PacketHandler
 
                 if (skillPkt.DestPos == null) { break; }
                 Vector3 targetpos = new Vector3(skillPkt.DestPos.X, skillPkt.DestPos.Y, skillPkt.DestPos.Z);
-                cc.spawnfireball(targetpos); //임시 함수 실제로는 스킬 아이디 까지 받아서 그에 따라 분기해줘야함
+                cc.spawnfireball(targetpos); //TODO: 투사체 종류입력으로 받아서 각 투사체 별 아트리소스를 맵핑하는 함수 필요
                 break;
             case skillType.Dash:
                 cc.State = Define.CreatureState.Skill;
+                Vector3 dashtargetpos = new Vector3(skillPkt.DestPos.X, skillPkt.DestPos.Y, skillPkt.DestPos.Z);
+                cc.PlayDashAnimation(dashtargetpos);
                 break;
         }
 

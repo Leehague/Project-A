@@ -474,7 +474,7 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
 
     if (now - lastUsed < coolTime) {
         // 아직 쿨타임 중! 요청 무시 혹은 에러 패킷 전송
-        std::cout << "it's cooltime" << std::endl;
+        //std::cout << "it's cooltime" << std::endl;
         return;
     }
 
@@ -490,7 +490,7 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
         if (SKillUser->UseMp(requiredMp) == false)
         {
             //마나 부족, 본인에게 메시지등을 보낼수 있을것임
-            std::cout << "Mana is not enough " << std::endl;
+            //std::cout << "Mana is not enough " << std::endl;
             return;
         }
 
@@ -539,6 +539,18 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
 
     case SkillType::Dash:
         // 이동 가능 지역인지 확인 후 좌표 강제 갱신
+        if (this->_map->CanGo(targetPos))
+        {
+            //이동가능 지역인 경우
+            SKillUser->Setpos(targetPos);
+        }
+        else
+        {
+            //이동 불가 지역인 경우
+            
+        }
+
+
         break;
     }
 
@@ -613,13 +625,78 @@ void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
     
     Vector3 newPos = Vector3::PosInfoToVector3(projectile->Getpos());
 
-    // 2. 그리드 좌표 업데이트
+    // 2. 지형 충돌 검사 (Map 클래스에 역할 위임)
+    if (_map != nullptr && _map->CheckProjectileCollision(newPos))
+    {
+        projectile->SetState(CreatureState::OnDead);
+        return; // 지형(벽)에 부딪히면 즉시 소멸
+    }
+
+    // 3. 그리드 좌표 업데이트
     UpdateObjectGrid(projectile, oldPos, newPos);
 
-    // TODO: 타겟 충돌(피격) 판정 및 사거리 도달 시 삭제 로직 구현
-    // 충돌 시나 사거리 초과 시 -> projectile->SetState(CreatureState::Dead);
+    bool isHit = false;
+    GameObjectPtr attacker = projectile->GetAttacker();
+    const SkillData* skillData = projectile->GetSkillData();
 
-    // 3. 이동 패킷 브로드캐스트
+    if (attacker && skillData)
+    {
+        // 4. 사거리 초과 시 투사체 소멸
+        if (projectile->GetTraveledDistance() >= skillData->range)
+        {
+            projectile->SetState(CreatureState::OnDead);
+            return;
+        }
+
+        // 5. 주변 섹터의 동적 오브젝트와 타겟 충돌(피격) 검사 (Room 역할)
+        auto [cellX, cellZ] = GetSectorPos(newPos);
+        std::vector<GameObjectPtr> targetsToHit;
+        {
+            std::lock_guard<std::mutex> lock(_lock);
+            for (int dz = -1; dz <= 1; ++dz) {
+                for (int dx = -1; dx <= 1; ++dx) {
+                    int nx = cellX + dx;
+                    int nz = cellZ + dz;
+                    if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ) {
+                        for (auto& go : _sectors[nz][nx]) {
+                            if (go == nullptr || go == projectile || go->GetObjectId() == attacker->GetObjectId()) continue;
+                            if (go->GetState() == CreatureState::Dead || go->GetState() == CreatureState::OnDead) continue;
+                            if (go->GetType() != GameObjectType::Player && go->GetType() != GameObjectType::Monster) continue;
+
+                            float dist = Vector3::Distance(newPos, Vector3::PosInfoToVector3(go->Getpos()));
+                            if (dist <= 1.0f) { // 피격 반경 (임시 1.0f 적용)
+                                targetsToHit.push_back(go);
+                                isHit = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 6. 데미지 적용 및 브로드캐스트
+        for (auto& target : targetsToHit)
+        {
+            int32 damage = skillData->damage + attacker->GetAttack();
+            target->OnAttacked(damage);
+
+            UpdateHPToOthers(target, attacker, damage, target->Getpos_As_Vector3());
+            if (target->GetType() == GameObjectType::Player) {
+                UpdateHPToSelf(std::static_pointer_cast<Player>(target));
+            }
+
+            std::cout << "[Projectile Hit] " << attacker->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
+        }
+    }
+
+    // 충돌(피격) 시 상태를 OnDead로 바꾸고 이동 패킷 생략
+    if (isHit)
+    {
+        projectile->SetState(CreatureState::OnDead);
+        return;
+    }
+
+    // 7. 이동 패킷 브로드캐스트
     BroadcastMove(projectile);
 }
 
