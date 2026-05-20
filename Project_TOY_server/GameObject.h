@@ -20,6 +20,7 @@ enum class GameObjectType
 	Player,
 	Monster,
 	Projectile,
+    Item,
 };
 
 enum class CreatureState

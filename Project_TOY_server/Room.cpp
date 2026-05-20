@@ -1030,14 +1030,20 @@ void Room::Execute()
             if (item.second->GetType() == GameObjectType::Monster)
             {
                 monstersToUpdate.push_back(std::static_pointer_cast<Monster>(item.second));
+
             }
             else if (item.second->GetType() == GameObjectType::Projectile)
             {
                 projectilesToUpdate.push_back(std::static_pointer_cast<Projectile>(item.second));
+                continue;
+                // Projectile 의 소멸에 대해서는 방송할 필요가 없음, 오히려 투사체의 상태를 실시간으로 통신하지 않으려는 구조임, 생성되는 순간만 통보하고 끝
+                // 데이터 기반으로 하기 위해서 bool 변수 하나를 gameObject 객체에 추가해서 데이터 로드할때 혹은 오브젝트 생성할때 이 오브젝트가 죽을때 방송 대상이 되는지를
+                // 체크하는 방법도 있을 듯, 기획에 따라 투사체이지만 소멸할때 클라에 알려주고 싶을 수도 있기 때문
+                 
             }
             if (item.second->GetState() == CreatureState::OnDead)
             {
-                
+
                 deadpkt.add_dead_object_id_list(item.second->GetObjectId());
                 item.second->SetState(CreatureState::Dead);
                 anyDead = true; // 죽은 몬스터가 있을 때만 플래그 활성화

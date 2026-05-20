@@ -69,3 +69,30 @@ struct SkillData {
     //targetType
     SkillTargetType targetType = SkillTargetType::objectTarget;
 };
+
+enum class ItemType
+{
+    Equipment = 0, //장비류
+    Consumable = 1, //소모품류
+    Etc = 2, // 기타
+};
+
+struct ItemData
+{
+    int32 id = 0;
+    std::string name;
+    ItemType itemType;
+    std::string description;
+    std::string iconPath;
+
+    // Equipment specific
+    int32 damage;
+    std::string modelPath;
+
+    // Consumable specific
+    int32 value;
+    std::string effect;
+    int32 coolTime;
+    bool stackable;
+    int32 maxStack;
+};

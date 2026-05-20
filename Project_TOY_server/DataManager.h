@@ -16,6 +16,7 @@ public:
         LoadStatData("Data/StatData.json");
         LoadMapData("Data/MapData.json");
         LoadSkillData("Data/SkillData.json");
+        LoadItemData("Data/ItemData.json");
     }
 
 private:
@@ -135,6 +136,42 @@ private:
         }
     }
 
+    void LoadItemData(const std::string& path) {
+        std::ifstream f(path);
+        if (!f.is_open()) {
+            std::cout << "Cannot find file at: " << path << std::endl;
+            return;
+        }
+        if (f.peek() == std::ifstream::traits_type::eof()) {
+            std::cout << "File is empty!" << std::endl;
+            return;
+        }
+
+        json data = json::parse(f);
+
+        for (auto& item : data["items"]) {
+            ItemData itemData;
+            itemData.id = item["id"];
+            itemData.name = item["name"];
+            itemData.itemType = static_cast<ItemType>(item["itemTypeId"].get<int>());
+            itemData.description = item["description"];
+            itemData.iconPath = item["iconPath"];
+
+            // Equipment specific
+            if (item.contains("damage")) itemData.damage = item["damage"];
+            if (item.contains("modelPath")) itemData.modelPath = item["modelPath"];
+
+            // Consumable specific
+            if (item.contains("value")) itemData.value = item["value"];
+            if (item.contains("effect")) itemData.effect = item["effect"];
+            if (item.contains("coolTime")) itemData.coolTime = item["coolTime"];
+            if (item.contains("stackable")) itemData.stackable = item["stackable"];
+            if (item.contains("maxStack")) itemData.maxStack = item["maxStack"];
+
+            _itemTable[itemData.id] = itemData;
+        }
+    }
+
     
 public:
     const StatData* GetStat(int32 templateId) {
@@ -150,8 +187,13 @@ public:
         if (_skillTable.find(id) == _skillTable.end()) return nullptr;
         return &_skillTable[id];
     }
+    const ItemData* GetItem(int32 templateId) {
+        if (_itemTable.find(templateId) == _itemTable.end()) return nullptr;
+        return &_itemTable[templateId];
+    }
 private:
     std::map<int32, StatData> _statTable; //key : tempateId , value : StatData
     std::map<int32, MapData> _mapTable; //key : MapId, value : MapData
     std::unordered_map<int32, SkillData> _skillTable; //key : Id , value : SkillData
+    std::unordered_map<int32, ItemData> _itemTable; //key : Id, value : ItemData
 };

@@ -161,6 +161,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="IocpCore.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="JobQueue.h" />
     <ClInclude Include="JobSerializer.h" />
     <ClInclude Include="Listener.h" />
