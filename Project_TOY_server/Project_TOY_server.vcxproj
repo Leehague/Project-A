@@ -134,8 +134,10 @@
   <ItemGroup>
     <ClCompile Include="DBConnection.cpp" />
     <ClCompile Include="DBManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameSessionManager.cpp" />
     <ClCompile Include="IocpCore.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="JobSerializer.cpp" />
     <ClCompile Include="Listener.cpp" />
@@ -145,6 +147,7 @@
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Protocol\Protocol.pb.cc" />
     <ClCompile Include="RecvBuffer.cpp" />
@@ -160,6 +163,7 @@
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="JobQueue.h" />

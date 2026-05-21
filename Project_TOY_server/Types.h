@@ -22,7 +22,7 @@ using int64 = std::int64_t;
 
 class Session; class SendBuffer; class Player; class Room; 
 class GameObject; class Map; class Monster; class Vector3; struct MapData; struct SkillData;
-class Projectile;
+class Projectile; class Item; class Inventory;
 // 스마트 포인터 별칭 정의
 using SessionPtr = std::shared_ptr<Session>;
 using SendBufferPtr = std::shared_ptr<SendBuffer>;
@@ -32,6 +32,7 @@ using GameObjectPtr = std::shared_ptr<GameObject>;
 using MapPtr = std::shared_ptr<Map>;
 using MonsterPtr = std::shared_ptr<Monster>;
 using ProjectilePtr = std::shared_ptr<Projectile>;
-
+using ItemPtr = std::shared_ptr<Item>;
+using InventoryPtr = std::shared_ptr<Inventory>;
 
 const float EPSILON = 1e-4f;

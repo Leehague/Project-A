@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "GameObject.h"

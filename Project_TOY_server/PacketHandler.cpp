@@ -4,6 +4,7 @@
 #include "ObjectManager.h"
 #include "RoomManager.h"
 #include "DataContents.h"
+#include "DBManager.h"
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];
@@ -24,24 +25,32 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
     Protocol::SC_LOGIN_OK resPkt;
 
     resPkt.set_success(true);
+
+    //TODO: accountId를 로그인 서버로부터 받아 와야함
+    int32 accountId = 1; int32 characterId; int32 templateId;
+
+    if (DBManager::GetInstance().GetCharacterInfo(accountId, characterId, templateId))
+    {
+        
+
+        GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, templateId);
+
+
+        resPkt.set_player_id(go->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
+
+        //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
+
+        if (resPkt.success()) { std::cout << "success is true" << std::endl; }
+        else { std::cout << "success is not true" << std::endl; }
+
+        auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
+
+        if (!sendBuffer) { return true; }
+        session->Send(sendBuffer);
+
+    }
     
-    //TODO : [DB 필요]DB와 통신해서 템플릿 아이디 등 정보 가져오기 그래서 create할때 동적으로 연결
     
-    GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session,1);
-
-
-    resPkt.set_player_id(go->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
-
-    //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
-    
-    if (resPkt.success()) { std::cout << "success is true" << std::endl; }
-    else { std::cout << "success is not true" << std::endl; }
-
-    auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
-    
-    if (!sendBuffer) { return true; }
-    session->Send(sendBuffer);
-
     return true;
 }
 

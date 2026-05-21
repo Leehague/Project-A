@@ -1,4 +1,4 @@
-#include "Monster.h"
+﻿#include "Monster.h"
 #include "RoomManager.h"
 #include "Map.h"
 #include "Player.h"
@@ -6,6 +6,7 @@
 #include "DataManager.h"
 #include "Session.h"
 #include "DataContents.h"
+
 
 std::vector<float> Monster::GatherContext()
 {

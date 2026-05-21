@@ -12,7 +12,7 @@
 #include "DataContents.h"
 #include "ObjectManager.h"
 #include "JobSerializer.h"
-
+#include "DataManager.h"
 
 Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(roomId)
 {

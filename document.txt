@@ -522,3 +522,15 @@ TODO: 대쉬 스킬 구현
 TODO: Item 요소를 DB에 추가하고 계정마다 소유한 Item 정보를 기억하게 하는 로직 
 -투사체 역시 CreatureState를 사용해서 몬스터가 죽은 것처럼 방송하는 문제가 있었음
 일단은 임시로 해당 코드 흐름을 막아놓음(Room.cpp 1038) void Room::Execute() 에서 투사체 체크를 하면 continue를 하는 방식
+
+2026/05/21
+
+- DB에 item table , Inventory table 생성
+- Item 등의 데이터는 정적 데이터 이므로 json파일로만 유지해도 상관없지만 (그리고 어떤 면에서는 더 좋지만)
+DB 툴에서 사용성을 높이기위해 DB에도 저장.
+
+- 커넥션 스트링 수정 
+- DBManager 초기화 코드 main에 삽입
+- 향후 마무리 단계에서 로그인 서버 (웹서버) 로 로그인 부분을 완성해야함 (TODO)
+
+-[TODO] DBManager::LoadPlayerInventory 를 호출해서 플레이어의 아이템 정보를 select 해올 적당한 시점을 찾아야함
