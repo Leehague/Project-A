@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Types.h"
 #include "JobQueue.h"
 
@@ -41,7 +41,7 @@ public:
     // 스킬 패킷 처리 
     void HandleSkillForPlayer(PlayerPtr player , Protocol::CS_SKILL& pkt);
     void HandleSkillForMonster(MonsterPtr monster, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid);
-    void HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos , int32 skillid);
+    void HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos , int32 skillid);
 
     
     //본인에게 MP 변경 패킷 전송
@@ -49,12 +49,12 @@ public:
     //본인에게 HP 변경 패킷 전송
     void UpdateHPToSelf(PlayerPtr player);
     //대상(target)의 MP 변화를 broadcastcenter의 주변에 알림
-    void UpdateMPToOthers(GameObjectPtr target, Vector3 broadcastcenter);
+    void UpdateMPToOthers(CreaturePtr target, Vector3 broadcastcenter);
     //대상(target)의 HP 변화를 broadcastcenter의 주변에 알림
-    void UpdateHPToOthers(GameObjectPtr target, GameObjectPtr attacker, int damage, Vector3 broadcastcenter);
+    void UpdateHPToOthers(CreaturePtr target, CreaturePtr attacker, int damage, Vector3 broadcastcenter);
 
     //투사체 관련 함수
-    void SpawnProjectile(GameObjectPtr attacker, const SkillData *skillData, Vector3 targetPos);
+    void SpawnProjectile(CreaturePtr attacker, const SkillData *skillData, Vector3 targetPos);
     void UpdateProjectile(std::shared_ptr<Projectile> projectile);
 
 

@@ -1,9 +1,10 @@
-﻿#pragma once
+#pragma once
 #include "ObjectManager.h"
 #include "RoomManager.h"
 #include "Player.h"
 #include "Monster.h"
 #include "Projectile.h"
+#include "Item.h"
 
 ObjcetManager GObjcetManager;
 
@@ -32,6 +33,12 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
         ProjectilePtr projectile = std::make_shared<Projectile>(objcetId);
         //Init 은 SpawnProjectile 에서 해주고 있음
         go = std::static_pointer_cast<GameObject>(projectile);
+    }
+    else if (type == GameObjectType::Item)
+    {
+        ItemPtr item = std::make_shared<Item>(objcetId);
+        item->Init(templateId);
+        go = std::static_pointer_cast<GameObject>(item);
     }
     else 
     {

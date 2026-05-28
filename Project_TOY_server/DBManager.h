@@ -1,4 +1,4 @@
-﻿// DBManager.h
+// DBManager.h
 #pragma once
 #include "DBConnection.h"
 #include "JobQueue.h"

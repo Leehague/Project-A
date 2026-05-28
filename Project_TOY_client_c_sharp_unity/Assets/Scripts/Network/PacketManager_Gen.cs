@@ -50,6 +50,10 @@ public partial class PacketManager
         _typeToId.Add(typeof(SC_MONSTER_DEAD), (ushort)PacketId.PktScMonsterDead);
         _onRecv.Add((ushort)PacketId.PktScMonsterDead, (s, b, off, sz) => MakePacket<SC_MONSTER_DEAD>(s, b, off, sz, (ushort)PacketId.PktScMonsterDead));
         _handler.Add((ushort)PacketId.PktScMonsterDead, PacketHandler.Handle_SC_MONSTER_DEAD);
+        _typeToId.Add(typeof(CS_OWNED_ITEM_REQUEST), (ushort)PacketId.PktCsOwnedItemRequest);
+        _typeToId.Add(typeof(SC_ITEM_RESPONSE), (ushort)PacketId.PktScItemResponse);
+        _onRecv.Add((ushort)PacketId.PktScItemResponse, (s, b, off, sz) => MakePacket<SC_ITEM_RESPONSE>(s, b, off, sz, (ushort)PacketId.PktScItemResponse));
+        _handler.Add((ushort)PacketId.PktScItemResponse, PacketHandler.Handle_SC_ITEM_RESPONSE);
 
     }
 }

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "json.hpp" // nlohmann/json
 #include <fstream>
 #include "DataContents.h"
@@ -151,7 +151,7 @@ private:
 
         for (auto& item : data["items"]) {
             ItemData itemData;
-            itemData.id = item["id"];
+            itemData.templateId = item["id"];
             itemData.name = item["name"];
             itemData.itemType = static_cast<ItemType>(item["itemTypeId"].get<int>());
             itemData.description = item["description"];
@@ -168,7 +168,7 @@ private:
             if (item.contains("stackable")) itemData.stackable = item["stackable"];
             if (item.contains("maxStack")) itemData.maxStack = item["maxStack"];
 
-            _itemTable[itemData.id] = itemData;
+            _itemTable[itemData.templateId] = itemData;
         }
     }
 

@@ -1,14 +1,15 @@
-﻿#pragma once
+#pragma once
 #include "Types.h"
 #include "DataContents.h"
-#include "GameObject.h"
 
-class Player : public GameObject
+#include "Creature.h"
+
+class Player : public Creature
 {
 public:
 
     Player(int32 objectId, std::shared_ptr<Session> sessionPtr)
-        : GameObject(objectId, GameObjectType::Player), session(sessionPtr)
+        : Creature(objectId, GameObjectType::Player), session(sessionPtr)
     {
         
     }

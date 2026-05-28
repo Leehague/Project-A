@@ -1,4 +1,4 @@
-﻿#include "JobQueue.h"
+#include "JobQueue.h"
 #include "JobSerializer.h"
 
 void JobQueue::Push(JobFn&& fn)

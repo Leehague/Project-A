@@ -1,4 +1,4 @@
-﻿using Protocol;
+using Protocol;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -172,7 +172,7 @@ public class ObjectManager
             if (isMyPlayer) { continue; }
 
             Debug.Log(spawninfo.Spawnposinfo.ObjectId);
-            SpawnPlayer(spawninfo.Spawnposinfo, spawninfo.TempleteId);
+            SpawnPlayer(spawninfo.Spawnposinfo, spawninfo.TemplateId);
         }
     }
 }

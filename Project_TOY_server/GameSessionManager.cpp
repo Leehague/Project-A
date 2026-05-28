@@ -1,4 +1,4 @@
-﻿#include "GameSessionManager.h"
+#include "GameSessionManager.h"
 #include "Session.h"
 
 GameSessionManager GSessionManager;

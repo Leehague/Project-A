@@ -1,4 +1,4 @@
-﻿#include "Monster.h"
+#include "Monster.h"
 #include "RoomManager.h"
 #include "Map.h"
 #include "Player.h"
@@ -6,7 +6,7 @@
 #include "DataManager.h"
 #include "Session.h"
 #include "DataContents.h"
-
+#include "GameObject.h"
 
 std::vector<float> Monster::GatherContext()
 {
@@ -82,7 +82,7 @@ void Monster::MoveTo(Vector3 targetPos)
     {
         if (std::isnan(vec.x) || std::isnan(vec.y) || std::isnan(vec.z))
         { 
-            std::cout << "잘못된 path 입니다." << std::endl;
+            std::cout << "Invalid path." << std::endl;
             return; 
         }
     }
@@ -156,13 +156,13 @@ void Monster::ProcessMove()
 
     if (std::isnan(currentPos.x) || std::isnan(currentPos.y) || std::isnan(currentPos.z))
     {
-        std::cout << "ProcessMove ::(currentPos) 잘못된 포지션 요청" << std::endl;
+        std::cout << "ProcessMove ::(currentPos) Invalid position request" << std::endl;
         return;
     }
 
     if (std::isnan(nextPos.x) || std::isnan(nextPos.y) || std::isnan(nextPos.z))
     {
-        std::cout << "ProcessMove ::(nextPos) 잘못된 포지션 요청" << std::endl;
+        std::cout << "ProcessMove ::(nextPos) Invalid position request" << std::endl;
         _path.erase(_path.begin()); // 터진 좌표는 제거
         return; 
     }
@@ -242,5 +242,10 @@ void Monster::SyncPosAndBroadcast(Vector3 oldPos, Vector3 newPos)
 
 void Monster::UseSkill(GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
 {
-    this->Getroomptr()->HandleSkill(shared_from_this(), targetobj, targetPos, skillid);
+    CreaturePtr self = std::dynamic_pointer_cast<Creature>(shared_from_this());
+    if(self)
+    {
+        this->Getroomptr()->HandleSkill(self, targetobj, targetPos, skillid);
+    }
+    
 }

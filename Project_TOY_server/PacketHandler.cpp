@@ -1,10 +1,12 @@
-﻿#include "PacketHandler.h"
+#include "PacketHandler.h"
 #include "Session.h"
 #include "Player.h"
 #include "ObjectManager.h"
 #include "RoomManager.h"
 #include "DataContents.h"
 #include "DBManager.h"
+#include "Inventory.h"
+#include "Item.h"
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];
@@ -17,26 +19,32 @@ bool Handle_INVALID(SessionPtr& session, BYTE* buffer, int32 len)
 
 bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 {
-    std::cout << "로그인 요청 ID: " << pkt.user_id() << std::endl;
+    std::cout << "Login request ID: " << pkt.user_id() << std::endl;
 
-    //TODO 로그인 유효성 검증 로직 추가 
+    //TODO 로그인 유효성 검증 로직 추가 (로그인 서버 추가후 로그인 서버와의 통신 필요)
+    //이때 accountId를 받아 와야함
 
-    // 응답 전송 
-    Protocol::SC_LOGIN_OK resPkt;
-
-    resPkt.set_success(true);
-
-    //TODO: accountId를 로그인 서버로부터 받아 와야함
     int32 accountId = 1; int32 characterId; int32 templateId;
 
+    PlayerPtr player;
     if (DBManager::GetInstance().GetCharacterInfo(accountId, characterId, templateId))
     {
         
-
         GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, templateId);
+        player = std::static_pointer_cast<Player>(go);
+        
+        
 
+    }
+    //참고 : characterId 는 playerDbId와 동일함 둘다 DB에서의 Id임
+    if (DBManager::GetInstance().LoadPlayerInventory(characterId, player))
+    {
+        // 응답 전송 
+        Protocol::SC_LOGIN_OK resPkt;
 
-        resPkt.set_player_id(go->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
+        resPkt.set_success(true);
+
+        resPkt.set_player_id(player->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
 
         //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
 
@@ -48,10 +56,12 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
         if (!sendBuffer) { return true; }
         session->Send(sendBuffer);
 
+
+        return true;
     }
-    
-    
-    return true;
+
+    //여기서 false를 리턴하거나 혹은 true를 리턴하는 대신 에러 대처를 별도로 해야함 일단은 false 리턴
+    return false;
 }
 
 
@@ -180,5 +190,55 @@ bool Handle_CS_SKILL(SessionPtr& session, Protocol::CS_SKILL& pkt)
     }
     room->HandleSkillForPlayer(player, pkt);
     
+    return true;
+}
+
+bool Handle_CS_OWNED_ITEM_REQUEST(SessionPtr& session, Protocol::CS_OWNED_ITEM_REQUEST& pkt)
+{   
+    PlayerPtr player = session->GetPlayerPtr();
+    if (player == nullptr) return true;
+
+    //요청한 유저가 본인이 맞는지 검증
+    if (player->GetObjectId() != pkt.player_id())
+    {
+        //만약 발급한 각 플레이어(세션)이 가진 obejctID(playerId)를 리프레쉬하는 코드등이 추가되면 여기서 연결을 끊는 것이 아니라
+        //클라가 잘못 알고 있음을 확인하고 서버가 알고있는 playerId를 통보하거나 혹은 클라를 확인하는 코드등 추가 작업 필요가능성 있음
+        std::cout << "player Id missmatch" << std::endl;
+        return true; // 일단은 true 리턴하여 패킷 처리는 했다고 응답, 하지만 실제로는 클라가 잘못된 playerId를 가지고 있음을 알려주는 패킷을 보내거나 하는 추가 작업 필요할 수 있음
+    }
+
+    Protocol::SC_ITEM_RESPONSE resPkt;
+    
+    //인벤토리에서 전체 아이템 정보 가져오기
+    InventoryPtr inventory = player->GetInventory();
+    const auto& allItems = inventory->GetAllItems();
+
+    //여기서 아아템의 갯수와 구조가 복잡해지고 많아지면 그 구조에 따라 최적화가 필요할 수도 있음
+
+    for (const auto& pair : allItems)
+    {
+        ItemPtr item = pair.second;
+        if (item == nullptr) continue;
+
+        Protocol::ItemInfo* itemInfo = resPkt.add_items();
+
+        itemInfo->set_dbid(item->GetItemDBid());
+        itemInfo->set_templateid(item->GetTemplateId());
+        itemInfo->set_count(item->GetCount());
+        itemInfo->set_slot(item->GetSlot());
+        itemInfo->set_item_memo(item->GetMemo());
+
+
+        //temp log code
+        std::cout << "itemInfo >> DB id :"<< item->GetItemDBid() << std::endl;
+    }
+
+    // 패킷 직렬화 및 전송
+    SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_ITEM_RESPONSE);
+    if (sendBuffer)
+    {
+        session->Send(sendBuffer);
+    }
+
     return true;
 }

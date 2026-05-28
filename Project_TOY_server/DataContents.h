@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <map>
 #include <vector>
 #include "Types.h" // float, int32 등 정의된 헤더
@@ -79,7 +79,7 @@ enum class ItemType
 
 struct ItemData
 {
-    int32 id = 0;
+    int32 templateId;
     std::string name;
     ItemType itemType;
     std::string description;

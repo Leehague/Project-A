@@ -1,26 +1,26 @@
-﻿#pragma once
+#pragma once
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "GameObject.h"
+#include "Creature.h"
 
 
-
-class Monster : public GameObject
+class Monster : public Creature
 {
 public:
 
     Monster(int32 objectId)
-        : GameObject(objectId, GameObjectType::Monster) 
+        : Creature(objectId, GameObjectType::Monster)
     {
         
     }
 
-    virtual void Init(int32 templateId)
-    {
-        
-        InitStatData(templateId);
-        
-    }
+    //virtual void Init(int32 templateId)
+    //{
+    //    
+    //    InitStatData(templateId);
+    //    
+    //}
 
 
 public:

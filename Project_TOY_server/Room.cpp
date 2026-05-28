@@ -1,4 +1,4 @@
-﻿#include "Room.h"
+#include "Room.h"
 #include "Player.h" 
 #include "Session.h" 
 #include "GameObject.h"
@@ -13,6 +13,8 @@
 #include "ObjectManager.h"
 #include "JobSerializer.h"
 #include "DataManager.h"
+#include "Creature.h"
+
 
 Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(roomId)
 {
@@ -53,7 +55,7 @@ void Room::Enter(GameObjectPtr go)
         Protocol::SC_ENTER_GAME enterPkt;     
         *enterPkt.mutable_pos_info() = *(player->Getpos()); // 서버가 결정한 좌표
 
-        enterPkt.set_templeteid(go->GetTempleteId()); //핸들러에서 결정된 템플릿 아이디
+        enterPkt.set_templateid(go->GetTemplateId()); //핸들러에서 결정된 템플릿 아이디
         
         enterPkt.set_mapid(_map->GetMapId()); //클라에 보내줄 맵 Id
         auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
@@ -182,7 +184,7 @@ void Room::SpawnBroadcast(PlayerPtr player)
         Protocol::SpawnInfo* spawnInfo = spawnPkt.add_players_spawn_info();
 
         spawnInfo->mutable_spawnposinfo()->CopyFrom(*player->Getpos());
-        spawnInfo->set_templeteid(player->GetTempleteId());
+        spawnInfo->set_templateid(player->GetTemplateId());
 
 
         if (spawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
@@ -219,13 +221,13 @@ void Room::SpawnBroadcast(PlayerPtr player)
             {
                 Protocol::SpawnInfo* spawnInfo = playerspawnPkt.add_players_spawn_info();
                 spawnInfo->mutable_spawnposinfo()->CopyFrom(*(obj->Getpos()));
-                spawnInfo->set_templeteid(obj->GetTempleteId());
+                spawnInfo->set_templateid(obj->GetTemplateId());
             }
             else if (obj->GetType() == GameObjectType::Monster)
             {
                 Protocol::SpawnInfo* spawnInfo = monsterspawnPkt.add_monsters_spawn_info();
                 spawnInfo->mutable_spawnposinfo()->CopyFrom(*(obj->Getpos()));
-                spawnInfo->set_templeteid(obj->GetTempleteId());
+                spawnInfo->set_templateid(obj->GetTemplateId());
             }
         }
 
@@ -257,7 +259,7 @@ void Room::SpawnBroadcast(const std::vector<MonsterPtr>& monsters)
         Protocol::SpawnInfo* spawnInfo = monsterspawn_pkt.add_monsters_spawn_info();
 
         spawnInfo->mutable_spawnposinfo()->CopyFrom(*(monster->Getpos()));
-        spawnInfo->set_templeteid(monster->GetTempleteId());
+        spawnInfo->set_templateid(monster->GetTemplateId());
     }
 
     if (monsterspawn_pkt.monsters_spawn_info_size() > 0) // 데이터가 있을 때만 전송
@@ -378,11 +380,11 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
             uint64 currentTick = ::GetTickCount64(); // 현재 서버 시간 (Windows 기준)
 
             // 처음에만 0일 수 있으므로 예외 처리
-            if (player->lastMoveTick == 0) player->lastMoveTick = currentTick - 100;
+            if (player->GetlastMoveTick() == 0) { player->SetlastMoveTick(currentTick - 100); }
 
             // deltaTime 계산 (초 단위로 변환)
-            float deltaTime = (currentTick - player->lastMoveTick) / 1000.0f;
-            player->lastMoveTick = currentTick; // 현재 시간을 다음 검증을 위해 저장
+            float deltaTime = (currentTick - player->GetlastMoveTick()) / 1000.0f;
+            player->SetlastMoveTick(currentTick); // 현재 시간을 다음 검증을 위해 저장
 
 
             float dist = Vector3::Distance(currentPos, newPos);
@@ -391,7 +393,7 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
             //속도 검증
             if (dist > maxAllowedDist) {
                 // 너무 멀리 이동함 (패킷 무시 혹은 강제 위치 복구)
-                std::cout << "비정상 이동 요청 인식" << std::endl;
+                std::cout << "Abnormal move request detected" << std::endl;
 
                 self->SendMoveResync(player);
                 return;
@@ -462,14 +464,14 @@ void Room::HandleSkillForMonster(MonsterPtr monster, GameObjectPtr targetobj, Ve
     });
 }
 
-void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
+void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
 {
     // [수정] 플레이어만 사용 -> 모든 스킬을 쓸수 있는 게임 오브젝트가 사용하는 메소드
     // TODO: [DB컨텐츠 추가 필요][핵 방지]_skillCooltimes 를 이용하던 아니면 다른 메모리영역을 추가하던 해서 스킬이 진짜 그 캐릭터가 쓸수 있는 스킬인지 체크하는 로직필요
 
     const SkillData* skilldata = DataManager::GetInstance().GetSkill(skillid);
     int64 now = GetTickCount64();
-    int64 lastUsed = SKillUser->_skillCooltimes[skilldata->id];
+    int64 lastUsed = SKillUser->GetSkillCoolTime(skilldata->id);
     int64 coolTime = skilldata->coolTime * 1000; // 초 단위를 ms로 변환
 
     if (now - lastUsed < coolTime) {
@@ -478,9 +480,7 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
         return;
     }
 
-    // 검증 통과 후 사용 시점 갱신
-    SKillUser->_skillCooltimes[skilldata->id] = now;
-
+    
     // 3. 코스트(마나 등) 체크 및 차감
     // (Player 클래스에 GetStat(), SetStat() 혹은 직접 접근 가능한 멤버가 있다고 가정)
     if (skilldata->costType == CostType::Mana) {
@@ -496,8 +496,8 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
 
     }
 
-    // 4. 검증 통과 후 사용 시점 갱신
-    SKillUser->_skillCooltimes[skilldata->id] = now;
+    // 검증 통과 후 사용 시점 갱신
+    SKillUser->SetSkillCoolTime(skilldata->id, now);
 
     // 5. 스킬 타입별 피격 판정
     bool isHit = false;
@@ -509,6 +509,7 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
         for (auto obj : _objects)
         {
             GameObjectPtr target = obj.second;
+            CreaturePtr creaturetarget = std::dynamic_pointer_cast<Creature>(target);
             if (target && target->GetObjectId() != SKillUser->GetObjectId()) {
                 // 거리 계산 (Vector3::Distance)
                 float dist = Vector3::Distance(Vector3::PosInfoToVector3(SKillUser->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
@@ -517,13 +518,19 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
                 if (dist <= skilldata->range + 0.5f) {
                     isHit = true;
 
+
+                    if (creaturetarget == nullptr) { continue; }
+
+                    //이 아래로는 데미지 계산등 Creature 에게만 적욜할 로직이 들거마면 됨. 
+
                     // 데미지 계산 및 적용(서버 메모리 업데이트)
                     int32 damage = skilldata->damage + SKillUser->GetAttack(); // 스킬데미지 + 캐릭터공격력 수정 가능
-                    target->OnAttacked(damage); // 대상의 HP를 깎는 함수 호출
+                    creaturetarget->OnAttacked(damage); // 대상의 HP를 깎는 함수 호출
 
-                    UpdateHPToOthers(target, SKillUser, damage, SKillUser->Getpos_As_Vector3());
+                 
+                    UpdateHPToOthers(creaturetarget, SKillUser, damage, SKillUser->Getpos_As_Vector3());
 
-                    std::cout << "[Melee Hit] " << SKillUser->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
+                    std::cout << "[Melee Hit] " << SKillUser->GetName() << " -> " << creaturetarget->GetName() << " (Damage: " << damage << ")" << std::endl;
                 }
             }
         }
@@ -589,7 +596,7 @@ void Room::HandleSkill(GameObjectPtr SKillUser, GameObjectPtr targetobj, Vector3
 }
 
 //투사체 관련 함수
-void Room::SpawnProjectile(GameObjectPtr attacker, const SkillData *skillData, Vector3 targetPos)
+void Room::SpawnProjectile(CreaturePtr attacker, const SkillData *skillData, Vector3 targetPos)
 {
     if (attacker == nullptr || skillData == nullptr)
         return;
@@ -636,7 +643,10 @@ void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
     UpdateObjectGrid(projectile, oldPos, newPos);
 
     bool isHit = false;
-    GameObjectPtr attacker = projectile->GetAttacker();
+    CreaturePtr attacker = std::dynamic_pointer_cast<Creature>(projectile->GetAttacker());
+    //아래에서 attacker null check를 하고 있음
+
+    
     const SkillData* skillData = projectile->GetSkillData();
 
     if (attacker && skillData)
@@ -661,7 +671,10 @@ void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
                         for (auto& go : _sectors[nz][nx]) {
                             if (go == nullptr || go == projectile || go->GetObjectId() == attacker->GetObjectId()) continue;
                             if (go->GetState() == CreatureState::Dead || go->GetState() == CreatureState::OnDead) continue;
+
                             if (go->GetType() != GameObjectType::Player && go->GetType() != GameObjectType::Monster) continue;
+                            
+
 
                             float dist = Vector3::Distance(newPos, Vector3::PosInfoToVector3(go->Getpos()));
                             if (dist <= 1.0f) { // 피격 반경 (임시 1.0f 적용)
@@ -677,15 +690,20 @@ void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
         // 6. 데미지 적용 및 브로드캐스트
         for (auto& target : targetsToHit)
         {
-            int32 damage = skillData->damage + attacker->GetAttack();
-            target->OnAttacked(damage);
+            CreaturePtr creaturetarget = std::dynamic_pointer_cast<Creature>(target);
 
-            UpdateHPToOthers(target, attacker, damage, target->Getpos_As_Vector3());
+            if (creaturetarget == nullptr) { continue; }
+            int32 damage = skillData->damage + attacker->GetAttack();
+            creaturetarget->OnAttacked(damage);
+
+           
+            UpdateHPToOthers(creaturetarget, attacker, damage, target->Getpos_As_Vector3());
+            
             if (target->GetType() == GameObjectType::Player) {
                 UpdateHPToSelf(std::static_pointer_cast<Player>(target));
             }
 
-            std::cout << "[Projectile Hit] " << attacker->GetName() << " -> " << target->GetName() << " (Damage: " << damage << ")" << std::endl;
+            std::cout << "[Projectile Hit] " << attacker->GetName() << " -> " << creaturetarget->GetName() << " (Damage: " << damage << ")" << std::endl;
         }
     }
 
@@ -728,7 +746,7 @@ void Room::UpdateHPToSelf(PlayerPtr player)
     SendTo(player, sendBuffer);
 }
 
-void Room::UpdateMPToOthers(GameObjectPtr target, Vector3 broadcastcenter)
+void Room::UpdateMPToOthers(CreaturePtr target, Vector3 broadcastcenter)
 {
     //Mp 변화 방송
     Protocol::SC_CHANGE_MP mp_changed_pkt;
@@ -743,7 +761,7 @@ void Room::UpdateMPToOthers(GameObjectPtr target, Vector3 broadcastcenter)
 }
 
 
-void Room::UpdateHPToOthers(GameObjectPtr target, GameObjectPtr attacker, int damage, Vector3 broadcastcenter)
+void Room::UpdateHPToOthers(CreaturePtr target, CreaturePtr attacker, int damage, Vector3 broadcastcenter)
 {
     //Hp 변화 방송
     Protocol::SC_CHANGE_HP hp_changed_pkt;
@@ -1041,12 +1059,16 @@ void Room::Execute()
                 // 체크하는 방법도 있을 듯, 기획에 따라 투사체이지만 소멸할때 클라에 알려주고 싶을 수도 있기 때문
                  
             }
-            if (item.second->GetState() == CreatureState::OnDead)
+            // [수정] GameObject가 아닌 생명체(Player, Monster)일 경우에만 상태를 체크하도록 캐스팅
+            if (item.second->GetType() == GameObjectType::Player || item.second->GetType() == GameObjectType::Monster)
             {
-
-                deadpkt.add_dead_object_id_list(item.second->GetObjectId());
-                item.second->SetState(CreatureState::Dead);
-                anyDead = true; // 죽은 몬스터가 있을 때만 플래그 활성화
+                auto creature = std::static_pointer_cast<Creature>(item.second);
+                if (creature && creature->GetState() == CreatureState::OnDead)
+                {
+                    deadpkt.add_dead_object_id_list(creature->GetObjectId());
+                    creature->SetState(CreatureState::Dead);
+                    anyDead = true; // 죽은 몬스터가 있을 때만 플래그 활성화
+                }
             }
 
         }

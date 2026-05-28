@@ -1,4 +1,4 @@
-﻿using Google.Protobuf;
+using Google.Protobuf;
 using Protocol; // Protobuf로 생성된 네임스페이스
 using System;
 using System.Collections.Generic;

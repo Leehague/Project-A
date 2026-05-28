@@ -1,4 +1,4 @@
-﻿#include "Projectile.h"
+#include "Projectile.h"
 #include "Vector3.h"
 #include "Protocol/Protocol.pb.h"
 #include "Room.h"

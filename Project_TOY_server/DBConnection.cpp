@@ -1,4 +1,4 @@
-﻿#include "DBConnection.h"
+#include "DBConnection.h"
 #include <iostream>
 
 DBConnection::DBConnection()
@@ -150,4 +150,30 @@ int32 DBConnection::GetInt(const WCHAR* colName)
         return value;
     }
     return 0;
+}
+
+std::string DBConnection::GetString(const WCHAR* colName)
+{
+    if (_hStmt == SQL_NULL_HSTMT) return "";
+
+    auto it = _colIndexMap.find(colName);
+    if (it == _colIndexMap.end()) return "";
+
+    // 1. 문자열을 받아올 안전한 고정 크기 버퍼를 준비합니다.
+    char buffer[1024] = { 0 };
+    SQLLEN indicator = 0;
+
+    // 2. SQL_C_CHAR 타입을 사용하고, 버퍼의 포인터와 크기를 넘겨줍니다.
+    SQLRETURN ret = ::SQLGetData(_hStmt, it->second, SQL_C_CHAR, buffer, sizeof(buffer), &indicator);
+
+    if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
+    {
+        // 3. 데이터가 NULL 이면 빈 문자열 반환
+        if (indicator == SQL_NULL_DATA) return "";
+
+        // 4. 받아온 C스타일 문자열(buffer)을 std::string으로 안전하게 변환하여 반환
+        return std::string(buffer);
+    }
+
+    return "";
 }

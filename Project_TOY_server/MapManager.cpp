@@ -1,4 +1,4 @@
-﻿#include "MapManager.h"
+#include "MapManager.h"
 #include "DataManager.h"
 #include "Map.h"
 

@@ -1,4 +1,4 @@
-﻿using Cinemachine;
+using Cinemachine;
 using Protocol;
 using System;
 using System.Collections.Generic;
@@ -135,6 +135,7 @@ public class PlayerController : CreatureController
 
 
          UpdateSkillInput();
+         HandleUIInput();
         
     }
 
@@ -250,5 +251,26 @@ public class PlayerController : CreatureController
         //[cite_start]// TODO: 타겟팅 스킬일 경우 skillPkt.Target 세팅 [cite: 48]
 
         Managers.networkManager.Send(skillPkt);
+    }
+
+    private void HandleUIInput()
+    {
+        // 인벤토리 UI 토글
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            UI_Inventory invenUI = Managers.uiManager.FindUI<UI_Inventory>();
+            if (invenUI != null && invenUI.isActiveAndEnabled)
+            {
+                Debug.Log("close invenUI");
+                // 이미 열려있으면 닫기
+                Managers.uiManager.ClosePopupUI(invenUI);
+            }
+            else
+            {
+                Debug.Log("open invenUI");
+                // 닫혀있으면 열기
+                Managers.uiManager.ShowPopupUI<UI_Inventory>();
+            }
+        }
     }
 }

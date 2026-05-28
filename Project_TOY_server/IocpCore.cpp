@@ -8,7 +8,7 @@ void PrintErrorCode(int32_t errorCode)
 {
     LPVOID errorMsg;
 
-    // ½Ã½ºÅÛÀ¸·ÎºÎÅÍ ¿¡·¯ ÄÚµå¿¡ ÇØ´çÇÏ´Â ¸Ş½ÃÁö¸¦ °¡Á®¿É´Ï´Ù.
+    // ì‹œìŠ¤í…œìœ¼ë¡œë¶€í„° ì—ëŸ¬ ì½”ë“œì— í•´ë‹¹í•˜ëŠ” ë©”ì‹œì§€ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
     ::FormatMessage(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
@@ -21,7 +21,7 @@ void PrintErrorCode(int32_t errorCode)
 
     std::wcout << L"Error Code: " << errorCode << L" / Message: " << (wchar_t*)errorMsg << std::endl;
 
-    // »ç¿ëµÈ ¸Ş¸ğ¸®¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+    // ì‚¬ìš©ëœ ë©”ëª¨ë¦¬ë¥¼ í•´ì œí•©ë‹ˆë‹¤.
     ::LocalFree(errorMsg);
 }
 
@@ -29,7 +29,7 @@ void PrintErrorCode(int32_t errorCode)
 
 IocpCore::IocpCore()
 {
-    // 1. IOCP ÇÚµé »ı¼º (0Àº ¿î¿µÃ¼Á¦°¡ ÀûÀıÇÑ ½º·¹µå ¼ö¸¦ °áÁ¤ÇÏ°Ô ÇÔ)
+    // 1. IOCP í•¸ë“¤ ìƒì„± (0ì€ ìš´ì˜ì²´ì œê°€ ì ì ˆí•œ ìŠ¤ë ˆë“œ ìˆ˜ë¥¼ ê²°ì •í•˜ê²Œ í•¨)
     _iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 }
 
@@ -39,16 +39,16 @@ IocpCore::~IocpCore()
         ::CloseHandle(_iocpHandle);
 }
 
-//VALID_HANDLE_VALUE ÀÌ¸é True ¸®ÅÏ
+//VALID_HANDLE_VALUE ì´ë©´ True ë¦¬í„´
 bool IocpCore::Register(SessionPtr session)
 {
-    // 2. ¼ÒÄÏ°ú IOCP ÇÚµéÀ» ¿¬°á (CompletionKey·Î ¼¼¼Ç ÁÖ¼Ò¸¦ ³Ñ±è)
-    // ¿©±â¼­ ³Ñ±ä session ÁÖ¼Ò´Â ³ªÁß¿¡ Dispatch¿¡¼­ ±×´ë·Î µ¹¾Æ¿È
-    // [¼öÁ¤] session.get()À» »ç¿ëÇÏ¿© ½ÇÁ¦ ÁÖ¼Ò(Session*)¸¦ Àü´ŞÇÕ´Ï´Ù.
+    // 2. ì†Œì¼“ê³¼ IOCP í•¸ë“¤ì„ ì—°ê²° (CompletionKeyë¡œ ì„¸ì…˜ ì£¼ì†Œë¥¼ ë„˜ê¹€)
+    // ì—¬ê¸°ì„œ ë„˜ê¸´ session ì£¼ì†ŒëŠ” ë‚˜ì¤‘ì— Dispatchì—ì„œ ê·¸ëŒ€ë¡œ ëŒì•„ì˜´
+    // [ìˆ˜ì •] session.get()ì„ ì‚¬ìš©í•˜ì—¬ ì‹¤ì œ ì£¼ì†Œ(Session*)ë¥¼ ì „ë‹¬í•©ë‹ˆë‹¤.
     HANDLE h = ::CreateIoCompletionPort(
         (HANDLE)session->GetSocket(),
         _iocpHandle,
-        (ULONG_PTR)session.get(), // shared_ptrÀÌ ¾Æ´Ñ ½ÇÁ¦ ÁÖ¼Ò°ª Àü´Ş
+        (ULONG_PTR)session.get(), // shared_ptrì´ ì•„ë‹Œ ì‹¤ì œ ì£¼ì†Œê°’ ì „ë‹¬
         0
     );
 
@@ -61,16 +61,16 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
     Session* session = nullptr;
     OverlappedEx* overlappedEx = nullptr;
 
-    // GQCS È£Ãâ
+    // GQCS í˜¸ì¶œ
     bool ret = ::GetQueuedCompletionStatus(_iocpHandle, &bytesTransferred,
         (ULONG_PTR*)&session, (LPOVERLAPPED*)&overlappedEx, timeoutMs);
 
     if (ret == false)
     {
         int errCode = ::WSAGetLastError();
-        if (errCode == WAIT_TIMEOUT) return true; // Å¸ÀÓ¾Æ¿ôÀº ´Ü¼ø ´ë±â »óÅÂÀÌ¹Ç·Î Åë°ú
+        if (errCode == WAIT_TIMEOUT) return true; // íƒ€ì„ì•„ì›ƒì€ ë‹¨ìˆœ ëŒ€ê¸° ìƒíƒœì´ë¯€ë¡œ í†µê³¼
 
-        // [Áß¿ä] ¿¡·¯°¡ ¹ß»ıÇß´õ¶óµµ overlappedEx°¡ ÀÖ´Ù¸é ¼¼¼Ç Á¤¸® ÈÄ °è¼Ó ÁøÇà
+        // [ì¤‘ìš”] ì—ëŸ¬ê°€ ë°œìƒí–ˆë”ë¼ë„ overlappedExê°€ ìˆë‹¤ë©´ ì„¸ì…˜ ì •ë¦¬ í›„ ê³„ì† ì§„í–‰
         if (overlappedEx && overlappedEx->owner)
         {
             PrintErrorCode(errCode);
@@ -78,10 +78,10 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
             overlappedEx->owner->OnDisconnected();
             delete overlappedEx;
         }
-        return true; // ·çÇÁ°¡ ±úÁöÁö ¾Êµµ·Ï true ¹İÈ¯
+        return true; // ë£¨í”„ê°€ ê¹¨ì§€ì§€ ì•Šë„ë¡ true ë°˜í™˜
     }
 
-    // »ó´ë¹æÀÌ Á¢¼ÓÀ» ²÷Àº °æ¿ì (Graceful Shutdown)
+    // ìƒëŒ€ë°©ì´ ì ‘ì†ì„ ëŠì€ ê²½ìš° (Graceful Shutdown)
     if (bytesTransferred == 0)
     {
         if (overlappedEx && overlappedEx->owner) 
@@ -97,7 +97,7 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
         return true;
     }
 
-    // [¸Å¿ì Áß¿ä] ¼¼¼ÇÀÇ ¼ÒÄÏÀÌ À¯È¿ÇÑÁö ÃÖÁ¾ È®ÀÎ ÈÄ Äİ¹é È£Ãâ
+    // [ë§¤ìš° ì¤‘ìš”] ì„¸ì…˜ì˜ ì†Œì¼“ì´ ìœ íš¨í•œì§€ ìµœì¢… í™•ì¸ í›„ ì½œë°± í˜¸ì¶œ
     if (overlappedEx->owner->GetSocket() != INVALID_SOCKET)
     {
         if (overlappedEx->type == IO_TYPE::RECV)
@@ -106,5 +106,5 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
             overlappedEx->owner->OnSend(bytesTransferred);
     }
     delete overlappedEx;
-    return true; // ¼º°øÀûÀ¸·Î Ã³¸® ¿Ï·á
+    return true; // ì„±ê³µì ìœ¼ë¡œ ì²˜ë¦¬ ì™„ë£Œ
 }

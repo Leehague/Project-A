@@ -1,4 +1,4 @@
-﻿#include "SendBuffer.h"
+#include "SendBuffer.h"
 #include <iostream>
 
 SendBuffer::SendBuffer(int bufferSize) : _capacity(bufferSize)

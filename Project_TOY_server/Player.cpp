@@ -1,11 +1,11 @@
-﻿#include "Player.h"
+#include "Player.h"
 #include "Session.h"
 #include "Room.h"
-
+#include "Inventory.h"
 
 void Player::Init(int32 templateId)
 {
-
+    Creature::Init(templateId);
     auto sessionPtr = session.lock();
     if (sessionPtr)
     {
@@ -13,5 +13,6 @@ void Player::Init(int32 templateId)
         sessionPtr->SetPlayerPtr(std::static_pointer_cast<Player>(shared_from_this()));
 
     }
-    this->InitStatData(templateId);
+    
+    OwnInventory = std::make_shared<Inventory>();
 }

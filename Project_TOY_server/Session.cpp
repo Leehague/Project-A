@@ -1,4 +1,4 @@
-﻿#include "Session.h"
+#include "Session.h"
 #include <iostream>
 #include "RoomManager.h"
 #include "ObjectManager.h"

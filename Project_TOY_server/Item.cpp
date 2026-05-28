@@ -1,10 +1,12 @@
-﻿#include "Item.h"
+#include "Item.h"
 
 
-void Item::InitItem(int32 itemDbId, int32 itemTemplteId, int32 count, int32 slot)
+void Item::InitItem(ItemInfo iteminfo)
 {
-    _itemDbId = itemDbId;
-    _itemTemplteId = itemTemplteId;
-    _count = count;
-    _slot = slot;
+    _iteminfo.itemDbId = iteminfo.itemDbId;
+    _iteminfo.itemTemplateId = iteminfo.itemTemplateId;
+    
+    _iteminfo.count = iteminfo.count;
+    _iteminfo.slot = iteminfo.slot;
+    _iteminfo.itemMemo = iteminfo.itemMemo; //에러가 여기서 나고 있음... 왜지?
 }

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <windows.h>
 #include <sqlext.h>
 #include <string>
@@ -30,13 +30,14 @@ public:
     bool Execute(const WCHAR* query);
     bool Fetch();
     int32 GetInt(const WCHAR* colName);
+    std::string GetString(const WCHAR* colName);
+
 
     // 구문(Statement) 초기화
     void FreeStmt();
 private:
     SQLHDBC     _hDbc = SQL_NULL_HDBC;      // 연결 핸들
     bool        _isConnected = false;
-
 
     SQLHSTMT    _hStmt = SQL_NULL_HSTMT;    // 구문 핸들
 

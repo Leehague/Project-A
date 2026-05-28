@@ -1,4 +1,7 @@
-﻿#ifndef ABSL_CONSUME_DLL
+// MSVC 컴파일러에게 문자열 리터럴을 UTF-8로 컴파일하라고 강제 지시
+#pragma execution_character_set("utf-8")
+
+#ifndef ABSL_CONSUME_DLL
 #define ABSL_CONSUME_DLL
 #endif
 
@@ -25,6 +28,7 @@
 #include <sqlext.h>
 #include "DBConnection.h"
 #include "DBManager.h"
+#include <windows.h> // GetConsoleOutputCP 등을 사용하기 위해 추가
 
 
 #pragma comment(lib, "ws2_32.lib")
@@ -75,6 +79,15 @@ void ConsoleThread(RoomPtr room)
 }
 int main()
 {
+    // 1. 현재 콘솔의 인코딩(코드 페이지) 번호 확인
+    //UINT currentCP = ::GetConsoleOutputCP();
+    //std::cout << "Current Console Output Code Page: " << currentCP << std::endl;
+    // 출력 결과가 949 라면 EUC-KR, 65001 이라면 UTF-8 입니다.
+
+    // 2. (권장) 서버 프로그램은 통신과 DB 저장을 위해 주로 UTF-8을 사용하므로, 
+    // 콘솔창도 UTF-8로 맞춰주면 한글 패킷이나 DB 로그를 출력할 때 깨지지 않습니다.
+    ::SetConsoleOutputCP(CP_UTF8); 
+
     PacketHandler::Init();
     DataManager::GetInstance().Init();
     GMapManager.Init();
@@ -95,12 +108,15 @@ int main()
         return -1; // DB 연결 실패 시 서버 종료
     }
 
+    ///
 
     std::cout << GRoomManager.Create(1) << "번 방 생성" << std::endl;
 
     RoomPtr defaultRoom = GRoomManager.FindRoom(1);
     std::thread consoleThread(ConsoleThread, defaultRoom);
     consoleThread.detach();
+
+    ///
 
     bool success = listener.StartAccept(
         7777,
@@ -113,7 +129,7 @@ int main()
         std::thread t(&Listener::Execute, &listener, std::ref(iocp));
         t.detach();
 
-        // [수정] 3. Worker Thread 풀 구성 
+        // 3. Worker Thread 풀 구성 
         // 정의해둔 WorkerThread 함수를 사용하여 네트워크와 로직을 모두 처리하게 합니다.
         std::vector<std::thread> workerThreads;
         for (int i = 0; i < 4; i++)
@@ -122,7 +138,7 @@ int main()
         }
 
         // 4. [Main Thread 전용] 주기적인 로직 업데이트 (Tick 관리)
-        // main.cpp의 while 루프
+        
         while (true)
         {
             auto rooms = GRoomManager.GetRooms();
@@ -141,4 +157,3 @@ int main()
 
     return 0;
 }
-

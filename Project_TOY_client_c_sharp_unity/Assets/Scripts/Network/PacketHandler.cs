@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Google.Protobuf;
 using Protocol;
 
@@ -131,7 +131,7 @@ public class PacketHandler
         Managers.objectManager.MyplayerPosInfo=enterGamePkt.PosInfo;
 
         //내 캐릭터 스폰
-        Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo, enterGamePkt.TempleteId, true);
+        Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo, enterGamePkt.TemplateId, true);
 
         //CS_GAME_READY 전송 로직
         Protocol.CS_GAME_READY _CS_GAME_READY = new Protocol.CS_GAME_READY();
@@ -213,7 +213,7 @@ public class PacketHandler
         foreach (SpawnInfo info in sc_monster_spawn_pkt.MonstersSpawnInfo) 
         {
             // ObjectManager에서 몬스터 스폰 처리 
-            Managers.objectManager.SpawnMonster(info.Spawnposinfo, info.TempleteId);
+            Managers.objectManager.SpawnMonster(info.Spawnposinfo, info.TemplateId);
         }
     }
 
@@ -226,5 +226,20 @@ public class PacketHandler
             CreatureController deadcc =Managers.objectManager.FindController(obejectid);
             deadcc.OnDead();
         }
+    }
+
+    public static void Handle_SC_ITEM_RESPONSE(PacketSession session, IMessage packet)
+    {
+        SC_ITEM_RESPONSE sc_item_resonse_pkt = packet as SC_ITEM_RESPONSE;
+
+        // 열려있는 인벤토리 팝업 UI를 찾아 즉시 갱신합니다.
+        UI_Inventory invenUI = Managers.uiManager.FindUI<UI_Inventory>();
+        if (invenUI != null)
+        {
+            invenUI.RefreshUI(sc_item_resonse_pkt.Items);
+        }
+        
+        // (선택) UI가 닫혀있을 때를 대비해 Managers.objectManager.MyInventory 등에
+        // sc_item_resonse_pkt.Items 데이터를 캐싱(저장)해 두는 구조를 추가하면 더 좋습니다.
     }
 }

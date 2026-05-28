@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +9,9 @@ public class UIManager
 
     // 현재 띄워져 있는 팝업들을 관리하는 스택
     Stack<UI_Popup> _popupStack = new Stack<UI_Popup>();
+
+    // 팝업 캐싱을 위한 딕셔너리 (비활성화 상태로 보관)
+    Dictionary<string, UI_Popup> _popups = new Dictionary<string, UI_Popup>();
 
     // 현재 활성화된 Scene UI
     UI_Scene _sceneUI = null;
@@ -64,11 +67,21 @@ public class UIManager
         if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
 
-        GameObject go = Managers.resourceManager.Instantiate($"UI/Popup/{name}");
-        T popup = Extension.GetOrAddComponent<T>(go);
-        _popupStack.Push(popup);
+        T popup = null;
+        if (_popups.TryGetValue(name, out UI_Popup cachedPopup) && cachedPopup != null)
+        {
+            popup = cachedPopup as T;
+            popup.gameObject.SetActive(true); // 이미 생성된 팝업이면 활성화만 수행
+        }
+        else
+        {
+            GameObject go = Managers.resourceManager.Instantiate($"UI/Popup/{name}");
+            popup = Extension.GetOrAddComponent<T>(go);
+            _popups[name] = popup; // 새로 생성한 경우 캐시에 저장
+            go.transform.SetParent(Root.transform);
+        }
 
-        go.transform.SetParent(Root.transform);
+        _popupStack.Push(popup);
 
         return popup;
     }
@@ -92,7 +105,7 @@ public class UIManager
         if (_popupStack.Count == 0) return;
 
         UI_Popup popup = _popupStack.Pop();
-        Managers.resourceManager.Destroy(popup.gameObject);
+        popup.gameObject.SetActive(false); // Destroy 대신 비활성화 (캐시 유지)
         _order--;
     }
 
@@ -102,14 +115,19 @@ public class UIManager
             ClosePopupUI();
     }
 
-    // UIManager.cs 내부에 추가할 메소드
+
     public T FindUI<T>() where T : UI_Base
     {
-        // 만약 UIManager 내부에서 생성된 UI들을 Dictionary나 Stack/List 등으로 관리하고 있다면, 
-        // Object.FindObjectOfType 대신 해당 컬렉션에서 검색하여 반환하도록 최적화하는 것이 가장 좋습니다.
-        // (아래는 임시로 FindObjectOfType을 래핑해 둔 예시입니다)
+        // 1. 씬 UI 캐시 확인
+        if (_sceneUI != null && _sceneUI is T)
+            return _sceneUI as T;
 
-        return UnityEngine.Object.FindObjectOfType<T>();
+        // 2. 팝업 UI 캐시 확인 (비활성화 상태인 팝업도 O(1)로 즉시 찾음)
+        if (_popups.TryGetValue(typeof(T).Name, out UI_Popup popup) && popup != null)
+            return popup as T;
+
+        // 3. 폴백: 씬 전체 검색 (비활성화 된 오브젝트 포함하도록 true 전달)
+        return UnityEngine.Object.FindObjectOfType<T>(true);
     }
 
 }

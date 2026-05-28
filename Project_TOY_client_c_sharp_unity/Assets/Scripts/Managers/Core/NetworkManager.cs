@@ -1,4 +1,4 @@
-﻿using Google.Protobuf;
+using Google.Protobuf;
 using System;
 using System.Collections.Concurrent;
 using System.Net;

@@ -1,4 +1,4 @@
-﻿#include "Listener.h"
+#include "Listener.h"
 #include "Session.h"
 #include "IocpCore.h"
 #include <iostream>

@@ -1,4 +1,4 @@
-﻿#include "GameObject.h"
+#include "GameObject.h"
 #include "Room.h"
 #include "DataContents.h"
 #include "DataManager.h"
@@ -26,55 +26,6 @@ void GameObject::Setpos(Vector3 vecpos)
     _pos.set_z(vecpos.z);
     _pos.set_yaw(CalculateYaw(dir));
 }
-
-void GameObject::InitStatData(int32 templateId)
-{
-    const StatData* statData = DataManager::GetInstance().GetStat(templateId);
-    if (statData) {
-        _speed = statData->speed;
-        _maxHp = statData->baseHp;
-        _maxMp = statData->baseMp;
-        _attack = statData->baseAttack;
-        _name = statData->name;
-        _basestatData = statData;
-
-        CurrentHp = _maxHp;
-        CurrentMp = _maxMp;
-        // 나중에 DB가 붙으면 여기서 _level = db.GetLevel() 등을 호출하면 됩니다.
-        // + something 을 여기서 해주면 됨
-        //즉 스텟 초기화
-
-    }
-}
-
-void GameObject::OnAttacked(int32 damage)
-{
-    CurrentHp = CurrentHp - damage;
-
-    if (CurrentHp <= 0)
-    {
-        CurrentHp = 0;
-        std::cout << _name << " is dead" << std::endl;
-        OnDead();
-    }
-
-}
-
-bool GameObject::UseMp(int32 requiredMp)
-{
-    if (CurrentMp - requiredMp < 0) { return false; }
-    CurrentMp = CurrentMp - requiredMp;
-    return true;
-}
-void GameObject::OnDead()
-{
-    //사망 상태 방송 패킷 전송은 Room의 Execute 에서 담당
-
-    //Dead 로 Creature state 수정
-    SetState(CreatureState::OnDead);
-
-}
-
 
 float GameObject::CalculateYaw(Vector3 dir)
 {

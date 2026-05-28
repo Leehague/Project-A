@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Protocol/Protocol.pb.h"
 
 class Vector3 

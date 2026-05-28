@@ -23,6 +23,8 @@ enum PacketId {
     PKT_SC_CHANGE_MP = 17;
     PKT_SC_MONSTER_SPAWN = 18;
     PKT_SC_MONSTER_DEAD = 19;
+    PKT_CS_OWNED_ITEM_REQUEST = 20;
+    PKT_SC_ITEM_RESPONSE = 21;
 
 }
 
@@ -95,7 +97,7 @@ message CS_ENTER_GAME {
 
 message SC_ENTER_GAME {
     PosInfo pos_info = 1;
-    int32 templeteId = 2;
+    int32 templateId = 2;
     int32 MapId = 3;
 }
 
@@ -107,7 +109,7 @@ message SC_PLAYER_SPAWN {
 message SpawnInfo
 {
     PosInfo spawnposinfo = 1;
-    int32 templeteId = 2;
+    int32 templateId = 2;
 }
 
 message CS_GAME_READY {
@@ -167,4 +169,21 @@ message SC_MONSTER_SPAWN {
 
 message SC_MONSTER_DEAD {
     repeated int32 dead_object_id_list = 1;
+}
+
+message CS_OWNED_ITEM_REQUEST {
+    int32 player_id = 1; //자기 자신의 objectID(playerId)를 확인용으로 전송
+}
+
+message SC_ITEM_RESPONSE {
+    repeated ItemInfo items = 1;
+}
+
+message ItemInfo 
+{
+    int32 Dbid = 1; 
+    int32 TemplateId = 2;
+    int32 Count = 3;
+    int32 Slot = 4;
+    string item_memo = 5;
 }

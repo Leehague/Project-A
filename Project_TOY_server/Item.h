@@ -1,7 +1,17 @@
-﻿#pragma once
+#pragma once
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "GameObject.h"
+
+struct ItemInfo 
+{
+    int32 itemDbId;
+    int32 itemTemplateId;
+    int32 count;
+    int32 slot;
+    std::string itemMemo ="";
+};
+
 
 class Item : public GameObject
 {
@@ -14,13 +24,35 @@ public:
     }
 
 
-    void InitItem(int32 itemDbId, int32 itemTemplteId, int32 count, int32 slot);
+    void InitItem(ItemInfo iteminfo);
 
-private:
+    //getters
+    int32 GetItemDBid() 
+    {
+        return _iteminfo.itemDbId;
+    }
+    /*virtual int32 GetTemplateId() 
+    {
+        return _iteminfo.itemTemplateId;
+    }*/
+    int32 GetCount() 
+    {
+        return _iteminfo.count;
+    }
+    int32 GetSlot() 
+    {
+        return _iteminfo.slot;
+    }
+
+    std::string GetMemo()
+    {
+        return _iteminfo.itemMemo;
+    }
+
+public:
     
-    int32 _itemDbId;
-    int32 _itemTemplteId;
-    int32 _count;
-    int32 _slot;
+private:
+    ItemInfo _iteminfo;
+    
     //아이템에서 HP는 일종의 내구도 개념으로 이해 하면 될것
 };

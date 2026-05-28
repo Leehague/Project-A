@@ -13,10 +13,10 @@ public class MapExporter : EditorWindow
         GetWindow<MapExporter>("Map Exporter");
     }
 
-    // ¼³Á¤ º¯¼öµé
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Vector3 minBound = new Vector3(-50, 0, -50);
     Vector3 maxBound = new Vector3(50, 0, 50);
-    float cellSize = 0.5f; // 0.5m °£°ÝÀ¸·Î Á¤¹Ð ½ºÄµ
+    float cellSize = 0.5f; // 0.5m ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Äµ
     string mapName = "Map_01";
 
     void OnGUI()
@@ -34,24 +34,24 @@ public class MapExporter : EditorWindow
 
     void Export()
     {
-        // ÆÄÀÏ ÀúÀå °æ·Î (ÇÁ·ÎÁ§Æ® Æú´õ ³»)
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
         string path = Application.dataPath + $"/../MapData/{mapName}.txt";
 
-        // Æú´õ°¡ ¾øÀ¸¸é »ý¼º
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (!Directory.Exists(Application.dataPath + "/../MapData"))
             Directory.CreateDirectory(Application.dataPath + "/../MapData");
 
         StringBuilder sb = new StringBuilder();
 
-        // ¸Ê Á¤º¸ Çì´õ (°¡·Î, ¼¼·Î Å©±â µî)
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½)
         int xCount = Mathf.CeilToInt((maxBound.x - minBound.x) / cellSize);
         int zCount = Mathf.CeilToInt((maxBound.z - minBound.z) / cellSize);
 
-        sb.AppendLine($"{xCount} {zCount}"); // ¼­¹ö°¡ ¸ÕÀú ÀÐÀ» Á¤º¸
+        sb.AppendLine($"{xCount} {zCount}"); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         sb.AppendLine($"{minBound.x} {minBound.z} {cellSize}");
 
 
-        // ·¹ÀÌÄ³½ºÆ® ½ºÄµ ·çÇÁ
+        // ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Æ® ï¿½ï¿½Äµ ï¿½ï¿½ï¿½ï¿½
         for (int z = 0; z < zCount; z++)
         {
             for (int x = 0; x < xCount; x++)
@@ -59,27 +59,27 @@ public class MapExporter : EditorWindow
                 float posX = minBound.x + (x * cellSize);
                 float posZ = minBound.z + (z * cellSize);
 
-                Vector3 rayStart = new Vector3(posX, 100.0f, posZ); // ÇÏ´Ã À§¿¡¼­
+                Vector3 rayStart = new Vector3(posX, 100.0f, posZ); // ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 RaycastHit hit;
 
-                // 1. Obstacle ·¹ÀÌ¾î¿¡ ¸ÕÀú ºÎµúÈ÷´ÂÁö È®ÀÎ (º® Ã¼Å©)
+                // 1. Obstacle ï¿½ï¿½ï¿½Ì¾î¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ (ï¿½ï¿½ Ã¼Å©)
                 int obstacleMask = 1 << LayerMask.NameToLayer("Obstacle");
                 int groundMask = 1 << LayerMask.NameToLayer("Ground");
 
                 if (Physics.Raycast(rayStart, Vector3.down, out hit, 200.0f, obstacleMask))
                 {
-                    // º®ÀÎ °æ¿ì (³ôÀÌ´Â Ãæµ¹ ÁöÁ¡ÀÇ Y°ª)
+                    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½)
                     sb.Append($"1|{hit.point.y:F2} ");
                 }
-                // 2. Ground ·¹ÀÌ¾î¿¡ ºÎµúÈ÷´ÂÁö È®ÀÎ (¹Ù´Ú Ã¼Å©)
+                // 2. Ground ï¿½ï¿½ï¿½Ì¾î¿¡ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ (ï¿½Ù´ï¿½ Ã¼Å©)
                 else if (Physics.Raycast(rayStart, Vector3.down, out hit, 200.0f, groundMask))
                 {
-                    // °¥ ¼ö ÀÖ´Â ¹Ù´ÚÀÎ °æ¿ì
+                    // ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Ù´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
                     sb.Append($"0|{hit.point.y:F2} ");
                 }
                 else
                 {
-                    // ³¶¶°·¯Áö
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                     sb.Append($"1|-100.0 ");
                 }
             }
@@ -96,15 +96,15 @@ public class NavMeshExporter : EditorWindow
     [MenuItem("Tools/Export NavMesh for C++ Server")]
     public static void Export()
     {
-        // 1. ÇöÀç BakeµÈ NavMesh µ¥ÀÌÅÍ °¡Á®¿À±â
+        // 1. ï¿½ï¿½ï¿½ï¿½ Bakeï¿½ï¿½ NavMesh ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
 
-        // 2. ÀúÀå °æ·Î ¼³Á¤
+        // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         string path = Application.dataPath + "/../MapData/NavMesh_01.bin";
 
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
         {
-            // [Á¤Á¡ Á¤º¸ ÀúÀå]
+            // [ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½]
             writer.Write(tri.vertices.Length);
             foreach (Vector3 v in tri.vertices)
             {
@@ -113,7 +113,7 @@ public class NavMeshExporter : EditorWindow
                 writer.Write(v.z);
             }
 
-            // [ÀÎµ¦½º(»ï°¢Çü ¿¬°á) Á¤º¸ ÀúÀå]
+            // [ï¿½Îµï¿½ï¿½ï¿½(ï¿½ï°¢ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½]
             writer.Write(tri.indices.Length);
             foreach (int index in tri.indices)
             {
@@ -122,9 +122,9 @@ public class NavMeshExporter : EditorWindow
         }
         Debug.Log($"NavMesh Export Complete: {path} (Vertices: {tri.vertices.Length})");
 
-        // ScanMap.csÀÇ Export ÇÔ¼ö ³»ºÎ
+        // ScanMap.csï¿½ï¿½ Export ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½
         
-        Debug.Log($"Vertices: {tri.vertices.Length}, Indices: {tri.indices.Length}"); // ¿©±â¼­ 0ÀÌ ³ª¿À´ÂÁö È®ÀÎ
+        Debug.Log($"Vertices: {tri.vertices.Length}, Indices: {tri.indices.Length}"); // ï¿½ï¿½ï¿½â¼­ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 
     }
 }

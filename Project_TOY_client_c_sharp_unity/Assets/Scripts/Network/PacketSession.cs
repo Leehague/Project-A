@@ -1,4 +1,4 @@
-﻿using Google.Protobuf;
+using Google.Protobuf;
 using Protocol;
 using System;
 using System.Collections.Generic;

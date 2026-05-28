@@ -1,4 +1,4 @@
-﻿#include "RecvBuffer.h"
+#include "RecvBuffer.h"
 #include <algorithm>
 
 

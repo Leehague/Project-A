@@ -1,4 +1,4 @@
-﻿// DBManager.cpp
+// DBManager.cpp
 #include "DBManager.h"
 #include <iostream>
 #include "DataContents.h"
@@ -99,28 +99,31 @@ bool DBManager::LoadPlayerInventory(int32 playerDBId, PlayerPtr player)
         // 4. Fetch 루프: 결과가 안 나올 때까지 한 줄(Row)씩 읽어옵니다.
         while (conn->Fetch())
         {
+            ItemInfo curuentiteminfo;
             // 컬럼(Column) 인덱스나 이름으로 데이터를 추출
-            int32 itemDbId = conn->GetInt(L"ItemDbId");
-            int32 templateId = conn->GetInt(L"TemplateId");
-            int32 count = conn->GetInt(L"Count");
-            int32 slot = conn->GetInt(L"Slot");
+            curuentiteminfo.itemDbId = conn->GetInt(L"ItemDbId");
+            curuentiteminfo.itemTemplateId = conn->GetInt(L"TemplateId");
+            curuentiteminfo.count = conn->GetInt(L"Count");
+            curuentiteminfo.slot = conn->GetInt(L"Slot");
+            curuentiteminfo.itemMemo = conn->GetString(L"ItemMemo");
 
+            
             // 5. DataManager를 이용해 해당 아이템이 실제로 존재하는 유효한 아이템인지 메타데이터 검증
-            const ItemData* itemData = DataManager::GetInstance().GetItem(templateId);
+            const ItemData* itemData = DataManager::GetInstance().GetItem(curuentiteminfo.itemTemplateId);
             if (itemData != nullptr)
             {
                 // 6. 플레이어 객체 내부의 인벤토리(메모리)에 아이템 등록
-                ItemPtr item = std::static_pointer_cast<Item>(GObjcetManager.Create(GameObjectType::Item, player->session.lock(), templateId));
-                item->InitItem(itemDbId, templateId, count, slot);
-                player->GetInventory()->InsertItem(itemDbId, item);
+                ItemPtr item = std::static_pointer_cast<Item>(GObjcetManager.Create(GameObjectType::Item, player->session.lock(), curuentiteminfo.itemTemplateId));
+                item->InitItem(curuentiteminfo);
+                player->GetInventory()->InsertItem(curuentiteminfo.itemDbId, item);
 
                 std::cout << "[Inventory Loaded] Item: " << itemData->name
-                    << " (Count: " << count << " / Slot: " << slot << ")" << std::endl;
+                    << " (Count: " << curuentiteminfo.count << " / Slot: " << curuentiteminfo.slot << ")" << std::endl;
             }
             else
             {
                 // DB에는 있는데 json 데이터에는 없는 이상한 아이템인 경우 (로그 남기기)
-                std::cerr << "[Warning] Unknown TemplateId in DB: " << templateId << std::endl;
+                std::cerr << "[Warning] Unknown TemplateId in DB: " << curuentiteminfo.itemTemplateId << std::endl;
             }
         }
     }

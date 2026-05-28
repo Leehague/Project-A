@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Google.Protobuf;
 using Protocol;
 using System.Collections;

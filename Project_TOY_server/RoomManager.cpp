@@ -1,4 +1,4 @@
-﻿#include "RoomManager.h"
+#include "RoomManager.h"
 
 RoomManager GRoomManager;
 
