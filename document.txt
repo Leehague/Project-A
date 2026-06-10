@@ -575,3 +575,51 @@ std::string은 char[] 와 같은 자료형과는 다르게 여러 변수가 포�
 => [수정] i 를 누를 때마다 활성화 , 비활성화가 되도록 ClosePopupUI, ShowPopupUI 수정 및 UIManager에 캐싱을 위하 딕셔너리 추가 ,FindUI는 이제 이 딕셔너리에서 찾는것을 먼저 시도함
 TODO: 
 1. [client,design job]inventory UI를 그래도 UI답게 untiy edtior에서 수정
+
+
+2026/06/03
+
+UI 인벤토리 적당하게 디자인
+
+TODO: 강화학습 몬스터 AI에 붙이기 => MDP를 어떻게 정의할 것인가? 몬스터 AI에 선공/후공 결정 부터 전투 돌입시 사용할 전투 AI 두 종류로 분리를 해서 
+Behaviour Tree와 강화학습을 결합 형태를 능동적으로 적용할 수 있도록 할것 (즉 예컨데 몬스터나 NPC 종류마다 어떤 건 Behaviour Tree로 어떤건 Behaviour Tree 와 강화학습을 결합한 모델로)
+즉 일종의 '전투 모드' 로 돌입을 할지 말지 를 결정하는 결정하는 부분 / 전투 AI 를 분리하고 몬스터의 종류나 등급에 따라서 행동트리와 강화학습을 적절히 섞어서 모델을 만들 필요가 있음.
+
+현재의 구상은 잡몹 : 행동트리 only or( 선공결정모델 : 행동트리 , 전투 AI : 복합)
+엘리트 몬스터 (보스몹이나 필드 보스등) : 전부 복합(행동트리 + 강화학습)
+
+예상 과제
+1. network I/O가 없는 별도의 시뮬레이션을 만들어야 할것 다른 오버헤드도 줄일 수 있으면 줄이는게 좋음 (이건 python + c++ 이나 python으로 하는게 좋아보임)
+
+행동트리 (behaviour Tree)를 넣으려는 이유: 강화학습의 State, Action등을 조절해서 어떤 의도를 가진 몬스터의 행동 패턴을 유도 할 수 도 있겠지만 어쩄든 어떤 기획의도가 몬스터의 패턴에 반영되려면
+행동트리가 도입되어야 할지도?
+
+
+=>TODO: Headless 시뮬레이터 구축
+(Gemini 의 추천)
+C++ Core 로직 분리: 현재 작성 중이신 Room, Map(네비메시), Creature, Skill 데미지 계산 등 핵심 전투 로직을 네트워크(Session, Send/Recv)와 완벽히 분리합니다.
+PyBind11 적용: C++ 로직을 Python에서 불러올 수 있도록 PyBind11을 이용해 .pyd (혹은 .so) 공유 라이브러리로 빌드합니다.
+Python에서 env.step(action)을 호출하면, 내부적으로 C++의 Room::Execute()나 Monster::HandleSkill()이 한 틱(Tick) 실행되도록 맵핑합니다.
+OpenAI Gymnasium 환경 구성: Python 측에서 표준 강화학습 환경인 Gymnasium 인터페이스를 구현합니다.
+여기서 강화학습 알고리즘(PPO, SAC 등 - Stable-Baselines3나 Ray RLlib 추천)을 붙여 수백만 번의 전투 시뮬레이션을 C++ 속도로 돌립니다.
+모델 포팅: Python에서 학습이 완료된 모델 가중치(ONNX, 혹은 단순 신경망 포맷)를 추출하고, C++ 서버에서 ONNX Runtime이나 자체 C++ 추론 엔진(단순 MLP라면 직접 구현 가능)을 올려 가중치를 로드해 실제 게임 서버에 적용합니다.
+
+C++ Core 로직 분리
+
+2026/06/08
+
+-CoreRoom 생성
+CoreRoom :기존의 Room 클래스에서 내부적인 계산을 하는 로직만 이사할 클래스, 시뮬레이션을 하는 simulationRoom 클래스를 차후에 만들어서 기존의 Room클래스와 내부적인 계산은 같은 로직을 사용하되
+네트워크I/O 등을 해야하는 기존 Room 과는 다르게 유저의 패킷 대신 시뮬레이션을 진행하도록 할것. 이를 위한 준비단계
+
+리펙토링 진행중...
+
+
+2026/06/10
+
+리펙토링 진행중. mutex 로 lock을 걸어서 사용하던 room의 코드들을 this->push로 전환. google protocol 을 Core namespace에 정의 해놓은 순수 c++ 구조체로 전환. 최소한 coreroom, monster, player, gameobject등 . 
+등 시뮬레이션 환경에 필요한 코드에서는 순수 c++구조체를 사용하는 식으로 전환 할 것임.
+
+room에서 상당 부분을 coreroom으로 로직을 옯겼음.
+
+CoreRoom::HandleSkill <- 여기부터 수정하면 됨

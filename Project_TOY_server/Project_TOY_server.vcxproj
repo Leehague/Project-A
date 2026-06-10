@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CoreRoom.cpp" />
     <ClCompile Include="Creature.cpp" />
     <ClCompile Include="DBConnection.cpp" />
     <ClCompile Include="DBManager.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="Session.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CoreRoom.h" />
     <ClInclude Include="Creature.h" />
     <ClInclude Include="DataContents.h" />
     <ClInclude Include="DataManager.h" />
@@ -166,6 +168,7 @@
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
+    <ClInclude Include="InfoSturct.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="Item.h" />

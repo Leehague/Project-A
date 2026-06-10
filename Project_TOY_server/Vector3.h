@@ -1,6 +1,6 @@
 #pragma once
 #include "Protocol/Protocol.pb.h"
-
+#include "InfoSturct.h"
 class Vector3 
 {
 public:
@@ -31,6 +31,10 @@ public:
     {
         return Vector3(posinfo->x(), posinfo->y(), posinfo->z());
 
+    }
+    static Vector3 PosInfoToVector3(const Core::PosInfo* posinfo)
+    {
+        return Vector3(posinfo->x, posinfo->y, posinfo->z);
     }
 
     // 더하기

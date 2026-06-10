@@ -1,20 +1,10 @@
 #pragma once
 #include "GameObject.h"
 #include "DataContents.h"
+#include "InfoSturct.h"
 #include <map>
 #include <memory>
 
-struct StatInfo 
-{
-    int32 hp = 0;
-    int32 maxHp = 0;
-    int32 mp = 0;
-    int32 maxMp = 0;
-    int32 attack = 0;
-    float speed = 1.0f;
-    std::string name;
-
-};
 
 class Creature : public GameObject
 {
@@ -78,7 +68,7 @@ protected:
    
 protected:
 
-    StatInfo _statInfo; //동적으로 변화할 정보
+    Core::StatInfo _statInfo; //동적으로 변화할 정보
 
     //기본 스탯 정보. 참고만해야함. 변화하는 정보가 아님
     const StatData* _basestatData = nullptr; //templeteId 는 여기에 포함되어 있음

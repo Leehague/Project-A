@@ -2,6 +2,7 @@
 #include "json.hpp" // nlohmann/json
 #include <fstream>
 #include "DataContents.h"
+#include <iostream>
 using json = nlohmann::json;
 
 //데이터를 초기화 시 가져와서 메모리에 올려 놓는 역할 및 필요시 해당 데이터를 건네주는 클래스

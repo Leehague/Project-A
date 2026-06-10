@@ -99,7 +99,7 @@ bool DBManager::LoadPlayerInventory(int32 playerDBId, PlayerPtr player)
         // 4. Fetch 루프: 결과가 안 나올 때까지 한 줄(Row)씩 읽어옵니다.
         while (conn->Fetch())
         {
-            ItemInfo curuentiteminfo;
+            Core::ItemInfo curuentiteminfo;
             // 컬럼(Column) 인덱스나 이름으로 데이터를 추출
             curuentiteminfo.itemDbId = conn->GetInt(L"ItemDbId");
             curuentiteminfo.itemTemplateId = conn->GetInt(L"TemplateId");

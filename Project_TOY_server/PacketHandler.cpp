@@ -7,6 +7,7 @@
 #include "DBManager.h"
 #include "Inventory.h"
 #include "Item.h"
+#include "InfoSturct.h"
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];
@@ -25,19 +26,25 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
     //이때 accountId를 받아 와야함
 
     int32 accountId = 1; int32 characterId; int32 templateId;
+    Core::PosInfo posInfo; // DB에서 위치 정보를 받아올 변수
 
     PlayerPtr player;
-    if (DBManager::GetInstance().GetCharacterInfo(accountId, characterId, templateId))
+    // TODO: 향후 DBManager::GetCharacterInfo가 위치 정보(posInfo)까지 가져오도록 수정 필요합니다.
+    // 현재는 GetCharacterInfo가 false를 반환해도, 위에서 선언한 posInfo가 생성자 덕분에 (0,0,0)으로 안전하게 초기화됩니다.
+    if (DBManager::GetInstance().GetCharacterInfo(accountId, characterId, templateId/*, posInfo*/))
     {
         
         GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, templateId);
         player = std::static_pointer_cast<Player>(go);
         
-        
+        // [수정] DB에서 위치를 가져오지 않더라도, 생성자로 (0,0,0)이 된 posInfo로 위치를 명시적으로 설정합니다.
+        // 이렇게 하면 Room::Enter에서 올바른 위치를 사용하게 됩니다.
+        player->Setpos(posInfo);
 
     }
     //참고 : characterId 는 playerDbId와 동일함 둘다 DB에서의 Id임
-    if (DBManager::GetInstance().LoadPlayerInventory(characterId, player))
+    // player 객체가 성공적으로 생성되었는지 확인 후 인벤토리 로드
+    if (player && DBManager::GetInstance().LoadPlayerInventory(characterId, player))
     {
         // 응답 전송 
         Protocol::SC_LOGIN_OK resPkt;
@@ -152,7 +159,10 @@ bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt)
     // Temp , TODO: FindLastRoom 은 서버 입장에서 마지막으로 만들어진 Room 을 찾아서 입장 시키는 것, 
     // 따라서 해당 클라에 알맞는 룸을 찾아서 입장시키는 로직이 필요함 
     // 이는 기획에 따라 달라질 요소가 있음
-    GRoomManager.FindLastRoom()->Enter(player); //Enter 로직 속에 전송로직이 포함되어 있으므로 이것으로 충분함
+
+    RoomPtr currentRoom = GRoomManager.FindLastRoom(); //즉 여기서 어떤 룸을 선택할지 다른 방식을 도입해야할 수도 있음
+
+    currentRoom->Enter(player); //Enter 로직 속에 전송로직이 포함되어 있으므로 이것으로 충분함
 
     //수정 : Room ::Enter 에서는 스폰 패킷을 더이상 전송하지 않음.
 

@@ -2,15 +2,8 @@
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
 #include "GameObject.h"
+#include "InfoSturct.h"
 
-struct ItemInfo 
-{
-    int32 itemDbId;
-    int32 itemTemplateId;
-    int32 count;
-    int32 slot;
-    std::string itemMemo ="";
-};
 
 
 class Item : public GameObject
@@ -24,7 +17,7 @@ public:
     }
 
 
-    void InitItem(ItemInfo iteminfo);
+    void InitItem(Core::ItemInfo iteminfo);
 
     //getters
     int32 GetItemDBid() 
@@ -52,7 +45,7 @@ public:
 public:
     
 private:
-    ItemInfo _iteminfo;
+    Core::ItemInfo _iteminfo;
     
     //아이템에서 HP는 일종의 내구도 개념으로 이해 하면 될것
 };

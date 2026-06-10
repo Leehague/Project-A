@@ -1,7 +1,7 @@
 #include "Item.h"
 
 
-void Item::InitItem(ItemInfo iteminfo)
+void Item::InitItem(Core::ItemInfo iteminfo)
 {
     _iteminfo.itemDbId = iteminfo.itemDbId;
     _iteminfo.itemTemplateId = iteminfo.itemTemplateId;

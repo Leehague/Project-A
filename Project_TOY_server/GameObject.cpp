@@ -4,28 +4,39 @@
 #include "DataManager.h"
 #include "RoomManager.h"
 
+
 Vector3  GameObject::Getpos_As_Vector3() { return Vector3::PosInfoToVector3(&_pos); }
 
 RoomPtr GameObject::Getroomptr() { return GRoomManager.FindRoom(_roomId); }
 
 void GameObject::Setpos(Protocol::PosInfo pos)
 {
-    _pos.set_x(pos.x());
-    _pos.set_y(pos.y());
-    _pos.set_z(pos.z());
-    _pos.set_yaw(pos.yaw());
-    _pos.set_state(pos.state());
+    _pos.x=pos.x();
+    _pos.y=pos.y();
+    _pos.z=pos.z();
+    _pos.yaw=pos.yaw();
+    _pos.state = (CreatureState)pos.state();
 
 }
 
 void GameObject::Setpos(Vector3 vecpos)
 {
-    Vector3 dir(vecpos.x - _pos.x(), vecpos.y - _pos.y(), vecpos.z - _pos.z());
-    _pos.set_x(vecpos.x);
-    _pos.set_y(vecpos.y);
-    _pos.set_z(vecpos.z);
-    _pos.set_yaw(CalculateYaw(dir));
+    Vector3 dir(vecpos.x - _pos.x, vecpos.y - _pos.y, vecpos.z - _pos.z);
+    _pos.x=(vecpos.x);
+    _pos.y=(vecpos.y);
+    _pos.z=(vecpos.z);
+    _pos.yaw=(CalculateYaw(dir));
 }
+
+void GameObject::Setpos(Core::PosInfo pos)
+{
+    _pos.x = pos.x;
+    _pos.y = pos.y;
+    _pos.z = pos.z;
+    _pos.yaw = pos.yaw;
+    _pos.state = pos.state;
+}
+
 
 float GameObject::CalculateYaw(Vector3 dir)
 {

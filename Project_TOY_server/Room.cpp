@@ -14,77 +14,114 @@
 #include "JobSerializer.h"
 #include "DataManager.h"
 #include "Creature.h"
+#include "CoreRoom.h"
+#include "InfoSturct.h"
 
+
+// 내부 구조체(Core::PosInfo)를 Protobuf 패킷(Protocol::PosInfo)으로 복사하는 헬퍼 함수
+static void CopyCorePosToProtocol(Protocol::PosInfo* dest, const Core::PosInfo* src)
+{
+    if (dest == nullptr || src == nullptr) return;
+    dest->set_object_id(src->object_id);
+    dest->set_x(src->x);
+    dest->set_y(src->y);
+    dest->set_z(src->z);
+    dest->set_yaw(src->yaw);
+    dest->set_state((int32)src->state);
+
+}
 
 Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(roomId)
 {
     // 방이 생성될 때 맵 매니저를 통해 맵을 할당받습니다.
     // GMapManager는 전역 혹은 싱글톤으로 선언되어 있어야 합니다.
-    _map = GMapManager.LoadMap(mapId);
+    /*_map = GMapManager.LoadMap(mapId);*/
 
-    if (_map == nullptr)
+    bool maploadsuccess;
+    _coreroom = std::make_shared<CoreRoom>(mapId, maploadsuccess);
+
+    if (maploadsuccess == false)
     {
         std::cout << "Room " << roomId << ": Map Load Failed! (ID: " << mapId << ")" << std::endl;
         return;
     }
-    InitGridData(_map->GetMapData());
+
+    
 }
 
 void Room::Enter(GameObjectPtr go)
 {
-    //서버 내부 메모리에 정보 저장(방 입장 처리)
-    {
-        std::lock_guard<std::mutex> lock(_lock);
-        _objects[go->GetObjectId()] = go;
-        go->SetroomId(_Selfroomid);
+    std::weak_ptr<Room> weakSelf = std::static_pointer_cast<Room>(shared_from_this());
 
-        auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // 좌표로 인덱스 추출
-        _sectors[cellZ][cellX].insert(go);
+    this->Push([weakSelf, go]() {
+        //서버 내부 메모리에 정보 저장(방 입장 처리)
 
-    }
-    //본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
-    if (go->GetType() == GameObjectType::Player )
-    {       
-        auto player = std::static_pointer_cast<Player>(go);
-        if (player==nullptr) { return; }
-        if (auto session = player->session.lock())
-        {
-            session->SetPlayerId(player->GetObjectId());
-            session->SetPlayerPtr(player);
+        if (auto self = weakSelf.lock()) {
+            self->_coreroom->_objects[go->GetObjectId()] = go;
+            go->SetroomId(self->_Selfroomid);
+
+            auto [cellX, cellZ] = self->_coreroom->GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // 좌표로 인덱스 추출
+            self->_coreroom->_sectors[cellZ][cellX].insert(go);
+       
+            //본인에게 입장 성공 및 좌표 알림 (SC_ENTER_GAME)
+            if (go->GetType() == GameObjectType::Player)
+            {
+                auto player = std::static_pointer_cast<Player>(go);
+                if (player == nullptr) { return; }
+
+                // 1. 세션 락을 딱 한 번만 잡아서 안전하게 보관합니다.
+                auto session = player->session.lock();
+                if (session == nullptr) { return; } // 그 새 연결이 끊겼다면 조용히 무시
+
+                session->SetPlayerId(player->GetObjectId());
+                session->SetPlayerPtr(player);
+                
+                Protocol::SC_ENTER_GAME enterPkt;
+                CopyCorePosToProtocol(enterPkt.mutable_pos_info(), player->Getpos()); // 서버가 결정한 좌표
+
+                // 2. [핵심] Core::PosInfo 내부에 object_id가 0으로 비어있을 수 있으므로 
+                // 여기서 확실하게 플레이어의 ObjectId로 덮어씌워 줍니다!
+                enterPkt.mutable_pos_info()->set_object_id(player->GetObjectId());
+
+                enterPkt.set_templateid(go->GetTemplateId()); //핸들러에서 결정된 템플릿 아이디
+
+                enterPkt.set_mapid(self->GetMapptr()->GetMapId()); //클라에 보내줄 맵 Id
+                auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
+
+                if (!sendBuffer) return;
+
+               
+
+                // 3. 락을 두 번 걸지 않고 처음에 확보해 둔 session 변수를 통해 Send 합니다.
+                session->Send(sendBuffer);
+            }
+            else if (go->GetType() == GameObjectType::Monster)
+            {
+                MonsterPtr monster = std::static_pointer_cast<Monster>(go);
+                self->SpawnBroadcast(monster);
+            }
+            // 수정 : 스폰 패킷은 Room::Enter 에서 전송하지 않고 나중에 레디 패킷을 수신해서 전송함
         }
-        Protocol::SC_ENTER_GAME enterPkt;     
-        *enterPkt.mutable_pos_info() = *(player->Getpos()); // 서버가 결정한 좌표
-
-        enterPkt.set_templateid(go->GetTemplateId()); //핸들러에서 결정된 템플릿 아이디
-        
-        enterPkt.set_mapid(_map->GetMapId()); //클라에 보내줄 맵 Id
-        auto sendBuffer = ServerUtils::MakeSendBuffer(enterPkt, Protocol::PKT_SC_ENTER_GAME);
-        
-        if (!sendBuffer) return;
-        
-        player->session.lock()->Send(sendBuffer);
-    }
-    else if (go->GetType() == GameObjectType::Monster)
-    {
-        MonsterPtr monster= std::static_pointer_cast<Monster>(go);
-        SpawnBroadcast(monster);
-    }
-    // 수정 : 스폰 패킷은 Room::Enter 에서 전송하지 않고 나중에 레디 패킷을 수신해서 전송함
-    
+    });
 }
 
 void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
 {
+    std::weak_ptr<Room> weakSelf = std::static_pointer_cast<Room>(shared_from_this());
     //서버 내부 메모리에 정보 저장(방 입장 처리)
-    {
-        for (MonsterPtr monster : monsters) 
-        {
-            std::lock_guard<std::mutex> lock(_lock);
-            _objects[monster->GetObjectId()] = monster;
-            monster->SetroomId(_Selfroomid);
+    this->Push([weakSelf, monsters]() {
+        if (auto self = weakSelf.lock()) {
+
+            for (MonsterPtr monster : monsters)
+            {
+                //std::lock_guard<std::mutex> lock(_lock);
+                self->_coreroom->_objects[monster->GetObjectId()] = monster;
+                monster->SetroomId(self->_Selfroomid);
+            }
+
+            self->SpawnBroadcast(monsters);
         }
-    }
-    SpawnBroadcast(monsters);
+        });
 }
 
 void Room::Leave(PlayerPtr player)
@@ -94,19 +131,18 @@ void Room::Leave(PlayerPtr player)
     uint64 playerId = player->GetObjectId();
 
     {
-        std::lock_guard<std::mutex> lock(_lock);
         
-        auto it = _objects.find(playerId);
-        if (it == _objects.end())
+        auto it = _coreroom->_objects.find(playerId);
+        if (it == _coreroom->_objects.end())
             return; // 이미 나갔거나 없는 객체면 무시
 
         GameObjectPtr go = it->second;
 
         // 그리드에서 제거
-        auto [cellX, cellZ] = GetSectorPos(Vector3::PosInfoToVector3(go->Getpos()));
-        _sectors[cellZ][cellX].erase(go);
+        auto [cellX, cellZ] = _coreroom->GetSectorPos(Vector3::PosInfoToVector3(go->Getpos()));
+        _coreroom->_sectors[cellZ][cellX].erase(go);
 
-        _objects.erase(playerId); // 1. 룸의 관리 목록에서 제거
+        _coreroom->_objects.erase(playerId); // 1. 룸의 관리 목록에서 제거
     }
 
     // 2. 타인들에게 이 유저가 나갔음을 알림 (SC_DESPAWN)
@@ -128,21 +164,28 @@ void Room::Broadcast(SendBufferPtr sendBuffer)
 }
 void Room::Broadcast(SendBufferPtr sendBuffer, int32 passing_object_id)
 {
-    // Snapshot target sessions under lock to avoid data-race / iterator invalidation
-    std::vector<std::shared_ptr<Session>> targets;
-    {
-        std::lock_guard<std::mutex> lock(_lock);
-        for (auto& pair : _objects) {
-            if (pair.second->GetType() != GameObjectType::Player) continue;
-            auto player = std::static_pointer_cast<Player>(pair.second);
-            if (player->GetObjectId() == passing_object_id) continue;
-            if (auto session = player->session.lock()) {
-                targets.push_back(session);
+    std::weak_ptr<Room> weakSelf = std::static_pointer_cast<Room>(shared_from_this());
+
+    this->Push([weakSelf, passing_object_id, sendBuffer]() {
+        
+        
+        if (auto self = weakSelf.lock()) {
+            // Snapshot target sessions under lock to avoid data-race / iterator invalidation
+            std::vector<std::shared_ptr<Session>> targets;
+            {
+                for (auto& pair : self->_coreroom->_objects) {
+                    if (pair.second->GetType() != GameObjectType::Player) continue;
+                    auto player = std::static_pointer_cast<Player>(pair.second);
+                    if (player->GetObjectId() == passing_object_id) continue;
+                    if (auto session = player->session.lock()) {
+                        targets.push_back(session);
+                    }
+                }
             }
+            self->Broadcast(sendBuffer, targets);//target이 있는 버전의 Braodcast를 호출함
+
         }
-    }
-    Broadcast(sendBuffer,targets);//target이 있는 버전의 Braodcast를 호출함
-    
+    });
 }
 void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Session>> targets)
 {
@@ -177,76 +220,82 @@ void Room::Broadcast(SendBufferPtr sendBuffer, std::vector<std::shared_ptr<Sessi
 }
 void Room::SpawnBroadcast(PlayerPtr player)
 {
-    //(player 기준)타인들에게 나를 알림 (SC_PLAYER_SPAWN 브로드캐스트)
-    {
-        Protocol::SC_PLAYER_SPAWN spawnPkt;
-              
-        Protocol::SpawnInfo* spawnInfo = spawnPkt.add_players_spawn_info();
+    std::weak_ptr<Room> weakSelf = std::static_pointer_cast<Room>(shared_from_this());
 
-        spawnInfo->mutable_spawnposinfo()->CopyFrom(*player->Getpos());
-        spawnInfo->set_templateid(player->GetTemplateId());
+    this->Push([weakSelf, player]() {
 
-
-        if (spawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
+        if (auto self = weakSelf.lock())
         {
-            
-            SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
-
-            if (!sendBuffer) return;
-
-            // 나를 제외한 모두에게 전송 (기존에 만든 Broadcast 함수 활용)
-            Broadcast(sendBuffer, player->GetObjectId());
-        }
-
-    }
-
-    //(player 기준)나에게 기존 오브젝트들을 알림 (SC_PLAYER_SPAWN 목록 전송)
-    {
-        Protocol::SC_PLAYER_SPAWN playerspawnPkt;
-        Protocol::SC_MONSTER_SPAWN monsterspawnPkt;
-
-        // Snapshot _objects under lock
-        std::vector<GameObjectPtr> snapshot;
-        {
-            std::lock_guard<std::mutex> lock(_lock);
-            snapshot.reserve(_objects.size());
-            for (auto& pair : _objects)
-                snapshot.push_back(pair.second);
-        }
-
-        for (auto& obj : snapshot)
-        {
-            if (!obj) continue;
-            if (obj->GetType() == GameObjectType::Player)
+            //(player 기준)타인들에게 나를 알림 (SC_PLAYER_SPAWN 브로드캐스트)
             {
-                Protocol::SpawnInfo* spawnInfo = playerspawnPkt.add_players_spawn_info();
-                spawnInfo->mutable_spawnposinfo()->CopyFrom(*(obj->Getpos()));
-                spawnInfo->set_templateid(obj->GetTemplateId());
-            }
-            else if (obj->GetType() == GameObjectType::Monster)
-            {
-                Protocol::SpawnInfo* spawnInfo = monsterspawnPkt.add_monsters_spawn_info();
-                spawnInfo->mutable_spawnposinfo()->CopyFrom(*(obj->Getpos()));
-                spawnInfo->set_templateid(obj->GetTemplateId());
-            }
-        }
+                Protocol::SC_PLAYER_SPAWN spawnPkt;
 
-        if (playerspawnPkt.players_spawn_info_size() > 0)
-        {
-            auto sendBuffer = ServerUtils::MakeSendBuffer(playerspawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
-            if (!sendBuffer) return;
-            
-            
-            if (auto s = player->session.lock()) s->Send(sendBuffer);
+                Protocol::SpawnInfo* spawnInfo = spawnPkt.add_players_spawn_info();
+
+                CopyCorePosToProtocol(spawnInfo->mutable_spawnposinfo(), player->Getpos());
+                spawnInfo->set_templateid(player->GetTemplateId());
+
+
+                if (spawnPkt.players_spawn_info_size() > 0) // 데이터가 있을 때만 전송
+                {
+
+                    SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(spawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
+
+                    if (!sendBuffer) return;
+
+                    // 나를 제외한 모두에게 전송 (기존에 만든 Broadcast 함수 활용)
+                    self->Broadcast(sendBuffer, player->GetObjectId());
+                }
+
+            }
+
+            //(player 기준)나에게 기존 오브젝트들을 알림 (SC_PLAYER_SPAWN 목록 전송)
+            {
+                Protocol::SC_PLAYER_SPAWN playerspawnPkt;
+                Protocol::SC_MONSTER_SPAWN monsterspawnPkt;
+
+                
+               
+                for (auto& pair : self->_coreroom->_objects)
+                {
+                    GameObjectPtr obj =pair.second;
+                    if (!obj) continue;
+                    if (obj->GetType() == GameObjectType::Player)
+                    {
+                        Protocol::SpawnInfo* spawnInfo = playerspawnPkt.add_players_spawn_info();
+                        CopyCorePosToProtocol(spawnInfo->mutable_spawnposinfo(), obj->Getpos());
+                        spawnInfo->set_templateid(obj->GetTemplateId());
+                    }
+                    else if (obj->GetType() == GameObjectType::Monster)
+                    {
+                        Protocol::SpawnInfo* spawnInfo = monsterspawnPkt.add_monsters_spawn_info();
+                        CopyCorePosToProtocol(spawnInfo->mutable_spawnposinfo(), obj->Getpos());
+                        spawnInfo->set_templateid(obj->GetTemplateId());
+                    }
+                }
+
+                if (playerspawnPkt.players_spawn_info_size() > 0)
+                {
+                    auto sendBuffer = ServerUtils::MakeSendBuffer(playerspawnPkt, Protocol::PKT_SC_PLAYER_SPAWN);
+                    if (!sendBuffer) return;
+
+
+                    if (auto s = player->session.lock()) s->Send(sendBuffer);
+                }
+                if (monsterspawnPkt.monsters_spawn_info_size() > 0)
+                {
+                    auto sendBuffer = ServerUtils::MakeSendBuffer(monsterspawnPkt, Protocol::PKT_SC_MONSTER_SPAWN);
+                    if (!sendBuffer) return;
+
+                    if (auto s = player->session.lock()) s->Send(sendBuffer);
+                }
+            }
+
+
         }
-        if (monsterspawnPkt.monsters_spawn_info_size() > 0)
-        {
-            auto sendBuffer = ServerUtils::MakeSendBuffer(monsterspawnPkt, Protocol::PKT_SC_MONSTER_SPAWN);
-            if (!sendBuffer) return;
-            
-            if (auto s = player->session.lock()) s->Send(sendBuffer);
-        }
-    }
+        
+        });
+    
 
 }
 void Room::SpawnBroadcast(const std::vector<MonsterPtr>& monsters)
@@ -258,7 +307,8 @@ void Room::SpawnBroadcast(const std::vector<MonsterPtr>& monsters)
     {
         Protocol::SpawnInfo* spawnInfo = monsterspawn_pkt.add_monsters_spawn_info();
 
-        spawnInfo->mutable_spawnposinfo()->CopyFrom(*(monster->Getpos()));
+        //spawnInfo->mutable_spawnposinfo()->CopyFrom(*(monster->Getpos()));
+        CopyCorePosToProtocol(spawnInfo->mutable_spawnposinfo(), monster->Getpos());
         spawnInfo->set_templateid(monster->GetTemplateId());
     }
 
@@ -289,7 +339,7 @@ void Room::BroadcastMove(const std::vector<GameObjectPtr>& gameobjects)
         if (go == nullptr) return;
 
         Protocol::PosInfo* newPos = movePkt.add_pos_info();
-        newPos->CopyFrom(*go->Getpos());
+        CopyCorePosToProtocol(newPos, go->Getpos());
 
         // Sanitize all components (use isfinite to catch inf/NaN)
         if (!std::isfinite(newPos->x()) || !std::isfinite(newPos->y()) || !std::isfinite(newPos->z()))
@@ -298,9 +348,6 @@ void Room::BroadcastMove(const std::vector<GameObjectPtr>& gameobjects)
             return;
         }
         
-        //log
-        //std::cout << "\n newPos: \t" << newPos->x() << "\t" << newPos->y() << "\t" << newPos->z() << std::endl;
-
        
     }
     
@@ -337,13 +384,10 @@ void Room::BroadcastMove(GameObjectPtr go)
 
 void Room::SendTo(PlayerPtr player, SendBufferPtr sendBuffer)
 {
-    // Snapshot session under lock, then send outside lock
-        std::shared_ptr<Session> session;
-    {
-        std::lock_guard<std::mutex> lock(_lock);
-        if (!player) return;
-        session = player->session.lock();
-    }
+    if (!player) return;
+    
+    // weak_ptr의 lock()은 그 자체로 스레드 안전합니다.
+    std::shared_ptr<Session> session = player->session.lock();
 
     if (session) {
         try {
@@ -413,7 +457,7 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
 
             //[갱신] 그리드 업데이트
             {
-                self->UpdateObjectGrid(player, currentPos, newPos);
+                self->_coreroom->UpdateObjectGrid(player, currentPos, newPos);
             }
 
 
@@ -464,6 +508,7 @@ void Room::HandleSkillForMonster(MonsterPtr monster, GameObjectPtr targetobj, Ve
     });
 }
 
+
 void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
 {
     // [수정] 플레이어만 사용 -> 모든 스킬을 쓸수 있는 게임 오브젝트가 사용하는 메소드
@@ -506,7 +551,7 @@ void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 t
     {
     case SkillType::Melee:
     {
-        for (auto obj : _objects)
+        for (auto obj : _coreroom->_objects)
         {
             GameObjectPtr target = obj.second;
             CreaturePtr creaturetarget = std::dynamic_pointer_cast<Creature>(target);
@@ -546,7 +591,7 @@ void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 t
 
     case SkillType::Dash:
         // 이동 가능 지역인지 확인 후 좌표 강제 갱신
-        if (this->_map->CanGo(targetPos))
+        if (this->GetMapptr()->CanGo(targetPos))
         {
             //이동가능 지역인 경우
             SKillUser->Setpos(targetPos);
@@ -609,7 +654,10 @@ void Room::SpawnProjectile(CreaturePtr attacker, const SkillData *skillData, Vec
         return;
 
     // 2. 공격자의 위치로 초기 좌표 설정
-    Protocol::PosInfo posInfo = *(attacker->Getpos());
+
+    
+    Protocol::PosInfo posInfo;
+    CopyCorePosToProtocol(&posInfo, (attacker->Getpos()));
     projectile->Setpos(posInfo);
 
     // 3. 투사체 방향 및 속도 등 초기화
@@ -624,98 +672,37 @@ void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
 {
     if (projectile == nullptr || projectile->GetState() == CreatureState::Dead)
         return;
-
-    Vector3 oldPos = Vector3::PosInfoToVector3(projectile->Getpos());
-    
-    // 1. 투사체 이동 진행
-    projectile->TickMove();
-    
-    Vector3 newPos = Vector3::PosInfoToVector3(projectile->Getpos());
-
-    // 2. 지형 충돌 검사 (Map 클래스에 역할 위임)
-    if (_map != nullptr && _map->CheckProjectileCollision(newPos))
-    {
-        projectile->SetState(CreatureState::OnDead);
-        return; // 지형(벽)에 부딪히면 즉시 소멸
-    }
-
-    // 3. 그리드 좌표 업데이트
-    UpdateObjectGrid(projectile, oldPos, newPos);
-
-    bool isHit = false;
     CreaturePtr attacker = std::dynamic_pointer_cast<Creature>(projectile->GetAttacker());
-    //아래에서 attacker null check를 하고 있음
 
-    
-    const SkillData* skillData = projectile->GetSkillData();
+    bool ishit;
+    //1.CoreRoom에서 이동 판정, 충돌 검사, 데미지 계산, 실제 HP 차감까지 모두 수행하고 결과만 반환받음
+    std::vector<Core::DamageResult> results = _coreroom->UpdateProjectile(projectile, ishit);
 
-    if (attacker && skillData)
+    //2.피격 결과 네트워크 브로드캐스트
+    for (const auto& result : results)
     {
-        // 4. 사거리 초과 시 투사체 소멸
-        if (projectile->GetTraveledDistance() >= skillData->range)
-        {
-            projectile->SetState(CreatureState::OnDead);
-            return;
-        }
-
-        // 5. 주변 섹터의 동적 오브젝트와 타겟 충돌(피격) 검사 (Room 역할)
-        auto [cellX, cellZ] = GetSectorPos(newPos);
-        std::vector<GameObjectPtr> targetsToHit;
-        {
-            std::lock_guard<std::mutex> lock(_lock);
-            for (int dz = -1; dz <= 1; ++dz) {
-                for (int dx = -1; dx <= 1; ++dx) {
-                    int nx = cellX + dx;
-                    int nz = cellZ + dz;
-                    if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ) {
-                        for (auto& go : _sectors[nz][nx]) {
-                            if (go == nullptr || go == projectile || go->GetObjectId() == attacker->GetObjectId()) continue;
-                            if (go->GetState() == CreatureState::Dead || go->GetState() == CreatureState::OnDead) continue;
-
-                            if (go->GetType() != GameObjectType::Player && go->GetType() != GameObjectType::Monster) continue;
-                            
-
-
-                            float dist = Vector3::Distance(newPos, Vector3::PosInfoToVector3(go->Getpos()));
-                            if (dist <= 1.0f) { // 피격 반경 (임시 1.0f 적용)
-                                targetsToHit.push_back(go);
-                                isHit = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 6. 데미지 적용 및 브로드캐스트
-        for (auto& target : targetsToHit)
-        {
-            CreaturePtr creaturetarget = std::dynamic_pointer_cast<Creature>(target);
-
-            if (creaturetarget == nullptr) { continue; }
-            int32 damage = skillData->damage + attacker->GetAttack();
-            creaturetarget->OnAttacked(damage);
-
-           
-            UpdateHPToOthers(creaturetarget, attacker, damage, target->Getpos_As_Vector3());
+        if (result.target == nullptr) continue;
+        CreaturePtr target = std::dynamic_pointer_cast<Creature>(result.target);
+        
+        if (target == nullptr) continue; // 피격 대상이 Creature가 아니면 무시
+        
+        // TODO: 향후 광역 스킬을 위해 SC_CHANGE_HP_LIST 패킷이 추가되면, 
+        // 이 루프 안에서 패킷 하나로 합치는(Batching) 로직으로 리팩토링하기 매우 좋습니다.
+        UpdateHPToOthers(target, attacker, result.damage, result.target->Getpos_As_Vector3());
             
-            if (target->GetType() == GameObjectType::Player) {
-                UpdateHPToSelf(std::static_pointer_cast<Player>(target));
-            }
-
-            std::cout << "[Projectile Hit] " << attacker->GetName() << " -> " << creaturetarget->GetName() << " (Damage: " << damage << ")" << std::endl;
+        if (target->GetType() == GameObjectType::Player) {
+            UpdateHPToSelf(std::static_pointer_cast<Player>(target));
         }
+
+        std::cout << "[Projectile Hit] " << attacker->GetName() << " -> " << target->GetName() << " (Damage: " << result.damage << ")" << std::endl;
     }
 
-    // 충돌(피격) 시 상태를 OnDead로 바꾸고 이동 패킷 생략
-    if (isHit)
+    if (!ishit) //충돌(피격) 하지 않았을 시에만 이동패킷 브로드 캐스팅
     {
-        projectile->SetState(CreatureState::OnDead);
-        return;
+        //3.이동 패킷 브로드캐스트
+        BroadcastMove(projectile);
     }
-
-    // 7. 이동 패킷 브로드캐스트
-    BroadcastMove(projectile);
+    
 }
 
 //본인에게 MP 변경 패킷 전송 
@@ -807,32 +794,7 @@ void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
 
 PlayerPtr Room::GetNearestPlayer(Vector3 pos, float maxRange)
 {
-    PlayerPtr nearestPlayer = nullptr;
-    float bestDistSq = maxRange * maxRange; // 제곱근 연산을 피하기 위해 거리의 제곱 사용
-
-    // 1. 주변 9개 그리드에 있는 플레이어 리스트를 가져옴 (이미 구현된 함수 활용)
-    std::vector<PlayerPtr> adjacentPlayers = GetAdjacentPlayers(pos);
-
-    // 2. 리스트를 순회하며 가장 가까운 플레이어 탐색
-    for (const PlayerPtr& player : adjacentPlayers)
-    {
-        // 사망 상태인 플레이어는 제외 (필요 시)
-        if (player->GetState() == CreatureState::Dead)
-            continue;
-
-        Vector3 playerPos = Vector3::PosInfoToVector3(player->Getpos());
-
-        // 두 지점 사이의 거리 제곱 계산 (sqrt를 안 써서 성능 이득)
-        float distSq = Vector3::DistanceSquared(pos, playerPos);
-
-        if (distSq < bestDistSq)
-        {
-            bestDistSq = distSq;
-            nearestPlayer = player;
-        }
-    }
-
-    return nearestPlayer;
+    return _coreroom->GetNearestPlayer(pos,  maxRange);
 }
 
 //위치 되감기
@@ -842,7 +804,8 @@ void Room::SendMoveResync(PlayerPtr player)
     Protocol::SC_MOVING resPkt;
 
     Protocol::PosInfo* resPos = resPkt.add_pos_info();
-    resPos->CopyFrom(*(player->Getpos())); // 업데이트 전의 서버 좌표
+    //resPos->CopyFrom(*(player->Getpos())); // 업데이트 전의 서버 좌표
+    CopyCorePosToProtocol(resPos, player->Getpos()); // 업데이트 전의 서버 좌표
     resPos->set_state((int)CreatureState::Idle);
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_MOVING);
@@ -855,178 +818,151 @@ void Room::SendMoveResync(PlayerPtr player)
 
 }
 
-std::pair<int, int> Room::GetSectorPos(Vector3 pos)
-{
-    // 1. 먼저 물리 타일 좌표로 변환
-    int cellX = static_cast<int>(std::floor((pos.x - _minX) / _cellSize));
-    int cellZ = static_cast<int>(std::floor((pos.z - _minZ) / _cellSize));
+//std::pair<int, int> Room::GetSectorPos(Vector3 pos)
+//{
+//    // 1. 먼저 물리 타일 좌표로 변환
+//    int cellX = static_cast<int>(std::floor((pos.x - _minX) / _cellSize));
+//    int cellZ = static_cast<int>(std::floor((pos.z - _minZ) / _cellSize));
+//
+//    // 2. 물리 좌표를 섹터 크기로 나누어 섹터 인덱스 산출
+//    int sectorX = cellX / _sectorSize;
+//    int sectorZ = cellZ / _sectorSize;
+//
+//    // 범위 제한
+//    sectorX = std::clamp(sectorX, 0, _sectorCountX - 1);
+//    sectorZ = std::clamp(sectorZ, 0, _sectorCountZ - 1);
+//
+//    return { sectorX, sectorZ };
+//}
 
-    // 2. 물리 좌표를 섹터 크기로 나누어 섹터 인덱스 산출
-    int sectorX = cellX / _sectorSize;
-    int sectorZ = cellZ / _sectorSize;
+////인접 플레이어 추출 (Interest Management)
+//std::vector<std::shared_ptr<Session>> Room::GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id)
+//{
+//    std::vector<std::shared_ptr<Session>> SessionsOfadjacentPlayers;
+//
+//    auto [cellX, cellZ] = GetSectorPos(pos);
+//
+//    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
+//    std::vector<GameObjectPtr> snapshot;
+//    {
+//        std::lock_guard<std::mutex> lock(_lock);
+//        for (int dz = -1; dz <= 1; ++dz)
+//        {
+//            for (int dx = -1; dx <= 1; ++dx)
+//            {
+//                int nx = cellX + dx;
+//                int nz = cellZ + dz;
+//
+//                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
+//                {
+//                    for (auto& go : _sectors[nz][nx])
+//                    {
+//                        snapshot.push_back(go);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    // Process snapshot without holding the room lock
+//    for (auto& go : snapshot)
+//    {
+//        if (!go) continue;
+//
+//        // CHECK ID FIRST before any weak_ptr operations
+//        if (go->GetObjectId() == passing_object_id) continue;
+//
+//        if (go->GetType() == GameObjectType::Player)
+//        {
+//            auto player = std::static_pointer_cast<Player>(go);
+//
+//            // Only now try to lock the session weak_ptr
+//            if (auto session = player->session.lock())
+//            {
+//
+//                SessionsOfadjacentPlayers.push_back(session);
+//            }
+//        }
+//    }
+//
+//    return SessionsOfadjacentPlayers;
+//}
 
-    // 범위 제한
-    sectorX = std::clamp(sectorX, 0, _sectorCountX - 1);
-    sectorZ = std::clamp(sectorZ, 0, _sectorCountZ - 1);
-
-    return { sectorX, sectorZ };
-}
-
-//인접 플레이어 추출 (Interest Management)
-std::vector<std::shared_ptr<Session>> Room::GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id)
-{
-    std::vector<std::shared_ptr<Session>> SessionsOfadjacentPlayers;
-
-    auto [cellX, cellZ] = GetSectorPos(pos);
-
-    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
-    std::vector<GameObjectPtr> snapshot;
-    {
-        std::lock_guard<std::mutex> lock(_lock);
-        for (int dz = -1; dz <= 1; ++dz)
-        {
-            for (int dx = -1; dx <= 1; ++dx)
-            {
-                int nx = cellX + dx;
-                int nz = cellZ + dz;
-
-                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
-                {
-                    for (auto& go : _sectors[nz][nx])
-                    {
-                        snapshot.push_back(go);
-                    }
-                }
-            }
-        }
-    }
-
-    // Process snapshot without holding the room lock
-    for (auto& go : snapshot)
-    {
-        if (!go) continue;
-
-        // CHECK ID FIRST before any weak_ptr operations
-        if (go->GetObjectId() == passing_object_id) continue;
-
-        if (go->GetType() == GameObjectType::Player)
-        {
-            auto player = std::static_pointer_cast<Player>(go);
-
-            // Only now try to lock the session weak_ptr
-            if (auto session = player->session.lock())
-            {
-
-                SessionsOfadjacentPlayers.push_back(session);
-            }
-        }
-    }
-
-    return SessionsOfadjacentPlayers;
-}
-
-std::vector <PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_object_id) 
-{
-    std::vector <PlayerPtr>adjacentPlayers;
-
-    auto [cellX, cellZ] = GetSectorPos(pos);
-
-    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
-    std::vector<GameObjectPtr> snapshot;
-    {
-        std::lock_guard<std::mutex> lock(_lock);
-        for (int dz = -1; dz <= 1; ++dz)
-        {
-            for (int dx = -1; dx <= 1; ++dx)
-            {
-                int nx = cellX + dx;
-                int nz = cellZ + dz;
-
-                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
-                {
-                    for (auto& go : _sectors[nz][nx])
-                    {
-                        snapshot.push_back(go);
-                    }
-                }
-            }
-        }
-    }
-
-    // Process snapshot without holding the room lock
-    for (auto& go : snapshot)
-    {
-        if (!go) continue;
-
-        // CHECK ID FIRST before any weak_ptr operations
-        if (go->GetObjectId() == passing_object_id) continue;
-
-        if (go->GetType() == GameObjectType::Player)
-        {
-            auto player = std::static_pointer_cast<Player>(go);
-
-            // Only now try to lock the session weak_ptr
-            if (auto session = player->session.lock())
-            {
-
-                adjacentPlayers.push_back(player);
-            }
-        }
-    }
-
-    return adjacentPlayers;
-}
-
-
+//std::vector <PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_object_id) 
+//{
+//    std::vector <PlayerPtr>adjacentPlayers;
+//
+//    auto [cellX, cellZ] = GetSectorPos(pos);
+//
+//    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
+//    std::vector<GameObjectPtr> snapshot;
+//    {
+//        std::lock_guard<std::mutex> lock(_lock);
+//        for (int dz = -1; dz <= 1; ++dz)
+//        {
+//            for (int dx = -1; dx <= 1; ++dx)
+//            {
+//                int nx = cellX + dx;
+//                int nz = cellZ + dz;
+//
+//                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
+//                {
+//                    for (auto& go : _sectors[nz][nx])
+//                    {
+//                        snapshot.push_back(go);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    // Process snapshot without holding the room lock
+//    for (auto& go : snapshot)
+//    {
+//        if (!go) continue;
+//
+//        // CHECK ID FIRST before any weak_ptr operations
+//        if (go->GetObjectId() == passing_object_id) continue;
+//
+//        if (go->GetType() == GameObjectType::Player)
+//        {
+//            auto player = std::static_pointer_cast<Player>(go);
+//
+//            // Only now try to lock the session weak_ptr
+//            if (auto session = player->session.lock())
+//            {
+//
+//                adjacentPlayers.push_back(player);
+//            }
+//        }
+//    }
+//
+//    return adjacentPlayers;
+//}
 
 
-
-void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
-{
-    auto oldGridPos = GetSectorPos(oldPos);
-    auto newGridPos = GetSectorPos(newPos);
-
-    if (oldGridPos == newGridPos)
-        return;
-
-    int oldX = oldGridPos.first;
-    int oldZ = oldGridPos.second;
-    int newX = newGridPos.first;
-    int newZ = newGridPos.second;
-
-    // Protect _sectors modification with lock
-    {
-        std::lock_guard<std::mutex> lock(_lock);
-        // Defensive: verify indices valid
-        if (oldZ >= 0 && oldZ < (int)_sectors.size() && oldX >= 0 && oldX < (int)_sectors[oldZ].size())
-            _sectors[oldZ][oldX].erase(go);
-        if (newZ >= 0 && newZ < (int)_sectors.size() && newX >= 0 && newX < (int)_sectors[newZ].size())
-            _sectors[newZ][newX].insert(go);
-    }
-}
 
 void Room::BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id)
 {
     // 모든 플레이어가 아니라 인접한 플레이어에게만 보냄
-    std::vector<std::shared_ptr<Session>> targets = GetAdjacentPlayersSessions(centerPos, passing_object_id);
+    std::vector<std::shared_ptr<Session>> targets = _coreroom->GetAdjacentPlayersSessions(centerPos, passing_object_id);
 
-    
     Broadcast(sendBuffer, targets);
 }
 
-void Room::InitGridData(const MapData* mapdata)
-{
-    _cellSize = mapdata->CellSize;
-    _minX = mapdata->MinX;
-    _minZ = mapdata->MinZ;
-    // 섹터 개수 계산 (전체 가로/세로 타일 수 / 섹터 크기)
-    _sectorCountX = (mapdata->width / _sectorSize) + 1;
-    _sectorCountZ = (mapdata->height / _sectorSize) + 1;
-
-    _sectors.assign(_sectorCountZ, std::vector<std::set<GameObjectPtr>>(_sectorCountX));
-}
-
-
+//void Room::InitGridData(const MapData* mapdata)
+//{
+//    _cellSize = mapdata->CellSize;
+//    _minX = mapdata->MinX;
+//    _minZ = mapdata->MinZ;
+//    // 섹터 개수 계산 (전체 가로/세로 타일 수 / 섹터 크기)
+//    _sectorCountX = (mapdata->width / _sectorSize) + 1;
+//    _sectorCountZ = (mapdata->height / _sectorSize) + 1;
+//
+//    _sectors.assign(_sectorCountZ, std::vector<std::set<GameObjectPtr>>(_sectorCountX));
+//}
+//
+//
 
 void Room::Execute() 
 {
@@ -1041,36 +977,34 @@ void Room::Execute()
 
     std::vector<MonsterPtr> monstersToUpdate;
     std::vector<ProjectilePtr> projectilesToUpdate;
+    
+    // JobQueue::Execute()가 끝난 직후이므로 락 없이 안전하게 순회 가능합니다.
+    for (auto& item : _coreroom->_objects)
     {
-        std::lock_guard<std::mutex> lock(_lock);
-        for (auto& item : _objects)
+        if (item.second->GetType() == GameObjectType::Monster)
         {
-            if (item.second->GetType() == GameObjectType::Monster)
-            {
-                monstersToUpdate.push_back(std::static_pointer_cast<Monster>(item.second));
+            monstersToUpdate.push_back(std::static_pointer_cast<Monster>(item.second));
 
-            }
-            else if (item.second->GetType() == GameObjectType::Projectile)
+        }
+        else if (item.second->GetType() == GameObjectType::Projectile)
+        {
+            projectilesToUpdate.push_back(std::static_pointer_cast<Projectile>(item.second));
+            continue;
+            // Projectile 의 소멸에 대해서는 방송할 필요가 없음, 오히려 투사체의 상태를 실시간으로 통신하지 않으려는 구조임, 생성되는 순간만 통보하고 끝
+            // 데이터 기반으로 하기 위해서 bool 변수 하나를 gameObject 객체에 추가해서 데이터 로드할때 혹은 오브젝트 생성할때 이 오브젝트가 죽을때 방송 대상이 되는지를
+            // 체크하는 방법도 있을 듯, 기획에 따라 투사체이지만 소멸할때 클라에 알려주고 싶을 수도 있기 때문
+             
+        }
+        // [수정] GameObject가 아닌 생명체(Player, Monster)일 경우에만 상태를 체크하도록 캐스팅
+        if (item.second->GetType() == GameObjectType::Player || item.second->GetType() == GameObjectType::Monster)
+        {
+            auto creature = std::static_pointer_cast<Creature>(item.second);
+            if (creature && creature->GetState() == CreatureState::OnDead)
             {
-                projectilesToUpdate.push_back(std::static_pointer_cast<Projectile>(item.second));
-                continue;
-                // Projectile 의 소멸에 대해서는 방송할 필요가 없음, 오히려 투사체의 상태를 실시간으로 통신하지 않으려는 구조임, 생성되는 순간만 통보하고 끝
-                // 데이터 기반으로 하기 위해서 bool 변수 하나를 gameObject 객체에 추가해서 데이터 로드할때 혹은 오브젝트 생성할때 이 오브젝트가 죽을때 방송 대상이 되는지를
-                // 체크하는 방법도 있을 듯, 기획에 따라 투사체이지만 소멸할때 클라에 알려주고 싶을 수도 있기 때문
-                 
+                deadpkt.add_dead_object_id_list(creature->GetObjectId());
+                creature->SetState(CreatureState::Dead);
+                anyDead = true; // 죽은 몬스터가 있을 때만 플래그 활성화
             }
-            // [수정] GameObject가 아닌 생명체(Player, Monster)일 경우에만 상태를 체크하도록 캐스팅
-            if (item.second->GetType() == GameObjectType::Player || item.second->GetType() == GameObjectType::Monster)
-            {
-                auto creature = std::static_pointer_cast<Creature>(item.second);
-                if (creature && creature->GetState() == CreatureState::OnDead)
-                {
-                    deadpkt.add_dead_object_id_list(creature->GetObjectId());
-                    creature->SetState(CreatureState::Dead);
-                    anyDead = true; // 죽은 몬스터가 있을 때만 플래그 활성화
-                }
-            }
-
         }
     }
 
@@ -1103,4 +1037,14 @@ void Room::Execute()
         std::cout << "SomeOne is dead, boradcasting" << std::endl;
     }
     
+}
+
+void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
+{
+    _coreroom->UpdateObjectGrid(go, oldPos, newPos);
+}
+
+MapPtr Room::GetMapptr()
+{
+    return _coreroom->GetMapptr();
 }

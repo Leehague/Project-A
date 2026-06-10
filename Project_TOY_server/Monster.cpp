@@ -87,7 +87,7 @@ void Monster::MoveTo(Vector3 targetPos)
         }
     }
 
-    _pos.set_state((int32)CreatureState::Moving);
+    _pos.state = (CreatureState::Moving);
     
 }
 
@@ -171,9 +171,9 @@ void Monster::ProcessMove()
     if (dist <= moveDist || dist < 0.01f)
     {
         // 목적지에 정확히 안착 (오차 누적 방지)
-        _pos.set_x(nextPos.x);
-        _pos.set_y(nextPos.y);
-        _pos.set_z(nextPos.z);
+        _pos.x=nextPos.x;
+        _pos.y=nextPos.y;
+        _pos.z=nextPos.z;
 
         _path.erase(_path.begin());
         if (_path.empty()) SetState(CreatureState::Idle);
@@ -188,7 +188,7 @@ void Monster::ProcessMove()
             }
 
             //std::cout << "yaw: "<<yaw << std::endl;
-            _pos.set_yaw(yaw);
+            _pos.yaw=yaw;
          
         // [중요] 위치가 변했으므로 무조건 알림
         SyncPosAndBroadcast(currentPos, nextPos);
@@ -208,9 +208,9 @@ void Monster::ProcessMove()
 
     if (std::isfinite(newPos.x) && std::isfinite(newPos.y) && std::isfinite(newPos.z))
     {
-        _pos.set_x(newPos.x);
-        _pos.set_y(newPos.y);
-        _pos.set_z(newPos.z);
+        _pos.x=newPos.x;
+        _pos.y=newPos.y;
+        _pos.z=newPos.z;
 
         float yaw = CalculateYaw(Normlizeddir);
         // Yaw 값 범위 강제 제한 (0~360)
@@ -221,7 +221,7 @@ void Monster::ProcessMove()
         }
 
         //std::cout << "yaw: "<<yaw << std::endl;
-        _pos.set_yaw(yaw);
+        _pos.yaw=yaw;
 
         SyncPosAndBroadcast(currentPos, newPos);
     }
