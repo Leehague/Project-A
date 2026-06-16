@@ -1,8 +1,9 @@
 #include "Projectile.h"
 #include "Vector3.h"
-#include "Protocol/Protocol.pb.h"
 #include "Room.h"
-#include "Session.h"
+#include <windows.h>
+
+Projectile::Projectile(int32 objectId) : GameObject(objectId, GameObjectType::Projectile) {}
 
 Projectile::~Projectile() {}
 
@@ -36,9 +37,5 @@ void Projectile::TickMove()
     Vector3 currentPos = Vector3::PosInfoToVector3(Getpos());
     Vector3 newPos = currentPos + (_direction * moveDist);
 
-    Protocol::PosInfo posInfo;
-    posInfo.set_x(newPos.x);
-    posInfo.set_y(newPos.y);
-    posInfo.set_z(newPos.z);
-    Setpos(posInfo);
+    Setpos(newPos);
 }

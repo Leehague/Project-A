@@ -8,5 +8,5 @@ void Item::InitItem(Core::ItemInfo iteminfo)
     
     _iteminfo.count = iteminfo.count;
     _iteminfo.slot = iteminfo.slot;
-    _iteminfo.itemMemo = iteminfo.itemMemo; //에러가 여기서 나고 있음... 왜지?
+    _iteminfo.itemMemo = iteminfo.itemMemo; 
 }

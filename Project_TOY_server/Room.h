@@ -7,6 +7,9 @@ class Room : public JobQueue
 {
 public:
     Room(int32 roomId, int32 mapId);
+
+    //Room 초기화 함수
+    void Init(); 
     void Enter(GameObjectPtr go);//단일 입장 , 가능하면 플레이어에게만 사용
     void EnterMonsters(const std::vector<MonsterPtr>& monsters); //복수의 몬스터들 한번에 입장
 
@@ -53,8 +56,6 @@ public:
     //대상(target)의 HP 변화를 broadcastcenter의 주변에 알림
     void UpdateHPToOthers(CreaturePtr target, CreaturePtr attacker, int damage, Vector3 broadcastcenter);
 
-    //투사체 관련 함수
-    void SpawnProjectile(CreaturePtr attacker, const SkillData *skillData, Vector3 targetPos);
     void UpdateProjectile(std::shared_ptr<Projectile> projectile);
 
 
@@ -113,4 +114,3 @@ private:
 private:
     CoreRoomPtr _coreroom;
 };
-

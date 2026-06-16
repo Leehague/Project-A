@@ -1,6 +1,12 @@
+#pragma once
 #include "Types.h"
 #include "InfoSturct.h"
 #include <set>
+#include <functional>
+#include <map>
+#include <vector>
+#include "Vector3.h"
+#include "GameObject.h"
 
 class CoreRoom
 {
@@ -9,11 +15,14 @@ public:
     CoreRoom(int32 mapId, bool& maploadsuccess);
 
     // 이동 패킷 처리 루틴
-    bool HandleMove(PlayerPtr player, Core::PosInfo posinfo);
-    void HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid);
+    bool HandleMove(PlayerPtr player, const Core::PosInfo& posinfo);
+    // 결과를 받을 필요가 없다면 기본값인 nullptr가 들어가 메모리 할당을 원천 차단합니다.
+    bool HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid , std::vector<Core::DamageResult>* results = nullptr, bool* ishit = nullptr, std::vector<GameObjectPtr>* spawnedObjects = nullptr);
 
     //투사체 관련 함수
-    void SpawnProjectile(CreaturePtr attacker, const SkillData* skillData, Vector3 targetPos);
+
+    //투사체 소환
+    ProjectilePtr SpawnProjectile(CreaturePtr attacker, const SkillData* skillData, Vector3 targetPos);
 
     std::vector<Core::DamageResult> UpdateProjectile(std::shared_ptr<Projectile> projectile , bool& ishit);
 
@@ -31,8 +40,6 @@ public:
     // 1. 그리드 인덱스 계산 (좌표 -> 그리드 좌표)
 
     std::pair<int, int> GetSectorPos(Vector3 pos);
-    // 2. 내 주변 9개 칸에 속한 플레이어 리스트 가져오기 (브로드캐스트 타겟 추출)
-    std::vector<std::shared_ptr<Session>> GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id = -1);
 
     std::vector<PlayerPtr> GetAdjacentPlayers(Vector3 pos, int32 passing_object_id = -1);
 
@@ -58,5 +65,19 @@ public:
 public:
     void InitGridData(const MapData* mapdata);
 
+public:
+    // 이동 이벤트를 외부(Room)로 전달할 콜백 함수 포인터
+    std::function<void(GameObjectPtr)> _onObjectMovedCallback = nullptr;
 
+    // 오브젝트 생성요청을 외부(Room)로 전달할 콜백 함수 포인터
+    std::function<GameObjectPtr(GameObjectType, int32)> _objectFactoryCallback = nullptr;
+
+    // Monster나 Player가 이동했을 때 호출할 함수
+    void OnObjectMoved(GameObjectPtr go) {
+        if (_onObjectMovedCallback) {
+            _onObjectMovedCallback(go); // 등록된 콜백이 있으면 실행!
+        }
+    }
+
+    
 };

@@ -1,7 +1,6 @@
 #pragma once
 #include "Types.h"
 #include "DataContents.h"
-
 #include "Creature.h"
 
 class Player : public Creature

@@ -623,3 +623,95 @@ CoreRoom :기존의 Room 클래스에서 내부적인 계산을 하는 로직만
 room에서 상당 부분을 coreroom으로 로직을 옯겼음.
 
 CoreRoom::HandleSkill <- 여기부터 수정하면 됨
+
+2026/06/11
+
+리펙토링 진행중...
+
+** 유의점 , Room 은 CoreRoom의 메소드를 호출해도 되지만 , CoreRoom은 room의 메소드를 호출해서는 안됨.**
+
+-handle skill, spawn projetle, update projetile 등을 core room으로 이전
+-[환경 구축] pyBind11을 설치
+
+
+
+TODO: 빌드 에러 해결
+
+libprotobufd.lib 빌드 문제...
+
+1.Developer Command Prompt for VS 2022
+
+cd C:\Users\leehague\Desktop\Project A\Project_TOY_server
+
+
+:: 1. 기존의 잘못된 vcxproj 캐시 폴더 완벽 삭제
+rmdir /s /q out\build\x64-Release
+
+:: 2. Ninja 생성기를 사용하여 아주 엄격한 Release 모드로 설정 생성
+cmake -B out\build\x64-Release -S . -G Ninja -DCMAKE_TOOLCHAIN_FILE="C:\Users\leehague\vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release -DPython_EXECUTABLE="C:\Users\leehague\AppData\Local\Programs\Python\Python311\python.exe"
+
+:: 3. 빌드 실행 (Ninja는 설정된 Release로만 군말 없이 빌드합니다)
+cmake --build out\build\x64-Release
+
+에러가 여전히 있음...
+
+2026/06/14
+
+serverutils 코드에서 디버깅용 protobuf 파일을 링크하도록 강제하는 부분이 있었음 이부분 주석 처리
+
+빌드에서 남은 문제는 의존성 문제임.
+의존성 문제를 해결하고 다시 빌드할것
+
+**
+빌드 방법
+x64 Native Tools Command Prompt 에서
+
+1. 디렉토리로 이동
+cd C:\Users\leehague\Desktop\Project A\Project_TOY_server
+
+2. 빌드 명령
+cmake --build out\build\x64-Release
+**
+
+
+TODO: 
+
+1. (리펙토링) 의존성 문제 해결  object 들은 coreroom을 호출해야하고 MapManager 이외의 다른 매니저들을 호출 하면 안됨
+
+2. python 으로 시뮬레이션을 활용해 강화학습 모델 학습시키고 추론 테스트, 지표 기록하는 코드 생성 그리고 어떻게 평가하고 어떤 지표를 뽑아야 할지도 
+고민해야함. (질문, 목적이 게임의 몬스터 AI를 만들기 위한 강화학습모델이라고 한다면 강화학습 이론상으로는 '무엇'이 가장 중요한 지표일까?)
+
+3. AWS 등 클라우드에 올려셔 작동시키기 , 배포에 대한 연습
+
+4. 하나의 게임룸으로 진행시키는 방식으로 일단은 완성 (현재 방식)
+
+2026/06/16
+
+-리펙토링 완료, GameObject 와 그것을 상속받은 객체들 Network I/O 등과의 종속성 해제 - 
+-pyd 파일 빌드 완료
+-test.py 구동완료  vscode 세팅 끝
+
+TODO: 
+1. python으로 강화학습을 위한 시뮬레이션 코드 작성
+2. 본게임 컨텐츠 업데이트(c++게임 서버) -> MDP 설계 혹은 추가 State,Action,Reward(c++게임 서버)
+-> pyd 빌드 -> python 강화학습 코드에 적용 이  파이프라인를 완성 시켜야함
+
+[gemini] 의 추천 방법
+
+** 학습 및 추론(Inference) 파이프라인 **
+[Python] 시뮬레이션 환경 구축:
+gymnasium (구 OpenAI Gym) 라이브러리의 Env 클래스를 상속받는 파이썬 클래스(예: GameEnv)를 만듭니다.
+__init__: import game_core를 통해 C++ CoreRoom 객체를 생성합니다.
+reset(): C++ CoreRoom의 상태를 초기화하고, 첫 번째 State를 GatherContext()로 받아와 리턴합니다.
+step(action): 파이썬에서 받은 action ID를 C++ CoreRoom으로 넘겨 한 틱 시뮬레이션을 돌립니다. 그 결과로 나온 다음 State, Reward, 에피소드 종료 여부(Done)를 리턴합니다.
+[Python] 모델 학습:
+위에서 만든 GameEnv 환경을 Stable-Baselines3의 PPO 모델로 감싸고 model.learn(total_timesteps=10_000_000) 와 같이 학습을 시작합니다.
+[Python -> C++] 모델 배포:
+학습이 완료된 PPO 모델(PyTorch 기반)의 가중치를 ONNX (Open Neural Network Exchange) 포맷으로 변환하여 저장합니다. ONNX는 다양한 플랫폼과 언어에서 모델을 공유하기 위한 표준 포맷입니다.
+[C++] 추론 엔진 탑재:
+실제 C++ 게임 서버에서는 Microsoft에서 만든 ONNX Runtime 라이브러리를 사용합니다.
+서버가 시작될 때, 저장해둔 .onnx 모델 파일을 ONNX Runtime으로 로드합니다.
+Monster::UpdateAction() 함수 내부에서, 기존의 하드코딩된 로직 대신 ONNX Runtime을 호출하여 현재 State에 대한 Action을 추론하고, 그 결과를 ExecuteHighLevelAction에 넘겨줍니다.
+
+
+TODO: 별개로 시뭔스 다이어 그램을 그리는 툴 만들기(통신 순서를 시각화 하기 위함)

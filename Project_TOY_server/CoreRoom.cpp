@@ -5,6 +5,8 @@
 #include <windows.h> 
 #include "MapManager.h"
 #include "Map.h"
+#include "DataManager.h"
+#include "GameObject.h"
 
 CoreRoom::CoreRoom(int32 mapId, bool& maploadsuccess)
 {
@@ -21,7 +23,7 @@ CoreRoom::CoreRoom(int32 mapId, bool& maploadsuccess)
     maploadsuccess = true;
 }
 
-bool CoreRoom::HandleMove(PlayerPtr player, Core::PosInfo posinfo)
+bool CoreRoom::HandleMove(PlayerPtr player, const Core::PosInfo& posinfo)
 {
     if (player == nullptr)
     {
@@ -31,8 +33,6 @@ bool CoreRoom::HandleMove(PlayerPtr player, Core::PosInfo posinfo)
 
     Vector3 currentPos = Vector3::PosInfoToVector3(player->Getpos());
     Vector3 newPos = Vector3(posinfo.x, posinfo.y, posinfo.z);
-
-    // 처음에만 0일 수 있으므로 예외 처리
 
     uint64 currentTick =::GetTickCount64(); // 현재 서버 시간 (Windows 기준)
 
@@ -76,10 +76,153 @@ bool CoreRoom::HandleMove(PlayerPtr player, Core::PosInfo posinfo)
     return true;
 
 }
-void CoreRoom::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
+
+bool CoreRoom::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid, std::vector<Core::DamageResult>* results, bool* ishit, std::vector<GameObjectPtr>* spawnedObjects)
 {
-    //TODO
+    const SkillData* skilldata = DataManager::GetInstance().GetSkill(skillid);
+    int64 now = GetTickCount64();
+    int64 lastUsed = SKillUser->GetSkillCoolTime(skilldata->id);
+    int64 coolTime = skilldata->coolTime * 1000; // 초 단위를 ms로 변환
+
+    
+
+
+    if (now - lastUsed < coolTime) {
+        // 아직 쿨타임 중! 요청 무시 혹은 에러 패킷 전송
+        //std::cout << "it's cooltime" << std::endl;
+        return false;
+    }
+
+
+    // 3. 코스트(마나 등) 체크 및 차감
+    // (Player 클래스에 GetStat(), SetStat() 혹은 직접 접근 가능한 멤버가 있다고 가정)
+    if (skilldata->costType == CostType::Mana) {
+
+        int32 requiredMp = skilldata->cost; // 예시: 스킬 데이터에 코스트 수치를 추가하면 더 좋습니다.
+
+        if (SKillUser->UseMp(requiredMp) == false)
+        {
+            //마나 부족, 본인에게 메시지등을 보낼수 있을것임
+            //std::cout << "Mana is not enough " << std::endl;
+            return false;
+        }
+
+    }
+
+    // 검증 통과 후 사용 시점 갱신
+    SKillUser->SetSkillCoolTime(skilldata->id, now);
+
+    // 5. 스킬 타입별 피격 판정
+    
+
+    switch (skilldata->skillType)
+    {
+    case SkillType::Melee:
+    {
+        for (auto obj : _objects)
+        {
+            GameObjectPtr target = obj.second;
+            CreaturePtr creaturetarget = std::dynamic_pointer_cast<Creature>(target);
+            if (target && target->GetObjectId() != SKillUser->GetObjectId()) {
+                // 거리 계산 (Vector3::Distance)
+                float dist = Vector3::Distance(Vector3::PosInfoToVector3(SKillUser->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
+
+                // 사거리 검증 (약간의 마진 부여: 0.5f)
+                if (dist <= skilldata->range + 0.5f) {
+                    if (ishit) *ishit = true; //피격판정
+
+
+                    if (creaturetarget == nullptr) { continue; }
+
+                    //이 아래로는 데미지 계산등 Creature 에게만 적욜할 로직이 들거마면 됨. 
+
+                    // 데미지 계산 및 적용(서버 메모리 업데이트)
+                    int32 damage = skilldata->damage + SKillUser->GetAttack(); // 스킬데미지 + 캐릭터공격력 수정 가능
+                    creaturetarget->OnAttacked(damage); // 대상의 HP를 깎는 함수 호출
+
+                    //results 에 타겟 추가
+                    Core::DamageResult result;
+                    result.damage = damage;
+                    result.target = target;
+
+                    if (results) results->push_back(result);
+                    //UpdateHPToOthers(creaturetarget, SKillUser, damage, SKillUser->Getpos_As_Vector3());
+                    //이건 room 에서 해줄것
+
+                    std::cout << "[Melee Hit] " << SKillUser->GetName() << " -> " << creaturetarget->GetName() << " (Damage: " << damage << ")" << std::endl;
+                }
+            }
+        }
+
+    }
+    break;
+
+    case SkillType::Projectile:
+    {
+        std::cout << "Spawn Projectile" << std::endl;
+        ProjectilePtr projectile = SpawnProjectile(SKillUser, skilldata, targetPos);
+        if (projectile != nullptr)
+        {
+            if (spawnedObjects) spawnedObjects->push_back(projectile);
+        }
+        break;
+    }
+    case SkillType::Dash:
+    {
+        // 이동 가능 지역인지 확인 후 좌표 강제 갱신
+        if (this->GetMapptr()->CanGo(targetPos))
+        {
+            //이동가능 지역인 경우
+            SKillUser->Setpos(targetPos);
+        }
+        else
+        {
+            //이동 불가 지역인 경우
+
+        }
+
+
+        break;
+    }
+    }
+
+    return true;
 }
+
+ProjectilePtr CoreRoom::SpawnProjectile(CreaturePtr attacker, const SkillData* skillData, Vector3 targetPos)
+{
+    if (attacker == nullptr || skillData == nullptr)
+        return nullptr;
+
+    // 1. 투사체 객체 생성 (팩토리 패턴)
+    ProjectilePtr projectile;
+    if (_objectFactoryCallback)
+    {
+        // 실제 네트워크 서버 환경: Room이 연결해준 GObjcetManager를 통해 생성
+        GameObjectPtr go = _objectFactoryCallback(GameObjectType::Projectile, skillData->projectileId);
+        projectile = std::static_pointer_cast<Projectile>(go);
+    }
+    else
+    {
+        // 파이썬 시뮬레이션 환경: 매니저 없이 자체 생성 및 더미 ID 부여
+        static int32 s_simObjectId = 1000000; // 시뮬레이터에서 안 겹치게 사용할 더미 ID
+        projectile = std::make_shared<Projectile>(++s_simObjectId);
+        // (필요 시 projectile->SetTemplateId(skillData->projectileId) 호출)
+    }
+
+    // 2. 공격자의 위치로 초기 좌표 설정
+
+    projectile->Setpos(*attacker->Getpos());
+    
+    // 3. 투사체 방향 및 속도 등 초기화
+    projectile->Init(attacker, skillData, targetPos);
+
+    return projectile;
+}
+
+
+
+
 std::vector<Core::DamageResult> CoreRoom::UpdateProjectile(std::shared_ptr<Projectile> projectile, bool& ishit)
 {
     std::vector<Core::DamageResult> result;
@@ -242,69 +385,15 @@ std::pair<int, int> CoreRoom::GetSectorPos(Vector3 pos)
     return { sectorX, sectorZ };
 }
 
-//인접 플레이어 추출 (Interest Management)
-std::vector<std::shared_ptr<Session>> CoreRoom::GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id)
-{
-    std::vector<std::shared_ptr<Session>> SessionsOfadjacentPlayers;
-
-    auto [cellX, cellZ] = GetSectorPos(pos);
-
-    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
-    std::vector<GameObjectPtr> snapshot;
-    {
-        //std::lock_guard<std::mutex> lock(_lock);
-        for (int dz = -1; dz <= 1; ++dz)
-        {
-            for (int dx = -1; dx <= 1; ++dx)
-            {
-                int nx = cellX + dx;
-                int nz = cellZ + dz;
-
-                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
-                {
-                    for (auto& go : _sectors[nz][nx])
-                    {
-                        snapshot.push_back(go);
-                    }
-                }
-            }
-        }
-    }
-
-    // Process snapshot without holding the room lock
-    for (auto& go : snapshot)
-    {
-        if (!go) continue;
-
-        // CHECK ID FIRST before any weak_ptr operations
-        if (go->GetObjectId() == passing_object_id) continue;
-
-        if (go->GetType() == GameObjectType::Player)
-        {
-            auto player = std::static_pointer_cast<Player>(go);
-
-            // Only now try to lock the session weak_ptr
-            if (auto session = player->session.lock())
-            {
-
-                SessionsOfadjacentPlayers.push_back(session);
-            }
-        }
-    }
-
-    return SessionsOfadjacentPlayers;
-}
-
 std::vector <PlayerPtr> CoreRoom::GetAdjacentPlayers(Vector3 pos, int32 passing_object_id)
 {
     std::vector <PlayerPtr>adjacentPlayers;
 
     auto [cellX, cellZ] = GetSectorPos(pos);
 
-    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
     std::vector<GameObjectPtr> snapshot;
     {
-        //std::lock_guard<std::mutex> lock(_lock);
+        
         for (int dz = -1; dz <= 1; ++dz)
         {
             for (int dx = -1; dx <= 1; ++dx)
@@ -347,10 +436,6 @@ std::vector <PlayerPtr> CoreRoom::GetAdjacentPlayers(Vector3 pos, int32 passing_
     return adjacentPlayers;
 }
 
-
-
-
-
 void CoreRoom::InitGridData(const MapData* mapdata)
 {
     _cellSize = mapdata->CellSize;
@@ -362,5 +447,3 @@ void CoreRoom::InitGridData(const MapData* mapdata)
 
     _sectors.assign(_sectorCountZ, std::vector<std::set<GameObjectPtr>>(_sectorCountX));
 }
-
-

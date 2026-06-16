@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Objects">
       <UniqueIdentifier>{dabe8570-d0af-4a21-b1e5-88e797b97cd6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Room">
+      <UniqueIdentifier>{ffaf6dad-32f4-4897-8b03-3d7acf5ce28a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Room">
+      <UniqueIdentifier>{5e84c0a0-8eda-4e33-866e-f34c0e271318}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,9 +64,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PacketHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Room.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Protocol\Protocol.pb.cc">
@@ -112,7 +115,10 @@
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="CoreRoom.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Room</Filter>
+    </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Source Files\Room</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +182,6 @@
     <ClInclude Include="Monster.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Room.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JobQueue.h">
       <Filter>Header Files\Job</Filter>
     </ClInclude>
@@ -206,13 +209,21 @@
     <ClInclude Include="InfoSturct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Header Files\Room</Filter>
+    </ClInclude>
     <ClInclude Include="CoreRoom.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Room</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="GeneratePacketHandler.py" />
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
 #include "GameObject.h"
-#include "Room.h"
 #include "DataContents.h"
 #include "DataManager.h"
 #include "RoomManager.h"
@@ -7,19 +6,9 @@
 
 Vector3  GameObject::Getpos_As_Vector3() { return Vector3::PosInfoToVector3(&_pos); }
 
-RoomPtr GameObject::Getroomptr() { return GRoomManager.FindRoom(_roomId); }
 
-void GameObject::Setpos(Protocol::PosInfo pos)
-{
-    _pos.x=pos.x();
-    _pos.y=pos.y();
-    _pos.z=pos.z();
-    _pos.yaw=pos.yaw();
-    _pos.state = (CreatureState)pos.state();
 
-}
-
-void GameObject::Setpos(Vector3 vecpos)
+void GameObject::Setpos(const Vector3& vecpos)
 {
     Vector3 dir(vecpos.x - _pos.x, vecpos.y - _pos.y, vecpos.z - _pos.z);
     _pos.x=(vecpos.x);
@@ -28,7 +17,7 @@ void GameObject::Setpos(Vector3 vecpos)
     _pos.yaw=(CalculateYaw(dir));
 }
 
-void GameObject::Setpos(Core::PosInfo pos)
+void GameObject::Setpos(const Core::PosInfo& pos)
 {
     _pos.x = pos.x;
     _pos.y = pos.y;

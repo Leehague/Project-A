@@ -1,6 +1,5 @@
 #pragma once
 #include "Types.h"
-#include "Protocol/Protocol.pb.h"
 #include "GameObject.h"
 #include "Creature.h"
 
@@ -15,17 +14,7 @@ public:
         
     }
 
-    //virtual void Init(int32 templateId)
-    //{
-    //    
-    //    InitStatData(templateId);
-    //    
-    //}
 
-
-public:
-    uint64 lastMoveTick = 0; // 마지막 이동 검증 시간 (ms)
-    std::map<int32, int64> _skillCooltimes; // <SkillID, LastUsedTick>
 private:
     // 추가: 행동 결정 주기 관리
     uint64 _nextDecisionTick = 0;
@@ -36,7 +25,8 @@ private:
 public:
     std::vector<float> GatherContext();
     void ExecuteHighLevelAction(int actionId, Vector3 targetPos);
-    void MoveTo(Vector3 targetPos);
+    void MoveTo(const Vector3& targetPos);
+    void FleeFrom(const Vector3& targetPos);
 
 public:
     void JobUpdate();

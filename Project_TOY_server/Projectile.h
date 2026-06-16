@@ -5,10 +5,8 @@
 class Projectile : public GameObject
 {
 public:
-    Projectile(int32 objectId) : GameObject(objectId, GameObjectType::Projectile)
-    {
-
-    };
+    Projectile(int32 objectId);
+   
     virtual ~Projectile();
 
     void Init(GameObjectPtr attacker, const SkillData* skillData, Vector3 targetPos);

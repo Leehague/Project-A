@@ -31,12 +31,21 @@ static void CopyCorePosToProtocol(Protocol::PosInfo* dest, const Core::PosInfo* 
 
 }
 
+static void CopyProtocolPosToCore(Core::PosInfo* dest, const Protocol::PosInfo* src)
+{
+    if (dest == nullptr || src == nullptr) return;
+    dest->object_id = src->object_id();
+    dest->x = src->x();
+    dest->y = src->y();
+    dest->z = src->z();
+    dest->yaw = src->yaw();
+    dest->state =(CreatureState) src->state();
+}
+
 Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(roomId)
 {
     // 방이 생성될 때 맵 매니저를 통해 맵을 할당받습니다.
-    // GMapManager는 전역 혹은 싱글톤으로 선언되어 있어야 합니다.
-    /*_map = GMapManager.LoadMap(mapId);*/
-
+    // 맵할당 로직은 Coreroom의 생성자로 이동했음
     bool maploadsuccess;
     _coreroom = std::make_shared<CoreRoom>(mapId, maploadsuccess);
 
@@ -45,7 +54,22 @@ Room::Room(int32 roomId, int32 mapId) :JobQueue(&GJobSerializer) , _Selfroomid(r
         std::cout << "Room " << roomId << ": Map Load Failed! (ID: " << mapId << ")" << std::endl;
         return;
     }
+}
 
+void Room::Init()
+{
+    // CoreRoom 안에서 누군가 움직였다고 알리면, 기존 Room의 BroadcastMove를 실행하도록 콜백 연결
+    std::weak_ptr<Room> weakSelf = std::static_pointer_cast<Room>(shared_from_this());
+    _coreroom->_onObjectMovedCallback = [weakSelf](GameObjectPtr go) {
+        if (auto self = weakSelf.lock()) {
+            self->BroadcastMove(go); // 기존에 만들었던 이동 패킷 전송 로직 실행
+        }
+    };
+
+    // CoreRoom에서 오브젝트 생성 시 GObjcetManager를 호출하도록 팩토리 연결
+    _coreroom->_objectFactoryCallback = [](GameObjectType type, int32 templateId) -> GameObjectPtr {
+        return GObjcetManager.Create(type, nullptr, templateId);
+    };
     
 }
 
@@ -410,66 +434,31 @@ void Room::HandleMove(PlayerPtr player ,Protocol::CS_MOVING& pkt)
         return;
     }
 
-    Protocol::PosInfo posInfo = pkt.pos_info();
+    const Protocol::PosInfo* posInfo = &(pkt.pos_info());
+    Core::PosInfo pos;
+    CopyProtocolPosToCore(&pos, posInfo);
+
     std::weak_ptr<Room> weakSelf = std::static_pointer_cast<Room>(shared_from_this());
 
-    this->Push([weakSelf, player, posInfo]() {
+    this->Push([weakSelf, player, pos]() {
         if (auto self = weakSelf.lock()) { // 실행 시점에 룸이 살아있는지 확인
-            // 1. [검증] 이전 위치와 새 위치의 거리 차이가 너무 크면 무시하거나 보정 (핵 방지)
-            Vector3 currentPos = Vector3::PosInfoToVector3(player->Getpos());
-            Vector3 newPos = Vector3(posInfo.x(), posInfo.y(), posInfo.z());
 
-            // 처음에만 0일 수 있으므로 예외 처리
-
-            uint64 currentTick = ::GetTickCount64(); // 현재 서버 시간 (Windows 기준)
-
-            // 처음에만 0일 수 있으므로 예외 처리
-            if (player->GetlastMoveTick() == 0) { player->SetlastMoveTick(currentTick - 100); }
-
-            // deltaTime 계산 (초 단위로 변환)
-            float deltaTime = (currentTick - player->GetlastMoveTick()) / 1000.0f;
-            player->SetlastMoveTick(currentTick); // 현재 시간을 다음 검증을 위해 저장
-
-
-            float dist = Vector3::Distance(currentPos, newPos);
-            float maxAllowedDist = player->GetSpeed() * deltaTime * 1.2f; // 오차범위 20%
-
-            //속도 검증
-            if (dist > maxAllowedDist) {
-                // 너무 멀리 이동함 (패킷 무시 혹은 강제 위치 복구)
-                std::cout << "Abnormal move request detected" << std::endl;
-
-                self->SendMoveResync(player);
+            if (player == nullptr)
+            {
+                std::cout << "HandleMove : player ptr is null" << std::endl;
                 return;
             }
 
-            // 지형 검증
-            MapPtr map = self->GetMapptr();
-            if (map != nullptr)
+            if (self->_coreroom->HandleMove(player, pos))
             {
-                if (map->CanGo(newPos) == false)
-                {
-                    // 충돌 발생! 클라이언트에게 강제 위치 복구 패킷 전송
-                    self->SendMoveResync(player);
-                    return;
-                }
-            }
+                // 3. [전달] 방 안의 다른 유저들에게 이동 사실 브로드캐스트
 
-            //[갱신] 그리드 업데이트
+                self->BroadcastMove(player);
+            }
+            else
             {
-                self->_coreroom->UpdateObjectGrid(player, currentPos, newPos);
+                self->SendMoveResync(player);
             }
-
-
-            // 2. [갱신] 서버 메모리에 플레이어 위치 정보 업데이트
-            player->Setpos(posInfo);
-
-            // 3. [전달] 방 안의 다른 유저들에게 이동 사실 브로드캐스트
-
-            self->BroadcastMove(player);
-            //Loging
-            /*std::cout << "RoomId: " << _Selfroomid << std::endl
-                << "object Id : " << resPos->object_id() << "HandleMove : (" << resPos->x() << resPos->y() << resPos->z() << ")" << std::endl;*/
         }
         });
 }
@@ -511,108 +500,49 @@ void Room::HandleSkillForMonster(MonsterPtr monster, GameObjectPtr targetobj, Ve
 
 void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
 {
-    // [수정] 플레이어만 사용 -> 모든 스킬을 쓸수 있는 게임 오브젝트가 사용하는 메소드
     // TODO: [DB컨텐츠 추가 필요][핵 방지]_skillCooltimes 를 이용하던 아니면 다른 메모리영역을 추가하던 해서 스킬이 진짜 그 캐릭터가 쓸수 있는 스킬인지 체크하는 로직필요
 
     const SkillData* skilldata = DataManager::GetInstance().GetSkill(skillid);
-    int64 now = GetTickCount64();
-    int64 lastUsed = SKillUser->GetSkillCoolTime(skilldata->id);
-    int64 coolTime = skilldata->coolTime * 1000; // 초 단위를 ms로 변환
+    std::vector<Core::DamageResult> damageresults;
+    bool ishit = false; // 쓰레기값이 들어가지 않도록 초기화 해주는 것이 안전합니다.
 
-    if (now - lastUsed < coolTime) {
-        // 아직 쿨타임 중! 요청 무시 혹은 에러 패킷 전송
-        //std::cout << "it's cooltime" << std::endl;
+    std::vector<GameObjectPtr> spawnedobejcts;
+    // 각 지역 변수의 메모리 주소(&)를 포인터로 넘겨줍니다.
+    if (_coreroom->HandleSkill(SKillUser, targetobj, targetPos, skillid, &damageresults, &ishit, &spawnedobejcts) == false)
+    {
         return;
     }
 
-    
-    // 3. 코스트(마나 등) 체크 및 차감
-    // (Player 클래스에 GetStat(), SetStat() 혹은 직접 접근 가능한 멤버가 있다고 가정)
-    if (skilldata->costType == CostType::Mana) {
-        
-        int32 requiredMp = skilldata->cost; // 예시: 스킬 데이터에 코스트 수치를 추가하면 더 좋습니다.
-
-        if (SKillUser->UseMp(requiredMp) == false)
-        {
-            //마나 부족, 본인에게 메시지등을 보낼수 있을것임
-            //std::cout << "Mana is not enough " << std::endl;
-            return;
-        }
-
-    }
-
-    // 검증 통과 후 사용 시점 갱신
-    SKillUser->SetSkillCoolTime(skilldata->id, now);
-
-    // 5. 스킬 타입별 피격 판정
-    bool isHit = false;
-
-    switch (skilldata->skillType)
+    for (GameObjectPtr spawnedobejct : spawnedobejcts)
     {
-    case SkillType::Melee:
-    {
-        for (auto obj : _coreroom->_objects)
-        {
-            GameObjectPtr target = obj.second;
-            CreaturePtr creaturetarget = std::dynamic_pointer_cast<Creature>(target);
-            if (target && target->GetObjectId() != SKillUser->GetObjectId()) {
-                // 거리 계산 (Vector3::Distance)
-                float dist = Vector3::Distance(Vector3::PosInfoToVector3(SKillUser->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
-
-                // 사거리 검증 (약간의 마진 부여: 0.5f)
-                if (dist <= skilldata->range + 0.5f) {
-                    isHit = true;
-
-
-                    if (creaturetarget == nullptr) { continue; }
-
-                    //이 아래로는 데미지 계산등 Creature 에게만 적욜할 로직이 들거마면 됨. 
-
-                    // 데미지 계산 및 적용(서버 메모리 업데이트)
-                    int32 damage = skilldata->damage + SKillUser->GetAttack(); // 스킬데미지 + 캐릭터공격력 수정 가능
-                    creaturetarget->OnAttacked(damage); // 대상의 HP를 깎는 함수 호출
-
-                 
-                    UpdateHPToOthers(creaturetarget, SKillUser, damage, SKillUser->Getpos_As_Vector3());
-
-                    std::cout << "[Melee Hit] " << SKillUser->GetName() << " -> " << creaturetarget->GetName() << " (Damage: " << damage << ")" << std::endl;
-                }
-            }
-        }
-
+        Enter(spawnedobejct);
     }
-    break;
-
-    case SkillType::Projectile:
-        std::cout << "Spawn Projectile" << std::endl;
-        SpawnProjectile(SKillUser, skilldata, targetPos);
-        
-        break;
-
-    case SkillType::Dash:
-        // 이동 가능 지역인지 확인 후 좌표 강제 갱신
-        if (this->GetMapptr()->CanGo(targetPos))
-        {
-            //이동가능 지역인 경우
-            SKillUser->Setpos(targetPos);
-        }
-        else
-        {
-            //이동 불가 지역인 경우
-            
-        }
 
 
-        break;
-    }
 
     // 6. 결과 브로드캐스트 (주변 모두에게 애니메이션 알림)
+
+    //HP 손실 정보(피격정보)를 주변에 뿌림
+    for (Core::DamageResult& result : damageresults)
+    {
+        CreaturePtr target = std::dynamic_pointer_cast<Creature>(result.target);
+
+        if (target)
+        {
+            UpdateHPToOthers(target, SKillUser, result.damage, SKillUser->Getpos_As_Vector3());
+        }
+
+    }
+
+    //스킬 사용자 , 본인에게 MP 변화 패킷 전송
     if (SKillUser->GetType() == GameObjectType::Player)
     {
         PlayerPtr player = std::static_pointer_cast<Player>(SKillUser);
-        //본인에게 MP 변화 패킷 전송
+        
         UpdateMPToSelf(player);
     }
+
+    
     
 
     Protocol::SC_SKILL resPkt;
@@ -638,34 +568,6 @@ void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 t
     if (!sendBuffer) return;
     BroadcastAround(sendBuffer, SKillUser->Getpos_As_Vector3());
     
-}
-
-//투사체 관련 함수
-void Room::SpawnProjectile(CreaturePtr attacker, const SkillData *skillData, Vector3 targetPos)
-{
-    if (attacker == nullptr || skillData == nullptr)
-        return;
-
-    // 1. 투사체 객체 생성
-    GameObjectPtr go = GObjcetManager.Create(GameObjectType::Projectile, nullptr, skillData->projectileId);
-    std::shared_ptr<Projectile> projectile = std::static_pointer_cast<Projectile>(go);
-    
-    if (projectile == nullptr)
-        return;
-
-    // 2. 공격자의 위치로 초기 좌표 설정
-
-    
-    Protocol::PosInfo posInfo;
-    CopyCorePosToProtocol(&posInfo, (attacker->Getpos()));
-    projectile->Setpos(posInfo);
-
-    // 3. 투사체 방향 및 속도 등 초기화
-    projectile->Init(attacker, skillData, targetPos);
-
-    // 4. 룸에 입장 (내부 관리 목록 _objects 추가 및 그리드 배치)
-    // TODO: 클라이언트 측에 투사체 스폰을 알리는 패킷 전송 로직이 필요하다면 여기에 추가
-    Enter(projectile);
 }
 
 void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
@@ -945,7 +847,13 @@ void Room::SendMoveResync(PlayerPtr player)
 void Room::BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id)
 {
     // 모든 플레이어가 아니라 인접한 플레이어에게만 보냄
-    std::vector<std::shared_ptr<Session>> targets = _coreroom->GetAdjacentPlayersSessions(centerPos, passing_object_id);
+    std::vector<PlayerPtr> adjacentPlayers = _coreroom->GetAdjacentPlayers(centerPos, passing_object_id);
+    std::vector<std::shared_ptr<Session>> targets;
+    for (auto& player : adjacentPlayers)
+    {
+        if (auto session = player->session.lock())
+            targets.push_back(session);
+    }
 
     Broadcast(sendBuffer, targets);
 }

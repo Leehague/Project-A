@@ -2,11 +2,11 @@
 #include "RoomManager.h"
 #include "Map.h"
 #include "Player.h"
-#include "Room.h"
 #include "DataManager.h"
-#include "Session.h"
 #include "DataContents.h"
 #include "GameObject.h"
+#include "CoreRoom.h"
+#include <windows.h>
 
 std::vector<float> Monster::GatherContext()
 {
@@ -17,7 +17,9 @@ std::vector<float> Monster::GatherContext()
     context.push_back(static_cast<float>(GetCurrentMp()) / GetMaxMP());
 
     // 2. 가장 가까운 타겟(플레이어) 정보
-    PlayerPtr target =this->Getroomptr()->GetNearestPlayer(this->Getpos_As_Vector3(), this->_targetrange); // 시야(그리드) 내에서 탐색
+    PlayerPtr target =this->GetCoreroomptr()->GetNearestPlayer(this->Getpos_As_Vector3(), this->_targetrange); // 시야(그리드) 내에서 탐색
+
+    
     if (target)
     {
         Vector3 myPos = Vector3::PosInfoToVector3(this->Getpos());
@@ -35,6 +37,11 @@ std::vector<float> Monster::GatherContext()
         context.insert(context.end(), { 0.0f, 0.0f, 0.0f });
     }
 
+    // 3. 스킬 쿨타임
+
+    // 4. 주변 위협
+
+
     return context;
 }
 
@@ -50,27 +57,39 @@ void Monster::ExecuteHighLevelAction(int actionId, Vector3 targetPos)
         this->UseSkill(nullptr,Vector3(0,0,0),1); // 일반 공격 스킬 ID
         break;
     case 2: // Flee
-        //this->FleeFrom(targetPos);
+        this->FleeFrom(targetPos);
         break;
     }
 }
 
-void Monster::MoveTo(Vector3 targetPos)
+void Monster::FleeFrom(const Vector3& targetPos)
+{
+    Vector3 myPos = Getpos_As_Vector3();
+    Vector3 dir = (myPos - targetPos).GetNormalized(); // 방향만 가져옴 (길이 1)
+    dir.y = 0.0f; // 위아래로 도망가는 것 방지
+
+    // 반대 방향으로 10.0f (적당한 고정 거리) 만큼 떨어진 곳을 목적지로 설정
+    Vector3 destPos = myPos + (dir * 10.0f);
+    
+    MoveTo(destPos);
+}
+
+void Monster::MoveTo(const Vector3& targetPos)
 {
     // A* 알고리즘 연동
     // 1. Map::FindPath(myPos, targetPos) 호출하여 경로 리스트 획득
     // 2. 경로의 첫 번째 지점으로 이동 시작
     // 3. CreatureState를 Moving으로 변경 및 주변에 SC_MOVE 브로드캐스트
 
-    RoomPtr myroom = this->Getroomptr();
-    if (myroom == nullptr) return;
+    CoreRoomPtr mycoreroom = this->GetCoreroomptr();
+    if (mycoreroom == nullptr) return;
 
-    auto mapptr = myroom->GetMapptr();
+    auto mapptr = mycoreroom->GetMapptr();
     if (mapptr == nullptr) return;
 
     if (Getpos_As_Vector3() == targetPos) return;
 
-    std::vector<Vector3> newPath = myroom->GetMapptr()->FindPath(this->Getpos_As_Vector3(), targetPos);
+    std::vector<Vector3> newPath = mycoreroom->GetMapptr()->FindPath(this->Getpos_As_Vector3(), targetPos);
     
     if (!newPath.empty())
     {
@@ -119,7 +138,7 @@ void Monster::UpdateAction()
     std::vector<float> context = GatherContext();
 
     // 가장 가까운 플레이어 탐색
-    PlayerPtr target = Getroomptr()->GetNearestPlayer(Getpos_As_Vector3(), _targetrange);
+    PlayerPtr target = GetCoreroomptr()->GetNearestPlayer(Getpos_As_Vector3(), _targetrange);
 
     if (target)
     {
@@ -232,11 +251,11 @@ void Monster::ProcessMove()
 // 헬퍼 함수: 그리드 갱신과 브로드캐스트를 묶어서 처리
 void Monster::SyncPosAndBroadcast(Vector3 oldPos, Vector3 newPos)
 {
-    if (auto room = Getroomptr()) {
+    if (auto room = GetCoreroomptr()) {
         // 섹터 변경 및 그리드 동기화
         room->UpdateObjectGrid(shared_from_this(), oldPos, newPos);
-        // 클라이언트에 이동 알림
-        room->BroadcastMove(shared_from_this());
+        // 코어 룸에 이동 사실을 알림 (실제 브로드캐스트는 룸에서 콜백으로 처리)
+        room->OnObjectMoved(shared_from_this());
     }
 }
 
@@ -245,7 +264,7 @@ void Monster::UseSkill(GameObjectPtr targetobj, Vector3 targetPos, int32 skillid
     CreaturePtr self = std::dynamic_pointer_cast<Creature>(shared_from_this());
     if(self)
     {
-        this->Getroomptr()->HandleSkill(self, targetobj, targetPos, skillid);
+        this->GetCoreroomptr()->HandleSkill(self, targetobj, targetPos, skillid);
     }
     
 }

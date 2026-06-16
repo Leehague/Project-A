@@ -61,6 +61,7 @@ public:
         _skillCooltimes[SkillID] = LastUsedTick;
     }
 
+   
 protected:
     //Creature 사망 판정시 호출될 함수
     virtual void OnDead();

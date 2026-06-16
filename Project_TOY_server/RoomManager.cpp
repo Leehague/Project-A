@@ -7,6 +7,7 @@ int32 RoomManager::Create(int32 mapId)
     std::lock_guard<std::mutex> lock(_lock);  
     int32 roomId = ++RoomCounter;
     RoomPtr room = std::make_shared<Room>(roomId,mapId);
+    room->Init();
     // ... 초기화 로직 ...
     _rooms[roomId] = room;
     //room->SetRoomid(roomId); [수정] Room 클래스의 생성자에서 수행함

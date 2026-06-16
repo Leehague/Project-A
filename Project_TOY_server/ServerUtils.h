@@ -4,7 +4,7 @@
 #include "SendBuffer.h"
 #include "BufferWriter.h"
 
-#pragma comment(lib, "libprotobufd.lib") // 또는 libprotobufd.lib
+//#pragma comment(lib, "libprotobufd.lib") // 또는 libprotobufd.lib
 
 #pragma pack(push, 1) // 1바이트 단위로 정렬
 // 패킷의 가장 앞에 붙는 메타데이터
