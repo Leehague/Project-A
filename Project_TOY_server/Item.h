@@ -9,8 +9,8 @@ class Item : public GameObject
 {
 public:
 
-    Item(int32 objectId)
-        : GameObject(objectId, GameObjectType::Item)
+    Item(int32 objectId, CoreRoomPtr coreroomptr)
+        : GameObject(objectId, GameObjectType::Item, coreroomptr)
     {
 
     }

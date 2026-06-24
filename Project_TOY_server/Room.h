@@ -64,6 +64,8 @@ public:
 
     //몬스터 스폰 
     void MonsterSpawn(int32 NumOfMonster, int templatedId);
+    void MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll);
+
 
     MapPtr GetMapptr();
 

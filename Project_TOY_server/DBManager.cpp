@@ -113,7 +113,8 @@ bool DBManager::LoadPlayerInventory(int32 playerDBId, PlayerPtr player)
             if (itemData != nullptr)
             {
                 // 6. 플레이어 객체 내부의 인벤토리(메모리)에 아이템 등록
-                ItemPtr item = std::static_pointer_cast<Item>(GObjcetManager.Create(GameObjectType::Item, player->session.lock(), curuentiteminfo.itemTemplateId));
+                CoreRoomPtr playercoreroom = player->GetCoreroomptr();
+                ItemPtr item = std::static_pointer_cast<Item>(GObjcetManager.Create(GameObjectType::Item, player->session.lock(), curuentiteminfo.itemTemplateId, playercoreroom));
                 item->InitItem(curuentiteminfo);
                 player->GetInventory()->InsertItem(curuentiteminfo.itemDbId, item);
 

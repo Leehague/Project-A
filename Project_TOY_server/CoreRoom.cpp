@@ -34,7 +34,7 @@ bool CoreRoom::HandleMove(PlayerPtr player, const Core::PosInfo& posinfo)
     Vector3 currentPos = Vector3::PosInfoToVector3(player->Getpos());
     Vector3 newPos = Vector3(posinfo.x, posinfo.y, posinfo.z);
 
-    uint64 currentTick =::GetTickCount64(); // 현재 서버 시간 (Windows 기준)
+    uint64 currentTick =TimeManager::GetTickCount64(); // 현재 서버 시간 (Windows 기준)
 
     // 처음에만 0일 수 있으므로 예외 처리
     if (player->GetlastMoveTick() == 0) { player->SetlastMoveTick(currentTick - 100); }
@@ -80,7 +80,11 @@ bool CoreRoom::HandleMove(PlayerPtr player, const Core::PosInfo& posinfo)
 bool CoreRoom::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid, std::vector<Core::DamageResult>* results, bool* ishit, std::vector<GameObjectPtr>* spawnedObjects)
 {
     const SkillData* skilldata = DataManager::GetInstance().GetSkill(skillid);
-    int64 now = GetTickCount64();
+    if (skilldata == nullptr)
+    {
+        return false;
+    }
+    int64 now = TimeManager::GetTickCount64();
     int64 lastUsed = SKillUser->GetSkillCoolTime(skilldata->id);
     int64 coolTime = skilldata->coolTime * 1000; // 초 단위를 ms로 변환
 
@@ -196,17 +200,18 @@ ProjectilePtr CoreRoom::SpawnProjectile(CreaturePtr attacker, const SkillData* s
 
     // 1. 투사체 객체 생성 (팩토리 패턴)
     ProjectilePtr projectile;
+    CoreRoomPtr self = std::static_pointer_cast<CoreRoom>(shared_from_this());
     if (_objectFactoryCallback)
     {
         // 실제 네트워크 서버 환경: Room이 연결해준 GObjcetManager를 통해 생성
-        GameObjectPtr go = _objectFactoryCallback(GameObjectType::Projectile, skillData->projectileId);
+        GameObjectPtr go = _objectFactoryCallback(GameObjectType::Projectile, skillData->projectileId, self);
         projectile = std::static_pointer_cast<Projectile>(go);
     }
     else
     {
         // 파이썬 시뮬레이션 환경: 매니저 없이 자체 생성 및 더미 ID 부여
         static int32 s_simObjectId = 1000000; // 시뮬레이터에서 안 겹치게 사용할 더미 ID
-        projectile = std::make_shared<Projectile>(++s_simObjectId);
+        projectile = std::make_shared<Projectile>(++s_simObjectId, self);
         // (필요 시 projectile->SetTemplateId(skillData->projectileId) 호출)
     }
 
@@ -446,4 +451,70 @@ void CoreRoom::InitGridData(const MapData* mapdata)
     _sectorCountZ = (mapdata->height / _sectorSize) + 1;
 
     _sectors.assign(_sectorCountZ, std::vector<std::set<GameObjectPtr>>(_sectorCountX));
+}
+
+CreaturePtr CoreRoom::GetNearestCreature(Vector3 pos, float maxRange, int32 excludeObjectId)
+{
+    CreaturePtr nearestCreature = nullptr;
+    float bestDistSq = maxRange * maxRange;
+
+    std::vector<CreaturePtr> adjacentCreatures = GetAdjacentCreatures(pos, excludeObjectId);
+
+    for (const CreaturePtr& creature : adjacentCreatures)
+    {
+        if (creature->GetState() == CreatureState::Dead || creature->GetState() == CreatureState::OnDead)
+            continue;
+
+        Vector3 creaturePos = Vector3::PosInfoToVector3(creature->Getpos());
+        float distSq = Vector3::DistanceSquared(pos, creaturePos);
+
+        if (distSq < bestDistSq)
+        {
+            bestDistSq = distSq;
+            nearestCreature = creature;
+        }
+    }
+
+    return nearestCreature;
+}
+
+std::vector<CreaturePtr> CoreRoom::GetAdjacentCreatures(Vector3 pos, int32 excludeObjectId)
+{
+    std::vector<CreaturePtr> adjacentCreatures;
+
+    auto [cellX, cellZ] = GetSectorPos(pos);
+
+    std::vector<GameObjectPtr> snapshot;
+    {
+        for (int dz = -1; dz <= 1; ++dz)
+        {
+            for (int dx = -1; dx <= 1; ++dx)
+            {
+                int nx = cellX + dx;
+                int nz = cellZ + dz;
+
+                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
+                {
+                    for (auto& go : _sectors[nz][nx])
+                    {
+                        snapshot.push_back(go);
+                    }
+                }
+            }
+        }
+    }
+
+    for (auto& go : snapshot)
+    {
+        if (!go) continue;
+        if (go->GetObjectId() == excludeObjectId) continue;
+
+        if (go->GetType() == GameObjectType::Player || go->GetType() == GameObjectType::Monster)
+        {
+            auto creature = std::static_pointer_cast<Creature>(go);
+            adjacentCreatures.push_back(creature);
+        }
+    }
+
+    return adjacentCreatures;
 }

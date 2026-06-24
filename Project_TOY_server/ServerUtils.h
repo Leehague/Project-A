@@ -4,7 +4,6 @@
 #include "SendBuffer.h"
 #include "BufferWriter.h"
 
-//#pragma comment(lib, "libprotobufd.lib") // 또는 libprotobufd.lib
 
 #pragma pack(push, 1) // 1바이트 단위로 정렬
 // 패킷의 가장 앞에 붙는 메타데이터
@@ -24,10 +23,7 @@ public:
         const uint16 headerSize = sizeof(PacketHeader);
         const uint16 totalSize = dataSize + headerSize;
 
-        // [디버깅 로그 추가]
-        //std::cout << "[Send] ID: " << pktId << ", DataSize: " << dataSize << ", TotalSize: " << totalSize << std::endl;
-
-
+     
         SendBufferPtr sendBuffer = std::make_shared<SendBuffer>(totalSize);
 
         // 1. 헤더 직접 기입
@@ -40,8 +36,7 @@ public:
         if (pkt.SerializeToArray(dataStart, dataSize) == false)
             return nullptr;
 
-        // [핵심 추가] 3. 버퍼의 사용된 크기를 강제로 설정해줌
-        // SendBuffer 클래스에 public으로 추가하거나, Write 함수를 활용해야 합니다.
+       
         sendBuffer->Close(totalSize);
 
         return sendBuffer;

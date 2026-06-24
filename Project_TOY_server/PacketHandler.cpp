@@ -34,7 +34,7 @@ bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
     if (DBManager::GetInstance().GetCharacterInfo(accountId, characterId, templateId/*, posInfo*/))
     {
         
-        GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, templateId);
+        GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, templateId,nullptr);
         player = std::static_pointer_cast<Player>(go);
         
         // [수정] DB에서 위치를 가져오지 않더라도, 생성자로 (0,0,0)이 된 posInfo로 위치를 명시적으로 설정합니다.

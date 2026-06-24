@@ -26,17 +26,7 @@ public class PacketHandler
         
     }
 
-    //public static void Handle_SC_CHAT_BROADCAST(PacketSession session, IMessage packet)
-    //{
-    //    SC_CHAT_BROADCAST pkt = packet as SC_CHAT_BROADCAST;
-    //    // 씬에 띄워져 있는 UI_Chat 스크립트를 찾아 내용을 갱신
-    //    UI_Chat chatUI = Object.FindObjectOfType<UI_Chat>();
-    //    if (chatUI != null)
-    //    {
-    //        chatUI.AddChat(chatPkt.PlayerId, chatPkt.Msg);
-    //    }
-    //}
-
+    
     // PacketHandler.cs 내부 수정
     public static void Handle_SC_CHAT_BROADCAST(PacketSession session, IMessage packet)
     {

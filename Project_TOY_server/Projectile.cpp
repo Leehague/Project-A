@@ -3,7 +3,7 @@
 #include "Room.h"
 #include <windows.h>
 
-Projectile::Projectile(int32 objectId) : GameObject(objectId, GameObjectType::Projectile) {}
+Projectile::Projectile(int32 objectId, CoreRoomPtr coreroomptr) : GameObject(objectId, GameObjectType::Projectile , coreroomptr) {}
 
 Projectile::~Projectile() {}
 
@@ -18,13 +18,13 @@ void Projectile::Init(GameObjectPtr attacker, const SkillData* skillData, Vector
     _direction.y = 0; // 지면과 평행하게 날아가도록 고정
     _direction.Normalize();
 
-    _lastTick = ::GetTickCount64();
+    _lastTick = TimeManager::GetTickCount64();
     _traveledDistance = 0.0f;
 }
 
 void Projectile::TickMove()
 {
-    uint64 currentTick = ::GetTickCount64();
+    uint64 currentTick = TimeManager::GetTickCount64();
     if (_lastTick == 0) _lastTick = currentTick;
 
     float deltaTime = (currentTick - _lastTick) / 1000.0f;

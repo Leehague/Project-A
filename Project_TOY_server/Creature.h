@@ -9,7 +9,7 @@
 class Creature : public GameObject
 {
 public:
-    Creature(int32 objectId, GameObjectType type) : GameObject(objectId, type) {}
+    Creature(int32 objectId, GameObjectType type, CoreRoomPtr coreroomptr) : GameObject(objectId, type, coreroomptr) {}
     virtual ~Creature() {}
 
     // 상태 관련

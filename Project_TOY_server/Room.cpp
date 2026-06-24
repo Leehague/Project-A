@@ -67,8 +67,8 @@ void Room::Init()
     };
 
     // CoreRoom에서 오브젝트 생성 시 GObjcetManager를 호출하도록 팩토리 연결
-    _coreroom->_objectFactoryCallback = [](GameObjectType type, int32 templateId) -> GameObjectPtr {
-        return GObjcetManager.Create(type, nullptr, templateId);
+    _coreroom->_objectFactoryCallback = [](GameObjectType type, int32 templateId , CoreRoomPtr _coreroom) -> GameObjectPtr {
+        return GObjcetManager.Create(type, nullptr, templateId, _coreroom);
     };
     
 }
@@ -82,7 +82,10 @@ void Room::Enter(GameObjectPtr go)
 
         if (auto self = weakSelf.lock()) {
             self->_coreroom->_objects[go->GetObjectId()] = go;
+
+            //기존에 Room에 들어 있던 객체들이 아니기 때문에 기본값(0 , nullptr )으로 설정되어 있을 Room, CoreRoom 정보 업데이트
             go->SetroomId(self->_Selfroomid);
+            go->SetCoreroomptr(self->_coreroom);
 
             auto [cellX, cellZ] = self->_coreroom->GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // 좌표로 인덱스 추출
             self->_coreroom->_sectors[cellZ][cellX].insert(go);
@@ -141,6 +144,7 @@ void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
                 //std::lock_guard<std::mutex> lock(_lock);
                 self->_coreroom->_objects[monster->GetObjectId()] = monster;
                 monster->SetroomId(self->_Selfroomid);
+                monster->SetCoreroomptr(self->_coreroom);
             }
 
             self->SpawnBroadcast(monsters);
@@ -503,6 +507,10 @@ void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 t
     // TODO: [DB컨텐츠 추가 필요][핵 방지]_skillCooltimes 를 이용하던 아니면 다른 메모리영역을 추가하던 해서 스킬이 진짜 그 캐릭터가 쓸수 있는 스킬인지 체크하는 로직필요
 
     const SkillData* skilldata = DataManager::GetInstance().GetSkill(skillid);
+    if (skilldata == nullptr)
+    {
+        return;
+    }
     std::vector<Core::DamageResult> damageresults;
     bool ishit = false; // 쓰레기값이 들어가지 않도록 초기화 해주는 것이 안전합니다.
 
@@ -667,21 +675,28 @@ void Room::UpdateHPToOthers(CreaturePtr target, CreaturePtr attacker, int damage
 
 void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
 {
+    MonsterSpawn(NumOfMonster, templatedId, false);
+}
+
+void Room::MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll)
+{
     // [수정] 외부 쓰레드(ConsoleThread 등)에서 호출될 것을 대비해 
     // 실제 로직을 람다로 묶어 JobQueue에 넣습니다.
     RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
 
-    this->Push([self, NumOfMonster, templatedId]() {
+    this->Push([self, NumOfMonster, templatedId, IsRLControll]() {
         std::vector<MonsterPtr> monsters;
         for (int i = 0; i < NumOfMonster; i++)
         {
             MonsterPtr monster = std::static_pointer_cast<Monster>(
-                GObjcetManager.Create(GameObjectType::Monster, nullptr, templatedId)
+                GObjcetManager.Create(GameObjectType::Monster, nullptr, templatedId, self->_coreroom)
             );
 
             // 좌표 설정 등 로직 수행
             monster->Set_x(10.0f + i * 2.0f);
             monster->Set_z(10.0f);
+
+            monster->SetRLControlled(IsRLControll);
 
             monsters.push_back(monster);
         }

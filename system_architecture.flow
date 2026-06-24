@@ -1,0 +1,6 @@
+# Project A System Architecture & Packet Flow
+* Client [Unity Client] -> Server [C++ IOCP Server] : NetworkManager (TCP/IP)
+* Server -> DB [Database] : Entity Framework / Stored Procedure
+* ProtoFiles [Protobuf Definition] -> CodeGen [Packet Generator] : Input (.proto)
+* CodeGen -> Server : Generate PacketHandler.h
+* CodeGen -> Client : Generate PacketManager_Gen.cs

@@ -8,7 +8,7 @@
 #include "Vector3.h"
 #include "GameObject.h"
 
-class CoreRoom
+class CoreRoom : public std::enable_shared_from_this<CoreRoom>
 {
 public:
 
@@ -29,6 +29,7 @@ public:
     MapPtr GetMapptr() { return _map; };
 
     PlayerPtr GetNearestPlayer(Vector3 pos, float maxRange);
+    CreaturePtr GetNearestCreature(Vector3 pos, float maxRange, int32 excludeObjectId);
 
 public:
     
@@ -42,6 +43,7 @@ public:
     std::pair<int, int> GetSectorPos(Vector3 pos);
 
     std::vector<PlayerPtr> GetAdjacentPlayers(Vector3 pos, int32 passing_object_id = -1);
+    std::vector<CreaturePtr> GetAdjacentCreatures(Vector3 pos, int32 excludeObjectId);
 
 public:
     // 3. 오브젝트 이동 시 그리드 갱신 (Enter/Move/Leave 시 호출)
@@ -70,7 +72,7 @@ public:
     std::function<void(GameObjectPtr)> _onObjectMovedCallback = nullptr;
 
     // 오브젝트 생성요청을 외부(Room)로 전달할 콜백 함수 포인터
-    std::function<GameObjectPtr(GameObjectType, int32)> _objectFactoryCallback = nullptr;
+    std::function<GameObjectPtr(GameObjectType, int32, CoreRoomPtr)> _objectFactoryCallback = nullptr;
 
     // Monster나 Player가 이동했을 때 호출할 함수
     void OnObjectMoved(GameObjectPtr go) {

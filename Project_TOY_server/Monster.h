@@ -2,20 +2,29 @@
 #include "Types.h"
 #include "GameObject.h"
 #include "Creature.h"
+#include <functional>
 
+using RLPredictCallback = std::function<int(const std::vector<float>&)>;
 
 class Monster : public Creature
 {
 public:
 
-    Monster(int32 objectId)
-        : Creature(objectId, GameObjectType::Monster)
+    Monster(int32 objectId, CoreRoomPtr coreroomptr)
+        : Creature(objectId, GameObjectType::Monster, coreroomptr), _isRLControlled(false), _rlPredictCallback(nullptr)
     {
         
     }
 
+    void SetRLControlled(bool val) { _isRLControlled = val; }
+    bool IsRLControlled() const { return _isRLControlled; }
+
+    void SetRLPredictCallback(RLPredictCallback callback) { _rlPredictCallback = callback; }
+    bool HasRLPredictCallback() const { return _rlPredictCallback != nullptr; }
 
 private:
+    bool _isRLControlled;
+    RLPredictCallback _rlPredictCallback;
     // 추가: 행동 결정 주기 관리
     uint64 _nextDecisionTick = 0;
     const uint32 DECISION_INTERVAL_MS = 100; // 0.1초 = 100ms 마다 판단

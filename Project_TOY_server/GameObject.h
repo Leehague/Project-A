@@ -28,8 +28,8 @@ class GameObject : public std::enable_shared_from_this<GameObject>
 {
 public:
 
-	GameObject(int32 objectId ) : _objectId(objectId), _roomId(0), _type(GameObjectType::None){ _pos.object_id=static_cast<uint64_t>(objectId); }
-	GameObject(int32 objectId,  GameObjectType type) : _objectId(objectId), _roomId(0), _type(type) { _pos.object_id=static_cast<uint64_t>(objectId); }
+	GameObject(int32 objectId, CoreRoomPtr coreroomptr) : _objectId(objectId), _roomId(0), _type(GameObjectType::None) , _coreroomptr(coreroomptr){ _pos.object_id=static_cast<uint64_t>(objectId); }
+	GameObject(int32 objectId,  GameObjectType type, CoreRoomPtr coreroomptr) : _objectId(objectId), _roomId(0), _type(type) , _coreroomptr(coreroomptr) { _pos.object_id=static_cast<uint64_t>(objectId); }
 
 	int32 GetObjectId() { return _objectId; }
 
@@ -52,9 +52,13 @@ public:
 	void SetroomId(int32 roomid) { _roomId = roomid; }
 	int32 GetroomId() { return _roomId; }
 
-  
+
+    void SetCoreroomptr(CoreRoomPtr coreroomptr)
+    {
+        _coreroomptr = coreroomptr;
+    }
     CoreRoomPtr GetCoreroomptr() {
-        return coreroomptr;
+        return _coreroomptr;
     }
 
 	GameObjectType GetType() { return _type; }
@@ -75,7 +79,7 @@ protected:
 	int32 _roomId = 0; //소속된 Room의 roomId, initialized to 0
 	int32 _templateId = 0; // 모든 오브젝트 공통 데이터 ID
 
-    CoreRoomPtr coreroomptr;
+    CoreRoomPtr _coreroomptr;
 
 
 	Core::PosInfo _pos; //여기에 objectId도 있음

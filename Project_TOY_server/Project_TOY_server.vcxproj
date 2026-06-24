@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\Microsoft.ML.OnnxRuntime.props" Condition="Exists('packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\Microsoft.ML.OnnxRuntime.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -102,7 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;PROTOBUF_USE_DLLS;ABSL_CONSUME_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\ha052\vcpkg\vcpkg-master\installed\x64-windows\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -111,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\ha052\vcpkg\vcpkg-master\installed\x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libprotobufd.lib;abseil_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
@@ -185,6 +186,7 @@
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Protocol\Protocol.pb.h" />
     <ClInclude Include="RecvBuffer.h" />
+    <ClInclude Include="RLModelManager.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="SendBuffer.h" />
@@ -196,6 +198,7 @@
   <ItemGroup>
     <None Include="cpp.hint" />
     <None Include="GeneratePacketHandler.py" />
+    <None Include="models\monster_ppo_model.onnx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -204,11 +207,14 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\Google.Protobuf.Tools.3.33.4\build\Google.Protobuf.Tools.targets" Condition="Exists('packages\Google.Protobuf.Tools.3.33.4\build\Google.Protobuf.Tools.targets')" />
+    <Import Project="packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\Microsoft.ML.OnnxRuntime.targets" Condition="Exists('packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\Microsoft.ML.OnnxRuntime.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>이 프로젝트는 이 컴퓨터에 없는 NuGet 패키지를 참조합니다. 해당 패키지를 다운로드하려면 NuGet 패키지 복원을 사용하십시오. 자세한 내용은 http://go.microsoft.com/fwlink/?LinkID=322105를 참조하십시오. 누락된 파일은 {0}입니다.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\Google.Protobuf.Tools.3.33.4\build\Google.Protobuf.Tools.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Google.Protobuf.Tools.3.33.4\build\Google.Protobuf.Tools.targets'))" />
+    <Error Condition="!Exists('packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\Microsoft.ML.OnnxRuntime.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\Microsoft.ML.OnnxRuntime.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\Microsoft.ML.OnnxRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.ML.OnnxRuntime.1.27.0\build\native\Microsoft.ML.OnnxRuntime.targets'))" />
   </Target>
 </Project>

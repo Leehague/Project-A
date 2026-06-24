@@ -7,8 +7,8 @@ class Player : public Creature
 {
 public:
 
-    Player(int32 objectId, std::shared_ptr<Session> sessionPtr)
-        : Creature(objectId, GameObjectType::Player), session(sessionPtr)
+    Player(int32 objectId, std::shared_ptr<Session> sessionPtr, CoreRoomPtr coreroomptr)
+        : Creature(objectId, GameObjectType::Player, coreroomptr), session(sessionPtr)
     {
         
     }

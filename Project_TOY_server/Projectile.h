@@ -5,7 +5,7 @@
 class Projectile : public GameObject
 {
 public:
-    Projectile(int32 objectId);
+    Projectile(int32 objectId, CoreRoomPtr coreroomptr);
    
     virtual ~Projectile();
 

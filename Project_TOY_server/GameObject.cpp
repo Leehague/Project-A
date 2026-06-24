@@ -2,6 +2,17 @@
 #include "DataContents.h"
 #include "DataManager.h"
 #include "RoomManager.h"
+#include <windows.h>
+
+namespace TimeManager {
+    bool g_useVirtualTime = false;
+    uint64 g_virtualTick = 0;
+
+    uint64 GetTickCount64() {
+        if (g_useVirtualTime) return g_virtualTick;
+        return ::GetTickCount64();
+    }
+}
 
 
 Vector3  GameObject::Getpos_As_Vector3() { return Vector3::PosInfoToVector3(&_pos); }

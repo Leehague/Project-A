@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "CoreRoom.h"
 #include <windows.h>
+#include "RLModelManager.h"
 
 std::vector<float> Monster::GatherContext()
 {
@@ -16,8 +17,8 @@ std::vector<float> Monster::GatherContext()
     context.push_back(static_cast<float>(GetCurrentHp()) / GetMaxHP());
     context.push_back(static_cast<float>(GetCurrentMp()) / GetMaxMP());
 
-    // 2. 가장 가까운 타겟(플레이어) 정보
-    PlayerPtr target =this->GetCoreroomptr()->GetNearestPlayer(this->Getpos_As_Vector3(), this->_targetrange); // 시야(그리드) 내에서 탐색
+    // 2. 가장 가까운 타겟(플레이어/몬스터) 정보
+    CreaturePtr target = this->GetCoreroomptr()->GetNearestCreature(this->Getpos_As_Vector3(), this->_targetrange, this->GetObjectId()); // 시야(그리드) 내에서 탐색
 
     
     if (target)
@@ -54,7 +55,7 @@ void Monster::ExecuteHighLevelAction(int actionId, Vector3 targetPos)
         this->MoveTo(targetPos);
         break;
     case 1: // Basic Attack
-        this->UseSkill(nullptr,Vector3(0,0,0),1); // 일반 공격 스킬 ID
+        this->UseSkill(nullptr,Vector3(0,0,0),101); // 일반 공격 스킬 ID (SkillData.json ID: 101)
         break;
     case 2: // Flee
         this->FleeFrom(targetPos);
@@ -112,7 +113,7 @@ void Monster::MoveTo(const Vector3& targetPos)
 
 void Monster::JobUpdate()
 {
-    uint64 now = ::GetTickCount64();
+    uint64 now = TimeManager::GetTickCount64();
     if (now < _nextDecisionTick)
         return; // 아직 주기가 안 되었으면 스킵
     
@@ -125,7 +126,10 @@ void Monster::JobUpdate()
 
     // 1. AI 판단 (목적지나 타겟 설정)
     // 내부에서 FindPath 등을 호출하여 _path를 채움
-    UpdateAction();
+    if (!_isRLControlled || _rlPredictCallback != nullptr)
+    {
+        UpdateAction();
+    }
 
     // 2. 실제 이동 처리 (검문소)
     // 여기서 이전에 작성한 isfinite 검사 로직이 돌아감
@@ -137,22 +141,39 @@ void Monster::UpdateAction()
     // [판단] GatherContext를 통해 주변 상황 파악
     std::vector<float> context = GatherContext();
 
-    // 가장 가까운 플레이어 탐색
-    PlayerPtr target = GetCoreroomptr()->GetNearestPlayer(Getpos_As_Vector3(), _targetrange);
+    // 가장 가까운 타겟(플레이어/몬스터) 탐색
+    CreaturePtr target = GetCoreroomptr()->GetNearestCreature(Getpos_As_Vector3(), _targetrange, GetObjectId());
+    Vector3 targetPos = target ? target->Getpos_As_Vector3() : Vector3(0.0f, 0.0f, 0.0f);
 
-    if (target)
+    // 1. 파이썬 환경(훈련 시뮬레이션)에서 직접 콜백을 준 경우 (우선 처리)
+    if (_rlPredictCallback)
     {
-
-        // 타겟이 있으면 따라감 (ActionId 0: MoveTo)
-        ExecuteHighLevelAction(0, target->Getpos_As_Vector3());
+        int actionId = _rlPredictCallback(context);
+        ExecuteHighLevelAction(actionId, targetPos);
     }
+    // 2. 실서버에서 강화학습 컨트롤을 적용해야 할 경우 (ONNX 라이브러리 추론)
+    else if (_isRLControlled)
+    {
+        // 싱글톤 매니저의 Predict 함수를 통해 액션 ID 획득
+        int actionId = RLModelManager::GetInstance().Predict(context);
+        ExecuteHighLevelAction(actionId, targetPos);
+    }
+    // 3. 기존의 룰 기반 AI (일반 추격 및 Idle FSM)
     else
     {
-        // 타겟이 없으면 멈춤
-        if (GetState() == CreatureState::Moving)
+        if (target)
         {
-            SetState(CreatureState::Idle);
-            _path.clear();
+            // 타겟이 있으면 따라감 (ActionId 0: MoveTo)
+            ExecuteHighLevelAction(0, targetPos);
+        }
+        else
+        {
+            // 타겟이 없으면 멈춤
+            if (GetState() == CreatureState::Moving)
+            {
+                SetState(CreatureState::Idle);
+                _path.clear();
+            }
         }
     }
 }

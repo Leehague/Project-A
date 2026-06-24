@@ -694,7 +694,7 @@ TODO:
 TODO: 
 1. python으로 강화학습을 위한 시뮬레이션 코드 작성
 2. 본게임 컨텐츠 업데이트(c++게임 서버) -> MDP 설계 혹은 추가 State,Action,Reward(c++게임 서버)
--> pyd 빌드 -> python 강화학습 코드에 적용 이  파이프라인를 완성 시켜야함
+-> pyd 빌드 -> python 강화학습 코드에 적용 이 파이프라인를 완성 시켜야함
 
 [gemini] 의 추천 방법
 
@@ -714,4 +714,47 @@ step(action): 파이썬에서 받은 action ID를 C++ CoreRoom으로 넘겨 한 
 Monster::UpdateAction() 함수 내부에서, 기존의 하드코딩된 로직 대신 ONNX Runtime을 호출하여 현재 State에 대한 Action을 추론하고, 그 결과를 ExecuteHighLevelAction에 넘겨줍니다.
 
 
-TODO: 별개로 시뭔스 다이어 그램을 그리는 툴 만들기(통신 순서를 시각화 하기 위함)
+TODO: 별개로 시뭔스 다이어 그램을 그려보기
+
+2026/06/18
+
+-시퀀스 다이어 그램(Login Sequence) 생성
+
+2026/06/20
+
+-RL 부분 업데이트 , antigravity 사용 시작 (구독중인 구글 요금제 활용 및 geminai code assist가 잘 작동되지 않는 문제)
+
+- test.py 를 통한 실행 테스트는 통과
+- 실행시 전역으로 설치한 3.12 버전 python 으로 실행 해야 
+
+TODO : 본격적으로 RL aigent 학습 시작 , 추론 한것을 역으로 c++서버에서 실행시키는 부분도 구현해야함
+
+2026/06/21
+
+train.py 구동시 nullptr 버그등 수정. 
+1.CoreRoomPtr를 GameObject에 세팅하는 부분이 없었음. 생성자, Room의 Enter 로직들(Room::Enter , Room::MonsterEnter)등
+에서 세팅해주도록 변경. 
+
+2.SkillData를 가져올때 id를 1 번등으로 가져오던 것을 정상적으로 수정
+
+
+C++ 엔진의 가상 시간(Virtual Time) 도입 : ::GetTickCount64() 를 사용 하고 있었는데 시뮬레이션에서는 가상 시간을 도입해야 했음
+
+
+2026/06/22
+
+기존 게임 로직 테스트 중 몇가지 문제가 발생 함.
+하지만 정확히 원인을 시각적으로 알기 힘듬
+
+TODO: 서버에서 별도로 현재 Room 과 Room안의 오브젝트들의 HP 상태등을 체크하는 툴이 필요할 듯 (그래서 판정로직이 의도대로 작동하는지 아니면 랜더링이 제대로 안되고 있는 것인지를 확인 할 필요성이 있음)
+
+아마 무빙이 작거나 없으면 업데이트가 안된거나 하는 등의 이유일 가능성이 있음(확실하진 않음)
+
+2026/06/23
+
+-ONNX Runtime C++ API 연동
+: python : 신경망 학습(RL agent) => ONNX 파일 생성 => c++서버에선느 ONNX 파일 로드후 추론 진행 의 구조를 만들기 위함
+
+-[server] ONNX 파일을 관리하는 매니저 코드 생성 완 (RLModelManager)
+TODO: [server] : 몬스터가 전투 를 돌입할때 추론을 적용하도록 함.
+

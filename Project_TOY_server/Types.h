@@ -38,3 +38,9 @@ using CreaturePtr = std::shared_ptr<Creature>;
 using CoreRoomPtr = std::shared_ptr<CoreRoom>;
 
 const float EPSILON = 1e-4f;
+
+namespace TimeManager {
+    extern bool g_useVirtualTime;
+    extern uint64 g_virtualTick;
+    uint64 GetTickCount64();
+}
