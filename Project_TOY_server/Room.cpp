@@ -145,6 +145,14 @@ void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
                 self->_coreroom->_objects[monster->GetObjectId()] = monster;
                 monster->SetroomId(self->_Selfroomid);
                 monster->SetCoreroomptr(self->_coreroom);
+
+                auto [cellX, cellZ] = self->_coreroom->GetSectorPos(monster->Getpos_As_Vector3());
+
+                if (cellZ >= 0 && cellZ < (int)self->_coreroom->_sectors.size() &&
+                    cellX >= 0 && cellX < (int)self->_coreroom->_sectors[cellZ].size())
+                {
+                    self->_coreroom->_sectors[cellZ][cellX].insert(monster);
+                }
             }
 
             self->SpawnBroadcast(monsters);

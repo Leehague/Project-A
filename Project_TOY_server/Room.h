@@ -75,6 +75,7 @@ public:
 
 
 public:
+    CoreRoomPtr GetCoreRoom() { return _coreroom; }
     void UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos);
 private:
     //std::mutex _lock;
