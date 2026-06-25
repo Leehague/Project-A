@@ -8,6 +8,8 @@
 #include "Inventory.h"
 #include "Item.h"
 #include "InfoSturct.h"
+#include "Room.h"
+
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];

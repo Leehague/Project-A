@@ -145,6 +145,9 @@ void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
                 self->_coreroom->_objects[monster->GetObjectId()] = monster;
                 monster->SetroomId(self->_Selfroomid);
                 monster->SetCoreroomptr(self->_coreroom);
+                
+                // 💡 몬스터에게 이 방(Room은 JobQueue를 상속받음)의 포인터를 주입합니다.
+                monster->SetOwnerJobQueue(self); 
 
                 auto [cellX, cellZ] = self->_coreroom->GetSectorPos(monster->Getpos_As_Vector3());
 
@@ -743,128 +746,6 @@ void Room::SendMoveResync(PlayerPtr player)
 
 }
 
-//std::pair<int, int> Room::GetSectorPos(Vector3 pos)
-//{
-//    // 1. 먼저 물리 타일 좌표로 변환
-//    int cellX = static_cast<int>(std::floor((pos.x - _minX) / _cellSize));
-//    int cellZ = static_cast<int>(std::floor((pos.z - _minZ) / _cellSize));
-//
-//    // 2. 물리 좌표를 섹터 크기로 나누어 섹터 인덱스 산출
-//    int sectorX = cellX / _sectorSize;
-//    int sectorZ = cellZ / _sectorSize;
-//
-//    // 범위 제한
-//    sectorX = std::clamp(sectorX, 0, _sectorCountX - 1);
-//    sectorZ = std::clamp(sectorZ, 0, _sectorCountZ - 1);
-//
-//    return { sectorX, sectorZ };
-//}
-
-////인접 플레이어 추출 (Interest Management)
-//std::vector<std::shared_ptr<Session>> Room::GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id)
-//{
-//    std::vector<std::shared_ptr<Session>> SessionsOfadjacentPlayers;
-//
-//    auto [cellX, cellZ] = GetSectorPos(pos);
-//
-//    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
-//    std::vector<GameObjectPtr> snapshot;
-//    {
-//        std::lock_guard<std::mutex> lock(_lock);
-//        for (int dz = -1; dz <= 1; ++dz)
-//        {
-//            for (int dx = -1; dx <= 1; ++dx)
-//            {
-//                int nx = cellX + dx;
-//                int nz = cellZ + dz;
-//
-//                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
-//                {
-//                    for (auto& go : _sectors[nz][nx])
-//                    {
-//                        snapshot.push_back(go);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    // Process snapshot without holding the room lock
-//    for (auto& go : snapshot)
-//    {
-//        if (!go) continue;
-//
-//        // CHECK ID FIRST before any weak_ptr operations
-//        if (go->GetObjectId() == passing_object_id) continue;
-//
-//        if (go->GetType() == GameObjectType::Player)
-//        {
-//            auto player = std::static_pointer_cast<Player>(go);
-//
-//            // Only now try to lock the session weak_ptr
-//            if (auto session = player->session.lock())
-//            {
-//
-//                SessionsOfadjacentPlayers.push_back(session);
-//            }
-//        }
-//    }
-//
-//    return SessionsOfadjacentPlayers;
-//}
-
-//std::vector <PlayerPtr> Room::GetAdjacentPlayers(Vector3 pos, int32 passing_object_id) 
-//{
-//    std::vector <PlayerPtr>adjacentPlayers;
-//
-//    auto [cellX, cellZ] = GetSectorPos(pos);
-//
-//    // Snapshot relevant GameObjectPtr under lock to avoid concurrent modification
-//    std::vector<GameObjectPtr> snapshot;
-//    {
-//        std::lock_guard<std::mutex> lock(_lock);
-//        for (int dz = -1; dz <= 1; ++dz)
-//        {
-//            for (int dx = -1; dx <= 1; ++dx)
-//            {
-//                int nx = cellX + dx;
-//                int nz = cellZ + dz;
-//
-//                if (nx >= 0 && nx < _sectorCountX && nz >= 0 && nz < _sectorCountZ)
-//                {
-//                    for (auto& go : _sectors[nz][nx])
-//                    {
-//                        snapshot.push_back(go);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    // Process snapshot without holding the room lock
-//    for (auto& go : snapshot)
-//    {
-//        if (!go) continue;
-//
-//        // CHECK ID FIRST before any weak_ptr operations
-//        if (go->GetObjectId() == passing_object_id) continue;
-//
-//        if (go->GetType() == GameObjectType::Player)
-//        {
-//            auto player = std::static_pointer_cast<Player>(go);
-//
-//            // Only now try to lock the session weak_ptr
-//            if (auto session = player->session.lock())
-//            {
-//
-//                adjacentPlayers.push_back(player);
-//            }
-//        }
-//    }
-//
-//    return adjacentPlayers;
-//}
-
 
 
 void Room::BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 passing_object_id)
@@ -881,19 +762,6 @@ void Room::BroadcastAround(SendBufferPtr sendBuffer, Vector3 centerPos, int32 pa
     Broadcast(sendBuffer, targets);
 }
 
-//void Room::InitGridData(const MapData* mapdata)
-//{
-//    _cellSize = mapdata->CellSize;
-//    _minX = mapdata->MinX;
-//    _minZ = mapdata->MinZ;
-//    // 섹터 개수 계산 (전체 가로/세로 타일 수 / 섹터 크기)
-//    _sectorCountX = (mapdata->width / _sectorSize) + 1;
-//    _sectorCountZ = (mapdata->height / _sectorSize) + 1;
-//
-//    _sectors.assign(_sectorCountZ, std::vector<std::set<GameObjectPtr>>(_sectorCountX));
-//}
-//
-//
 
 void Room::Execute() 
 {

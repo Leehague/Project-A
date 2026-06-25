@@ -3,7 +3,7 @@
 #include "RoomManager.h"
 #include "ObjectManager.h"
 #include "Player.h"
-
+#include "Room.h"
 
 Session::Session() : _recvBuffer(1024 * 64)
 {

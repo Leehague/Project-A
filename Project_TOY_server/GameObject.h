@@ -22,7 +22,7 @@ enum class GameObjectType
 };
 
 
-class Vector3;
+class Vector3;class JobQueue; 
 
 class GameObject : public std::enable_shared_from_this<GameObject>
 {
@@ -89,4 +89,10 @@ protected:
 public:
     float CalculateYaw(Vector3 dir);
 	
+public:
+	// 실서버 환경에서만 룸이 자신을 주입해 줄 함수
+    void SetOwnerJobQueue(std::shared_ptr<JobQueue> jobQueue) { _ownerJobQueue = jobQueue; }
+    std::shared_ptr<JobQueue> GetOwnerJobQueue() { return _ownerJobQueue.lock(); }
+private:
+    std::weak_ptr<JobQueue> _ownerJobQueue; // 자신을 처리해 주는 방의 JobQueue 보관
 };

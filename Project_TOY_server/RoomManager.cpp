@@ -1,4 +1,5 @@
 #include "RoomManager.h"
+#include "Room.h"
 
 RoomManager GRoomManager;
 
@@ -10,7 +11,7 @@ int32 RoomManager::Create(int32 mapId)
     room->Init();
     // ... 초기화 로직 ...
     _rooms[roomId] = room;
-    //room->SetRoomid(roomId); [수정] Room 클래스의 생성자에서 수행함
+    
     return roomId;
 }
 

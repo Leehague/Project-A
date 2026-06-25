@@ -5,7 +5,17 @@
 #include <iostream>
 #include <windows.h>
 #include <filesystem>
-#include <iostream>
+#include "Room.h"
+#include "CoreRoom.h"
+
+// 비동기 추론 요청서
+struct InferenceRequest
+{
+    std::weak_ptr<class Monster> monster;
+    std::weak_ptr<JobQueue> room; // 💡 Room 대신 JobQueue 추상 클래스 참조
+    std::vector<float> context;
+};
+
 
 class RLModelManager
 {
@@ -84,6 +94,28 @@ public:
             std::wcerr << L"[ERROR] Requested path was: " << modelPath << std::endl;
             _session = nullptr;
         }
+
+
+        // ONNX 전용 연산 스레드 실행
+        _bShutdown = false;
+        _inferenceThread = std::thread(&RLModelManager::InferenceWorker, this);
+
+    }
+
+    // 몬스터가 요청을 밀어 넣는 O(1) 함수
+    void PushRequest(InferenceRequest&& req)
+    {
+        std::lock_guard<std::mutex> lock(_queueMutex);
+        _requestQueue.push(std::move(req));
+        _cv.notify_one(); // 대기 중인 추론 스레드 깨우기
+    }
+    // 서버 종료 시 세션 및 스레드 정리
+    void Shutdown()
+    {
+        _bShutdown = true;
+        _cv.notify_all();
+        if (_inferenceThread.joinable())
+            _inferenceThread.join();
     }
 
 
@@ -123,6 +155,8 @@ public:
 
         // 3. 결과 파싱 (torch.argmax 출력이므로 int64_t 형식으로 데이터 추출)
         int64_t* outputData = outputTensors[0].GetTensorMutableData<int64_t>();
+
+        
         return static_cast<int>(outputData[0]);
     }
 
@@ -131,4 +165,59 @@ private:
     Ort::Env _env;
     std::unique_ptr<Ort::Session> _session;
     size_t _expectedInputDim = 0; // 모델이 요구하는 입력 차원 (State Space Dimension)
+
+
+
+private:
+    // 백그라운드 추론 전용 스레드 루프
+    void InferenceWorker()
+    {
+        while (!_bShutdown)
+        {
+            std::vector<InferenceRequest> reqs;
+            {
+                std::unique_lock<std::mutex> lock(_queueMutex);
+                // 일감이 들어오거나 종료 요청이 올 때까지 스레드 휴식 (CPU 0% 점유)
+                _cv.wait(lock, [this]() { return !_requestQueue.empty() || _bShutdown; });
+                if (_bShutdown) break;
+                // 배치(Batching) 처리를 위해 쌓인 요청을 모두 꺼내옴
+                while (!_requestQueue.empty())
+                {
+                    reqs.push_back(std::move(_requestQueue.front()));
+                    _requestQueue.pop();
+                }
+            }
+            // 가져온 요청들에 대해 순차적 ONNX 추론 실행
+            for (auto& req : reqs)
+            {
+                auto monster = req.monster.lock();
+                auto room = req.room.lock();
+                if (!monster || !room) continue;
+                // 1. 무거운 ONNX 추론 실행 (이 스레드에서만 독점 수행)
+                int actionId = Predict(req.context);
+                // 2. 결과 적용은 반드시 '해당 룸의 JobQueue'로 다시 보내서 처리
+                // (이로 인해 몬스터 상태 변경 시 동시성 레이스 컨디션 완벽 차단)
+                room->Push([monster, actionId]() {
+                    if (monster->GetState() == CreatureState::OnDead || monster->GetState() == CreatureState::Dead)
+                        return;
+                    // 실행 시점의 실시간 타겟 좌표를 다시 구함
+                    CreaturePtr target = monster->GetCoreroomptr()->GetNearestCreature(
+                        monster->Getpos_As_Vector3(), monster->_targetrange, monster->GetObjectId());
+                    
+                    Vector3 targetPos = target ? target->Getpos_As_Vector3() : Vector3(0.0f, 0.0f, 0.0f);
+                    
+                    // 액션 실행
+                    monster->ExecuteHighLevelAction(actionId, targetPos);
+                });
+            }
+        }
+    }
+private:
+    std::thread _inferenceThread;
+    std::queue<InferenceRequest> _requestQueue;
+    std::mutex _queueMutex;
+    std::condition_variable _cv;
+    bool _bShutdown = false;
+
+
 };

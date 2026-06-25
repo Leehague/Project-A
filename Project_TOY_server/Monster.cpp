@@ -126,10 +126,9 @@ void Monster::JobUpdate()
 
     // 1. AI 판단 (목적지나 타겟 설정)
     // 내부에서 FindPath 등을 호출하여 _path를 채움
-    if (!_isRLControlled || _rlPredictCallback != nullptr)
-    {
-        UpdateAction();
-    }
+    
+    UpdateAction();
+    
 
     // 2. 실제 이동 처리 (검문소)
     // 여기서 이전에 작성한 isfinite 검사 로직이 돌아감
@@ -151,12 +150,23 @@ void Monster::UpdateAction()
         int actionId = _rlPredictCallback(context);
         ExecuteHighLevelAction(actionId, targetPos);
     }
-    // 2. 실서버에서 강화학습 컨트롤을 적용해야 할 경우 (ONNX 라이브러리 추론)
+    // 2. 실서버에서 강화학습 컨트롤을 적용해야 할 경우 (ONNX 라이브러리 추론) 비동기
     else if (_isRLControlled)
     {
-        // 싱글톤 매니저의 Predict 함수를 통해 액션 ID 획득
-        int actionId = RLModelManager::GetInstance().Predict(context);
-        ExecuteHighLevelAction(actionId, targetPos);
+        auto roomQueue = GetOwnerJobQueue(); //1단계에서 주입받은 큐 획득
+        auto self = std::static_pointer_cast<Monster>(shared_from_this());
+
+         // 실서버 환경일 때만 비동기 큐를 타게 됨 (Python 환경에서는 roomQueue가 nullptr이므로 통과)
+        if (roomQueue && self)
+        {
+            InferenceRequest req;
+            req.monster = self;
+            req.room = roomQueue; 
+            req.context = context;
+            RLModelManager::GetInstance().PushRequest(std::move(req));
+        }
+
+
     }
     // 3. 기존의 룰 기반 AI (일반 추격 및 Idle FSM)
     else

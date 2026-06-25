@@ -74,7 +74,7 @@ void ConsoleThread(RoomPtr room)
         else if (command =="RLspawn")
         {
             std::cout << "Admin: Spawning test five RL monsters..." << std::endl;
-            room->MonsterSpawn(5, 1, true);
+            room->MonsterSpawn(1, 1, true);
         }
         else if (command == "monitor")
         {
@@ -281,7 +281,16 @@ int main()
             for (auto& room : rooms)
             {
                 // 룸 자체를 시리얼라이저에 등록하여 워커 쓰레드가 처리하게 함
-                GJobSerializer.Push(room);
+                //GJobSerializer.Push(room);
+
+                // 강제 Push 대신, 룸의 JobQueue를 경유하여 Update 일감을 등록합니다.
+                // 이렇게 하면 _isInsideJobQueue가 내부적으로 true가 되어 중복 Push가 차단됩니다.
+                std::weak_ptr<Room> weakRoom = room;
+                room->Push([weakRoom]() {
+                    if (auto r = weakRoom.lock()) {
+                        r->Execute(); // 기존 Execute() 로직 수행
+                    }
+                });
             }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 적절한 틱 간격
