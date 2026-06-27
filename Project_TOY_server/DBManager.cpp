@@ -165,3 +165,49 @@ bool DBManager::GetCharacterInfo(int32 accountId, int32& outCharacterId, int32& 
     PushConnection(conn);
     return success;
 }
+
+bool DBManager::GetCharacterSkillInfo(int32 CharacterId, std::vector<int32>& outSkillIds)
+{
+    DBConnection* conn = PopConnection();
+    if (conn == nullptr) return false;
+
+    conn->BindParam(1, CharacterId);
+    const WCHAR* query = L"SELECT SkillId FROM [dbo].[CharacterSkills] WHERE CharacterId = ?";
+
+    bool success = false;
+    if (conn->Execute(query))
+    {
+        while (conn->Fetch())
+        {
+            outSkillIds.push_back( conn->GetInt(L"SkillId"));
+            
+        }
+
+        success = true;
+    }
+    PushConnection(conn);
+    return success;
+}
+
+bool DBManager::AddCharacterSkillInfo(int32 CharacterId, int32 SkillId , int32 SkillLevel)
+{   
+    DBConnection* conn = PopConnection();
+    if (conn == nullptr) return false;
+
+    conn->BindParam(1, CharacterId);
+    conn->BindParam(2, SkillId);
+    conn->BindParam(3, SkillLevel);
+
+    const WCHAR* query = L"INSERT INTO CharacterSkills (CharacterId, SkillId, SkillLevel) VALUES(?, ?, ?) ;";
+
+    bool success = false;
+
+    if (conn->Execute(query))
+    {
+        if(conn->Fetch())
+        {
+            success = true;
+        }
+    }
+    return success;
+}

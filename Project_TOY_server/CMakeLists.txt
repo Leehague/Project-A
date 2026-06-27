@@ -32,12 +32,19 @@ set(CORE_SOURCES
 # 4. 파이썬 확장 모듈(game_core.pyd) 생성
 pybind11_add_module(game_core ${CORE_SOURCES})
 
-# 5. Python 헤더 경로 명시적 포함 및 C++17 강제 설정
-target_include_directories(game_core PRIVATE ${Python_INCLUDE_DIRS})
+# 5. Python 및 OnnxRuntime 헤더 경로 명시적 포함 및 C++17 강제 설정
+set(ONNXRUNTIME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packages/Microsoft.ML.OnnxRuntime.1.27.0")
+target_include_directories(game_core PRIVATE 
+    ${Python_INCLUDE_DIRS}
+    "${ONNXRUNTIME_DIR}/build/native/include"
+)
 target_compile_features(game_core PRIVATE cxx_std_17)
 
-# 6. Protobuf 라이브러리 명시적 링크
-target_link_libraries(game_core PRIVATE protobuf::libprotobuf)
+# 6. Protobuf 및 OnnxRuntime 라이브러리 명시적 링크
+target_link_libraries(game_core PRIVATE 
+    protobuf::libprotobuf
+    "${ONNXRUNTIME_DIR}/runtimes/win-x64/native/onnxruntime.lib"
+)
 
 if(MSVC)
     target_compile_options(game_core PRIVATE /Zc:__cplusplus /std:c++17)

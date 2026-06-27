@@ -52,12 +52,15 @@ void Monster::ExecuteHighLevelAction(int actionId, Vector3 targetPos)
     switch (actionId)
     {
     case 0: // MoveTo
+        this->SetState(CreatureState::Moving);
         this->MoveTo(targetPos);
         break;
     case 1: // Basic Attack
+        this->SetState(CreatureState::Skill);
         this->UseSkill(nullptr,Vector3(0,0,0),101); // 일반 공격 스킬 ID (SkillData.json ID: 101)
         break;
     case 2: // Flee
+        this->SetState(CreatureState::Moving);
         this->FleeFrom(targetPos);
         break;
     }
@@ -173,8 +176,22 @@ void Monster::UpdateAction()
     {
         if (target)
         {
-            // 타겟이 있으면 따라감 (ActionId 0: MoveTo)
-            ExecuteHighLevelAction(0, targetPos);
+            Vector3 currentpos = this->Getpos_As_Vector3();
+            
+            float distancesauared = Vector3::DistanceSquared(targetPos, currentpos);
+
+            
+            
+            if (distancesauared < 5.0) //temp hardcoding
+            {
+                ExecuteHighLevelAction(1, targetPos); //basic attack
+            }
+            else
+            {
+                ExecuteHighLevelAction(0, targetPos); //moveto
+            }
+            
+            
         }
         else
         {
@@ -191,11 +208,16 @@ void Monster::UpdateAction()
 
 void Monster::ProcessMove()
 {
+    if (this->GetState() == CreatureState::Skill)
+    {
+        return;
+    }
+
     if (_path.empty()) {
         SetState(CreatureState::Idle);
         return;
     }
-
+    
     Vector3 currentPos = Getpos_As_Vector3();
     Vector3 nextPos = _path.front();
     Vector3 dir = nextPos - currentPos;
@@ -239,7 +261,7 @@ void Monster::ProcessMove()
 
             //std::cout << "yaw: "<<yaw << std::endl;
             _pos.yaw=yaw;
-         
+        
         // [중요] 위치가 변했으므로 무조건 알림
         SyncPosAndBroadcast(currentPos, nextPos);
         return;
@@ -292,10 +314,8 @@ void Monster::SyncPosAndBroadcast(Vector3 oldPos, Vector3 newPos)
 
 void Monster::UseSkill(GameObjectPtr targetobj, Vector3 targetPos, int32 skillid)
 {
-    CreaturePtr self = std::dynamic_pointer_cast<Creature>(shared_from_this());
-    if(self)
+    if (_onUseSkillCallback)
     {
-        this->GetCoreroomptr()->HandleSkill(self, targetobj, targetPos, skillid);
+        _onUseSkillCallback(std::static_pointer_cast<Monster>(shared_from_this()), targetobj, targetPos, skillid);
     }
-    
 }

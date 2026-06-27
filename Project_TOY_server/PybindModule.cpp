@@ -132,7 +132,8 @@ PYBIND11_MODULE(game_core, m) {
         .def("UpdateAction", &Monster::UpdateAction)
         .def("SetRLControlled", &Monster::SetRLControlled)
         .def("IsRLControlled", &Monster::IsRLControlled)
-        .def("SetRLPredictCallback", &Monster::SetRLPredictCallback);
+        .def("SetRLPredictCallback", &Monster::SetRLPredictCallback)
+        .def("SetSkillCallback", &Monster::SetSkillCallback);
 
     // ==========================================
     // 4. CoreRoom (시뮬레이터 핵심 엔진) 바인딩

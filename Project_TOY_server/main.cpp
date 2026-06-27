@@ -68,12 +68,12 @@ void ConsoleThread(RoomPtr room)
 
         if (command == "spawn")
         {
-            std::cout << "Admin: Spawning test five monsters..." << std::endl;
-            room->MonsterSpawn(5,1);
+            std::cout << "Admin: Spawning test one monster..." << std::endl;
+            room->MonsterSpawn(1,1);
         }
         else if (command =="RLspawn")
         {
-            std::cout << "Admin: Spawning test five RL monsters..." << std::endl;
+            std::cout << "Admin: Spawning test one RL monster..." << std::endl;
             room->MonsterSpawn(1, 1, true);
         }
         else if (command == "monitor")
@@ -212,6 +212,44 @@ void ConsoleThread(RoomPtr room)
             std::cout << "\x1B[2J\x1B[H";
             std::cout << "Status monitoring stopped." << std::endl;
         }
+        else if (command == "getskills")
+        {
+            int32 testCharId = 1; // 테스트용 캐릭터 ID
+            std::cout << "Admin: Fetching Skill list for Character ID " << testCharId << "..." << std::endl;
+
+            std::vector<int32> skillIds;
+            if (DBManager::GetInstance().GetCharacterSkillInfo(testCharId, skillIds))
+            {
+                std::cout << "Admin: Fetch Success! (Total: " << skillIds.size() << ")" << std::endl;
+                for (int32 skillId : skillIds)
+                {
+                    std::cout << " -> Skill ID: " << skillId << std::endl;
+                }
+            }
+            else
+            {
+                std::cout << "Admin: Fetch Failed..." << std::endl;
+            }
+        }
+        else if (command == "addskill")
+        {
+            int32 testCharId = 1;   // 테스트용 캐릭터 ID
+            int32 testSkillId = 101; // 일반 공격 스킬 ID (Knight 기준)
+            int32 skillLevel = 1;
+
+            std::cout << "Admin: Adding Skill " << testSkillId << " (Lv." << skillLevel
+                << ") to Character " << testCharId << "..." << std::endl;
+
+            if (DBManager::GetInstance().AddCharacterSkillInfo(testCharId, testSkillId, skillLevel))
+            {
+                std::cout << "Admin: Add Skill Success!" << std::endl;
+            }
+            else
+            {
+                std::cout << "Admin: Add Skill Failed..." << std::endl;
+            }
+        }
+
         else if (command == "exit")
         {
             exit(0);

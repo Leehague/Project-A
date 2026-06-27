@@ -93,6 +93,8 @@ public class CreatureController : MonoBehaviour
     //위치를 강제로 조정하는 함수
     public virtual void SyncPos(Vector3 pos) 
     {
+        _targetPos = pos;
+
         transform.position = pos;
     }
     //해당 Creautre가 사망시 호출될 함수

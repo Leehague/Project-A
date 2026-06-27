@@ -7,6 +7,7 @@
 #include <filesystem>
 #include "Room.h"
 #include "CoreRoom.h"
+#include "Monster.h"
 
 // 비동기 추론 요청서
 struct InferenceRequest

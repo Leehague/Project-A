@@ -69,11 +69,19 @@ class ToyMonsterEnv(gym.Env):
             self.target_monster = game_core.Monster(1)
             self.target_monster.Init(1)  # 템플릿 ID 1 (Knight 스탯 적용)
             
+            self.target_monster.SetSkillCallback(
+                lambda m, target_obj, target_pos, skill_id: self.room.HandleSkill(m, target_obj, target_pos, skill_id)
+            )
+
             # 3. 몬스터 생성 (학습 에이전트)
             self.monster = game_core.Monster(2)
             self.monster.Init(2)  # 몬스터 templateId 설정 (StatData.json UnDead ID: 2)
             self.monster.SetRLControlled(True)
             
+            self.monster.SetSkillCallback(
+                lambda m, target_obj, target_pos, skill_id: self.room.HandleSkill(m, target_obj, target_pos, skill_id)
+            )
+
             # 4. 초기 스폰 위치 설정 (예: 몬스터는 (10, 0, 10), 타겟은 (15, 0, 15))
             monster_start_pos = game_core.Vector3(10.0, 0.0, 10.0)
             target_start_pos = game_core.Vector3(15.0, 0.0, 15.0)
@@ -103,16 +111,20 @@ class ToyMonsterEnv(gym.Env):
         if game_core:
             game_core.add_virtual_time(100)
         
+        #action 적용전 HP 기록
+        before_hp = self.monster.GetCurrentHp()
+        before_target_hp = self.target_monster.GetCurrentHp()   
+
         # 1. 에이전트 Action 적용
         target_pos = self.target_monster.Getpos() # Vector3
         self.monster.ExecuteHighLevelAction(action, target_pos)
-        
+
         # 2. 물리/이동 시뮬레이션 프레임 진행
         # 몬스터의 JobUpdate()를 돌려서 몬스터가 100ms 의사결정 주기마다 위치를 갱신하게 만듭니다.
         # 고속 학습 시 실제 시간을 슬립할 경우 성능 저하가 크므로, 
         # C++의 GetTickCount64() 우회가 되어있지 않다면 여기서는 일단 실제 시뮬레이션 흐름을 반영합니다.
         self.monster.JobUpdate()
-        
+        self.target_monster.JobUpdate()
         # (옵션) 만약 투사체가 활성화되어 있다면 Room 단에서 UpdateProjectile 등을 처리해 줘야 합니다.
         # 현재는 몬스터의 단순 이동 및 타격 시뮬레이션 위주로 단순화합니다.
 

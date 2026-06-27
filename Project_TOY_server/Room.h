@@ -13,7 +13,7 @@ public:
     void Enter(GameObjectPtr go);//단일 입장 , 가능하면 플레이어에게만 사용
     void EnterMonsters(const std::vector<MonsterPtr>& monsters); //복수의 몬스터들 한번에 입장
 
-    void Leave(PlayerPtr player);
+    void Leave(GameObjectPtr  go);
 
     //방안의 모든 플레이어(세션들)에게 방송
     void Broadcast(SendBufferPtr sendBuffer);
@@ -78,41 +78,10 @@ public:
     CoreRoomPtr GetCoreRoom() { return _coreroom; }
     void UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos);
 private:
-    //std::mutex _lock;
-    //std::map<uint64, GameObjectPtr> _objects;
-
+    
     int32 _Selfroomid;
 
-    //MapPtr _map;
-
-private: //그리드 시스템 관련
-    // 1. 그리드 인덱스 계산 (좌표 -> 그리드 좌표)
     
-    //std::pair<int, int> GetSectorPos(Vector3 pos);
-    //// 2. 내 주변 9개 칸에 속한 플레이어 리스트 가져오기 (브로드캐스트 타겟 추출)
-    //std::vector<std::shared_ptr<Session>> GetAdjacentPlayersSessions(Vector3 pos, int32 passing_object_id =-1);
-
-    //std::vector<PlayerPtr> GetAdjacentPlayers(Vector3 pos, int32 passing_object_id = -1);
-
-
-    
-private:
-    // [그리드 데이터 구조] _objectGrid[z][x] = {해당 칸에 있는 오브젝트 세트}
-    // std::set을 쓰면 중복 제거 및 특정 오브젝트 탐색이 빠릅니다.
-    //std::vector<std::vector<std::set<GameObjectPtr>>> _sectors;
-
-    //int32 _sectorSize = 50;
-
-    //int32 _sectorCountX;
-    //int32 _sectorCountZ;
-
-
-    //// Map의 정보를 복사해두거나 직접 참조하여 인덱스 계산에 사용
-    //float _minX=0, _minZ=0, _cellSize=0;
-    //int _gridWidth=0, _gridHeight=0;
-private:
-    /*void InitGridData(const MapData* mapdata);*/
-
 
 private:
     CoreRoomPtr _coreroom;

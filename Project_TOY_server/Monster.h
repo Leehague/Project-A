@@ -22,6 +22,11 @@ public:
     void SetRLPredictCallback(RLPredictCallback callback) { _rlPredictCallback = callback; }
     bool HasRLPredictCallback() const { return _rlPredictCallback != nullptr; }
 
+
+    using SkillCallback = std::function<void(MonsterPtr, GameObjectPtr, Vector3, int32)>;
+    SkillCallback _onUseSkillCallback = nullptr;
+
+    void SetSkillCallback(SkillCallback callback) { _onUseSkillCallback = callback; }
 private:
     bool _isRLControlled;
     RLPredictCallback _rlPredictCallback;

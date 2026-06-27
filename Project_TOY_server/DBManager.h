@@ -36,8 +36,11 @@ public:
     //해당 계정의 CharacterId와 TemplateId 를 DB에서 가져옴
     bool GetCharacterInfo(int32 accountId, int32& outCharacterId, int32& outTemplateId);
 
+    //CharacterSkills 테이블에서 캐릭터가 소유한 모든 스킬정보 가져옴
+    bool GetCharacterSkillInfo(int32 CharacterId, std::vector<int32>& outSkillIds);
 
-
+    //CharacterSkills 테이블에 데이터 추가
+    bool AddCharacterSkillInfo(int32 CharacterId , int32 SkillId ,int32 SkillLevel);
 private:
     SQLHENV _hEnv = SQL_NULL_HENV;
     std::vector<DBConnection*> _pool; // 전체 연결 리스트

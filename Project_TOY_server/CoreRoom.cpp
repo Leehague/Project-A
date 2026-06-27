@@ -314,8 +314,12 @@ std::vector<Core::DamageResult> CoreRoom::UpdateProjectile(std::shared_ptr<Proje
     }
 
     ishit = isHit;
-    
-    projectile->SetState(CreatureState::OnDead);
+
+    if (isHit)
+    {
+        projectile->SetState(CreatureState::OnDead);
+    }
+
      
     return result;
 }

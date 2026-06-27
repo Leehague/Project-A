@@ -146,8 +146,13 @@ void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
                 monster->SetroomId(self->_Selfroomid);
                 monster->SetCoreroomptr(self->_coreroom);
                 
-                // 💡 몬스터에게 이 방(Room은 JobQueue를 상속받음)의 포인터를 주입합니다.
+                //몬스터에게 이 방(Room은 JobQueue를 상속받음)의 포인터를 주입합니다.
                 monster->SetOwnerJobQueue(self); 
+                
+                monster->SetSkillCallback([self](MonsterPtr m, GameObjectPtr t, Vector3 pos, int32 id) {
+                    // 실서버용 Room 스킬 핸들러 실행 (패킷 브로드캐스트 포함)
+                    self->HandleSkillForMonster(m, t, pos, id);
+                });
 
                 auto [cellX, cellZ] = self->_coreroom->GetSectorPos(monster->Getpos_As_Vector3());
 
@@ -163,37 +168,43 @@ void Room::EnterMonsters(const std::vector<MonsterPtr>& monsters)
         });
 }
 
-void Room::Leave(PlayerPtr player)
+void Room::Leave(GameObjectPtr go)
 {
-    if (player == nullptr) return;
-
-    uint64 playerId = player->GetObjectId();
+    if (go == nullptr) return;
 
     {
-        
-        auto it = _coreroom->_objects.find(playerId);
+        int32 objectID = go->GetObjectId();
+        auto it = _coreroom->_objects.find(objectID);
         if (it == _coreroom->_objects.end())
             return; // 이미 나갔거나 없는 객체면 무시
 
-        GameObjectPtr go = it->second;
-
         // 그리드에서 제거
-        auto [cellX, cellZ] = _coreroom->GetSectorPos(Vector3::PosInfoToVector3(go->Getpos()));
-        _coreroom->_sectors[cellZ][cellX].erase(go);
+        auto [cellX, cellZ] = _coreroom->GetSectorPos(Vector3::PosInfoToVector3(it->second->Getpos()));
+        _coreroom->_sectors[cellZ][cellX].erase(it->second);
 
-        _coreroom->_objects.erase(playerId); // 1. 룸의 관리 목록에서 제거
+        _coreroom->_objects.erase(objectID); // 1. 룸의 관리 목록에서 제거
     }
 
-    // 2. 타인들에게 이 유저가 나갔음을 알림 (SC_DESPAWN)
-    Protocol::SC_PLAYER_DESPAWN despawnPkt;
-    despawnPkt.add_player_id(playerId);
-    
 
-    auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_PLAYER_DESPAWN);
-    if (!sendBuffer) return;
-    
-    Broadcast(sendBuffer, playerId); // 본인은 이미 나갔으므로 제외
+    if (go->GetType() == GameObjectType::Player)
+    {
+        PlayerPtr player = std::dynamic_pointer_cast<Player>(go);
 
+        if (!player) { return; } //하지만 아마 여기에 걸리면 버그가 있을것
+        uint64 playerId = player->GetObjectId();
+
+        //타인들에게 이 유저가 나갔음을 알림 (SC_DESPAWN)
+        Protocol::SC_PLAYER_DESPAWN despawnPkt;
+        despawnPkt.add_player_id(playerId);
+
+
+        auto sendBuffer = ServerUtils::MakeSendBuffer(despawnPkt, Protocol::PKT_SC_PLAYER_DESPAWN);
+        if (!sendBuffer) return;
+
+        Broadcast(sendBuffer, playerId); // 본인은 이미 나갔으므로 제외
+    }
+    
+    
 
 }
 
@@ -585,8 +596,10 @@ void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 t
 
     auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_SKILL);
     if (!sendBuffer) return;
+
     BroadcastAround(sendBuffer, SKillUser->Getpos_As_Vector3());
-    
+
+   
 }
 
 void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
@@ -623,7 +636,16 @@ void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
         //3.이동 패킷 브로드캐스트
         BroadcastMove(projectile);
     }
-    
+
+
+    //[참고] projectile 의 state를 CreatureState::OnDead로 설정하는 로직은 coreroom에 있음
+
+
+    if (projectile->GetState() == CreatureState::OnDead)
+    {
+        Leave(projectile);
+        projectile->SetState(CreatureState::Dead); // 완전 소멸(Dead)로 변경하여 다음 프레임 루프 차단
+    }
 }
 
 //본인에게 MP 변경 패킷 전송 
