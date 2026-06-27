@@ -17,10 +17,10 @@ graph TD
 ```
 
 ### 1. C++ Game Server (`Project_TOY_server`)
-* **네트워크 코어:** IOCP(Input/Output Completion Port) 기반의 고성능 멀티스레드 네트워크 엔진 탑재.
+* **네트워크 코어:** IOCP(Input/Output Completion Port) 기반의 멀티스레드 네트워크 엔진 탑재.
 * **아키텍처 분리:** 실시간 소켓 통신 및 세션을 관리하는 `Room` 레이어와, 순수 게임 물리 및 충돌 연산을 처리하는 `CoreRoom` 레이어로 분리 설계.
 * **데이터베이스:** ODBC 연결 풀링(Connection Pooling) 기법 기반의 `DBManager` 스레드 풀을 활용한 비동기 DB 처리.
-* **AI 서빙:** ONNX Runtime C++ API를 탑재하여 실시간 서비스 환경에서 강화학습 모델 추론 기능 통합.
+* **RL 모델 추론:** ONNX Runtime C++ API를 탑재하여 실시간 서비스 환경에서 강화학습 모델 추론 기능 통합.
 
 ### 2. Unity Client (`Project_TOY_client_c_sharp_unity`)
 * **3D 시각화:** Unity 엔진 기반 캐릭터 이동, 회전, 스킬 연출 구현.
@@ -29,14 +29,14 @@ graph TD
 
 ### 3. Python RL Simulator (`Project_TOY_RL`)
 * **Pybind11 엔진 바인딩:** C++ `CoreRoom` 로직을 그대로 컴파일한 `game_core.pyd` 모듈을 임포트하여 고속 C++ 시뮬레이션 구동.
-* **가상 시간(Virtual Time) 제어:** 학습 속도 극대화를 위해 실제 시간을 대기(Sleep)하지 않고 가상 시간 틱을 조작하는 시뮬레이션 훈련 사이클 구축.
-* **Gymnasium 규격:** Gymnasium 표준 인터페이스인 `ToyMonsterEnv` 환경을 제공하여 Stable-Baselines3, Ray RLlib 등의 범용 학습 라이브러리와 완벽하게 호환.
+* **가상 시간(Virtual Time) 제어:** 시뮬레이션 환경에서는 학습시간 단축을 위해 실제 시간대신 가상시간 사용.
+* **Gymnasium 규격:** Gymnasium 표준 인터페이스인 `ToyMonsterEnv` 환경을 제공하여 Stable-Baselines3, Ray RLlib 등의 범용 학습 라이브러리와 호환.
 
 ---
 
-## 🛠️ 빌드 및 환경 설정 방법
+## 사용한 빌드 및 환경 설정 방법
 
-### 1. C++ ➡️ Python Module (.pyd) 컴파일 방법
+### 1. C++ -> Python Module (.pyd) 컴파일 방법
 파이썬 학습 환경에서 사용되는 물리 시뮬레이터를 빌드하기 위해 아래 명령어를 수행합니다. (Visual Studio 2022 및 vcpkg 설정 필요)
 
 ```powershell
@@ -55,9 +55,3 @@ python train.py
 
 ---
 
-## 📝 주요 개발 및 훈련 태스크
-* [x] C++ 몬스터 스킬 시전 시 파이썬 콜백 역추적 및 스폰 위치 동기화 개선
-* [x] 몬스터 스킬 시전 시 클라이언트 애니메이션 상태 강제 보존 및 덮어쓰기 방어
-* [x] 서버단 투사체(Projectile) 메모리 누수 및 OnDead 루프 상태 감지 해제
-* [ ] 몬스터 AI 일반화 성능 개선 (스펙 및 가변 다대다 환경을 위한 Attention/Padding 아키텍처)
-* [ ] 1대1 자가 대전(Self-Play) 학습 모듈 연동 및 훈련 성능 비교
