@@ -29,7 +29,7 @@ void PrintErrorCode(int32_t errorCode)
 
 IocpCore::IocpCore()
 {
-    // 1. IOCP 핸들 생성 (0은 운영체제가 적절한 스레드 수를 결정하게 함)
+    // IOCP 핸들 생성 (0은 운영체제가 적절한 스레드 수를 결정하게 함)
     _iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 }
 

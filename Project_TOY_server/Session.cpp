@@ -40,7 +40,7 @@ void Session::Receive()
     }
 
     // Overlapped 정보를 설정 (나중에 IOCP에서 이 정보를 보고 처리함)
-    OverlappedEx* overlapped = new OverlappedEx(); // 실제로는 풀링해서 써야 함
+    OverlappedEx* overlapped = new OverlappedEx(); 
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));
     overlapped->type = IO_TYPE::RECV;
     overlapped->owner = shared_from_this();
@@ -61,7 +61,7 @@ void Session::Receive()
         int err = ::WSAGetLastError();
         if (err != WSA_IO_PENDING)
         {
-            // [강화] 에러 코드와 함께 현재 세션 정보 출력
+            //  에러 코드와 함께 현재 세션 정보 출력
             std::cout << "WSARecv Error [Socket: " << _socket << "]: " << err << std::endl;
             delete overlapped; // 에러 시 메모리 누수 방지
         }
@@ -136,10 +136,6 @@ void Session::OnRecv(int bytesTransferred)
         uint16 id = header->id;
         uint16 size = header->size;
 
-        // [디버깅 로그]
-        //std::cout << "Processing Packet ID: " << header->id << " / Size: " << header->size << std::endl;
-        
-
         SessionPtr _sessionPtr = GetSessionPtr();
         if (PacketHandler::HandlePacket(_sessionPtr, reinterpret_cast<BYTE*>(_recvBuffer.ReadPos()), header->size)==false)
         {
@@ -188,7 +184,7 @@ void Session::RegisterSend()
 
     _sendRegistered = true;
 
-    // 큐에 쌓인 버퍼들을 하나로 묶어서 보낼 수 있음 (Scatter-Gather)
+    // 큐에 쌓인 버퍼들을 하나로 묶어서 보낼 수 있음
     // 여기서는 단순화를 위해 하나만 꺼내 보냄
     SendBufferPtr sendBuffer = _sendQueue.front();
 
