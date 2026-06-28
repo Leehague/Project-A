@@ -5,12 +5,14 @@ C++ IOCP 멀티스레드 서버, Unity 3D 게임 클라이언트, 그리고 Pyth
 
 ## 영상(video)
 
-실시간 서버 클라이언트 테스트 영상:
+* 실시간 서버 클라이언트 테스트 영상:
 https://www.youtube.com/watch?v=E2u_TFyD2zw
 
 
-python 시뮬레이션 학습 및 추론 테스트 영상 :
+* python 시뮬레이션 학습 및 추론 테스트 영상 :
 https://www.youtube.com/watch?v=q9-bs3Hth-8
+
+
 ---
 
 ## 전체 시스템 아키텍처
