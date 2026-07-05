@@ -59,6 +59,15 @@ public class CreatureController : MonoBehaviour
             case Define.CreatureState.Moving:
                 _animator.CrossFade("WALK", 0.1f);
                 break;
+            case Define.CreatureState.Jump:
+                _animator.CrossFade("WALK", 0.1f);
+                break;
+            case Define.CreatureState.Fall:
+                _animator.CrossFade("WALK", 0.1f);
+                break;
+            case Define.CreatureState.Landing:
+                _animator.CrossFade("IDLE", 0.1f);
+                break;
             case Define.CreatureState.Skill:
                 _animator.CrossFade("ATTACK", 0.1f);
                 break;

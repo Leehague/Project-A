@@ -43,9 +43,9 @@ bool CoreRoom::HandleMove(PlayerPtr player, const Core::PosInfo& posinfo)
     float deltaTime = (currentTick - player->GetlastMoveTick()) / 1000.0f;
     player->SetlastMoveTick(currentTick); // 현재 시간을 다음 검증을 위해 저장
 
-
-    float dist = Vector3::Distance(currentPos, newPos);
+    float dist = Vector3::XZDistance(currentPos, newPos);
     float maxAllowedDist = player->GetSpeed() * deltaTime * 1.2f; // 오차범위 20%
+
 
     //속도 검증
     if (dist > maxAllowedDist) {
@@ -59,7 +59,16 @@ bool CoreRoom::HandleMove(PlayerPtr player, const Core::PosInfo& posinfo)
     MapPtr map = this->GetMapptr();
     if (map != nullptr)
     {
-        if (map->CanGo(newPos) == false)
+        //TEMP
+        float Ypadding = 0.5f;
+        if (posinfo.state == CreatureState::Jump || posinfo.state == CreatureState::Fall)
+        {
+            Ypadding = 5.0f; //하드코딩 했지만 실제로는 '점프력' 같은 최대 점프 높이를 받아 와야함
+        }
+        
+
+
+        if (map->CanGo(newPos , Ypadding) == false)
         {
             return false;
         }
@@ -76,6 +85,7 @@ bool CoreRoom::HandleMove(PlayerPtr player, const Core::PosInfo& posinfo)
     return true;
 
 }
+
 
 bool CoreRoom::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid, std::vector<Core::DamageResult>* results, bool* ishit, std::vector<GameObjectPtr>* spawnedObjects)
 {
@@ -117,8 +127,6 @@ bool CoreRoom::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vecto
     SKillUser->SetSkillCoolTime(skilldata->id, now);
 
     // 5. 스킬 타입별 피격 판정
-    
-
     switch (skilldata->skillType)
     {
     case SkillType::Melee:
@@ -128,8 +136,18 @@ bool CoreRoom::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vecto
             GameObjectPtr target = obj.second;
             CreaturePtr creaturetarget = std::dynamic_pointer_cast<Creature>(target);
             if (target && target->GetObjectId() != SKillUser->GetObjectId()) {
+
+                Vector3 targetpos = target->Getpos_As_Vector3();
+                Vector3 skilluserpos = SKillUser->Getpos_As_Vector3();
+
+                //[추가] 각도 검증
+                Vector3 dir = targetpos- skilluserpos;
+                float diffyaw = (SKillUser->Getpos()->yaw)-Vector3::CalculateYaw(dir);
+
+                if (std::abs(diffyaw) > 20) { continue; }
+
                 // 거리 계산 (Vector3::Distance)
-                float dist = Vector3::Distance(Vector3::PosInfoToVector3(SKillUser->Getpos()), Vector3::PosInfoToVector3(target->Getpos()));
+                float dist = Vector3::Distance(skilluserpos, targetpos);
 
                 // 사거리 검증 (약간의 마진 부여: 0.5f)
                 if (dist <= skilldata->range + 0.5f) {

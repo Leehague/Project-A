@@ -141,7 +141,7 @@ public class PacketHandler
     public static void Handle_SC_SKILL(PacketSession session, IMessage packet)
     {
         SC_SKILL skillPkt = packet as SC_SKILL;
-        //스킬 종류에 따라 분기해야할듯?
+        
         Debug.Log($"skill used :{skillPkt.SkillId}");
         Skill skilldata=Managers.dataManager.SkillDict[skillPkt.SkillId]; //여기서 skilldata 는 수정하면 안됨.
         GameObject Caster=Managers.objectManager.Find(skillPkt.ObjectId); //스킬을 쓴 사람 (Caster)

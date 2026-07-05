@@ -82,5 +82,7 @@ private:
 
 private:
     void RegisterSend(); // 실제로 WSASend를 호출하는 함수
-    
+
+
+
 };

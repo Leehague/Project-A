@@ -120,6 +120,9 @@
     <ClCompile Include="Room.cpp">
       <Filter>Source Files\Room</Filter>
     </ClCompile>
+    <ClCompile Include="Vector3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RecvBuffer.h">
@@ -223,6 +226,9 @@
     <None Include="packages.config" />
     <None Include="GeneratePacketHandler.py" />
     <None Include="cpp.hint" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime_providers_shared.dll" />
+    <None Include="models\monster_ppo_model.onnx" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt">

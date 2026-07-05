@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using Protocol;
 using System;
 
-public class UI_Chat : UI_Scene
+public class UI_Chat : UI_Popup
 {
     enum InputFields
     {
@@ -28,8 +28,9 @@ public class UI_Chat : UI_Scene
         Init();
     }
 
-    public void Init()
+    public override void Init()
     {
+        base.Init();
         Bind<TMP_InputField>(typeof(InputFields));
         Bind<Button>(typeof(Buttons));
         Bind<TextMeshProUGUI>(typeof(Texts));

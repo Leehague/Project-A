@@ -1,41 +1,42 @@
 #pragma once
-#include "Protocol/Protocol.pb.h"
-#include "InfoSturct.h"
+#include <cmath>
+
+
+namespace Protocol
+{
+    class PosInfo;
+}
+
+namespace Core
+{
+    struct PosInfo;
+}
+
+struct Triangle;
+
 class Vector3 
 {
 public:
     float x, y, z;
 
 public:
-    Vector3() : x(0), y(0), z(0) {}
+    Vector3() : x(0), y(0), z(0) {};
     Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 
     // Make Distance a static method
-    static float Distance(const Vector3& a, const Vector3& b)
-    {
-        float dx = a.x - b.x;
-        float dy = a.y - b.y;
-        float dz = a.z - b.z;
-        return sqrt(dx * dx + dy * dy + dz * dz);
-    }
+    static float Distance(const Vector3& a, const Vector3& b);
+    
 
-    static float DistanceSquared(const Vector3& a, const Vector3& b) 
-    {
-        float dx = a.x - b.x;
-        float dy = a.y - b.y;
-        float dz = a.z - b.z;
-        return (dx * dx + dy * dy + dz * dz);
-    }
-
-    static Vector3 PosInfoToVector3(const Protocol::PosInfo* posinfo)
-    {
-        return Vector3(posinfo->x(), posinfo->y(), posinfo->z());
-
-    }
-    static Vector3 PosInfoToVector3(const Core::PosInfo* posinfo)
-    {
-        return Vector3(posinfo->x, posinfo->y, posinfo->z);
-    }
+    static float DistanceSquared(const Vector3& a, const Vector3& b);
+    
+    static float XZDistance(const Vector3& a, const Vector3& b);
+   
+    static float XZDistanceSquared(const Vector3& a, const Vector3& b);
+    
+    static Vector3 PosInfoToVector3(const Protocol::PosInfo* posinfo);
+  
+    static Vector3 PosInfoToVector3(const Core::PosInfo* posinfo);
+    
 
     // 더하기
     Vector3 operator+(const Vector3& other) const {
@@ -76,24 +77,23 @@ public:
     }
 
     // 자기 자신을 정규화
-    void Normalize()
-    {
-        float len = Length();
-        if (len > 0.000001f)
-        {
-            x /= len;
-            y /= len;
-            z /= len;
-        }
-    }
-
+    void Normalize();
+    
     // 정규화된 복사본 벡터를 반환
-    Vector3 GetNormalized() const
-    {
-        float len = Length();
-        if (len > 0.000001f)
-            return Vector3(x / len, y / len, z / len);
-        return Vector3(0.f, 0.f, 0.f);
-    }
+    Vector3 GetNormalized() const;
+    
+    // Vector3를 점으로 해석하고 해당 점이 삼각형 내부에 있는지 판단하는 함수 (Barycentric coordinate 방식)
+    bool IsPointInTriangle(Triangle tri, float Ypadding = 0.5f);
+
+public:
+    static float CalculateYaw(Vector3 dir);
+
 };
+
+
+struct Triangle {
+    Vector3 v1; Vector3 v2; Vector3 v3;
+    float minX; float maxX; float minZ; float maxZ;
+};
+
 

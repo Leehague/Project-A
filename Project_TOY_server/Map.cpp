@@ -1,9 +1,11 @@
 #include "Map.h"
+#include "DataContents.h"
 #include <fstream>
 #include <iostream>
-#include <cmath>
-#include "DataContents.h"
 #include <queue>
+#include "InfoSturct.h"
+#include "Vector3.h"
+
 
 bool Map::Load(const MapData* mapdata)
 {
@@ -76,18 +78,6 @@ bool Map::Load(const MapData* mapdata)
     return true;
 }
 
-bool Map::CanGo_Old(Vector3 pos)
-{
-    // 월드 좌표 -> 인덱스 변환 공식
-    // (현재좌표 - 시작좌표) / 한 칸의 크기
-    int x = static_cast<int>((pos.x - _minX) / _cellSize);
-    int z = static_cast<int>((pos.z - _minZ) / _cellSize);
-
-    if (x < 0 || x >= _width || z < 0 || z >= _height)
-        return false;
-
-    return !_collisionData[z][x];
-}
 
 float Map::GetHeight(Vector3 pos)
 {
@@ -280,48 +270,9 @@ bool Map::LoadNavMesh(const std::string& path) {
     return true;
 }
 
-// 점이 삼각형 내부에 있는지 판단하는 함수 (Barycentric coordinate 방식)
-bool IsPointInTriangle(Vector3 p, Triangle tri) {
-    // 1. 높이(Y) 검증: 점 P가 삼각형의 평면 높이와 너무 멀리 떨어져 있으면 false
-    // NavMesh 데이터이므로 삼각형 정점들의 평균 Y값이나 
-    // 최소/최대 Y 범위를 기준으로 허용 오차를 둡니다.
-    float minY = std::min({ tri.v1.y, tri.v2.y, tri.v3.y }) - 0.5f;
-    float maxY = std::max({ tri.v1.y, tri.v2.y, tri.v3.y }) + 0.5f;
-    if (p.y < minY || p.y > maxY) return false;
 
-    // 2. XZ 평면 판정 (Barycentric Coordinate)
-    // 벡터 정의
-    float v0x = tri.v3.x - tri.v1.x; float v0z = tri.v3.z - tri.v1.z; // AC
-    float v1x = tri.v2.x - tri.v1.x; float v1z = tri.v2.z - tri.v1.z; // AB
-    float v2x = p.x - tri.v1.x;      float v2z = p.z - tri.v1.z;      // AP
 
-    // 도트 프로덕트(내적) 계산 (XZ 평면용)
-    float dot00 = v0x * v0x + v0z * v0z;
-    float dot01 = v0x * v1x + v0z * v1z;
-    float dot02 = v0x * v2x + v0z * v2z;
-    float dot11 = v1x * v1x + v1z * v1z;
-    float dot12 = v1x * v2x + v1z * v2z;
-
-    // Barycentric 좌표(u, v) 계산
-    float denom = (dot00 * dot11 - dot01 * dot01);
-    // 분모가 0에 가깝다면 (삼각형이 일직선이거나 데이터가 깨진 경우)
-    if (std::abs(denom) < 0.000001f)
-    {
-        // NaN을 반환하지 말고, 계산이 불가능함을 알리거나 기본값 반환 
-        return false;
-    }
-
-    float invDenom = 1.0f / denom;
-    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-    // 최종 판정: u >= 0, v >= 0, u + v <= 1 이면 내부
-    // 부동 소수점 오차를 고려하여 아주 작은 값(EPSILON)을 적용합니다.
-    const float EPSILON = 0.001f;
-    return (u >= -EPSILON) && (v >= -EPSILON) && (u + v <= 1.0f + EPSILON);
-}
-
-bool Map::CanGo(Vector3 pos) {
+bool Map::CanGo(Vector3 pos, float Ypadding) {
     int x = static_cast<int>((pos.x - _minX) / _cellSize);
     int z = static_cast<int>((pos.z - _minZ) / _cellSize);
 
@@ -330,7 +281,7 @@ bool Map::CanGo(Vector3 pos) {
     // 현재 위치한 그리드 셀에 등록된 삼각형들만 루프
     const auto& candidateIndices = _gridIndices[z][x];
     for (int index : candidateIndices) {
-        if (IsPointInTriangle(pos, _navTriangles[index])) {
+        if (pos.IsPointInTriangle( _navTriangles[index] , Ypadding)) {
             return true;
         }
     }
@@ -345,3 +296,5 @@ bool Map::CheckProjectileCollision(Vector3 pos)
     // 갈 수 없는 곳(!CanGo)이면 투사체가 충돌(true)했다고 판정.
     return !CanGo(pos);
 }
+
+

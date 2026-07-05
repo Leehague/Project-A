@@ -65,7 +65,8 @@ public:
     //몬스터 스폰 
     void MonsterSpawn(int32 NumOfMonster, int templatedId);
     void MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll);
-
+    void MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll,bool IsHusuabi);
+    void HusuabiMonsterSpawn(int32 NumOfMonster, int templatedId);
 
     MapPtr GetMapptr();
 

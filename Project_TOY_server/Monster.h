@@ -11,13 +11,16 @@ class Monster : public Creature
 public:
 
     Monster(int32 objectId, CoreRoomPtr coreroomptr)
-        : Creature(objectId, GameObjectType::Monster, coreroomptr), _isRLControlled(false), _rlPredictCallback(nullptr)
+        : Creature(objectId, GameObjectType::Monster, coreroomptr), _isRLControlled(false), _rlPredictCallback(nullptr),_isHusuabi(false)
     {
         
     }
 
     void SetRLControlled(bool val) { _isRLControlled = val; }
     bool IsRLControlled() const { return _isRLControlled; }
+
+    void SetHusuabi(bool val) { _isHusuabi = val; }
+    bool IsHusuabi() const { return _isHusuabi; }
 
     void SetRLPredictCallback(RLPredictCallback callback) { _rlPredictCallback = callback; }
     bool HasRLPredictCallback() const { return _rlPredictCallback != nullptr; }
@@ -34,7 +37,7 @@ private:
     uint64 _nextDecisionTick = 0;
     const uint32 DECISION_INTERVAL_MS = 100; // 0.1초 = 100ms 마다 판단
 
-    
+    bool _isHusuabi;
 
 public:
     std::vector<float> GatherContext();

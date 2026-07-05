@@ -86,8 +86,7 @@ protected:
 	GameObjectType _type;
 
 
-public:
-    float CalculateYaw(Vector3 dir);
+
 	
 public:
 	// 실서버 환경에서만 룸이 자신을 주입해 줄 함수

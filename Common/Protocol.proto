@@ -25,7 +25,7 @@ enum PacketId {
     PKT_SC_MONSTER_DEAD = 19;
     PKT_CS_OWNED_ITEM_REQUEST = 20;
     PKT_SC_ITEM_RESPONSE = 21;
-
+    
 }
 
 
@@ -187,3 +187,4 @@ message ItemInfo
     int32 Slot = 4;
     string item_memo = 5;
 }
+

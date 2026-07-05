@@ -1,15 +1,12 @@
 // MSVC 컴파일러에게 문자열 리터럴을 UTF-8로 컴파일하라고 강제 지시
 #pragma execution_character_set("utf-8")
 
-
+#pragma once
 #include "IocpCore.h"
 #include "Listener.h"
 #include "Session.h"
 #include "Types.h"
 #include "Protocol/Protocol.pb.h"
-#include <thread>
-#include <vector>
-#include <iostream>
 #include "PacketHandler.h"
 #include "RoomManager.h"
 #include "DataManager.h"
@@ -18,10 +15,8 @@
 #include "GameObject.h"
 #include "ObjectManager.h"
 #include "JobSerializer.h"
-#include <sqlext.h>
 #include "DBConnection.h"
 #include "DBManager.h"
-#include <windows.h> // GetConsoleOutputCP 등을 사용하기 위해 추가
 #include "RLModelManager.h"
 #include "Creature.h"
 #include "Player.h"
@@ -29,9 +24,14 @@
 #include "CoreRoom.h"
 #include "Map.h"
 #include "Room.h"
+#include <thread>
+#include <vector>
 #include <future>
 #include <chrono>
 #include <iomanip>
+#include <iostream>
+#include <sqlext.h>
+#include <windows.h> // GetConsoleOutputCP 등을 사용하기 위해 추가
 
 
 #pragma comment(lib, "ws2_32.lib")
@@ -75,6 +75,11 @@ void ConsoleThread(RoomPtr room)
         {
             std::cout << "Admin: Spawning test one RL monster..." << std::endl;
             room->MonsterSpawn(1, 1, true);
+        }
+        else if (command =="husuabi_spawn")
+        {
+            std::cout << "Admin: Spawning test one husuabi monster..." << std::endl;
+            room->HusuabiMonsterSpawn(1,1);
         }
         else if (command == "monitor")
         {

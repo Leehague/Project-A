@@ -160,6 +160,7 @@
     <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="SendBuffer.cpp" />
     <ClCompile Include="Session.cpp" />
+    <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreRoom.h" />

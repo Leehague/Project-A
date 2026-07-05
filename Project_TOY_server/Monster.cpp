@@ -116,6 +116,9 @@ void Monster::MoveTo(const Vector3& targetPos)
 
 void Monster::JobUpdate()
 {
+    if (_isHusuabi) { return; }
+
+
     uint64 now = TimeManager::GetTickCount64();
     if (now < _nextDecisionTick)
         return; // 아직 주기가 안 되었으면 스킵
@@ -251,7 +254,7 @@ void Monster::ProcessMove()
         if (_path.empty()) SetState(CreatureState::Idle);
 
         
-        float yaw = CalculateYaw(Normlizeddir);
+        float yaw = Vector3::CalculateYaw(Normlizeddir);
             // Yaw 값 범위 강제 제한 (0~360)
             if (std::isnan(yaw)) 
             { 
@@ -284,7 +287,7 @@ void Monster::ProcessMove()
         _pos.y=newPos.y;
         _pos.z=newPos.z;
 
-        float yaw = CalculateYaw(Normlizeddir);
+        float yaw = Vector3::CalculateYaw(Normlizeddir);
         // Yaw 값 범위 강제 제한 (0~360)
         if (std::isnan(yaw)) 
         { 

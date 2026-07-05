@@ -130,7 +130,7 @@ bool Handle_CS_WHISPER(SessionPtr& session, Protocol::CS_WHISPER& pkt)
 
 bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt) 
 {
-    //세션에서 플레이어 객체 가져오기 (세션에 Player 멤버가 있다고 가정)
+    
     PlayerPtr player = session->GetPlayerPtr();
     if (player == nullptr) 
     { 
@@ -154,7 +154,7 @@ bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt)
     auto player = session->GetPlayerPtr();
     if (player == nullptr) 
     { 
-        std::cout << "not found playerPTr in Handle_CS_ENTER_GAME" << std::endl;
+        std::cout << "not found playerPtr in Handle_CS_ENTER_GAME" << std::endl;
         return true;
     }
 
@@ -254,3 +254,4 @@ bool Handle_CS_OWNED_ITEM_REQUEST(SessionPtr& session, Protocol::CS_OWNED_ITEM_R
 
     return true;
 }
+

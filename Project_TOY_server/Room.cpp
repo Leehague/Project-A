@@ -425,7 +425,6 @@ void Room::BroadcastMove(const std::vector<GameObjectPtr>& gameobjects)
 
 }
 
-
 void Room::BroadcastMove(GameObjectPtr go)
 {
     BroadcastMove(std::vector< GameObjectPtr>{ go });
@@ -602,6 +601,7 @@ void Room::HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 t
    
 }
 
+
 void Room::UpdateProjectile(std::shared_ptr<Projectile> projectile)
 {
     if (projectile == nullptr || projectile->GetState() == CreatureState::Dead)
@@ -708,16 +708,21 @@ void Room::UpdateHPToOthers(CreaturePtr target, CreaturePtr attacker, int damage
 
 void Room::MonsterSpawn(int32 NumOfMonster, int templatedId)
 {
-    MonsterSpawn(NumOfMonster, templatedId, false);
+    MonsterSpawn(NumOfMonster, templatedId, false,false);
 }
 
 void Room::MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll)
+{
+    MonsterSpawn(NumOfMonster,templatedId,IsRLControll, false);
+}
+
+void Room::MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll, bool IsHusuabi)
 {
     // [수정] 외부 쓰레드(ConsoleThread 등)에서 호출될 것을 대비해 
     // 실제 로직을 람다로 묶어 JobQueue에 넣습니다.
     RoomPtr self = std::static_pointer_cast<Room>(shared_from_this());
 
-    this->Push([self, NumOfMonster, templatedId, IsRLControll]() {
+    this->Push([self, NumOfMonster, templatedId, IsRLControll, IsHusuabi]() {
         std::vector<MonsterPtr> monsters;
         for (int i = 0; i < NumOfMonster; i++)
         {
@@ -730,6 +735,7 @@ void Room::MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll)
             monster->Set_z(10.0f);
 
             monster->SetRLControlled(IsRLControll);
+            monster->SetHusuabi(IsHusuabi);
 
             monsters.push_back(monster);
         }
@@ -740,6 +746,11 @@ void Room::MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll)
 
         std::cout << "[Job] MonsterSpawn completed: " << NumOfMonster << " monsters." << std::endl;
         });
+}
+
+void Room::HusuabiMonsterSpawn(int32 NumOfMonster, int templatedId)
+{
+    MonsterSpawn(NumOfMonster, templatedId, false, true);
 }
 
 PlayerPtr Room::GetNearestPlayer(Vector3 pos, float maxRange)

@@ -1,6 +1,4 @@
 
-
-
 public class Define
 {
     // UI 관련 이벤트 정의
@@ -12,7 +10,7 @@ public class Define
         EndDrag,   // 드래그 종료
     }
 
-    // 씬 종류 정의 (나중에 SceneManagerEx에서 사용)
+    // 씬 종류 정의 
     public enum SceneType
     {
         Unknown = 0,
@@ -25,7 +23,11 @@ public class Define
     {
         Idle,
         Moving,
+        Jump,
+        Fall,
+        Landing,
         Skill,
+        OnDead,
         Dead,
     }
 

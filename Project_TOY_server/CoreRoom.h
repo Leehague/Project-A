@@ -16,6 +16,8 @@ public:
 
     // 이동 패킷 처리 루틴
     bool HandleMove(PlayerPtr player, const Core::PosInfo& posinfo);
+
+  
     // 결과를 받을 필요가 없다면 기본값인 nullptr가 들어가 메모리 할당을 원천 차단합니다.
     bool HandleSkill(CreaturePtr SKillUser, GameObjectPtr targetobj, Vector3 targetPos, int32 skillid , std::vector<Core::DamageResult>* results = nullptr, bool* ishit = nullptr, std::vector<GameObjectPtr>* spawnedObjects = nullptr);
 

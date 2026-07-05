@@ -1,14 +1,10 @@
 #pragma once
 #include <string>
-#include "Vector3.h"
 #include <vector>
 #include "Types.h"
+#include "Vector3.h"
 
 
-struct Triangle {
-    Vector3 v1, v2, v3;
-    float minX, maxX, minZ, maxZ;
-};
 
 struct PQNode {
     bool operator<(const PQNode& other) const { return f > other.f; }
@@ -24,8 +20,8 @@ class Map
 public:
     bool Load(const MapData* mapdata);
     bool LoadNavMesh(const std::string& path);
-    bool CanGo_Old(Vector3 pos);
-    bool CanGo(Vector3 pos); // 핵심 로직
+    
+    bool CanGo(Vector3 pos , float Ypadding = 0.5f); // 핵심 로직
     bool CheckProjectileCollision(Vector3 pos); // 투사체 지형 충돌 검사
     float GetHeight(Vector3 pos); // [추가] 특정 좌표의 지형 높이 반환
     uint64 GetMapId();
@@ -55,6 +51,5 @@ public:
     // 시작점에서 목적지까지의 경로를 Vector3 리스트로 반환
     std::vector<Vector3> FindPath(Vector3 startPos, Vector3 endPos);
 
-private:
-    
+ 
 };

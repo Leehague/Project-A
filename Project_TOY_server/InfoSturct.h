@@ -5,6 +5,9 @@ enum class CreatureState
 {
     Idle,
     Moving,
+    Jump,
+    Fall,
+    Landing,
     Skill,
     OnDead, //방금 사망
     Dead, //죽어있었던 상태

@@ -25,7 +25,7 @@ void GameObject::Setpos(const Vector3& vecpos)
     _pos.x=(vecpos.x);
     _pos.y=(vecpos.y);
     _pos.z=(vecpos.z);
-    _pos.yaw=(CalculateYaw(dir));
+    _pos.yaw=(Vector3::CalculateYaw(dir));
 }
 
 void GameObject::Setpos(const Core::PosInfo& pos)
@@ -38,23 +38,4 @@ void GameObject::Setpos(const Core::PosInfo& pos)
 }
 
 
-float GameObject::CalculateYaw(Vector3 dir)
-{
-    // 이동 거리가 거의 없으면 각도를 변경하지 않음 (0으로 나누기 방지)
-    if (std::abs(dir.x) < EPSILON && std::abs(dir.z) < EPSILON)
-        return 0.0f; // 혹은 기존 yaw 유지
 
-    // atan2는 라디안 값을 반환 (-PI ~ PI)
-    float radian = std::atan2(dir.x, dir.z);
-
-    // 라디안 -> 도 변환
-    float degree = radian * (180.0f / 3.1415926535f);
-
-    // 결과를 0~360 범위로 정규화 (선택 사항)
-    if (degree < 0) degree += 360.0f;
-
-    if (!std::isfinite(degree))
-        return 0.0f;
-
-    return degree;
-}

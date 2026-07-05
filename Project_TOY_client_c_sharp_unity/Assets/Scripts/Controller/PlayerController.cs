@@ -10,9 +10,12 @@ using UnityEngine;
 
 public class PlayerController : CreatureController
 {
+    
 
     public bool IsMyPlayer { get; set; }
 
+    [SerializeField] int MAXjumpcount = 1;
+    private int jumpcount = 0;
 
     float _lastSendTime = 0f;
     const float SEND_INTERVAL = 0.05f; // 20Hz (초당 20번 전송)
@@ -28,6 +31,20 @@ public class PlayerController : CreatureController
     private CharacterController _charController;
     bool _isStuckByServer = false;
     float _stuckTimer = 0f;
+
+
+    [Header("Physics")]
+    [SerializeField] float _gravity = -20.0f;     // 중력 가속도 (음수값)
+    [SerializeField] float _jumpForce = 8.0f;     // 점프 초기 수직 속도
+    float _yVelocity = 0.0f;                      // 실시간 Y축 수직 속도
+
+
+
+    private float _jumpStateTimer = 0f;
+    private float _landingStateTimer = 0f;
+    const float JUMP_STATE_DURATION = 0.15f;    // 도약 애니메이션이 최소한 보여야 하는 시간
+    const float LANDING_STATE_DURATION = 0.2f;  // 착지 애니메이션이 고정
+
 
     protected override void Init()
     {
@@ -57,7 +74,7 @@ public class PlayerController : CreatureController
             hpBar.SetStat(this.stat, "내 캐릭터");
 
             // 채팅 UI 동적 생성 (UI_Root 자식으로 자동 할당됨)
-            Managers.uiManager.ShowSceneUI<UI_Chat>();
+            Managers.uiManager.ShowPopupUI<UI_Chat>();
         }
     }
 
@@ -76,6 +93,8 @@ public class PlayerController : CreatureController
 
     private void HandleInput()
     {
+        
+
         if (_isStuckByServer)
         {
             _stuckTimer -= Time.deltaTime;
@@ -83,7 +102,7 @@ public class PlayerController : CreatureController
             return; // 서버가 보정한 직후에는 키 입력을 무시함
         }
 
-        // [추가] UI 입력 필드(채팅창)에 포커스가 맞춰져 있다면 모든 조작 입력을 무시합니다.
+        // UI 입력 필드(채팅창)에 포커스가 맞춰져 있다면 모든 조작 입력을 무시합니다.
         if (UnityEngine.EventSystems.EventSystem.current != null && 
             UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != null)
         {
@@ -95,10 +114,42 @@ public class PlayerController : CreatureController
             }
         }
 
+        
+        // 지면에 닿아있을 때는 중력이 누적되지 않도록 막고, 경사면 밀착을 위해 최소한의 하향력(-0.5f)만 줍니다.
+        if (_charController.isGrounded)
+        {
+            
+            _yVelocity = -0.5f;
+            if (State == Define.CreatureState.Fall) { State = Define.CreatureState.Landing; }
+            else if (State == Define.CreatureState.Landing) { State = Define.CreatureState.Idle;  jumpcount = 0; }
+
+            //jumpcount = 0;
+        }
+        else
+        {
+            // 공중에 떠 있는 경우 중력 가속도를 지속해서 누적
+            _yVelocity += _gravity * Time.deltaTime;
+            if (_yVelocity < -1.0f && State == Define.CreatureState.Jump) { State = Define.CreatureState.Fall;  } 
+            
+        }
+
+
+        // 지면에 닿아있는 상태에서 스페이스바 입력 시 수직 속도를 추진력만큼 솟구치게 변경
+        if (Input.GetKeyDown(KeyCode.Space) && _charController.isGrounded && jumpcount < MAXjumpcount )
+        {
+            State = Define.CreatureState.Jump;
+            _yVelocity = _jumpForce;
+            jumpcount++;
+            
+        }
+
+
+        //수평 입력 처리 (이동 방향 계산)
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
-        Vector3 inputDir = new Vector3(h, 0, v).normalized;
 
+        Vector3 inputDir = new Vector3(h, 0, v).normalized;
+        Vector3 moveDir = Vector3.zero;
 
         if (inputDir.magnitude > 0.01f)
         {
@@ -112,30 +163,57 @@ public class PlayerController : CreatureController
             right.Normalize();
 
             // 최종 이동 방향: (카메라앞 * 세로입력) + (카메라옆 * 가로입력)
-            Vector3 moveDir = (forward * inputDir.z + right * inputDir.x).normalized;
-
-            // 2. 실제 이동 및 회전
-            //transform.position += moveDir * _moveSpeed * Time.deltaTime;
-            //[수정] 직접 position을 건드리지 않고 Move 함수 사용
-            Vector3 motion = moveDir * _moveSpeed * Time.deltaTime;
-            _charController.Move(motion + Vector3.down * 1.0f * Time.deltaTime);
-
+            moveDir = (forward * inputDir.z + right * inputDir.x).normalized;
 
             //회전 로직
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
 
-            State = Define.CreatureState.Moving;
+            if (_charController.isGrounded && jumpcount < 1)
+            {
+                State = Define.CreatureState.Moving;
+            }
+
         }
-        else 
-        { 
-            State = Define.CreatureState.Idle;
+        else
+        {
+            if (_charController.isGrounded && jumpcount <1)
+            {
+                State = Define.CreatureState.Idle;
+            }
         }
 
 
 
-         UpdateSkillInput();
-         HandleUIInput();
+
+
+        //이동로직
+        //직접 position을 건드리지 않고 Move 함수 사용
+        Vector3 velocity = moveDir * _moveSpeed;
+        velocity.y = _yVelocity;
+        _charController.Move(velocity * Time.deltaTime);
+
+        // [추가] 지면 위에 있는 상태에서만 NavMesh 영역 밖으로 나가는 것을 방지
+        // (점프/낙하 중에 체크하면 공중에 뜬 캐릭터가 바닥으로 갑자기 강제 착지(Snapping)될 수 있습니다)
+        if (_charController.isGrounded && State == Define.CreatureState.Moving)
+        {
+            UnityEngine.AI.NavMeshHit hit;
+            // 캐릭터 중심 기준 1.0f 반경 내의 가장 가까운 유효한 NavMesh 지점을 찾습니다.
+            if (UnityEngine.AI.NavMesh.SamplePosition(transform.position, out hit, 1.0f, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                // 현재 캐릭터의 실제 위치와 NavMesh 위 유효한 위치가 아주 미세하게라도 다르다면 보정
+                if (Vector3.Distance(transform.position, hit.position) > 0.01f)
+                {
+                    // CharacterController를 잠시 끄고 위치를 보정해야 정상 적용됩니다.
+                    _charController.enabled = false;
+                    transform.position = new Vector3(hit.position.x, transform.position.y, hit.position.z); // XZ축만 보정
+                    _charController.enabled = true;
+                }
+            }
+        }
+
+        UpdateSkillInput();
+        HandleUIInput();
         
     }
 
