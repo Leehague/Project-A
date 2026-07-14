@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class LoadingScene : BaseScene
 {
     private AsyncOperation _asyncOp;
-
+    private int _targetMapId = -1;
 
 
     protected override void Init()
@@ -13,7 +13,17 @@ public class LoadingScene : BaseScene
         base.Init(); // 부모의 공통 초기화 수행
         SceneType = Define.SceneType.Loading;
 
-         StartCoroutine(LoadSceneAsync());
+
+        Managers.sceneManagerEx.OnEnterGameReceived += OnReceiveEnterGame;
+    }
+
+    private void Start()
+    {
+        //CS_ENTER_GAME 전송
+        Protocol.CS_ENTER_GAME _CS_enter_game_pkt = new Protocol.CS_ENTER_GAME();
+        Managers.networkManager.Send(_CS_enter_game_pkt);
+
+        //StartCoroutine(LoadSceneAsync());
     }
 
     public override void Clear()
@@ -21,10 +31,27 @@ public class LoadingScene : BaseScene
         // 씬 이동 시 오브젝트 풀 등을 정리
     }
 
+
+    private void OnDestroy()
+    {
+        // 씬이 파괴될 때 이벤트 해제 (메모리 누수 방지)
+        if (Managers.sceneManagerEx != null)
+        {
+            Managers.sceneManagerEx.OnEnterGameReceived -= OnReceiveEnterGame;
+        }
+    }
+    private void OnReceiveEnterGame(int mapId)
+    {
+        _targetMapId = mapId;
+
+        // 서버로부터 맵 ID를 응답받았으므로 씬 로딩 코루틴 실행
+        StartCoroutine(LoadSceneAsync());
+    }
+
     IEnumerator LoadSceneAsync()
     {
-        
-        _asyncOp = Managers.sceneManagerEx.LoadSceneAsync(Define.SceneType.Game);
+        //id
+        _asyncOp = Managers.sceneManagerEx.LoadSceneAsync(Define.SceneType.Game, _targetMapId);
         
         _asyncOp.allowSceneActivation = false;
 

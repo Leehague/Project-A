@@ -1,16 +1,48 @@
 {
-  "Maps": [
-    {
-      "id": 1,
-      "name": "Village",
-      "MapPath": "Resource/Maps/Map_01.txt",
-      "NavMeshPath": "Resource/Maps/NavMesh_01.bin",
-      "MinX": -33,
-      "MinZ": -33,
-      "CellSize": 0.5,
-      "Width": 126,
-      "Height": 108
-    }
-    
-  ]
+    "Maps": [
+        {
+            "id": 3,
+            "name": "Game",
+            "MapPath": "Resource/Maps/Game.txt",
+            "NavMeshPath": "Resource/Maps/Game_NavMesh.bin",
+            "MinX": -257.0,
+            "MinZ": -257.0,
+            "CellSize": 0.5,
+            "Width": 1008,
+            "Height": 1008
+        },
+        {
+            "id": 4,
+            "name": "Loading",
+            "MapPath": "Resource/Maps/Loading.txt",
+            "NavMeshPath": "Resource/Maps/Loading_NavMesh.bin",
+            "MinX": -50.0,
+            "MinZ": -50.0,
+            "CellSize": 0.5,
+            "Width": 200,
+            "Height": 200
+        },
+        {
+            "id": 5,
+            "name": "Login",
+            "MapPath": "Resource/Maps/Login.txt",
+            "NavMeshPath": "Resource/Maps/Login_NavMesh.bin",
+            "MinX": -50.0,
+            "MinZ": -50.0,
+            "CellSize": 0.5,
+            "Width": 200,
+            "Height": 200
+        },
+        {
+            "id": 6,
+            "name": "Test",
+            "MapPath": "Resource/Maps/Test.txt",
+            "NavMeshPath": "Resource/Maps/Test_NavMesh.bin",
+            "MinX": -252.0,
+            "MinZ": -252.0,
+            "CellSize": 0.5,
+            "Width": 1008,
+            "Height": 1008
+        }
+    ]
 }

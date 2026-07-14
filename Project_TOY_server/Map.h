@@ -5,7 +5,6 @@
 #include "Vector3.h"
 
 
-
 struct PQNode {
     bool operator<(const PQNode& other) const { return f > other.f; }
     int32 f; // g + h
@@ -37,7 +36,7 @@ private:
 
     const MapData* _mapdata =nullptr;
     std::vector<std::vector<bool>> _collisionData;
-    std::vector<std::vector<float>> _heightData; // [추가] 높이 데이터 저장용
+    std::vector<std::vector<float>> _heightData; // 높이 데이터 저장용
 
 
     std::vector<Triangle> _navTriangles;

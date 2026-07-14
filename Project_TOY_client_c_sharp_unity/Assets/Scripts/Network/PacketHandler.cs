@@ -110,23 +110,22 @@ public class PacketHandler
         //로그인 패킷에서 받았던 playerId(obejcId)와 일치하는지 확인
         if (enterGamePkt.PosInfo.ObjectId != Managers.objectManager.Myplayer_playerId) { return; }
 
-        //Map 로드
-        string Mapname = "Map" + enterGamePkt.MapId.ToString();
-        if (!GameObject.Find(Mapname))
-        {
-            Managers.resourceManager.Instantiate(Mapname);
-        }
+        
 
         //서버가 보내준 나의 초기 위치 정보를 저장
         Managers.objectManager.MyplayerPosInfo=enterGamePkt.PosInfo;
 
-        //내 캐릭터 스폰
-        Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo, enterGamePkt.TemplateId, true);
+        // [수정] 씬 로딩 완료 후 스폰하기 위해 데이터만 보관
+        Managers.objectManager.MyplayerPosInfo = enterGamePkt.PosInfo;
+        Managers.objectManager.Myplayer_TemplateId = enterGamePkt.TemplateId;
 
-        //CS_GAME_READY 전송 로직
-        Protocol.CS_GAME_READY _CS_GAME_READY = new Protocol.CS_GAME_READY();
-        _CS_GAME_READY.PlayerId = Managers.objectManager.Myplayer_playerId; // This playerId must equal to 'Real' player Id in server.
-        Managers.networkManager.Send(_CS_GAME_READY);
+        // [수정] 대기 중인 LoadingScene에게 씬 비동기 로딩을 시작하라고 이벤트를 보냄
+        Managers.sceneManagerEx.OnEnterGameReceived?.Invoke(enterGamePkt.MapId);
+
+        //내 캐릭터 스폰
+        //Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo, enterGamePkt.TemplateId, true);
+
+        
     }
 
     public static void Handle_SC_PLAYER_DESPAWN(PacketSession session, IMessage packet) 

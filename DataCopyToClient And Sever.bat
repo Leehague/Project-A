@@ -4,6 +4,7 @@ setlocal enabledelayedexpansion
 :: 1. 경로 설정 (등호 앞뒤 공백 제거 및 상대 경로 명확화)
 set "SOURCE_DIR=.\Common\Data\ForAll"
 set "SOURCE_FORSERVER_DIR=.\Common\Data\OnlyForServer"
+set "SOURCE_FORCLIENT_DIR=.\Common\Data\OnlyForClient"
 set "SERVER_DIR=.\Project_TOY_server\Data"
 set "CLIENT_DIR=.\Project_TOY_client_c_sharp_unity\Assets\Resources\Data"
 set "MapData_Source_Dir=.\Project_TOY_client_c_sharp_unity\MapData"
@@ -37,6 +38,9 @@ xcopy /Y /S /I "%MapData_Source_Dir%\*.bin" "%MapData_Server_Dir%"
 if not exist "%CLIENT_DIR%" mkdir "%CLIENT_DIR%"
 echo Copying JSON files to Client...
 xcopy /Y /S /I "%SOURCE_DIR%\*.json" "%CLIENT_DIR%"
+
+xcopy /Y /S /I "%SOURCE_FORCLIENT_DIR%\*.json" "%CLIENT_DIR%"
+
 
 echo.
 echo [Data Sync Complete!]

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 5
+  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -22,6 +22,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Floor
   m_Shader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -31,6 +33,7 @@ Material:
   stringTagMap:
     RenderType: Opaque
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -121,6 +124,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _Blend: 0
     - _BlendOp: 0
     - _BumpScale: 1
@@ -135,6 +139,7 @@ Material:
     - _DissTex_UV_invert: 0
     - _Distort_intensity: 0
     - _DstBlend: 0
+    - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
     - _Fresnel_pow: 5
     - _GlossMapScale: 0
@@ -154,6 +159,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
     - _SubDissolveTex_add: 0
     - _SubDissolveTex_multi: 1
     - _Surface: 0
@@ -169,7 +175,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.11320752, g: 0.11320752, b: 0.11320752, a: 1}
-    - _Color: {r: 0.1132075, g: 0.1132075, b: 0.1132075, a: 1}
+    - _Color: {r: 0.11320752, g: 0.11320752, b: 0.11320752, a: 1}
     - _Color_tint: {r: 0.103773594, g: 0.103773594, b: 0.103773594, a: 0}
     - _DissolveColor_step: {r: 0, g: 1, b: 0, a: 0}
     - _DissolveTex_speed: {r: 0, g: 0, b: 0, a: 0}

@@ -1,0 +1,24 @@
+{
+    "sceneStructures": [
+        {
+            "id": 1,
+            "name": "Login",
+            "type": "Login"
+        },
+        {
+            "id": 2,
+            "name": "Loading",
+            "type": "Loading"
+        },
+        {
+            "id": 3,
+            "name": "Game",
+            "type": "Game"
+        },
+        {
+            "id": 4,
+            "name": "Test",
+            "type": "Game"
+        }
+    ]
+}

@@ -17,6 +17,7 @@ public class Define
         Login = 1,
         Loading = 2,
         Game = 3,
+        
     }
 
     public enum CreatureState

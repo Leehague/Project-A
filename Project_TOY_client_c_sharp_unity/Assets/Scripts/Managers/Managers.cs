@@ -5,7 +5,12 @@ public class Managers : MonoBehaviour
 {
     // 단 하나만 존재하게 만드는 싱글톤
     private static Managers _instance;
-    public static Managers Instance { get { Init(); return _instance; } }
+    public static Managers Instance {
+        get {
+            Init();
+            return _instance;
+        }
+    }
 
     #region Core (네트워크, 리소스 등 게임 인프라)
     //내부 생성
@@ -34,6 +39,9 @@ public class Managers : MonoBehaviour
     public static UIManager uiManager => Instance.UIManager;
     public static PoolingManager poolingManager => Instance.PoolingManager;
     #endregion
+
+    private static bool _init = false;
+
 
     void Start()
     {
@@ -64,11 +72,6 @@ public class Managers : MonoBehaviour
                 go = new GameObject { name = "@Managers" };
                 _instance = go.AddComponent<Managers>();
                 DontDestroyOnLoad(go);
-
-                // 초기화 로직은 여기서 딱 한 번만!
-                _instance._networkManager.Init();
-                _instance._dataManager.Init();
-                Debug.Log("@Managers 신규 생성 및 초기화 완료");
             }
             else
             {
@@ -81,6 +84,14 @@ public class Managers : MonoBehaviour
             }
         }
 
+        if (_instance != null && _init == false)
+        {
+            _init = true;
+
+            // 초기화 로직 , 최초 1회만 실행되게 보장함.
+            _instance._networkManager.Init();
+            _instance._dataManager.Init();
+        }
         
     }
 

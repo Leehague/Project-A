@@ -10,7 +10,10 @@ public class ObjectManager
     public GameObject MyPlayer { get; set; }
     public PosInfo MyplayerPosInfo { get; set; }
     //서버에서 전송해준 내 캐릭터의 objectId
-    public int Myplayer_playerId { get; set; }  
+    public int Myplayer_playerId { get; set; }
+
+    // [추가] 내 캐릭터의 템플릿 ID 임시 저장 속성
+    public int Myplayer_TemplateId { get; set; }
 
     private List<Protocol.SC_PLAYER_SPAWN> _spawnQueue = new List<Protocol.SC_PLAYER_SPAWN>();
     // Game 씬이 준비되었는지 나타내는 플래그
