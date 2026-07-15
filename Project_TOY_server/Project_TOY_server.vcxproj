@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="CoreRoom.cpp" />
     <ClCompile Include="Creature.cpp" />
     <ClCompile Include="DBConnection.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="CoreRoom.h" />
     <ClInclude Include="Creature.h" />
     <ClInclude Include="DataContents.h" />
