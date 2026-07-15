@@ -14,7 +14,11 @@
             "id": 3,
             "name": "Game",
             "type": "Game"
+        },
+        {
+            "id": 4,
+            "name": "Test",
+            "type": "Game"
         }
-        
     ]
 }

@@ -122,6 +122,8 @@ public class PacketHandler
         // [수정] 대기 중인 LoadingScene에게 씬 비동기 로딩을 시작하라고 이벤트를 보냄
         Managers.sceneManagerEx.OnEnterGameReceived?.Invoke(enterGamePkt.MapId);
 
+        //MapId 저장
+        Managers.sceneManagerEx.MapId = enterGamePkt.MapId;
         //내 캐릭터 스폰
         //Managers.objectManager.SpawnPlayer(enterGamePkt.PosInfo, enterGamePkt.TemplateId, true);
 

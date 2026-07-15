@@ -22,12 +22,25 @@ public class GameScene : BaseScene
         if (Managers.objectManager.MyplayerPosInfo != null)
         {
             // 1. 보관 중이던 위치 정보와 템플릿 정보로 내 캐릭터 스폰
-            Managers.objectManager.SpawnPlayer(
+            GameObject myPlayerGo = Managers.objectManager.SpawnPlayer(
                 Managers.objectManager.MyplayerPosInfo,
                 Managers.objectManager.Myplayer_TemplateId,
                 true
             );
-            // 2. 서버에 로딩 완료 및 게임 참여 준비가 끝났음을 선언
+
+            // 2. 내 캐릭터 스폰 성공 시 SectorTracker 컴포넌트 부착 및 매니저 초기화
+            if (myPlayerGo != null)
+            {
+                // GameScene 오브젝트 자체에 SectorTracker 부착
+                SectorTracker tracker = gameObject.GetOrAddComponent<SectorTracker>();
+                // 내 캐릭터를 추적 대상으로 지정
+                tracker.TrackerTarget_transform = myPlayerGo.transform;
+                // 매니저에 방금 생성한 tracker를 직접 주입하며 초기화 수행
+                Managers.sceneManagerEx.Init(tracker);
+            }
+
+
+            // 3. 서버에 로딩 완료 및 게임 참여 준비가 끝났음을 선언
             Protocol.CS_GAME_READY gameReadyPkt = new Protocol.CS_GAME_READY();
             gameReadyPkt.PlayerId = Managers.objectManager.Myplayer_playerId;
             Managers.networkManager.Send(gameReadyPkt);

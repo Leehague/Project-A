@@ -57,10 +57,26 @@ public class PlayerController : CreatureController
             {
                 vcam.Follow = this.transform;
                 vcam.LookAt = this.transform;
-                
+
+            }
+            else
+            {
+                Managers.resourceManager.Instantiate("PlayerFollowCamera");
             }
 
-            _cameraTransform = Camera.main.transform;
+
+
+             _cameraTransform = Camera.main.transform;
+
+            if (_cameraTransform != null)
+            {
+                CinemachineBrain brain = _cameraTransform.GetComponent<CinemachineBrain>();
+
+                if (brain == null)
+                {
+                    brain = _cameraTransform.gameObject.AddComponent<CinemachineBrain>();
+                }
+            }
 
             // 마우스 커서 고정
             Cursor.lockState = CursorLockMode.Locked;

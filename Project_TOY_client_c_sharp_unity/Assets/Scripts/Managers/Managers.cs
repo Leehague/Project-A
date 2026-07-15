@@ -91,6 +91,7 @@ public class Managers : MonoBehaviour
             // 초기화 로직 , 최초 1회만 실행되게 보장함.
             _instance._networkManager.Init();
             _instance._dataManager.Init();
+            
         }
         
     }
