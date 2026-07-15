@@ -1,8 +1,0 @@
-# Project A Login Sequence
-* Client [Unity Client] -> Server [C++ IOCP Server] : CS_LOGIN (networkmanger::update)
-* Server -> Client : SC_LOGIN_OK (PacketHandler)
-* Client -> Server : CS_ENTER_GAME (GameScene::Init)
-* Server -> Client : SC_ENTER_GAME (Room::Enter)
-* Client -> Server : CS_GAME_READY
-* Server -> Client : SC_PLAYER_SPAWN (Spawn Self / Monster Spawn)
-* Server -> OtherClients [Other Unity Clients] : SC_PLAYER_SPAWN (Spawn Broadcast)
