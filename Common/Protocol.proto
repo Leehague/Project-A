@@ -25,6 +25,13 @@ enum PacketId {
     PKT_SC_MONSTER_DEAD = 19;
     PKT_CS_OWNED_ITEM_REQUEST = 20;
     PKT_SC_ITEM_RESPONSE = 21;
+    PKT_CS_QUEST_CREATED_REQUEST = 22;
+    PKT_SC_QUEST_CREATED_RESPONSE = 23;
+    PKT_CS_QUEST_ACCEPT_REQUEST = 24;
+    PKT_SC_QUEST_ACCEPT_RESPONSE = 25;
+    PKT_SC_QUEST_PROGRESS_UPDATE = 26;
+    PKT_CS_QUEST_LIST_REQUEST = 27;
+    PKT_SC_QUEST_LIST_RESPONSE = 28;
     
 }
 
@@ -188,3 +195,60 @@ message ItemInfo
     string item_memo = 5;
 }
 
+message QuestInfo {
+  int32 quest_id = 1;         // 고유 ID, 서버 id
+  int32 quest_templateId = 2; // 템플릿 id  (json 파일에서의 id) , 정적 생성 퀘스트에만 존재해야함
+  int32 quest_type_id = 3;    // QuestType (예: 1 - Kill)
+  int32 state = 4;            // QuestState (1: Accepted, 2: Completed, 3: RewardReceived)
+  
+  int32 client_object_id = 5; // 발급자 Creature의 Object ID (NPC/Monster/Player)
+  int32 acquirer_object_id = 6;// 수행자 Creature의 Object ID
+  // 퀘스트 수행 목표 데이터 (동적 생성 지원용)
+  int32 target_template_id = 7;        // 처치 대상 몬스터 ID 또는 타겟 아이템 ID 등 (templateId)
+  int32 current_count = 8;    // 현재 진행량 (예: 1마리 잡음)
+  int32 target_count = 9;     // 목표량 (예: 5마리 채워야 함)
+  // 보상 데이터
+  int32 reward_type_id = 10;   // RewardType (1: Exp, 2: Item, 3: Gold)
+  int32 reward_value = 11;    // 보상 골드량, 경험치량 또는 아이템 개수
+  int32 reward_item_id = 12;  // 보상 아이템 템플릿 ID
+
+  string name = 13;
+}
+
+message CS_QUEST_CREATED_REQUEST 
+{
+    QuestInfo req_create_quest_info =1; 
+}
+
+message SC_QUEST_CREATED_RESPONSE
+{
+    bool success = 1;
+    QuestInfo res_create_quest_info = 2;
+}
+
+message CS_QUEST_ACCEPT_REQUEST
+{
+    int32 quest_id = 1;
+    int32 quest_client_object_id =2;
+}
+
+message SC_QUEST_ACCEPT_RESPONSE
+{
+    bool success = 1;
+    QuestInfo res_accept_quest = 2;
+}
+
+message SC_QUEST_PROGRESS_UPDATE 
+{
+    QuestInfo prossing_quest = 1;
+}
+
+message CS_QUEST_LIST_REQUEST
+{
+    int32 quest_client_object_id = 1;
+}
+
+message SC_QUEST_LIST_RESPONSE
+{
+    repeated QuestInfo quests = 1;
+}

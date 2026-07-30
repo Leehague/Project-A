@@ -17,4 +17,199 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Maps/Test.unity
     guid: dc9912f1fc9ab5a4db1133d6d3898756
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-1_-1.unity
+    guid: 9132908fa9a9a994799bd4530f114eb2
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-1_-2.unity
+    guid: 337ffa159c59073469902a5f01a55433
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-1_-3.unity
+    guid: 37a0bc9d3f32f884b953edc1172b8ec6
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-1_-4.unity
+    guid: ebc11e24a83eb944fabe922c6fc331e5
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-1_0.unity
+    guid: b91c94bc1b0c5c2419a28d86d73459c5
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-1_1.unity
+    guid: 42a6ac257843d2b4fadae81917247a89
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-1_2.unity
+    guid: fccdc203d7d8d124cbac1a1e00c88493
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-1_3.unity
+    guid: 70120b000cf7ecd479f40f588560524c
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-2_-1.unity
+    guid: 6cf1a471f1bdb354d965d9efb30f3937
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-2_-2.unity
+    guid: c1c2e5066d24a564d89c0436d511a295
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-2_-3.unity
+    guid: c2e836e57e121984c97a87332ee0e10a
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-2_-4.unity
+    guid: 657ce17d1afbbec4099fe00090cf21af
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-2_0.unity
+    guid: 4d8d5affc5bb2c445b3e62c2fc738db1
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-2_1.unity
+    guid: fc9440a429c6d1d4d95fcd578ac58e7d
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-2_2.unity
+    guid: 4da555ddf377e8343b06d0c59b289d56
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-2_3.unity
+    guid: 152629d9e1d7f5648a0b9ce60f5ef0c0
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-3_-1.unity
+    guid: 92df0eb9a75cfcf45bd5e5644b9ed00f
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-3_-2.unity
+    guid: fb226fa759476b74ca034dac00b59efb
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-3_-3.unity
+    guid: 12eac7643fa4f184aace987af4a5e10e
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-3_-4.unity
+    guid: f602aa226c3db4d48b59be6825aa1b92
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-3_0.unity
+    guid: 0632bf0cef9b2104991bf93cff02f6b4
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-3_1.unity
+    guid: 5fe71b78370e76d4283a09debee32e76
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-3_2.unity
+    guid: cda018722404e2f4798f4050e8407dbb
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-3_3.unity
+    guid: 0e46c4f622350564a8b790522540c739
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-4_-1.unity
+    guid: e11ed2b718731274f88128232a8d1aa8
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-4_-2.unity
+    guid: 57697dedac2824b4db25f0ef90c20afb
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-4_-3.unity
+    guid: e7b45a77f2bce094ab629107c5f5b729
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-4_-4.unity
+    guid: d215e632c185c6543bca5e6de7049e72
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-4_0.unity
+    guid: f56e3438ea73afc45bf440259a2c8711
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-4_1.unity
+    guid: 498280b310928f24f9537dbe7f9d53ae
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-4_2.unity
+    guid: b01b9a29f14932242a3a1b0d7ef852a7
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-4_3.unity
+    guid: 75c68689e3cd71541999b7b10f656d2b
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_-5_-5.unity
+    guid: ff6b557e6008cf04381ab13560e2e48a
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_0_-1.unity
+    guid: f65235a955decfb4f914ea0aaae68da4
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_0_-2.unity
+    guid: c64d0ecbccbe93d418ec5d8da90fa0a4
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_0_-3.unity
+    guid: 9b52680e52ccfc44ea7383ba320b93eb
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_0_-4.unity
+    guid: 0c02250ff9832b04eb0baf705042b15d
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_0_0.unity
+    guid: 73dd6a71811c72540a2c0a90b1a07b98
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_0_1.unity
+    guid: e18d653f3199434468698eec6ce69693
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_0_2.unity
+    guid: e4e4a2d45ede1294c912c95e43233571
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_0_3.unity
+    guid: 1a65585888607764cbc3e374f05bc07c
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_1_-1.unity
+    guid: 2153c97400f9a9e488e742a1e31d8bd6
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_1_-2.unity
+    guid: 27e3c5febd75e1042b16fea53f8bd3c6
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_1_-3.unity
+    guid: 059182098c8974143a94c53fb88316a3
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_1_-4.unity
+    guid: 52222d8895886d54a92b9ac8a959c2b5
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_1_0.unity
+    guid: 363fa293e30f1c1438a9408dbae8b941
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_1_1.unity
+    guid: 41e69cf487727204896d0ceb86a701ec
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_1_2.unity
+    guid: 865a4e00cdb24ae4e993b8988b2daf02
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_1_3.unity
+    guid: 38cde8f404737614a864fb8b6ec6f69d
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_2_-1.unity
+    guid: 43cae40165ef8934aabd9854e220daab
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_2_-2.unity
+    guid: 863f727bf9d9b0549b2dcb919d2cb5f8
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_2_-3.unity
+    guid: 9c2bf6730a979d74ebb7fea1935d577e
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_2_-4.unity
+    guid: 65b77e9b1a593ee4a83369c228ac88f3
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_2_0.unity
+    guid: 6c2798be2d878d943b8e4107940c19db
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_2_1.unity
+    guid: e8185d50c7898334c95e81194554cbf4
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_2_2.unity
+    guid: 8491d7a58ea474749acfec33fc26dc64
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_2_3.unity
+    guid: 3d0c5c12ff6be1a4b94f589ac2a0db2c
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_3_-1.unity
+    guid: 18b3b1447d2cda3429877eef8192aa86
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_3_-2.unity
+    guid: 79a03bb552a0fa34b9c26d36d9840cab
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_3_-3.unity
+    guid: 05e2be5a991b2954987f372bd26deeb0
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_3_-4.unity
+    guid: 73023ded5d1dd644f96a385ec387924d
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_3_0.unity
+    guid: 16bcbde83e497bd4faf5ba17127c8b81
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_3_1.unity
+    guid: 954179455a17e6148b13ccb409052f98
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_3_2.unity
+    guid: a2bc01d79f5ee6044a5524f3b995e295
+  - enabled: 1
+    path: Assets/Scenes/SplitMap/Test_3_3.unity
+    guid: 099b3b57f2f0d01499ed68bf05155e85
   m_configObjects: {}

@@ -31,6 +31,12 @@ public:
     {
         return _iteminfo.count;
     }
+
+    void SetCount(int32 count)
+    {
+        _iteminfo.count = count;
+    }
+
     int32 GetSlot() 
     {
         return _iteminfo.slot;

@@ -18,6 +18,8 @@ public:
         LoadMapData("Data/MapData.json");
         LoadSkillData("Data/SkillData.json");
         LoadItemData("Data/ItemData.json");
+        LoadNpcData("Data/NPCData.json");
+        LoadQuestData("Data/QuestData.json");
     }
 
 private:
@@ -173,7 +175,69 @@ private:
         }
     }
 
-    
+    void LoadNpcData(const std::string& path)
+    {
+        std::ifstream f(path);
+
+        if (!f.is_open()) {
+            std::cout << "Cannot find file at: " << path << std::endl;
+            return;
+        }
+        if (f.peek() == std::ifstream::traits_type::eof()) {
+            std::cout << "File is empty!" << std::endl;
+            return;
+        }
+
+        json data = json::parse(f);
+
+
+        for (auto& npc : data["npcs"])
+        {
+            NPCData npcdata;
+            npcdata.id = npc["id"];
+            npcdata.name = npc["name"];
+            npcdata.statid = npc["statid"];
+
+            _npcTable[npcdata.id] = npcdata;
+        }
+    }
+
+    void LoadQuestData(const std::string& path)
+    {
+        std::ifstream f(path);
+
+        if (!f.is_open()) {
+            std::cout << "Cannot find file at: " << path << std::endl;
+            return;
+        }
+        if (f.peek() == std::ifstream::traits_type::eof()) {
+            std::cout << "File is empty!" << std::endl;
+            return;
+        }
+
+        json data = json::parse(f);
+
+
+
+        for (auto& quest : data["quests"])
+        {
+            QuestData questdata;
+
+            questdata.id = quest["id"];
+            questdata.name = quest["name"];
+            questdata.questTypeId = quest["questTypeId"];
+            questdata.rewardTypeid = quest["rewardTypeid"];
+
+            if (quest.contains("trargetMonsterId")) questdata.trargetMonsterId = quest["trargetMonsterId"];
+            if (quest.contains("targetCount")) questdata.targetCount = quest["targetCount"];
+            if (quest.contains("rewardExp")) questdata.rewardExp = quest["rewardExp"];
+            if (quest.contains("rewardItemTemplateId")) questdata.rewardItemTemplateId = quest["rewardItemTemplateId"];
+            if (quest.contains("rewardItemCount")) questdata.rewardItemCount = quest["rewardItemCount"];
+            if (quest.contains("rewardGold")) questdata.rewardGold = quest["rewardGold"];
+
+            _questTable[questdata.id] = questdata;
+        }
+    }
 public:
     const StatData* GetStat(int32 templateId) {
         if (_statTable.find(templateId) == _statTable.end()) return nullptr;
@@ -192,9 +256,25 @@ public:
         if (_itemTable.find(templateId) == _itemTable.end()) return nullptr;
         return &_itemTable[templateId];
     }
+
+    const NPCData* GetNPC(int32 NPCtemplateId)
+    {
+        if (_npcTable.find(NPCtemplateId) == _npcTable.end()) return nullptr;
+        return &_npcTable[NPCtemplateId];
+    }
+
+    const QuestData* GetQuest(int32 questId)
+    {
+        if (_questTable.find(questId) == _questTable.end()) return nullptr;
+        return &_questTable[questId];
+    }
 private:
     std::map<int32, StatData> _statTable; //key : tempateId , value : StatData
     std::map<int32, MapData> _mapTable; //key : MapId, value : MapData
     std::unordered_map<int32, SkillData> _skillTable; //key : Id , value : SkillData
     std::unordered_map<int32, ItemData> _itemTable; //key : Id, value : ItemData
+    std::unordered_map<int32, NPCData> _npcTable;
+    std::unordered_map<int32, QuestData> _questTable;
+
+
 };

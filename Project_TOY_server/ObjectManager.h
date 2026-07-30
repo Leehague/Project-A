@@ -12,7 +12,9 @@ public:
 	GameObjectPtr Find(int32 objectId);
 	void Removeobjcet(int32 objectId);
 	int32 GetobjcetCounter();
-	
+
+
+
 private:
 	std::mutex _lock;
 	std::map<int32, GameObjectPtr> _objects; //이 딕셔너리에서의 key 값이 곧 objectId 임 _pos.objectId 와 같아야함

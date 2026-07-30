@@ -43,30 +43,30 @@
     <Filter Include="Source Files\Room">
       <UniqueIdentifier>{5e84c0a0-8eda-4e33-866e-f34c0e271318}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Quest">
+      <UniqueIdentifier>{8963aad7-0025-4641-a68a-b693b419ddd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Quest">
+      <UniqueIdentifier>{42874327-94ff-47c4-a04c-ded8963a6a05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Events">
+      <UniqueIdentifier>{05df8cd2-e6c3-4194-acf2-f110e751f31e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network">
+      <UniqueIdentifier>{978c7b47-d304-46b0-8b2a-32487f72561f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{fbc03e27-ff58-4586-a2c3-c7143a352be5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Finance">
+      <UniqueIdentifier>{1b5e0616-d2d4-42d9-a866-503c8678762f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Finance">
+      <UniqueIdentifier>{b5718a71-d58e-4ab2-a097-0db400f0be5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RecvBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SendBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Session.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IocpCore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Listener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PacketHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Protocol\Protocol.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameSessionManager.cpp">
@@ -126,33 +126,48 @@
     <ClCompile Include="ConsoleManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="Quest.cpp">
+      <Filter>Source Files\Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="Kill_Quest.cpp">
+      <Filter>Source Files\Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpCore.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHandler.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocol\Protocol.pb.cc">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="RecvBuffer.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="SendBuffer.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="FinanceService.cpp">
+      <Filter>Source Files\Finance</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestComponent.cpp">
+      <Filter>Source Files\Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RecvBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SendBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Session.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IocpCore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Listener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ServerUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Protocol\Protocol.pb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameSessionManager.h">
@@ -206,9 +221,6 @@
     <ClInclude Include="Item.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Inventory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Creature.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
@@ -225,6 +237,48 @@
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Quest.h">
+      <Filter>Header Files\Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="Kill_Quest.h">
+      <Filter>Header Files\Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestEvent.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpCore.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHandler.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol\Protocol.pb.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SendBuffer.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="RecvBuffer.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestComponent.h">
+      <Filter>Header Files\Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="FinanceService.h">
+      <Filter>Header Files\Finance</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.h">
+      <Filter>Header Files\Finance</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>

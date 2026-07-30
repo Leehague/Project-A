@@ -34,7 +34,8 @@ public:
     CreaturePtr GetNearestCreature(Vector3 pos, float maxRange, int32 excludeObjectId);
 
 public:
-    
+
+    //Key: objcetId, value : GameObejctPtr
     std::map<uint64, GameObjectPtr> _objects;
     MapPtr _map;
 

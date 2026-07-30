@@ -81,6 +81,18 @@ class CS_OWNED_ITEM_REQUEST;
 struct CS_OWNED_ITEM_REQUESTDefaultTypeInternal;
 extern CS_OWNED_ITEM_REQUESTDefaultTypeInternal _CS_OWNED_ITEM_REQUEST_default_instance_;
 extern const ::google::protobuf::internal::ClassDataFull CS_OWNED_ITEM_REQUEST_class_data_;
+class CS_QUEST_ACCEPT_REQUEST;
+struct CS_QUEST_ACCEPT_REQUESTDefaultTypeInternal;
+extern CS_QUEST_ACCEPT_REQUESTDefaultTypeInternal _CS_QUEST_ACCEPT_REQUEST_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull CS_QUEST_ACCEPT_REQUEST_class_data_;
+class CS_QUEST_CREATED_REQUEST;
+struct CS_QUEST_CREATED_REQUESTDefaultTypeInternal;
+extern CS_QUEST_CREATED_REQUESTDefaultTypeInternal _CS_QUEST_CREATED_REQUEST_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull CS_QUEST_CREATED_REQUEST_class_data_;
+class CS_QUEST_LIST_REQUEST;
+struct CS_QUEST_LIST_REQUESTDefaultTypeInternal;
+extern CS_QUEST_LIST_REQUESTDefaultTypeInternal _CS_QUEST_LIST_REQUEST_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull CS_QUEST_LIST_REQUEST_class_data_;
 class CS_SKILL;
 struct CS_SKILLDefaultTypeInternal;
 extern CS_SKILLDefaultTypeInternal _CS_SKILL_default_instance_;
@@ -97,6 +109,10 @@ class PosInfo;
 struct PosInfoDefaultTypeInternal;
 extern PosInfoDefaultTypeInternal _PosInfo_default_instance_;
 extern const ::google::protobuf::internal::ClassDataFull PosInfo_class_data_;
+class QuestInfo;
+struct QuestInfoDefaultTypeInternal;
+extern QuestInfoDefaultTypeInternal _QuestInfo_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull QuestInfo_class_data_;
 class SC_CHANGE_HP;
 struct SC_CHANGE_HPDefaultTypeInternal;
 extern SC_CHANGE_HPDefaultTypeInternal _SC_CHANGE_HP_default_instance_;
@@ -141,6 +157,22 @@ class SC_PLAYER_SPAWN;
 struct SC_PLAYER_SPAWNDefaultTypeInternal;
 extern SC_PLAYER_SPAWNDefaultTypeInternal _SC_PLAYER_SPAWN_default_instance_;
 extern const ::google::protobuf::internal::ClassDataFull SC_PLAYER_SPAWN_class_data_;
+class SC_QUEST_ACCEPT_RESPONSE;
+struct SC_QUEST_ACCEPT_RESPONSEDefaultTypeInternal;
+extern SC_QUEST_ACCEPT_RESPONSEDefaultTypeInternal _SC_QUEST_ACCEPT_RESPONSE_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull SC_QUEST_ACCEPT_RESPONSE_class_data_;
+class SC_QUEST_CREATED_RESPONSE;
+struct SC_QUEST_CREATED_RESPONSEDefaultTypeInternal;
+extern SC_QUEST_CREATED_RESPONSEDefaultTypeInternal _SC_QUEST_CREATED_RESPONSE_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull SC_QUEST_CREATED_RESPONSE_class_data_;
+class SC_QUEST_LIST_RESPONSE;
+struct SC_QUEST_LIST_RESPONSEDefaultTypeInternal;
+extern SC_QUEST_LIST_RESPONSEDefaultTypeInternal _SC_QUEST_LIST_RESPONSE_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull SC_QUEST_LIST_RESPONSE_class_data_;
+class SC_QUEST_PROGRESS_UPDATE;
+struct SC_QUEST_PROGRESS_UPDATEDefaultTypeInternal;
+extern SC_QUEST_PROGRESS_UPDATEDefaultTypeInternal _SC_QUEST_PROGRESS_UPDATE_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull SC_QUEST_PROGRESS_UPDATE_class_data_;
 class SC_SKILL;
 struct SC_SKILLDefaultTypeInternal;
 extern SC_SKILLDefaultTypeInternal _SC_SKILL_default_instance_;
@@ -198,6 +230,13 @@ enum PacketId : int {
   PKT_SC_MONSTER_DEAD = 19,
   PKT_CS_OWNED_ITEM_REQUEST = 20,
   PKT_SC_ITEM_RESPONSE = 21,
+  PKT_CS_QUEST_CREATED_REQUEST = 22,
+  PKT_SC_QUEST_CREATED_RESPONSE = 23,
+  PKT_CS_QUEST_ACCEPT_REQUEST = 24,
+  PKT_SC_QUEST_ACCEPT_RESPONSE = 25,
+  PKT_SC_QUEST_PROGRESS_UPDATE = 26,
+  PKT_CS_QUEST_LIST_REQUEST = 27,
+  PKT_SC_QUEST_LIST_RESPONSE = 28,
   PacketId_INT_MIN_SENTINEL_DO_NOT_USE_ =
       ::std::numeric_limits<::int32_t>::min(),
   PacketId_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -208,11 +247,11 @@ extern const uint32_t PacketId_internal_data_[];
 inline constexpr PacketId PacketId_MIN =
     static_cast<PacketId>(0);
 inline constexpr PacketId PacketId_MAX =
-    static_cast<PacketId>(21);
+    static_cast<PacketId>(28);
 inline bool PacketId_IsValid(int value) {
-  return 0 <= value && value <= 21;
+  return 0 <= value && value <= 28;
 }
-inline constexpr int PacketId_ARRAYSIZE = 21 + 1;
+inline constexpr int PacketId_ARRAYSIZE = 28 + 1;
 const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL PacketId_descriptor();
 template <typename T>
 const ::std::string& PacketId_Name(T value) {
@@ -223,7 +262,7 @@ const ::std::string& PacketId_Name(T value) {
 }
 template <>
 inline const ::std::string& PacketId_Name(PacketId value) {
-  return ::google::protobuf::internal::NameOfDenseEnum<PacketId_descriptor, 0, 21>(
+  return ::google::protobuf::internal::NameOfDenseEnum<PacketId_descriptor, 0, 28>(
       static_cast<int>(value));
 }
 inline bool PacketId_Parse(
@@ -2338,6 +2377,345 @@ class SC_CHANGE_HP final : public ::google::protobuf::Message
 extern const ::google::protobuf::internal::ClassDataFull SC_CHANGE_HP_class_data_;
 // -------------------------------------------------------------------
 
+class QuestInfo final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.QuestInfo) */ {
+ public:
+  inline QuestInfo() : QuestInfo(nullptr) {}
+  ~QuestInfo() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(QuestInfo* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(QuestInfo));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR QuestInfo(::google::protobuf::internal::ConstantInitialized);
+
+  inline QuestInfo(const QuestInfo& from) : QuestInfo(nullptr, from) {}
+  inline QuestInfo(QuestInfo&& from) noexcept
+      : QuestInfo(nullptr, ::std::move(from)) {}
+  inline QuestInfo& operator=(const QuestInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline QuestInfo& operator=(QuestInfo&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const QuestInfo& default_instance() {
+    return *reinterpret_cast<const QuestInfo*>(
+        &_QuestInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 27;
+  friend void swap(QuestInfo& a, QuestInfo& b) { a.Swap(&b); }
+  inline void Swap(QuestInfo* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(QuestInfo* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  QuestInfo* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<QuestInfo>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const QuestInfo& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const QuestInfo& from) { QuestInfo::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(QuestInfo* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.QuestInfo"; }
+
+  explicit QuestInfo(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  QuestInfo(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const QuestInfo& from);
+  QuestInfo(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, QuestInfo&& from) noexcept
+      : QuestInfo(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kNameFieldNumber = 13,
+    kQuestIdFieldNumber = 1,
+    kQuestTemplateIdFieldNumber = 2,
+    kQuestTypeIdFieldNumber = 3,
+    kStateFieldNumber = 4,
+    kClientObjectIdFieldNumber = 5,
+    kAcquirerObjectIdFieldNumber = 6,
+    kTargetTemplateIdFieldNumber = 7,
+    kCurrentCountFieldNumber = 8,
+    kTargetCountFieldNumber = 9,
+    kRewardTypeIdFieldNumber = 10,
+    kRewardValueFieldNumber = 11,
+    kRewardItemIdFieldNumber = 12,
+  };
+  // string name = 13;
+  void clear_name() ;
+  const ::std::string& name() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_name(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_name();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_name();
+  void set_allocated_name(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_name() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_name(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_name();
+
+  public:
+  // int32 quest_id = 1;
+  void clear_quest_id() ;
+  ::int32_t quest_id() const;
+  void set_quest_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_quest_id() const;
+  void _internal_set_quest_id(::int32_t value);
+
+  public:
+  // int32 quest_templateId = 2;
+  void clear_quest_templateid() ;
+  ::int32_t quest_templateid() const;
+  void set_quest_templateid(::int32_t value);
+
+  private:
+  ::int32_t _internal_quest_templateid() const;
+  void _internal_set_quest_templateid(::int32_t value);
+
+  public:
+  // int32 quest_type_id = 3;
+  void clear_quest_type_id() ;
+  ::int32_t quest_type_id() const;
+  void set_quest_type_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_quest_type_id() const;
+  void _internal_set_quest_type_id(::int32_t value);
+
+  public:
+  // int32 state = 4;
+  void clear_state() ;
+  ::int32_t state() const;
+  void set_state(::int32_t value);
+
+  private:
+  ::int32_t _internal_state() const;
+  void _internal_set_state(::int32_t value);
+
+  public:
+  // int32 client_object_id = 5;
+  void clear_client_object_id() ;
+  ::int32_t client_object_id() const;
+  void set_client_object_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_client_object_id() const;
+  void _internal_set_client_object_id(::int32_t value);
+
+  public:
+  // int32 acquirer_object_id = 6;
+  void clear_acquirer_object_id() ;
+  ::int32_t acquirer_object_id() const;
+  void set_acquirer_object_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_acquirer_object_id() const;
+  void _internal_set_acquirer_object_id(::int32_t value);
+
+  public:
+  // int32 target_template_id = 7;
+  void clear_target_template_id() ;
+  ::int32_t target_template_id() const;
+  void set_target_template_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_target_template_id() const;
+  void _internal_set_target_template_id(::int32_t value);
+
+  public:
+  // int32 current_count = 8;
+  void clear_current_count() ;
+  ::int32_t current_count() const;
+  void set_current_count(::int32_t value);
+
+  private:
+  ::int32_t _internal_current_count() const;
+  void _internal_set_current_count(::int32_t value);
+
+  public:
+  // int32 target_count = 9;
+  void clear_target_count() ;
+  ::int32_t target_count() const;
+  void set_target_count(::int32_t value);
+
+  private:
+  ::int32_t _internal_target_count() const;
+  void _internal_set_target_count(::int32_t value);
+
+  public:
+  // int32 reward_type_id = 10;
+  void clear_reward_type_id() ;
+  ::int32_t reward_type_id() const;
+  void set_reward_type_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_reward_type_id() const;
+  void _internal_set_reward_type_id(::int32_t value);
+
+  public:
+  // int32 reward_value = 11;
+  void clear_reward_value() ;
+  ::int32_t reward_value() const;
+  void set_reward_value(::int32_t value);
+
+  private:
+  ::int32_t _internal_reward_value() const;
+  void _internal_set_reward_value(::int32_t value);
+
+  public:
+  // int32 reward_item_id = 12;
+  void clear_reward_item_id() ;
+  ::int32_t reward_item_id() const;
+  void set_reward_item_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_reward_item_id() const;
+  void _internal_set_reward_item_id(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.QuestInfo)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<4, 13,
+                                   0, 39,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const QuestInfo& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr name_;
+    ::int32_t quest_id_;
+    ::int32_t quest_templateid_;
+    ::int32_t quest_type_id_;
+    ::int32_t state_;
+    ::int32_t client_object_id_;
+    ::int32_t acquirer_object_id_;
+    ::int32_t target_template_id_;
+    ::int32_t current_count_;
+    ::int32_t target_count_;
+    ::int32_t reward_type_id_;
+    ::int32_t reward_value_;
+    ::int32_t reward_item_id_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull QuestInfo_class_data_;
+// -------------------------------------------------------------------
+
 class PosInfo final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.PosInfo) */ {
  public:
@@ -3036,6 +3414,398 @@ class CS_WHISPER final : public ::google::protobuf::Message
 };
 
 extern const ::google::protobuf::internal::ClassDataFull CS_WHISPER_class_data_;
+// -------------------------------------------------------------------
+
+class CS_QUEST_LIST_REQUEST final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_QUEST_LIST_REQUEST) */ {
+ public:
+  inline CS_QUEST_LIST_REQUEST() : CS_QUEST_LIST_REQUEST(nullptr) {}
+  ~CS_QUEST_LIST_REQUEST() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_QUEST_LIST_REQUEST* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_QUEST_LIST_REQUEST));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_QUEST_LIST_REQUEST(::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_QUEST_LIST_REQUEST(const CS_QUEST_LIST_REQUEST& from) : CS_QUEST_LIST_REQUEST(nullptr, from) {}
+  inline CS_QUEST_LIST_REQUEST(CS_QUEST_LIST_REQUEST&& from) noexcept
+      : CS_QUEST_LIST_REQUEST(nullptr, ::std::move(from)) {}
+  inline CS_QUEST_LIST_REQUEST& operator=(const CS_QUEST_LIST_REQUEST& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_QUEST_LIST_REQUEST& operator=(CS_QUEST_LIST_REQUEST&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_QUEST_LIST_REQUEST& default_instance() {
+    return *reinterpret_cast<const CS_QUEST_LIST_REQUEST*>(
+        &_CS_QUEST_LIST_REQUEST_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 33;
+  friend void swap(CS_QUEST_LIST_REQUEST& a, CS_QUEST_LIST_REQUEST& b) { a.Swap(&b); }
+  inline void Swap(CS_QUEST_LIST_REQUEST* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_QUEST_LIST_REQUEST* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_QUEST_LIST_REQUEST* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_QUEST_LIST_REQUEST>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_QUEST_LIST_REQUEST& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_QUEST_LIST_REQUEST& from) { CS_QUEST_LIST_REQUEST::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_QUEST_LIST_REQUEST* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_QUEST_LIST_REQUEST"; }
+
+  explicit CS_QUEST_LIST_REQUEST(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  CS_QUEST_LIST_REQUEST(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CS_QUEST_LIST_REQUEST& from);
+  CS_QUEST_LIST_REQUEST(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, CS_QUEST_LIST_REQUEST&& from) noexcept
+      : CS_QUEST_LIST_REQUEST(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kQuestClientObjectIdFieldNumber = 1,
+  };
+  // int32 quest_client_object_id = 1;
+  void clear_quest_client_object_id() ;
+  ::int32_t quest_client_object_id() const;
+  void set_quest_client_object_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_quest_client_object_id() const;
+  void _internal_set_quest_client_object_id(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_QUEST_LIST_REQUEST)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<0, 1,
+                                   0, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const CS_QUEST_LIST_REQUEST& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::int32_t quest_client_object_id_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull CS_QUEST_LIST_REQUEST_class_data_;
+// -------------------------------------------------------------------
+
+class CS_QUEST_ACCEPT_REQUEST final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_QUEST_ACCEPT_REQUEST) */ {
+ public:
+  inline CS_QUEST_ACCEPT_REQUEST() : CS_QUEST_ACCEPT_REQUEST(nullptr) {}
+  ~CS_QUEST_ACCEPT_REQUEST() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_QUEST_ACCEPT_REQUEST* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_QUEST_ACCEPT_REQUEST));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_QUEST_ACCEPT_REQUEST(::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_QUEST_ACCEPT_REQUEST(const CS_QUEST_ACCEPT_REQUEST& from) : CS_QUEST_ACCEPT_REQUEST(nullptr, from) {}
+  inline CS_QUEST_ACCEPT_REQUEST(CS_QUEST_ACCEPT_REQUEST&& from) noexcept
+      : CS_QUEST_ACCEPT_REQUEST(nullptr, ::std::move(from)) {}
+  inline CS_QUEST_ACCEPT_REQUEST& operator=(const CS_QUEST_ACCEPT_REQUEST& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_QUEST_ACCEPT_REQUEST& operator=(CS_QUEST_ACCEPT_REQUEST&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_QUEST_ACCEPT_REQUEST& default_instance() {
+    return *reinterpret_cast<const CS_QUEST_ACCEPT_REQUEST*>(
+        &_CS_QUEST_ACCEPT_REQUEST_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 30;
+  friend void swap(CS_QUEST_ACCEPT_REQUEST& a, CS_QUEST_ACCEPT_REQUEST& b) { a.Swap(&b); }
+  inline void Swap(CS_QUEST_ACCEPT_REQUEST* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_QUEST_ACCEPT_REQUEST* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_QUEST_ACCEPT_REQUEST* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_QUEST_ACCEPT_REQUEST>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_QUEST_ACCEPT_REQUEST& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_QUEST_ACCEPT_REQUEST& from) { CS_QUEST_ACCEPT_REQUEST::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_QUEST_ACCEPT_REQUEST* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_QUEST_ACCEPT_REQUEST"; }
+
+  explicit CS_QUEST_ACCEPT_REQUEST(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  CS_QUEST_ACCEPT_REQUEST(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CS_QUEST_ACCEPT_REQUEST& from);
+  CS_QUEST_ACCEPT_REQUEST(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, CS_QUEST_ACCEPT_REQUEST&& from) noexcept
+      : CS_QUEST_ACCEPT_REQUEST(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kQuestIdFieldNumber = 1,
+    kQuestClientObjectIdFieldNumber = 2,
+  };
+  // int32 quest_id = 1;
+  void clear_quest_id() ;
+  ::int32_t quest_id() const;
+  void set_quest_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_quest_id() const;
+  void _internal_set_quest_id(::int32_t value);
+
+  public:
+  // int32 quest_client_object_id = 2;
+  void clear_quest_client_object_id() ;
+  ::int32_t quest_client_object_id() const;
+  void set_quest_client_object_id(::int32_t value);
+
+  private:
+  ::int32_t _internal_quest_client_object_id() const;
+  void _internal_set_quest_client_object_id(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_QUEST_ACCEPT_REQUEST)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<1, 2,
+                                   0, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const CS_QUEST_ACCEPT_REQUEST& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::int32_t quest_id_;
+    ::int32_t quest_client_object_id_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull CS_QUEST_ACCEPT_REQUEST_class_data_;
 // -------------------------------------------------------------------
 
 class CS_OWNED_ITEM_REQUEST final : public ::google::protobuf::Message
@@ -4421,6 +5191,812 @@ class SC_SKILL final : public ::google::protobuf::Message
 extern const ::google::protobuf::internal::ClassDataFull SC_SKILL_class_data_;
 // -------------------------------------------------------------------
 
+class SC_QUEST_PROGRESS_UPDATE final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_QUEST_PROGRESS_UPDATE) */ {
+ public:
+  inline SC_QUEST_PROGRESS_UPDATE() : SC_QUEST_PROGRESS_UPDATE(nullptr) {}
+  ~SC_QUEST_PROGRESS_UPDATE() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_QUEST_PROGRESS_UPDATE* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_QUEST_PROGRESS_UPDATE));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_QUEST_PROGRESS_UPDATE(::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_QUEST_PROGRESS_UPDATE(const SC_QUEST_PROGRESS_UPDATE& from) : SC_QUEST_PROGRESS_UPDATE(nullptr, from) {}
+  inline SC_QUEST_PROGRESS_UPDATE(SC_QUEST_PROGRESS_UPDATE&& from) noexcept
+      : SC_QUEST_PROGRESS_UPDATE(nullptr, ::std::move(from)) {}
+  inline SC_QUEST_PROGRESS_UPDATE& operator=(const SC_QUEST_PROGRESS_UPDATE& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_QUEST_PROGRESS_UPDATE& operator=(SC_QUEST_PROGRESS_UPDATE&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_QUEST_PROGRESS_UPDATE& default_instance() {
+    return *reinterpret_cast<const SC_QUEST_PROGRESS_UPDATE*>(
+        &_SC_QUEST_PROGRESS_UPDATE_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 32;
+  friend void swap(SC_QUEST_PROGRESS_UPDATE& a, SC_QUEST_PROGRESS_UPDATE& b) { a.Swap(&b); }
+  inline void Swap(SC_QUEST_PROGRESS_UPDATE* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_QUEST_PROGRESS_UPDATE* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_QUEST_PROGRESS_UPDATE* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_QUEST_PROGRESS_UPDATE>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_QUEST_PROGRESS_UPDATE& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_QUEST_PROGRESS_UPDATE& from) { SC_QUEST_PROGRESS_UPDATE::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_QUEST_PROGRESS_UPDATE* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_QUEST_PROGRESS_UPDATE"; }
+
+  explicit SC_QUEST_PROGRESS_UPDATE(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  SC_QUEST_PROGRESS_UPDATE(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const SC_QUEST_PROGRESS_UPDATE& from);
+  SC_QUEST_PROGRESS_UPDATE(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, SC_QUEST_PROGRESS_UPDATE&& from) noexcept
+      : SC_QUEST_PROGRESS_UPDATE(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kProssingQuestFieldNumber = 1,
+  };
+  // .Protocol.QuestInfo prossing_quest = 1;
+  bool has_prossing_quest() const;
+  void clear_prossing_quest() ;
+  const ::Protocol::QuestInfo& prossing_quest() const;
+  [[nodiscard]] ::Protocol::QuestInfo* PROTOBUF_NULLABLE release_prossing_quest();
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL mutable_prossing_quest();
+  void set_allocated_prossing_quest(::Protocol::QuestInfo* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_prossing_quest(::Protocol::QuestInfo* PROTOBUF_NULLABLE value);
+  ::Protocol::QuestInfo* PROTOBUF_NULLABLE unsafe_arena_release_prossing_quest();
+
+  private:
+  const ::Protocol::QuestInfo& _internal_prossing_quest() const;
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL _internal_mutable_prossing_quest();
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_QUEST_PROGRESS_UPDATE)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<0, 1,
+                                   1, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const SC_QUEST_PROGRESS_UPDATE& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::QuestInfo* PROTOBUF_NULLABLE prossing_quest_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull SC_QUEST_PROGRESS_UPDATE_class_data_;
+// -------------------------------------------------------------------
+
+class SC_QUEST_LIST_RESPONSE final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_QUEST_LIST_RESPONSE) */ {
+ public:
+  inline SC_QUEST_LIST_RESPONSE() : SC_QUEST_LIST_RESPONSE(nullptr) {}
+  ~SC_QUEST_LIST_RESPONSE() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_QUEST_LIST_RESPONSE* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_QUEST_LIST_RESPONSE));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_QUEST_LIST_RESPONSE(::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_QUEST_LIST_RESPONSE(const SC_QUEST_LIST_RESPONSE& from) : SC_QUEST_LIST_RESPONSE(nullptr, from) {}
+  inline SC_QUEST_LIST_RESPONSE(SC_QUEST_LIST_RESPONSE&& from) noexcept
+      : SC_QUEST_LIST_RESPONSE(nullptr, ::std::move(from)) {}
+  inline SC_QUEST_LIST_RESPONSE& operator=(const SC_QUEST_LIST_RESPONSE& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_QUEST_LIST_RESPONSE& operator=(SC_QUEST_LIST_RESPONSE&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_QUEST_LIST_RESPONSE& default_instance() {
+    return *reinterpret_cast<const SC_QUEST_LIST_RESPONSE*>(
+        &_SC_QUEST_LIST_RESPONSE_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 34;
+  friend void swap(SC_QUEST_LIST_RESPONSE& a, SC_QUEST_LIST_RESPONSE& b) { a.Swap(&b); }
+  inline void Swap(SC_QUEST_LIST_RESPONSE* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_QUEST_LIST_RESPONSE* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_QUEST_LIST_RESPONSE* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_QUEST_LIST_RESPONSE>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_QUEST_LIST_RESPONSE& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_QUEST_LIST_RESPONSE& from) { SC_QUEST_LIST_RESPONSE::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_QUEST_LIST_RESPONSE* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_QUEST_LIST_RESPONSE"; }
+
+  explicit SC_QUEST_LIST_RESPONSE(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  SC_QUEST_LIST_RESPONSE(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const SC_QUEST_LIST_RESPONSE& from);
+  SC_QUEST_LIST_RESPONSE(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, SC_QUEST_LIST_RESPONSE&& from) noexcept
+      : SC_QUEST_LIST_RESPONSE(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kQuestsFieldNumber = 1,
+  };
+  // repeated .Protocol.QuestInfo quests = 1;
+  int quests_size() const;
+  private:
+  int _internal_quests_size() const;
+
+  public:
+  void clear_quests() ;
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL mutable_quests(int index);
+  ::google::protobuf::RepeatedPtrField<::Protocol::QuestInfo>* PROTOBUF_NONNULL mutable_quests();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::Protocol::QuestInfo>& _internal_quests() const;
+  ::google::protobuf::RepeatedPtrField<::Protocol::QuestInfo>* PROTOBUF_NONNULL _internal_mutable_quests();
+  public:
+  const ::Protocol::QuestInfo& quests(int index) const;
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL add_quests();
+  const ::google::protobuf::RepeatedPtrField<::Protocol::QuestInfo>& quests() const;
+  // @@protoc_insertion_point(class_scope:Protocol.SC_QUEST_LIST_RESPONSE)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<0, 1,
+                                   1, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const SC_QUEST_LIST_RESPONSE& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField< ::Protocol::QuestInfo > quests_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull SC_QUEST_LIST_RESPONSE_class_data_;
+// -------------------------------------------------------------------
+
+class SC_QUEST_CREATED_RESPONSE final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_QUEST_CREATED_RESPONSE) */ {
+ public:
+  inline SC_QUEST_CREATED_RESPONSE() : SC_QUEST_CREATED_RESPONSE(nullptr) {}
+  ~SC_QUEST_CREATED_RESPONSE() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_QUEST_CREATED_RESPONSE* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_QUEST_CREATED_RESPONSE));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_QUEST_CREATED_RESPONSE(::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_QUEST_CREATED_RESPONSE(const SC_QUEST_CREATED_RESPONSE& from) : SC_QUEST_CREATED_RESPONSE(nullptr, from) {}
+  inline SC_QUEST_CREATED_RESPONSE(SC_QUEST_CREATED_RESPONSE&& from) noexcept
+      : SC_QUEST_CREATED_RESPONSE(nullptr, ::std::move(from)) {}
+  inline SC_QUEST_CREATED_RESPONSE& operator=(const SC_QUEST_CREATED_RESPONSE& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_QUEST_CREATED_RESPONSE& operator=(SC_QUEST_CREATED_RESPONSE&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_QUEST_CREATED_RESPONSE& default_instance() {
+    return *reinterpret_cast<const SC_QUEST_CREATED_RESPONSE*>(
+        &_SC_QUEST_CREATED_RESPONSE_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 29;
+  friend void swap(SC_QUEST_CREATED_RESPONSE& a, SC_QUEST_CREATED_RESPONSE& b) { a.Swap(&b); }
+  inline void Swap(SC_QUEST_CREATED_RESPONSE* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_QUEST_CREATED_RESPONSE* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_QUEST_CREATED_RESPONSE* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_QUEST_CREATED_RESPONSE>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_QUEST_CREATED_RESPONSE& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_QUEST_CREATED_RESPONSE& from) { SC_QUEST_CREATED_RESPONSE::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_QUEST_CREATED_RESPONSE* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_QUEST_CREATED_RESPONSE"; }
+
+  explicit SC_QUEST_CREATED_RESPONSE(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  SC_QUEST_CREATED_RESPONSE(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const SC_QUEST_CREATED_RESPONSE& from);
+  SC_QUEST_CREATED_RESPONSE(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, SC_QUEST_CREATED_RESPONSE&& from) noexcept
+      : SC_QUEST_CREATED_RESPONSE(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kResCreateQuestInfoFieldNumber = 2,
+    kSuccessFieldNumber = 1,
+  };
+  // .Protocol.QuestInfo res_create_quest_info = 2;
+  bool has_res_create_quest_info() const;
+  void clear_res_create_quest_info() ;
+  const ::Protocol::QuestInfo& res_create_quest_info() const;
+  [[nodiscard]] ::Protocol::QuestInfo* PROTOBUF_NULLABLE release_res_create_quest_info();
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL mutable_res_create_quest_info();
+  void set_allocated_res_create_quest_info(::Protocol::QuestInfo* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_res_create_quest_info(::Protocol::QuestInfo* PROTOBUF_NULLABLE value);
+  ::Protocol::QuestInfo* PROTOBUF_NULLABLE unsafe_arena_release_res_create_quest_info();
+
+  private:
+  const ::Protocol::QuestInfo& _internal_res_create_quest_info() const;
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL _internal_mutable_res_create_quest_info();
+
+  public:
+  // bool success = 1;
+  void clear_success() ;
+  bool success() const;
+  void set_success(bool value);
+
+  private:
+  bool _internal_success() const;
+  void _internal_set_success(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_QUEST_CREATED_RESPONSE)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<1, 2,
+                                   1, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const SC_QUEST_CREATED_RESPONSE& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::QuestInfo* PROTOBUF_NULLABLE res_create_quest_info_;
+    bool success_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull SC_QUEST_CREATED_RESPONSE_class_data_;
+// -------------------------------------------------------------------
+
+class SC_QUEST_ACCEPT_RESPONSE final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_QUEST_ACCEPT_RESPONSE) */ {
+ public:
+  inline SC_QUEST_ACCEPT_RESPONSE() : SC_QUEST_ACCEPT_RESPONSE(nullptr) {}
+  ~SC_QUEST_ACCEPT_RESPONSE() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_QUEST_ACCEPT_RESPONSE* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_QUEST_ACCEPT_RESPONSE));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_QUEST_ACCEPT_RESPONSE(::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_QUEST_ACCEPT_RESPONSE(const SC_QUEST_ACCEPT_RESPONSE& from) : SC_QUEST_ACCEPT_RESPONSE(nullptr, from) {}
+  inline SC_QUEST_ACCEPT_RESPONSE(SC_QUEST_ACCEPT_RESPONSE&& from) noexcept
+      : SC_QUEST_ACCEPT_RESPONSE(nullptr, ::std::move(from)) {}
+  inline SC_QUEST_ACCEPT_RESPONSE& operator=(const SC_QUEST_ACCEPT_RESPONSE& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_QUEST_ACCEPT_RESPONSE& operator=(SC_QUEST_ACCEPT_RESPONSE&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_QUEST_ACCEPT_RESPONSE& default_instance() {
+    return *reinterpret_cast<const SC_QUEST_ACCEPT_RESPONSE*>(
+        &_SC_QUEST_ACCEPT_RESPONSE_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 31;
+  friend void swap(SC_QUEST_ACCEPT_RESPONSE& a, SC_QUEST_ACCEPT_RESPONSE& b) { a.Swap(&b); }
+  inline void Swap(SC_QUEST_ACCEPT_RESPONSE* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_QUEST_ACCEPT_RESPONSE* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_QUEST_ACCEPT_RESPONSE* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_QUEST_ACCEPT_RESPONSE>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_QUEST_ACCEPT_RESPONSE& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_QUEST_ACCEPT_RESPONSE& from) { SC_QUEST_ACCEPT_RESPONSE::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_QUEST_ACCEPT_RESPONSE* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_QUEST_ACCEPT_RESPONSE"; }
+
+  explicit SC_QUEST_ACCEPT_RESPONSE(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  SC_QUEST_ACCEPT_RESPONSE(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const SC_QUEST_ACCEPT_RESPONSE& from);
+  SC_QUEST_ACCEPT_RESPONSE(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, SC_QUEST_ACCEPT_RESPONSE&& from) noexcept
+      : SC_QUEST_ACCEPT_RESPONSE(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kResAcceptQuestFieldNumber = 2,
+    kSuccessFieldNumber = 1,
+  };
+  // .Protocol.QuestInfo res_accept_quest = 2;
+  bool has_res_accept_quest() const;
+  void clear_res_accept_quest() ;
+  const ::Protocol::QuestInfo& res_accept_quest() const;
+  [[nodiscard]] ::Protocol::QuestInfo* PROTOBUF_NULLABLE release_res_accept_quest();
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL mutable_res_accept_quest();
+  void set_allocated_res_accept_quest(::Protocol::QuestInfo* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_res_accept_quest(::Protocol::QuestInfo* PROTOBUF_NULLABLE value);
+  ::Protocol::QuestInfo* PROTOBUF_NULLABLE unsafe_arena_release_res_accept_quest();
+
+  private:
+  const ::Protocol::QuestInfo& _internal_res_accept_quest() const;
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL _internal_mutable_res_accept_quest();
+
+  public:
+  // bool success = 1;
+  void clear_success() ;
+  bool success() const;
+  void set_success(bool value);
+
+  private:
+  bool _internal_success() const;
+  void _internal_set_success(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_QUEST_ACCEPT_RESPONSE)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<1, 2,
+                                   1, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const SC_QUEST_ACCEPT_RESPONSE& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::QuestInfo* PROTOBUF_NULLABLE res_accept_quest_;
+    bool success_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull SC_QUEST_ACCEPT_RESPONSE_class_data_;
+// -------------------------------------------------------------------
+
 class SC_MOVING final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.SC_MOVING) */ {
  public:
@@ -5280,6 +6856,201 @@ class CS_SKILL final : public ::google::protobuf::Message
 };
 
 extern const ::google::protobuf::internal::ClassDataFull CS_SKILL_class_data_;
+// -------------------------------------------------------------------
+
+class CS_QUEST_CREATED_REQUEST final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_QUEST_CREATED_REQUEST) */ {
+ public:
+  inline CS_QUEST_CREATED_REQUEST() : CS_QUEST_CREATED_REQUEST(nullptr) {}
+  ~CS_QUEST_CREATED_REQUEST() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_QUEST_CREATED_REQUEST* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_QUEST_CREATED_REQUEST));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_QUEST_CREATED_REQUEST(::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_QUEST_CREATED_REQUEST(const CS_QUEST_CREATED_REQUEST& from) : CS_QUEST_CREATED_REQUEST(nullptr, from) {}
+  inline CS_QUEST_CREATED_REQUEST(CS_QUEST_CREATED_REQUEST&& from) noexcept
+      : CS_QUEST_CREATED_REQUEST(nullptr, ::std::move(from)) {}
+  inline CS_QUEST_CREATED_REQUEST& operator=(const CS_QUEST_CREATED_REQUEST& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_QUEST_CREATED_REQUEST& operator=(CS_QUEST_CREATED_REQUEST&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_QUEST_CREATED_REQUEST& default_instance() {
+    return *reinterpret_cast<const CS_QUEST_CREATED_REQUEST*>(
+        &_CS_QUEST_CREATED_REQUEST_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 28;
+  friend void swap(CS_QUEST_CREATED_REQUEST& a, CS_QUEST_CREATED_REQUEST& b) { a.Swap(&b); }
+  inline void Swap(CS_QUEST_CREATED_REQUEST* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_QUEST_CREATED_REQUEST* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_QUEST_CREATED_REQUEST* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_QUEST_CREATED_REQUEST>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_QUEST_CREATED_REQUEST& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_QUEST_CREATED_REQUEST& from) { CS_QUEST_CREATED_REQUEST::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_QUEST_CREATED_REQUEST* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_QUEST_CREATED_REQUEST"; }
+
+  explicit CS_QUEST_CREATED_REQUEST(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  CS_QUEST_CREATED_REQUEST(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CS_QUEST_CREATED_REQUEST& from);
+  CS_QUEST_CREATED_REQUEST(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, CS_QUEST_CREATED_REQUEST&& from) noexcept
+      : CS_QUEST_CREATED_REQUEST(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_();
+
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kReqCreateQuestInfoFieldNumber = 1,
+  };
+  // .Protocol.QuestInfo req_create_quest_info = 1;
+  bool has_req_create_quest_info() const;
+  void clear_req_create_quest_info() ;
+  const ::Protocol::QuestInfo& req_create_quest_info() const;
+  [[nodiscard]] ::Protocol::QuestInfo* PROTOBUF_NULLABLE release_req_create_quest_info();
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL mutable_req_create_quest_info();
+  void set_allocated_req_create_quest_info(::Protocol::QuestInfo* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_req_create_quest_info(::Protocol::QuestInfo* PROTOBUF_NULLABLE value);
+  ::Protocol::QuestInfo* PROTOBUF_NULLABLE unsafe_arena_release_req_create_quest_info();
+
+  private:
+  const ::Protocol::QuestInfo& _internal_req_create_quest_info() const;
+  ::Protocol::QuestInfo* PROTOBUF_NONNULL _internal_mutable_req_create_quest_info();
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_QUEST_CREATED_REQUEST)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<0, 1,
+                                   1, 0,
+                                   2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const CS_QUEST_CREATED_REQUEST& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::QuestInfo* PROTOBUF_NULLABLE req_create_quest_info_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+
+extern const ::google::protobuf::internal::ClassDataFull CS_QUEST_CREATED_REQUEST_class_data_;
 // -------------------------------------------------------------------
 
 class CS_MOVING final : public ::google::protobuf::Message
@@ -8385,6 +10156,980 @@ inline void ItemInfo::set_allocated_item_memo(::std::string* PROTOBUF_NULLABLE v
     _impl_.item_memo_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:Protocol.ItemInfo.item_memo)
+}
+
+// -------------------------------------------------------------------
+
+// QuestInfo
+
+// int32 quest_id = 1;
+inline void QuestInfo::clear_quest_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline ::int32_t QuestInfo::quest_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.quest_id)
+  return _internal_quest_id();
+}
+inline void QuestInfo::set_quest_id(::int32_t value) {
+  _internal_set_quest_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.quest_id)
+}
+inline ::int32_t QuestInfo::_internal_quest_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quest_id_;
+}
+inline void QuestInfo::_internal_set_quest_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_id_ = value;
+}
+
+// int32 quest_templateId = 2;
+inline void QuestInfo::clear_quest_templateid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_templateid_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000004U);
+}
+inline ::int32_t QuestInfo::quest_templateid() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.quest_templateId)
+  return _internal_quest_templateid();
+}
+inline void QuestInfo::set_quest_templateid(::int32_t value) {
+  _internal_set_quest_templateid(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.quest_templateId)
+}
+inline ::int32_t QuestInfo::_internal_quest_templateid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quest_templateid_;
+}
+inline void QuestInfo::_internal_set_quest_templateid(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_templateid_ = value;
+}
+
+// int32 quest_type_id = 3;
+inline void QuestInfo::clear_quest_type_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_type_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000008U);
+}
+inline ::int32_t QuestInfo::quest_type_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.quest_type_id)
+  return _internal_quest_type_id();
+}
+inline void QuestInfo::set_quest_type_id(::int32_t value) {
+  _internal_set_quest_type_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.quest_type_id)
+}
+inline ::int32_t QuestInfo::_internal_quest_type_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quest_type_id_;
+}
+inline void QuestInfo::_internal_set_quest_type_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_type_id_ = value;
+}
+
+// int32 state = 4;
+inline void QuestInfo::clear_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000010U);
+}
+inline ::int32_t QuestInfo::state() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.state)
+  return _internal_state();
+}
+inline void QuestInfo::set_state(::int32_t value) {
+  _internal_set_state(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.state)
+}
+inline ::int32_t QuestInfo::_internal_state() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.state_;
+}
+inline void QuestInfo::_internal_set_state(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = value;
+}
+
+// int32 client_object_id = 5;
+inline void QuestInfo::clear_client_object_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.client_object_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000020U);
+}
+inline ::int32_t QuestInfo::client_object_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.client_object_id)
+  return _internal_client_object_id();
+}
+inline void QuestInfo::set_client_object_id(::int32_t value) {
+  _internal_set_client_object_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.client_object_id)
+}
+inline ::int32_t QuestInfo::_internal_client_object_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.client_object_id_;
+}
+inline void QuestInfo::_internal_set_client_object_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.client_object_id_ = value;
+}
+
+// int32 acquirer_object_id = 6;
+inline void QuestInfo::clear_acquirer_object_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.acquirer_object_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000040U);
+}
+inline ::int32_t QuestInfo::acquirer_object_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.acquirer_object_id)
+  return _internal_acquirer_object_id();
+}
+inline void QuestInfo::set_acquirer_object_id(::int32_t value) {
+  _internal_set_acquirer_object_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.acquirer_object_id)
+}
+inline ::int32_t QuestInfo::_internal_acquirer_object_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.acquirer_object_id_;
+}
+inline void QuestInfo::_internal_set_acquirer_object_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.acquirer_object_id_ = value;
+}
+
+// int32 target_template_id = 7;
+inline void QuestInfo::clear_target_template_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.target_template_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000080U);
+}
+inline ::int32_t QuestInfo::target_template_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.target_template_id)
+  return _internal_target_template_id();
+}
+inline void QuestInfo::set_target_template_id(::int32_t value) {
+  _internal_set_target_template_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.target_template_id)
+}
+inline ::int32_t QuestInfo::_internal_target_template_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.target_template_id_;
+}
+inline void QuestInfo::_internal_set_target_template_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.target_template_id_ = value;
+}
+
+// int32 current_count = 8;
+inline void QuestInfo::clear_current_count() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.current_count_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000100U);
+}
+inline ::int32_t QuestInfo::current_count() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.current_count)
+  return _internal_current_count();
+}
+inline void QuestInfo::set_current_count(::int32_t value) {
+  _internal_set_current_count(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.current_count)
+}
+inline ::int32_t QuestInfo::_internal_current_count() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.current_count_;
+}
+inline void QuestInfo::_internal_set_current_count(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.current_count_ = value;
+}
+
+// int32 target_count = 9;
+inline void QuestInfo::clear_target_count() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.target_count_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000200U);
+}
+inline ::int32_t QuestInfo::target_count() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.target_count)
+  return _internal_target_count();
+}
+inline void QuestInfo::set_target_count(::int32_t value) {
+  _internal_set_target_count(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.target_count)
+}
+inline ::int32_t QuestInfo::_internal_target_count() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.target_count_;
+}
+inline void QuestInfo::_internal_set_target_count(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.target_count_ = value;
+}
+
+// int32 reward_type_id = 10;
+inline void QuestInfo::clear_reward_type_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reward_type_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000400U);
+}
+inline ::int32_t QuestInfo::reward_type_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.reward_type_id)
+  return _internal_reward_type_id();
+}
+inline void QuestInfo::set_reward_type_id(::int32_t value) {
+  _internal_set_reward_type_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.reward_type_id)
+}
+inline ::int32_t QuestInfo::_internal_reward_type_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.reward_type_id_;
+}
+inline void QuestInfo::_internal_set_reward_type_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reward_type_id_ = value;
+}
+
+// int32 reward_value = 11;
+inline void QuestInfo::clear_reward_value() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reward_value_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000800U);
+}
+inline ::int32_t QuestInfo::reward_value() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.reward_value)
+  return _internal_reward_value();
+}
+inline void QuestInfo::set_reward_value(::int32_t value) {
+  _internal_set_reward_value(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000800U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.reward_value)
+}
+inline ::int32_t QuestInfo::_internal_reward_value() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.reward_value_;
+}
+inline void QuestInfo::_internal_set_reward_value(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reward_value_ = value;
+}
+
+// int32 reward_item_id = 12;
+inline void QuestInfo::clear_reward_item_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reward_item_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00001000U);
+}
+inline ::int32_t QuestInfo::reward_item_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.reward_item_id)
+  return _internal_reward_item_id();
+}
+inline void QuestInfo::set_reward_item_id(::int32_t value) {
+  _internal_set_reward_item_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00001000U);
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.reward_item_id)
+}
+inline ::int32_t QuestInfo::_internal_reward_item_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.reward_item_id_;
+}
+inline void QuestInfo::_internal_set_reward_item_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reward_item_id_ = value;
+}
+
+// string name = 13;
+inline void QuestInfo::clear_name() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.name_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline const ::std::string& QuestInfo::name() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.QuestInfo.name)
+  return _internal_name();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void QuestInfo::set_name(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.name_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:Protocol.QuestInfo.name)
+}
+inline ::std::string* PROTOBUF_NONNULL QuestInfo::mutable_name()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_name();
+  // @@protoc_insertion_point(field_mutable:Protocol.QuestInfo.name)
+  return _s;
+}
+inline const ::std::string& QuestInfo::_internal_name() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.name_.Get();
+}
+inline void QuestInfo::_internal_set_name(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.name_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL QuestInfo::_internal_mutable_name() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.name_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE QuestInfo::release_name() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.QuestInfo.name)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.name_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.name_.Set("", GetArena());
+  }
+  return released;
+}
+inline void QuestInfo::set_allocated_name(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.name_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.name_.IsDefault()) {
+    _impl_.name_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:Protocol.QuestInfo.name)
+}
+
+// -------------------------------------------------------------------
+
+// CS_QUEST_CREATED_REQUEST
+
+// .Protocol.QuestInfo req_create_quest_info = 1;
+inline bool CS_QUEST_CREATED_REQUEST::has_req_create_quest_info() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  PROTOBUF_ASSUME(!value || _impl_.req_create_quest_info_ != nullptr);
+  return value;
+}
+inline void CS_QUEST_CREATED_REQUEST::clear_req_create_quest_info() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.req_create_quest_info_ != nullptr) _impl_.req_create_quest_info_->Clear();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline const ::Protocol::QuestInfo& CS_QUEST_CREATED_REQUEST::_internal_req_create_quest_info() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::QuestInfo* p = _impl_.req_create_quest_info_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::QuestInfo&>(::Protocol::_QuestInfo_default_instance_);
+}
+inline const ::Protocol::QuestInfo& CS_QUEST_CREATED_REQUEST::req_create_quest_info() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.CS_QUEST_CREATED_REQUEST.req_create_quest_info)
+  return _internal_req_create_quest_info();
+}
+inline void CS_QUEST_CREATED_REQUEST::unsafe_arena_set_allocated_req_create_quest_info(
+    ::Protocol::QuestInfo* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.req_create_quest_info_);
+  }
+  _impl_.req_create_quest_info_ = reinterpret_cast<::Protocol::QuestInfo*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.CS_QUEST_CREATED_REQUEST.req_create_quest_info)
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NULLABLE CS_QUEST_CREATED_REQUEST::release_req_create_quest_info() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* released = _impl_.req_create_quest_info_;
+  _impl_.req_create_quest_info_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NULLABLE CS_QUEST_CREATED_REQUEST::unsafe_arena_release_req_create_quest_info() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.CS_QUEST_CREATED_REQUEST.req_create_quest_info)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* temp = _impl_.req_create_quest_info_;
+  _impl_.req_create_quest_info_ = nullptr;
+  return temp;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL CS_QUEST_CREATED_REQUEST::_internal_mutable_req_create_quest_info() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.req_create_quest_info_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::QuestInfo>(GetArena());
+    _impl_.req_create_quest_info_ = reinterpret_cast<::Protocol::QuestInfo*>(p);
+  }
+  return _impl_.req_create_quest_info_;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL CS_QUEST_CREATED_REQUEST::mutable_req_create_quest_info()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* _msg = _internal_mutable_req_create_quest_info();
+  // @@protoc_insertion_point(field_mutable:Protocol.CS_QUEST_CREATED_REQUEST.req_create_quest_info)
+  return _msg;
+}
+inline void CS_QUEST_CREATED_REQUEST::set_allocated_req_create_quest_info(::Protocol::QuestInfo* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.req_create_quest_info_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+
+  _impl_.req_create_quest_info_ = reinterpret_cast<::Protocol::QuestInfo*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.CS_QUEST_CREATED_REQUEST.req_create_quest_info)
+}
+
+// -------------------------------------------------------------------
+
+// SC_QUEST_CREATED_RESPONSE
+
+// bool success = 1;
+inline void SC_QUEST_CREATED_RESPONSE::clear_success() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.success_ = false;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline bool SC_QUEST_CREATED_RESPONSE::success() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_QUEST_CREATED_RESPONSE.success)
+  return _internal_success();
+}
+inline void SC_QUEST_CREATED_RESPONSE::set_success(bool value) {
+  _internal_set_success(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:Protocol.SC_QUEST_CREATED_RESPONSE.success)
+}
+inline bool SC_QUEST_CREATED_RESPONSE::_internal_success() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.success_;
+}
+inline void SC_QUEST_CREATED_RESPONSE::_internal_set_success(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.success_ = value;
+}
+
+// .Protocol.QuestInfo res_create_quest_info = 2;
+inline bool SC_QUEST_CREATED_RESPONSE::has_res_create_quest_info() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  PROTOBUF_ASSUME(!value || _impl_.res_create_quest_info_ != nullptr);
+  return value;
+}
+inline void SC_QUEST_CREATED_RESPONSE::clear_res_create_quest_info() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.res_create_quest_info_ != nullptr) _impl_.res_create_quest_info_->Clear();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline const ::Protocol::QuestInfo& SC_QUEST_CREATED_RESPONSE::_internal_res_create_quest_info() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::QuestInfo* p = _impl_.res_create_quest_info_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::QuestInfo&>(::Protocol::_QuestInfo_default_instance_);
+}
+inline const ::Protocol::QuestInfo& SC_QUEST_CREATED_RESPONSE::res_create_quest_info() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_QUEST_CREATED_RESPONSE.res_create_quest_info)
+  return _internal_res_create_quest_info();
+}
+inline void SC_QUEST_CREATED_RESPONSE::unsafe_arena_set_allocated_res_create_quest_info(
+    ::Protocol::QuestInfo* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.res_create_quest_info_);
+  }
+  _impl_.res_create_quest_info_ = reinterpret_cast<::Protocol::QuestInfo*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_QUEST_CREATED_RESPONSE.res_create_quest_info)
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NULLABLE SC_QUEST_CREATED_RESPONSE::release_res_create_quest_info() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* released = _impl_.res_create_quest_info_;
+  _impl_.res_create_quest_info_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NULLABLE SC_QUEST_CREATED_RESPONSE::unsafe_arena_release_res_create_quest_info() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.SC_QUEST_CREATED_RESPONSE.res_create_quest_info)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* temp = _impl_.res_create_quest_info_;
+  _impl_.res_create_quest_info_ = nullptr;
+  return temp;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL SC_QUEST_CREATED_RESPONSE::_internal_mutable_res_create_quest_info() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.res_create_quest_info_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::QuestInfo>(GetArena());
+    _impl_.res_create_quest_info_ = reinterpret_cast<::Protocol::QuestInfo*>(p);
+  }
+  return _impl_.res_create_quest_info_;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL SC_QUEST_CREATED_RESPONSE::mutable_res_create_quest_info()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* _msg = _internal_mutable_res_create_quest_info();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_QUEST_CREATED_RESPONSE.res_create_quest_info)
+  return _msg;
+}
+inline void SC_QUEST_CREATED_RESPONSE::set_allocated_res_create_quest_info(::Protocol::QuestInfo* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.res_create_quest_info_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+
+  _impl_.res_create_quest_info_ = reinterpret_cast<::Protocol::QuestInfo*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_QUEST_CREATED_RESPONSE.res_create_quest_info)
+}
+
+// -------------------------------------------------------------------
+
+// CS_QUEST_ACCEPT_REQUEST
+
+// int32 quest_id = 1;
+inline void CS_QUEST_ACCEPT_REQUEST::clear_quest_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline ::int32_t CS_QUEST_ACCEPT_REQUEST::quest_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_QUEST_ACCEPT_REQUEST.quest_id)
+  return _internal_quest_id();
+}
+inline void CS_QUEST_ACCEPT_REQUEST::set_quest_id(::int32_t value) {
+  _internal_set_quest_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_set:Protocol.CS_QUEST_ACCEPT_REQUEST.quest_id)
+}
+inline ::int32_t CS_QUEST_ACCEPT_REQUEST::_internal_quest_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quest_id_;
+}
+inline void CS_QUEST_ACCEPT_REQUEST::_internal_set_quest_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_id_ = value;
+}
+
+// int32 quest_client_object_id = 2;
+inline void CS_QUEST_ACCEPT_REQUEST::clear_quest_client_object_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_client_object_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline ::int32_t CS_QUEST_ACCEPT_REQUEST::quest_client_object_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_QUEST_ACCEPT_REQUEST.quest_client_object_id)
+  return _internal_quest_client_object_id();
+}
+inline void CS_QUEST_ACCEPT_REQUEST::set_quest_client_object_id(::int32_t value) {
+  _internal_set_quest_client_object_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:Protocol.CS_QUEST_ACCEPT_REQUEST.quest_client_object_id)
+}
+inline ::int32_t CS_QUEST_ACCEPT_REQUEST::_internal_quest_client_object_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quest_client_object_id_;
+}
+inline void CS_QUEST_ACCEPT_REQUEST::_internal_set_quest_client_object_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_client_object_id_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_QUEST_ACCEPT_RESPONSE
+
+// bool success = 1;
+inline void SC_QUEST_ACCEPT_RESPONSE::clear_success() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.success_ = false;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000002U);
+}
+inline bool SC_QUEST_ACCEPT_RESPONSE::success() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_QUEST_ACCEPT_RESPONSE.success)
+  return _internal_success();
+}
+inline void SC_QUEST_ACCEPT_RESPONSE::set_success(bool value) {
+  _internal_set_success(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:Protocol.SC_QUEST_ACCEPT_RESPONSE.success)
+}
+inline bool SC_QUEST_ACCEPT_RESPONSE::_internal_success() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.success_;
+}
+inline void SC_QUEST_ACCEPT_RESPONSE::_internal_set_success(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.success_ = value;
+}
+
+// .Protocol.QuestInfo res_accept_quest = 2;
+inline bool SC_QUEST_ACCEPT_RESPONSE::has_res_accept_quest() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  PROTOBUF_ASSUME(!value || _impl_.res_accept_quest_ != nullptr);
+  return value;
+}
+inline void SC_QUEST_ACCEPT_RESPONSE::clear_res_accept_quest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.res_accept_quest_ != nullptr) _impl_.res_accept_quest_->Clear();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline const ::Protocol::QuestInfo& SC_QUEST_ACCEPT_RESPONSE::_internal_res_accept_quest() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::QuestInfo* p = _impl_.res_accept_quest_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::QuestInfo&>(::Protocol::_QuestInfo_default_instance_);
+}
+inline const ::Protocol::QuestInfo& SC_QUEST_ACCEPT_RESPONSE::res_accept_quest() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_QUEST_ACCEPT_RESPONSE.res_accept_quest)
+  return _internal_res_accept_quest();
+}
+inline void SC_QUEST_ACCEPT_RESPONSE::unsafe_arena_set_allocated_res_accept_quest(
+    ::Protocol::QuestInfo* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.res_accept_quest_);
+  }
+  _impl_.res_accept_quest_ = reinterpret_cast<::Protocol::QuestInfo*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_QUEST_ACCEPT_RESPONSE.res_accept_quest)
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NULLABLE SC_QUEST_ACCEPT_RESPONSE::release_res_accept_quest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* released = _impl_.res_accept_quest_;
+  _impl_.res_accept_quest_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NULLABLE SC_QUEST_ACCEPT_RESPONSE::unsafe_arena_release_res_accept_quest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.SC_QUEST_ACCEPT_RESPONSE.res_accept_quest)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* temp = _impl_.res_accept_quest_;
+  _impl_.res_accept_quest_ = nullptr;
+  return temp;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL SC_QUEST_ACCEPT_RESPONSE::_internal_mutable_res_accept_quest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.res_accept_quest_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::QuestInfo>(GetArena());
+    _impl_.res_accept_quest_ = reinterpret_cast<::Protocol::QuestInfo*>(p);
+  }
+  return _impl_.res_accept_quest_;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL SC_QUEST_ACCEPT_RESPONSE::mutable_res_accept_quest()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* _msg = _internal_mutable_res_accept_quest();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_QUEST_ACCEPT_RESPONSE.res_accept_quest)
+  return _msg;
+}
+inline void SC_QUEST_ACCEPT_RESPONSE::set_allocated_res_accept_quest(::Protocol::QuestInfo* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.res_accept_quest_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+
+  _impl_.res_accept_quest_ = reinterpret_cast<::Protocol::QuestInfo*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_QUEST_ACCEPT_RESPONSE.res_accept_quest)
+}
+
+// -------------------------------------------------------------------
+
+// SC_QUEST_PROGRESS_UPDATE
+
+// .Protocol.QuestInfo prossing_quest = 1;
+inline bool SC_QUEST_PROGRESS_UPDATE::has_prossing_quest() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  PROTOBUF_ASSUME(!value || _impl_.prossing_quest_ != nullptr);
+  return value;
+}
+inline void SC_QUEST_PROGRESS_UPDATE::clear_prossing_quest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.prossing_quest_ != nullptr) _impl_.prossing_quest_->Clear();
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline const ::Protocol::QuestInfo& SC_QUEST_PROGRESS_UPDATE::_internal_prossing_quest() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::QuestInfo* p = _impl_.prossing_quest_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::QuestInfo&>(::Protocol::_QuestInfo_default_instance_);
+}
+inline const ::Protocol::QuestInfo& SC_QUEST_PROGRESS_UPDATE::prossing_quest() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_QUEST_PROGRESS_UPDATE.prossing_quest)
+  return _internal_prossing_quest();
+}
+inline void SC_QUEST_PROGRESS_UPDATE::unsafe_arena_set_allocated_prossing_quest(
+    ::Protocol::QuestInfo* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.prossing_quest_);
+  }
+  _impl_.prossing_quest_ = reinterpret_cast<::Protocol::QuestInfo*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_QUEST_PROGRESS_UPDATE.prossing_quest)
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NULLABLE SC_QUEST_PROGRESS_UPDATE::release_prossing_quest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* released = _impl_.prossing_quest_;
+  _impl_.prossing_quest_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NULLABLE SC_QUEST_PROGRESS_UPDATE::unsafe_arena_release_prossing_quest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.SC_QUEST_PROGRESS_UPDATE.prossing_quest)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* temp = _impl_.prossing_quest_;
+  _impl_.prossing_quest_ = nullptr;
+  return temp;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL SC_QUEST_PROGRESS_UPDATE::_internal_mutable_prossing_quest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.prossing_quest_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::QuestInfo>(GetArena());
+    _impl_.prossing_quest_ = reinterpret_cast<::Protocol::QuestInfo*>(p);
+  }
+  return _impl_.prossing_quest_;
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL SC_QUEST_PROGRESS_UPDATE::mutable_prossing_quest()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::Protocol::QuestInfo* _msg = _internal_mutable_prossing_quest();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_QUEST_PROGRESS_UPDATE.prossing_quest)
+  return _msg;
+}
+inline void SC_QUEST_PROGRESS_UPDATE::set_allocated_prossing_quest(::Protocol::QuestInfo* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.prossing_quest_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+
+  _impl_.prossing_quest_ = reinterpret_cast<::Protocol::QuestInfo*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_QUEST_PROGRESS_UPDATE.prossing_quest)
+}
+
+// -------------------------------------------------------------------
+
+// CS_QUEST_LIST_REQUEST
+
+// int32 quest_client_object_id = 1;
+inline void CS_QUEST_LIST_REQUEST::clear_quest_client_object_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_client_object_id_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline ::int32_t CS_QUEST_LIST_REQUEST::quest_client_object_id() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_QUEST_LIST_REQUEST.quest_client_object_id)
+  return _internal_quest_client_object_id();
+}
+inline void CS_QUEST_LIST_REQUEST::set_quest_client_object_id(::int32_t value) {
+  _internal_set_quest_client_object_id(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_set:Protocol.CS_QUEST_LIST_REQUEST.quest_client_object_id)
+}
+inline ::int32_t CS_QUEST_LIST_REQUEST::_internal_quest_client_object_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quest_client_object_id_;
+}
+inline void CS_QUEST_LIST_REQUEST::_internal_set_quest_client_object_id(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_client_object_id_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_QUEST_LIST_RESPONSE
+
+// repeated .Protocol.QuestInfo quests = 1;
+inline int SC_QUEST_LIST_RESPONSE::_internal_quests_size() const {
+  return _internal_quests().size();
+}
+inline int SC_QUEST_LIST_RESPONSE::quests_size() const {
+  return _internal_quests_size();
+}
+inline void SC_QUEST_LIST_RESPONSE::clear_quests() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quests_.Clear();
+  ClearHasBitForRepeated(_impl_._has_bits_[0],
+                  0x00000001U);
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL SC_QUEST_LIST_RESPONSE::mutable_quests(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_QUEST_LIST_RESPONSE.quests)
+  return _internal_mutable_quests()->Mutable(index);
+}
+inline ::google::protobuf::RepeatedPtrField<::Protocol::QuestInfo>* PROTOBUF_NONNULL SC_QUEST_LIST_RESPONSE::mutable_quests()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_QUEST_LIST_RESPONSE.quests)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_quests();
+}
+inline const ::Protocol::QuestInfo& SC_QUEST_LIST_RESPONSE::quests(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_QUEST_LIST_RESPONSE.quests)
+  return _internal_quests().Get(index);
+}
+inline ::Protocol::QuestInfo* PROTOBUF_NONNULL SC_QUEST_LIST_RESPONSE::add_quests()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::Protocol::QuestInfo* _add =
+      _internal_mutable_quests()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBitForRepeated(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:Protocol.SC_QUEST_LIST_RESPONSE.quests)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::Protocol::QuestInfo>& SC_QUEST_LIST_RESPONSE::quests() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:Protocol.SC_QUEST_LIST_RESPONSE.quests)
+  return _internal_quests();
+}
+inline const ::google::protobuf::RepeatedPtrField<::Protocol::QuestInfo>&
+SC_QUEST_LIST_RESPONSE::_internal_quests() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quests_;
+}
+inline ::google::protobuf::RepeatedPtrField<::Protocol::QuestInfo>* PROTOBUF_NONNULL
+SC_QUEST_LIST_RESPONSE::_internal_mutable_quests() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.quests_;
 }
 
 #ifdef __GNUC__

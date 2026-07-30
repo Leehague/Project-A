@@ -9,7 +9,8 @@
 #include "Item.h"
 #include "InfoSturct.h"
 #include "Room.h"
-
+#include "FinanceService.h"
+#include "QuestComponent.h"
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];
@@ -219,39 +220,116 @@ bool Handle_CS_OWNED_ITEM_REQUEST(SessionPtr& session, Protocol::CS_OWNED_ITEM_R
         return true; // 일단은 true 리턴하여 패킷 처리는 했다고 응답, 하지만 실제로는 클라가 잘못된 playerId를 가지고 있음을 알려주는 패킷을 보내거나 하는 추가 작업 필요할 수 있음
     }
 
-    Protocol::SC_ITEM_RESPONSE resPkt;
-    
-    //인벤토리에서 전체 아이템 정보 가져오기
-    InventoryPtr inventory = player->GetInventory();
-    const auto& allItems = inventory->GetAllItems();
-
-    //여기서 아아템의 갯수와 구조가 복잡해지고 많아지면 그 구조에 따라 최적화가 필요할 수도 있음
-
-    for (const auto& pair : allItems)
-    {
-        ItemPtr item = pair.second;
-        if (item == nullptr) continue;
-
-        Protocol::ItemInfo* itemInfo = resPkt.add_items();
-
-        itemInfo->set_dbid(item->GetItemDBid());
-        itemInfo->set_templateid(item->GetTemplateId());
-        itemInfo->set_count(item->GetCount());
-        itemInfo->set_slot(item->GetSlot());
-        itemInfo->set_item_memo(item->GetMemo());
+    std::cout << "try send item info to client" << std::endl;
 
 
-        //temp log code
-        std::cout << "itemInfo >> DB id :"<< item->GetItemDBid() << std::endl;
-    }
 
-    // 패킷 직렬화 및 전송
-    SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_ITEM_RESPONSE);
-    if (sendBuffer)
-    {
-        session->Send(sendBuffer);
-    }
+    FinanceService::SendInventoryUpdatePacket(player);
 
     return true;
 }
 
+bool Handle_CS_QUEST_CREATED_REQUEST(SessionPtr& session, Protocol::CS_QUEST_CREATED_REQUEST& pkt)
+{
+    //해당 session player 포인터 가져오기
+    PlayerPtr player = session->GetPlayerPtr();
+
+    if (player == nullptr)
+    {
+        std::cout << "Handle_CS_QUEST_CREATED_REQUEST: player has nullptr" << std::endl;
+
+        return true;
+    }
+
+    // 플레이어가 속해 있는 방(Room) 조회
+    RoomPtr room = GRoomManager.FindRoom(player->GetroomId());
+    if (room == nullptr)
+    {
+        std::cout << "Handle_CS_QUEST_CREATED_REQUEST: room has nullptr" << std::endl;
+        return true;
+    }
+    // [핵심] 실제 생성과 응답 송신은 룸의 Job Queue에 넣어서 룸 스레드가 순차 처리하도록 위임
+    room->Push([player, session, pkt]() {
+        Protocol::QuestInfo req_questinfo = pkt.req_create_quest_info();
+
+        // 룸 스레드 내부이므로 스레드 경합 없이 안전하게 퀘스트 생성
+        QuestPtr quest = player->GetQuestComponent()->CreateQuest(req_questinfo);
+
+        Protocol::SC_QUEST_CREATED_RESPONSE respacket;
+
+        if (quest)
+        {
+            respacket.set_success(true);
+            // 앞서 만든 헬퍼 함수를 통해 안전하게 정보 주입
+            quest->FillQuestInfo(respacket.mutable_res_create_quest_info());
+        }
+        else
+        {
+            respacket.set_success(false);
+        }
+        // 응답 전송 버퍼 생성 및 전송
+        SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(respacket, Protocol::PKT_SC_QUEST_CREATED_RESPONSE);
+        if (sendBuffer)
+        {
+            session->Send(sendBuffer);
+        }
+        });
+
+    return true;
+}
+
+//Not Accepted 상태인 퀘스트를 ACCEPT 하는 요청을 대응하는 핸들러 함수
+bool Handle_CS_QUEST_ACCEPT_REQUEST(SessionPtr& session, Protocol::CS_QUEST_ACCEPT_REQUEST& pkt)
+{
+    PlayerPtr player = session->GetPlayerPtr();
+    if (player == nullptr)
+    {
+        std::cout << "Handle_CS_QUEST_ACCEPT_REQUEST: player has nullptr" << std::endl;
+        return true;
+    }
+    RoomPtr room = GRoomManager.FindRoom(player->GetroomId());
+    if (room == nullptr)
+    {
+        // 로그 오타 수정
+        std::cout << "Handle_CS_QUEST_ACCEPT_REQUEST: room has nullptr" << std::endl;
+        return true;
+    }
+    room->Push([player, session, pkt]() {
+        QuestComponentPtr questcomponent = player->GetQuestComponent();
+        if (questcomponent == nullptr)
+        {
+            std::cout << "Handle_CS_QUEST_ACCEPT_REQUEST: player has nullptr Questcomponent" << std::endl;
+            return; // 널 포인터 탈출 추가
+        }
+        int32 quest_id = pkt.quest_id();
+        int32 quest_client_object_id = pkt.quest_client_object_id();
+        GameObjectPtr quest_client_object = GObjcetManager.Find(quest_client_object_id);
+        // 퀘스트 수락 시도
+        bool success = questcomponent->REQAcceptQuest(quest_client_object, quest_id);
+        Protocol::SC_QUEST_ACCEPT_RESPONSE respacket;
+        respacket.set_success(success);
+        // [핵심] 수락에 성공했을 때만 패킷 내부에 메모리를 안전하게 할당받아 정보를 기입
+        if (success)
+        {
+            // mutable_res_accept_quest()를 호출하여 Protobuf 내부 메모리 주소를 헬퍼에 넘김
+            questcomponent->FindQuestInfoactiveQuest(quest_id, respacket.mutable_res_accept_quest());
+        }
+        // 응답 전송
+        SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(respacket, Protocol::PKT_SC_QUEST_ACCEPT_RESPONSE);
+        if (sendBuffer)
+        {
+            session->Send(sendBuffer);
+        }
+        });
+
+    
+    return true;
+}
+
+bool Handle_CS_QUEST_LIST_REQUEST(SessionPtr& session, Protocol::CS_QUEST_LIST_REQUEST& pkt)
+{
+
+
+
+    return true;
+}

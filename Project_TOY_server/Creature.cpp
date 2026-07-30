@@ -2,6 +2,18 @@
 #include "DataContents.h"
 #include "DataManager.h"
 #include "RoomManager.h"
+#include "Inventory.h"
+#include "QuestComponent.h"
+
+void Creature::Init(int32 templateId)
+{
+    GameObject::Init(templateId); //이걸 해야 공용 필드인 _templateId 가 초기화 됨.
+    InitStatData(templateId);
+    OwnInventory = std::make_shared<Inventory>();
+    questcomponent = std::make_shared<QuestComponent>(shared_from_this());
+}
+
+
 
 void Creature::InitStatData(int32 templateId)
 {

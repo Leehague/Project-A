@@ -35,9 +35,17 @@ public:
         return Items;
     }
 
+
+    bool IsInventoryNotFull()
+    {
+        return Items.size() <= max_item_num;
+    }
+
 private:
     // const 함수(GetAllItems)에서도 락을 걸 수 있도록 mutable 사용
     mutable std::mutex _lock;
 
     std::map<int32, ItemPtr> Items; // <ItemDbId, ItemPtr>
+
+    int max_item_num = 30; 
 };

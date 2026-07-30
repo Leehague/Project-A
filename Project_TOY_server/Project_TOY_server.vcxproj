@@ -140,12 +140,14 @@
     <ClCompile Include="Creature.cpp" />
     <ClCompile Include="DBConnection.cpp" />
     <ClCompile Include="DBManager.cpp" />
+    <ClCompile Include="FinanceService.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameSessionManager.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="JobSerializer.cpp" />
+    <ClCompile Include="Kill_Quest.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -156,6 +158,9 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Protocol\Protocol.pb.cc" />
+    <ClCompile Include="Quest.cpp" />
+    <ClCompile Include="QuestComponent.cpp" />
+    <ClCompile Include="QuestManager.cpp" />
     <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="RoomManager.cpp" />
@@ -171,6 +176,7 @@
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="DBConnection.h" />
     <ClInclude Include="DBManager.h" />
+    <ClInclude Include="FinanceService.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSessionManager.h" />
     <ClInclude Include="InfoSturct.h" />
@@ -179,6 +185,7 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="JobQueue.h" />
     <ClInclude Include="JobSerializer.h" />
+    <ClInclude Include="Kill_Quest.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapManager.h" />
@@ -188,6 +195,10 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Protocol\Protocol.pb.h" />
+    <ClInclude Include="Quest.h" />
+    <ClInclude Include="QuestComponent.h" />
+    <ClInclude Include="QuestEvent.h" />
+    <ClInclude Include="QuestManager.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="RLModelManager.h" />
     <ClInclude Include="Room.h" />

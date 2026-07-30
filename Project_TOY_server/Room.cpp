@@ -16,6 +16,8 @@
 #include "Creature.h"
 #include "CoreRoom.h"
 #include "InfoSturct.h"
+#include "QuestEvent.h"
+
 
 
 // 내부 구조체(Core::PosInfo)를 Protobuf 패킷(Protocol::PosInfo)으로 복사하는 헬퍼 함수
@@ -809,7 +811,10 @@ void Room::Execute()
 
     std::vector<MonsterPtr> monstersToUpdate;
     std::vector<ProjectilePtr> projectilesToUpdate;
-    
+
+    //Key : Obejct_templatedId, Val: count
+    std::unordered_map<int32, int32> Object_and_count;
+
     // JobQueue::Execute()가 끝난 직후이므로 락 없이 안전하게 순회 가능합니다.
     for (auto& item : _coreroom->_objects)
     {
@@ -834,6 +839,10 @@ void Room::Execute()
             if (creature && creature->GetState() == CreatureState::OnDead)
             {
                 deadpkt.add_dead_object_id_list(creature->GetObjectId());
+
+                //QuestEvent용
+                Object_and_count[creature->GetTemplateId()] = Object_and_count[creature->GetTemplateId()] + 1;
+
                 creature->SetState(CreatureState::Dead);
                 anyDead = true; // 죽은 몬스터가 있을 때만 플래그 활성화
             }
@@ -848,15 +857,15 @@ void Room::Execute()
             });
     }
 
-        std::weak_ptr<Room> weakSelf = std::static_pointer_cast<Room>(shared_from_this());
-        for (auto& projectile : projectilesToUpdate)
-        {
-            this->Push([weakSelf, projectile]() {
-                if (auto self = weakSelf.lock()) {
-                    self->UpdateProjectile(projectile);
-                }
-            });
-        }
+    std::weak_ptr<Room> weakSelf = std::static_pointer_cast<Room>(shared_from_this());
+    for (auto& projectile : projectilesToUpdate)
+    {
+        this->Push([weakSelf, projectile]() {
+            if (auto self = weakSelf.lock()) {
+                self->UpdateProjectile(projectile);
+            }
+        });
+    }
 
     if (anyDead) 
     {
@@ -867,9 +876,36 @@ void Room::Execute()
         Broadcast(sendBuffer);
 
         std::cout << "SomeOne is dead, boradcasting" << std::endl;
+
+        //Quest 이벤트 전파(통신을 하는건 아님)
+        for (const auto& [objectid, object] : _coreroom-> _objects)
+        {
+            if (object->GetType() == GameObjectType::Player)
+            {
+                PlayerPtr player = std::dynamic_pointer_cast<Player>(object);
+
+                if (player)
+                {
+                    for (const auto& [objecttemplateid, count] : Object_and_count)
+                    {
+                        QuestEvent killevent;
+                        killevent.questeventtype = QuestEventType::KillObejct;
+                        killevent.questtype = QuestType::Kill;
+                        killevent.target_Obejct_templatedId = objecttemplateid;
+                        killevent.Count = count;
+
+
+                        player->GetQuestComponent()->HandleEvent(killevent);
+                    }
+                    
+                }
+            }
+        }
+        
     }
     
 }
+
 
 void Room::UpdateObjectGrid(GameObjectPtr go, Vector3 oldPos, Vector3 newPos)
 {

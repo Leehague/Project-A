@@ -1,0 +1,52 @@
+{
+  "quests": [
+    {
+      "id": 1,
+      "name": "Kill to knigt",
+      "questTypeId": 1,
+      "trargetMonsterId": 1,
+      "targetCount": 1,
+      "rewardTypeid": 1,
+      "rewardExp": 100
+    }
+  ],
+  "questType": [
+    {
+      "Type": "Kill",
+      "TypeId": 1,
+      "Infolist": [
+        "trargetMonsterId",
+        "targetCount"
+      ]
+    }
+  ],
+  "rewardType": [
+    {
+      "Type": "None",
+      "TypeId": 0,
+      "Infolist": []
+    },
+    {
+      "Type": "Exp",
+      "TypeId": 1,
+      "Infolist": [
+        "rewardExp"
+      ]
+    },
+    {
+      "Type": "Item",
+      "TypeId": 2,
+      "Infolist": [
+        "rewardItemTemplateId",
+        "rewardItemCount"
+      ]
+    },
+    {
+      "Type": "Gold",
+      "TypeId": 3,
+      "Infolist": [
+        "rewardGold"
+      ]
+    }
+  ]
+}

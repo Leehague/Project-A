@@ -1,6 +1,4 @@
 #pragma once
-#include <map>
-#include <vector>
 #include "Types.h" // float, int32 등 정의된 헤더
 #include <string>
 
@@ -95,4 +93,52 @@ struct ItemData
     int32 coolTime;
     bool stackable;
     int32 maxStack;
+};
+
+
+struct NPCData
+{
+    int32 id;
+    std::string name;
+    int32 statid; //StatData 의 templateId
+};
+
+enum class RewardType
+{
+    None =0, 
+    Exp = 1,
+    Item =2,
+    Gold =3,
+};
+
+enum class QuestType
+{
+    None = 0,
+    Kill = 1
+};
+
+
+struct QuestData
+{
+    //Common
+    int32 id; //templateId 
+    std::string name;
+    int32 questTypeId;
+    int32 rewardTypeid;
+
+
+    //questType: Kill type
+    int32 trargetMonsterId;
+    int32 targetCount;
+
+    //rewardType: Exp
+    int32 rewardExp;
+
+    //rewardType: Item
+    int32 rewardItemTemplateId;
+    int32 rewardItemCount;
+
+    //rewardType : Gold
+    int32 rewardGold;
+
 };

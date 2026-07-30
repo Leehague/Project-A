@@ -92,7 +92,7 @@ bool DBManager::LoadPlayerInventory(int32 playerDBId, PlayerPtr player)
     conn->BindParam(1, playerDBId);
 
     // 3. 쿼리 실행 (미리 만들어둔 비클러스터형 인덱스 IX_Inventory_PlayerId를 타게 됨)
-    const WCHAR* query = L"SELECT ItemDbId, TemplateId, Count, Slot FROM [dbo].[Inventory] WHERE PlayerId = ?";
+    const WCHAR* query = L"SELECT ItemDbId, TemplateId, Count, Slot FROM [dbo].[Inventory] WHERE OwnerPlayerId = ?";
 
     if (conn->Execute(query))
     {

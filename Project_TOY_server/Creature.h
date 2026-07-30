@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "DataContents.h"
 #include "InfoSturct.h"
+#include "Types.h"
 #include <map>
 #include <memory>
 
@@ -16,12 +17,8 @@ public:
     CreatureState GetState() { return _state; }
     void SetState(CreatureState state) { _state = state; }
 
-    virtual void Init(int32 templateId)
-    {
-        GameObject::Init(templateId); //이걸 해야 공용 필드인 _templateId 가 초기화 됨.
-        InitStatData(templateId);
-    }
-   
+    virtual void Init(int32 templateId);
+    
 public:
 
     virtual void OnAttacked(int32 damage);
@@ -84,4 +81,35 @@ protected:
 
 protected:
     void InitStatData(int32 templateId);
+
+
+public:
+    int64 GetOwnedGold()
+    {
+        return OwnedGold;
+    }
+
+    void SetOwnedGold(int64 gold_amount)
+    {
+        OwnedGold = gold_amount;
+    }
+
+public:
+    InventoryPtr GetInventory()
+    {
+        return OwnInventory;
+    }
+
+    QuestComponentPtr GetQuestComponent()
+    {
+        return questcomponent;
+    }
+
+private:
+
+    int64 OwnedGold;
+    InventoryPtr OwnInventory;
+
+
+    QuestComponentPtr questcomponent;
 };

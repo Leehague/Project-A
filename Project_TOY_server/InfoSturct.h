@@ -13,8 +13,6 @@ enum class CreatureState
     Dead, //죽어있었던 상태
 };
 
-
-
 namespace Core {
     struct PosInfo {
         // 기본 생성자: 모든 멤버를 0으로 초기화하여 쓰레기 값 문제를 원천 방지합니다.
@@ -70,5 +68,7 @@ namespace Core {
         int32 damage;
     };
 
+    
+    
 }
 
