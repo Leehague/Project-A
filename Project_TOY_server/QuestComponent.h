@@ -26,6 +26,9 @@ public:
 
     void FindQuestInfoactiveQuest(int64 quest_id, Protocol::QuestInfo* outquestinfo);
 
+
+    std::vector<Protocol::QuestInfo> GetQuestInfoListAsAcquirer();
+
 private:
     //자신이 수행할 퀘스트를 추가함
     void AddactiveQuest(QuestPtr quest) { _activeQuests[quest->GetQuestId()] = quest; }
@@ -43,12 +46,15 @@ public:
     //acquir 측의 questcomponet에서 client questcomponet의 이 함수를 호출해야함
     bool RESAcceptQuest(int64 quest_id, GameObjectPtr acquir, QuestPtr& outquest);
 
+    //client 로써 가지고 있는 모든 퀘스트의 퀘스트 인포를 반환하는 함수
+    std::vector<Protocol::QuestInfo> GetQuestInfoListAsClient();
+
 private:
 
     void AddQuestAsClient(int32 questid, QuestPtr quest)
     {
         _QuestsAsClient[questid] = quest;
     }
-    //client 입장 (퀘스트 발행자)으로의 퀘스트
+    //client 입장 (퀘스트 발행자)으로의 퀘스트 key: quest_id, val: questptr
     std::unordered_map<int32, QuestPtr> _QuestsAsClient;
 };

@@ -38,7 +38,9 @@ private:
     void CmdRLSpawn(const std::vector<std::string>& args);
     void CmdHusuabiSpawn(const std::vector<std::string>& args);
     void CmdMonitor(const std::vector<std::string>& args);
-
+    void CmdQuestCreate(const std::vector<std::string>& args);
+    void CmdListQuests(const std::vector<std::string>& args);
+    
 private:
     std::thread _consoleThread;
     std::atomic<bool> _isRunning;

@@ -48,6 +48,20 @@ void QuestComponent::FindQuestInfoactiveQuest(int64 quest_id, Protocol::QuestInf
     _activeQuests[quest_id]->FillQuestInfo(outquestinfo);
 }
 
+std::vector<Protocol::QuestInfo> QuestComponent::GetQuestInfoListAsAcquirer()
+{
+    std::vector<Protocol::QuestInfo> result;
+
+
+    for (const auto& [quest_id, quest] : _activeQuests) {
+        Protocol::QuestInfo info;
+        quest->FillQuestInfo(&info);
+        result.push_back(info);
+    }
+
+    return result;
+}
+
 QuestPtr QuestComponent::CreateQuest(int32 quest_tempalateid)
 {
     
@@ -81,4 +95,18 @@ bool QuestComponent::RESAcceptQuest(int64 quest_id, GameObjectPtr acquir, QuestP
     outquest = quest;
 
     return true;
+}
+
+std::vector<Protocol::QuestInfo> QuestComponent::GetQuestInfoListAsClient()
+{
+    std::vector<Protocol::QuestInfo> result;
+
+
+    for (const auto& [quest_id, quest] : _QuestsAsClient) {
+        Protocol::QuestInfo info;
+        quest->FillQuestInfo(&info);
+        result.push_back(info);
+    }
+
+    return result;
 }

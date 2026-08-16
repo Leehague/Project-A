@@ -25,10 +25,7 @@ public class SceneManagerEx
         SceneStructure sceneStructure= Managers.dataManager.SceneStructureDict[id];
         string typename = sceneStructure.name;
 
-
-        //temp debug
-        //Debug.Log($"sceneStructure type :{sceneStructure.type} , typename: {typename}");
-
+        
         return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(typename);
     }
     

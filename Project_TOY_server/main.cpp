@@ -25,6 +25,7 @@
 #include "Map.h"
 #include "Room.h"
 #include "ConsoleManager.h"
+#include "LoginManager.h"
 #include <thread>
 #include <vector>
 #include <future>
@@ -57,12 +58,12 @@ void WorkerThread(IocpCore& iocp)
     }
 }
 
-volatile bool g_showStatus = false;
+//volatile bool g_showStatus = false;
 
 
 int main()
 {
-    
+    //ServerInit
     ::SetConsoleOutputCP(CP_UTF8); 
 
     PacketHandler::Init();
@@ -74,7 +75,6 @@ int main()
     Listener listener;
 
     // DB 매니저 초기화 (커넥션 풀 5개 생성 및 워커 스레드 시작)
- 
     std::wstring connStr = L"Driver={ODBC Driver 17 for SQL Server};Server=DESKTOP-IFVE1ON\\SQLEXPRESS;Database=ProjectA_DB;Trusted_Connection=yes;";
     if (DBManager::GetInstance().Init(5, connStr))
     {
@@ -86,7 +86,13 @@ int main()
         return -1; // DB 연결 실패 시 서버 종료
     }
 
-  
+    // Redis 매니저 초기화 (로컬 도커 Redis 기본 포트 6379로 연결)
+    if (LoginManager::GetInstance().Init("127.0.0.1", 6379) == false)
+    {
+        std::cout << "Redis Initialization Failed. Exit Server." << std::endl;
+        return 0;
+    }
+
 
     
     ConsoleManager::GetInstance().StartConsoleThread();

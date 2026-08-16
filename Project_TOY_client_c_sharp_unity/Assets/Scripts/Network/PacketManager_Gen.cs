@@ -54,6 +54,21 @@ public partial class PacketManager
         _typeToId.Add(typeof(SC_ITEM_RESPONSE), (ushort)PacketId.PktScItemResponse);
         _onRecv.Add((ushort)PacketId.PktScItemResponse, (s, b, off, sz) => MakePacket<SC_ITEM_RESPONSE>(s, b, off, sz, (ushort)PacketId.PktScItemResponse));
         _handler.Add((ushort)PacketId.PktScItemResponse, PacketHandler.Handle_SC_ITEM_RESPONSE);
+        _typeToId.Add(typeof(CS_QUEST_CREATED_REQUEST), (ushort)PacketId.PktCsQuestCreatedRequest);
+        _typeToId.Add(typeof(SC_QUEST_CREATED_RESPONSE), (ushort)PacketId.PktScQuestCreatedResponse);
+        _onRecv.Add((ushort)PacketId.PktScQuestCreatedResponse, (s, b, off, sz) => MakePacket<SC_QUEST_CREATED_RESPONSE>(s, b, off, sz, (ushort)PacketId.PktScQuestCreatedResponse));
+        _handler.Add((ushort)PacketId.PktScQuestCreatedResponse, PacketHandler.Handle_SC_QUEST_CREATED_RESPONSE);
+        _typeToId.Add(typeof(CS_QUEST_ACCEPT_REQUEST), (ushort)PacketId.PktCsQuestAcceptRequest);
+        _typeToId.Add(typeof(SC_QUEST_ACCEPT_RESPONSE), (ushort)PacketId.PktScQuestAcceptResponse);
+        _onRecv.Add((ushort)PacketId.PktScQuestAcceptResponse, (s, b, off, sz) => MakePacket<SC_QUEST_ACCEPT_RESPONSE>(s, b, off, sz, (ushort)PacketId.PktScQuestAcceptResponse));
+        _handler.Add((ushort)PacketId.PktScQuestAcceptResponse, PacketHandler.Handle_SC_QUEST_ACCEPT_RESPONSE);
+        _typeToId.Add(typeof(SC_QUEST_PROGRESS_UPDATE), (ushort)PacketId.PktScQuestProgressUpdate);
+        _onRecv.Add((ushort)PacketId.PktScQuestProgressUpdate, (s, b, off, sz) => MakePacket<SC_QUEST_PROGRESS_UPDATE>(s, b, off, sz, (ushort)PacketId.PktScQuestProgressUpdate));
+        _handler.Add((ushort)PacketId.PktScQuestProgressUpdate, PacketHandler.Handle_SC_QUEST_PROGRESS_UPDATE);
+        _typeToId.Add(typeof(CS_QUEST_LIST_REQUEST), (ushort)PacketId.PktCsQuestListRequest);
+        _typeToId.Add(typeof(SC_QUEST_LIST_RESPONSE), (ushort)PacketId.PktScQuestListResponse);
+        _onRecv.Add((ushort)PacketId.PktScQuestListResponse, (s, b, off, sz) => MakePacket<SC_QUEST_LIST_RESPONSE>(s, b, off, sz, (ushort)PacketId.PktScQuestListResponse));
+        _handler.Add((ushort)PacketId.PktScQuestListResponse, PacketHandler.Handle_SC_QUEST_LIST_RESPONSE);
 
     }
 }

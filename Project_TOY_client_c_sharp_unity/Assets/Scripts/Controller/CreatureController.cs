@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class CreatureController : MonoBehaviour
 {
+
+    
+
     public Stat stat { get; set; }
 
     // 타인일 때 사용할 변수들

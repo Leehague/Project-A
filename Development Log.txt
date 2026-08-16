@@ -938,3 +938,54 @@ Handle_CS_QUEST_CREATED_REQUEST 구현
 
 Handle_CS_QUEST_ACCEPT_REQUEST 구현 
 QuestComponent::REQAcceptQuest , RESAcceptQuest 구현
+
+2026/08/01
+
+Handle_CS_QUEST_LIST_REQUEST 구현 : 해당 오브젝트가 client로써 등록한 모든 퀘스트 목록 넘겨줌
+
+클라 측 Handle_SC_QUEST_CREATED_RESPONSE 구현중.. 
+
+클라 측 퀘스트 매니저 생성 및 구성 , 클라에서는 서버와의 요구사항이 다르기 때문에 하나의 퀘스트 매니저로 처리하는 것이 효율적으로 보임.
+
+TODO: 클라측 퀘스트 UI 만들기
+
+2026/08/02
+
+퀘스트 UI 작업
+
+2026/08/05
+
+한개의 퀘스트에 대해 아래의 흐름 완성
+관리자 콘솔 , 퀘스트 생성(서버) -> (서버)전송 -> (클라)수신 -> 클라 메모리 업데이트 -> 퀘스트 UI 
+
+TODO: 퀘스트 진행 테스트(완)
+
+TODO:
+1. (클라) 퀘스트 전반적인 상황을 보여줄 Quest UI 생성
+
+2026/08/06
+
+(클라) 퀘스트 전반적인 상황을 보여줄 Quest UI 생성
+
+
+2026/08/11
+
+(환경구축) Docker, Redis 설치 , 로그인 서버 프로젝트 생성
+
+2026/08/12
+
+TODO:
+라이브 서비스 준비
+1. UI 정비 , 채팅등의 기능의 UI를 개선해서 이쁘게 다듬고 , 서버와의 연동을확실히 하기위한 부분 점검
+2. DB화 작업  , DB 저장 기능 만들어야됨
+3. 로그인 파트 , 로그인 파트 전체 생성 필요
+
+2026/08/13
+
+[로그인 서버] 발급한 token과 , AccountID를 반환
+
+최종 목표는 게임DB와 통신해서 username으로 찾고 
+hashpassword 로 검증하고 redis에 token과 accountid(게임DB) 를 남겨 놓기
+
+TODO: 게임서버 로그인 CS Login 처리(pakcet handler)가 비동기 쓰레드로 처리하는 DBManager를 호출하고 리턴하도록하고
+DBManaager에서 DB 통신 후 player를 Create 하도록 리펙토링 필요 (게임로그인, 플레이어 접속시) <- 이부분을 

@@ -10,6 +10,10 @@ public class DataManager
 
     public Dictionary<int,SceneStructure> SceneStructureDict { get; private set; } = new Dictionary<int, SceneStructure>();
 
+    //Key:Quest Template Id
+    public Dictionary<int, QuestTemplate> QuestTemplateDict { get; private set; } = new Dictionary<int, QuestTemplate>();
+
+    
     public void Init()
     {
         // 1. JSON 로드 path = (Resources/Data/{name}.json)
@@ -19,8 +23,8 @@ public class DataManager
         SkillDict = LoadJson<SkillData, int, Skill>("SkillData").MakeDict();
         ItemDict = LoadJson<ItemData, int, Item>("ItemData").MakeDict();
         SceneStructureDict = LoadJson<SceneStructureData , int, SceneStructure>("SceneStructureData").MakeDict();
+        QuestTemplateDict = LoadJson<QuestTemplateData, int, QuestTemplate>("QuestData").MakeDict();
 
-        
 
     }
 

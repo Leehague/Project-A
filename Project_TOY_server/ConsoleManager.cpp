@@ -7,11 +7,18 @@
 #include "Monster.h"
 #include "Projectile.h"
 #include "Vector3.h"
+#include "Session.h"
+#include "QuestComponent.h"
+#include "Quest.h"
+#include "ServerUtils.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <future>
 #include <windows.h>
+
+
+
 
 ConsoleManager::~ConsoleManager()
 {
@@ -78,6 +85,8 @@ void ConsoleManager::ProcessCommand(const std::string& fullCommand)
             << "  rlspawn [roomId] [count] [templateId]: 특정 방에 RL 몬스터 스폰\n"
             << "  husuabi_spawn [roomId]               : 특정 방에 허수아비 몬스터 스폰\n"
             << "  monitor [roomId]                     : 특정 방 실시간 모니터링 시작\n"
+            << "  quest_create [roomId] [playerId] [templateId] : 특정 플레이어에게 퀘스트 즉시 부여\n"
+            << "  quest_list [roomId] [playerId]       : 특정 방에 속한 특정 플레이어의 퀘스트 목록 출력\n"
             << "====================================================\n" << std::endl;
     }
     else if (baseCmd == "room_create")      CmdCreateRoom(args);
@@ -86,6 +95,8 @@ void ConsoleManager::ProcessCommand(const std::string& fullCommand)
     else if (baseCmd == "rlspawn")          CmdRLSpawn(args);
     else if (baseCmd == "husuabi_spawn")    CmdHusuabiSpawn(args);
     else if (baseCmd == "monitor")          CmdMonitor(args);
+    else if (baseCmd == "quest_create")     CmdQuestCreate(args);
+    else if (baseCmd == "quest_list")       CmdListQuests(args);
     else
     {
         std::cout << "Unknown command. Type 'help'." << std::endl;
@@ -307,4 +318,188 @@ void ConsoleManager::CmdMonitor(const std::vector<std::string>& args)
     std::getline(std::cin, exitInput);
     _showStatus = false;
     std::cout << "Monitor stopped.\n" << std::endl;
+}
+
+// ConsoleManager.cpp 하단에 추가
+
+// quest_create [roomId] [playerId] [templateId]
+void ConsoleManager::CmdQuestCreate(const std::vector<std::string>& args)
+{
+    if (args.size() < 3)
+    {
+        std::cout << "Usage: quest_create [roomId] [playerId] [templateId]" << std::endl;
+        return;
+    }
+
+    int32 roomId = std::stoi(args[0]);
+    uint64 playerId = std::stoull(args[1]);
+    int32 templateId = std::stoi(args[2]);
+
+    RoomPtr room = GRoomManager.FindRoom(roomId);
+    if (!room)
+    {
+        std::cout << "Room ID " << roomId << " not found." << std::endl;
+        return;
+    }
+
+    // 룸 스레드의 Job Queue로 처리 위임 (스레드 안전)
+    room->Push([room, playerId, templateId]() {
+        auto coreRoom = room->GetCoreRoom();
+        if (!coreRoom) return;
+
+        // 1. 해당 룸의 오브젝트 맵에서 플레이어 검색
+        auto it = coreRoom->_objects.find(playerId);
+        if (it == coreRoom->_objects.end())
+        {
+            std::cout << "Player ID " << playerId << " not found in Room " << room->GetRoomid() << std::endl;
+            return;
+        }
+
+        GameObjectPtr obj = it->second;
+        if (obj->GetType() != GameObjectType::Player)
+        {
+            std::cout << "Object ID " << playerId << " is not a Player." << std::endl;
+            return;
+        }
+
+        PlayerPtr player = std::static_pointer_cast<Player>(obj);
+        QuestComponentPtr questComp = player->GetQuestComponent();
+        if (!questComp)
+        {
+            std::cout << "Player ID " << playerId << " does not have a QuestComponent." << std::endl;
+            return;
+        }
+
+        // 2. 퀘스트 템플릿 정보로 퀘스트 인스턴스 생성 (플레이어 자신을 발급자이자 수행자로 삼음)
+        QuestPtr quest = questComp->CreateQuest(templateId);
+        if (!quest)
+        {
+            std::cout << "Failed to create quest template ID " << templateId << " for Player " << playerId << std::endl;
+            return;
+        }
+
+        // 3. 해당 퀘스트를 플레이어가 즉시 수락(Accept)하도록 함
+        bool success = questComp->REQAcceptQuest(player, quest->GetQuestId());
+        if (success)
+        {
+            std::cout << "Successfully created and accepted Quest Template " << templateId 
+                      << " (Quest ID: " << quest->GetQuestId() << ") for Player " << playerId << std::endl;
+
+            // 4. 클라이언트의 UI 리프레시 및 동기화를 위해 수락 결과 패킷(SC_QUEST_ACCEPT_RESPONSE)을 전송
+            Protocol::SC_QUEST_ACCEPT_RESPONSE resPkt;
+            resPkt.set_success(true);
+            questComp->FindQuestInfoactiveQuest(quest->GetQuestId(), resPkt.mutable_res_accept_quest());
+
+            SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_QUEST_ACCEPT_RESPONSE);
+            
+            // Player가 가진 weak_ptr<Session>을 lock()하여 전송 진행
+            SessionPtr session = player->session.lock();
+            if (sendBuffer && session)
+            {
+                session->Send(sendBuffer);
+            }
+        }
+        else
+        {
+            std::cout << "Failed to accept Quest ID " << quest->GetQuestId() << " for Player " << playerId << std::endl;
+        }
+    });
+}
+
+void ConsoleManager::CmdListQuests(const std::vector<std::string>& args)
+{
+    if (args.size() < 2)
+    {
+        std::cout << "Usage: quest_list [roomId] [playerId] " << std::endl;
+        return;
+    }
+
+
+    int32 roomId = std::stoi(args[0]);
+    uint64 playerId = std::stoull(args[1]);
+
+    RoomPtr room = GRoomManager.FindRoom(roomId);
+    if (!room)
+    {
+        std::cout << "Room ID " << roomId << " not found." << std::endl;
+        return;
+    }
+
+
+
+    // 룸 스레드의 Job Queue로 처리 위임 (스레드 안전)
+    room->Push([room, playerId]() {
+        auto coreRoom = room->GetCoreRoom();
+        if (!coreRoom) return;
+
+        // 1. 해당 룸의 오브젝트 맵에서 플레이어 검색
+        auto it = coreRoom->_objects.find(playerId);
+        if (it == coreRoom->_objects.end())
+        {
+            std::cout << "Player ID " << playerId << " not found in Room " << room->GetRoomid() << std::endl;
+            return;
+        }
+
+        GameObjectPtr obj = it->second;
+        if (obj->GetType() != GameObjectType::Player)
+        {
+            std::cout << "Object ID " << playerId << " is not a Player." << std::endl;
+            return;
+        }
+
+        PlayerPtr player = std::static_pointer_cast<Player>(obj);
+        QuestComponentPtr questComp = player->GetQuestComponent();
+        if (!questComp)
+        {
+            std::cout << "Player ID " << playerId << " does not have a QuestComponent." << std::endl;
+            return;
+        }
+
+        std::vector<Protocol::QuestInfo> questsAsclient = questComp->GetQuestInfoListAsClient();
+
+        std::vector<Protocol::QuestInfo> questsAsAcquirer = questComp->GetQuestInfoListAsAcquirer();
+
+
+        if (questsAsclient.size() == 0)
+        {
+            std::cout << "quests as client is zero" << std::endl;
+        }
+        else
+        {
+            for (const Protocol::QuestInfo& quest : questsAsclient)
+            {
+                std::cout <<"Client Object ID : " << quest.client_object_id();
+                std::cout << "Acquirer Object ID : " << quest.acquirer_object_id();
+
+                std::string statearg;
+                switch ((QuestState)quest.state())
+                {
+                case QuestState::NotAccepted:
+                    statearg = "NotAccepted";
+                    break;
+                case QuestState::Accepted:
+                    statearg = "Accepted";
+                    break;
+                case QuestState::Completed:
+                    statearg = "Completed";
+                    break;
+                case QuestState::Rewardreceived:
+                    statearg = "Rewardreceived";
+                    break;
+                default:
+                    statearg = "No match state";
+                    break;
+                }
+
+                std::cout << "State : " << statearg;
+
+
+                std::cout << std::endl;
+            }
+        }
+
+        }
+    );
+        
+
 }

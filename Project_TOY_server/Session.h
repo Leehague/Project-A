@@ -22,6 +22,13 @@ struct OverlappedEx {
     SessionPtr owner;   // 이 작업을 요청한 Session 객체 주소
 };
 
+enum class SessionState
+{
+    InGame = 1,
+    Loading  = 2,
+};
+
+
 class Session :public std::enable_shared_from_this<Session>
 {
 public:
@@ -83,6 +90,10 @@ private:
 private:
     void RegisterSend(); // 실제로 WSASend를 호출하는 함수
 
-
+public:
+    void SetState(SessionState state) { _state = state; }
+    SessionState GetState() { return _state; }
+private:
+    SessionState _state;
 
 };

@@ -812,7 +812,7 @@ void Room::Execute()
     std::vector<MonsterPtr> monstersToUpdate;
     std::vector<ProjectilePtr> projectilesToUpdate;
 
-    //Key : Obejct_templatedId, Val: count
+    //Key : Obejct_templatedId, Val: count Quest Event 용
     std::unordered_map<int32, int32> Object_and_count;
 
     // JobQueue::Execute()가 끝난 직후이므로 락 없이 안전하게 순회 가능합니다.

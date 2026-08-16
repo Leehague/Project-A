@@ -60,8 +60,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92132156269270847a4e6245592fd8a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridPanel: {fileID: 2059684139789624905}
   windowPanel: {fileID: 7586463799218967619}
+  _isDraggable: 1
+  gridPanel: {fileID: 2059684139789624905}
 --- !u!223 &408576054810339565
 Canvas:
   m_ObjectHideFlags: 0

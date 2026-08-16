@@ -178,4 +178,6 @@ public class ObjectManager
             SpawnPlayer(spawninfo.Spawnposinfo, spawninfo.TemplateId);
         }
     }
+
+   
 }

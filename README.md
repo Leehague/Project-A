@@ -116,11 +116,17 @@ SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive); 를 활용해서
 이에 필요한 서브 씬들의 분할을 에디터 툴을 이용해 자동화
 
 
-### 퀘스트 시스템(작업중)
+### 퀘스트 시스템
 
 json 파일 형태로 미리 저장된 정적인 퀘스트 데이터를 이용해 생성된 정적 생성 퀘스트 와 게임 진행중 로직에 의해 생성되거나 사용자(플레이어)의 요청에 의해 생성되는 동적 생성 퀘스트
 각 Creature class들이 소유한 QuestCommponet class 에 의해 관리됨.
 각 퀘스트는 퀘스트 생성자(client) , 퀘스트 수령자 혹은 수행자(acquirer) 가 존재함.
+
+### Redis 및 로그인 웹서버 (작업중)
+
+MsSql기반의 DB 와는 별개의 Redis 도입
+로그인 인증을 위한 웹서버 (C# asp.core) 도입
+
 
 ## 사용한 빌드 및 환경 설정 방법
 

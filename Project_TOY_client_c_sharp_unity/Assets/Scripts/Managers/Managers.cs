@@ -31,6 +31,7 @@ public class Managers : MonoBehaviour
     private SceneManagerEx SceneManagerEx = new SceneManagerEx();
     private UIManager UIManager = new UIManager();
     private PoolingManager PoolingManager = new PoolingManager();
+    private QuestManager QuestManager = new QuestManager();
 
     //외부 접근용 property
     public static ObjectManager objectManager => Instance._objectManager;
@@ -38,6 +39,7 @@ public class Managers : MonoBehaviour
     public static SceneManagerEx sceneManagerEx => Instance.SceneManagerEx;
     public static UIManager uiManager => Instance.UIManager;
     public static PoolingManager poolingManager => Instance.PoolingManager;
+    public static QuestManager questManager => Instance.QuestManager;
     #endregion
 
     private static bool _init = false;

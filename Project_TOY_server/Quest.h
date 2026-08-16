@@ -94,7 +94,8 @@ public:
         return questdata;
     }
 
-    void FillQuestInfo(Protocol::QuestInfo* info);
+    //해당 Quest의 내부 인자를 바탕으로 QuestInfo를 채워주는 함수 (proto의 QuestInfo가 수정될시 수정되어야 하는 함수)
+    void FillQuestInfo(Protocol::QuestInfo* outinfo);
    
 private:
 

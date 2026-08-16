@@ -48,6 +48,8 @@ public class PlayerController : CreatureController
 
     protected override void Init()
     {
+        
+
         base.Init();
         if (IsMyPlayer)
         {
@@ -355,15 +357,76 @@ public class PlayerController : CreatureController
             UI_Inventory invenUI = Managers.uiManager.FindUI<UI_Inventory>();
             if (invenUI != null && invenUI.isActiveAndEnabled)
             {
-                Debug.Log("close invenUI");
+                
                 // 이미 열려있으면 닫기
                 Managers.uiManager.ClosePopupUI(invenUI);
             }
             else
             {
-                Debug.Log("open invenUI");
+                
                 // 닫혀있으면 열기
                 Managers.uiManager.ShowPopupUI<UI_Inventory>();
+            }
+        }
+
+        ////questinfo UI 토글
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    UI_QuestInfo questUI = Managers.uiManager.FindUI<UI_QuestInfo>();
+
+        //    if (questUI != null && questUI.isActiveAndEnabled)
+        //    {
+
+        //        // 이미 열려있으면 닫기
+        //        Managers.uiManager.ClosePopupUI(questUI);
+        //    }
+        //    else
+        //    {
+
+        //        // 새로 생성된 UI 팝업 객체를 questUI 변수에 대입하여 획득합니다.
+        //        questUI = Managers.uiManager.ShowPopupUI<UI_QuestInfo>();
+        //        // 안전장치로 널 체크를 수행한 뒤 갱신을 호출합니다.
+        //        if (questUI != null)
+        //        {
+        //            //temp
+        //            int targetQuestId = 1; // 기본값
+        //            var firstQuest = Managers.questManager.GetFirstActiveQuest(); // 헬퍼 함수 정의 필요
+        //            if (firstQuest != null)
+        //            {
+        //                targetQuestId = firstQuest.quest_id;
+        //            }
+        //            questUI.RefreshUI(targetQuestId); 
+        //        }
+
+
+
+        //    }
+        //}
+        //questinfo UI 토글
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            UI_QuestInfoList questUI = Managers.uiManager.FindUI<UI_QuestInfoList>();
+
+            if (questUI != null && questUI.isActiveAndEnabled)
+            {
+
+                // 이미 열려있으면 닫기
+                Managers.uiManager.ClosePopupUI(questUI);
+            }
+            else
+            {
+
+                // 새로 생성된 UI 팝업 객체를 questUI 변수에 대입하여 획득합니다.
+                questUI = Managers.uiManager.ShowPopupUI<UI_QuestInfoList>();
+                // 안전장치로 널 체크를 수행한 뒤 갱신을 호출합니다.
+                if (questUI != null)
+                {
+                    
+                    questUI.RefreshUI();
+                }
+
+
+
             }
         }
     }

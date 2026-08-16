@@ -37,15 +37,16 @@ enum PacketId {
 
 
 message CS_LOGIN {
-    int32 user_id = 1;
-    string password = 2;
+    string token = 1;
 }
+
 
 
 message SC_LOGIN_OK {
     bool success = 1;
     int32 player_id = 2; 
-    
+    int32 resultCode = 3;
+
 }
 
 
@@ -197,7 +198,7 @@ message ItemInfo
 
 message QuestInfo {
   int32 quest_id = 1;         // 고유 ID, 서버 id
-  int32 quest_templateId = 2; // 템플릿 id  (json 파일에서의 id) , 정적 생성 퀘스트에만 존재해야함
+  int32 quest_templateId = 2; // 템플릿 id  (json 파일에서의 id) 
   int32 quest_type_id = 3;    // QuestType (예: 1 - Kill)
   int32 state = 4;            // QuestState (1: Accepted, 2: Completed, 3: RewardReceived)
   

@@ -4,6 +4,9 @@
 #include "Creature.h"
 #include "Item.h"
 #include "Protocol/Protocol.pb.h"
+#include "ServerUtils.h"
+#include "Player.h"
+#include "Session.h"
 
 Kill_Quest::Kill_Quest(int32 questid, int32 quest_templateid, GameObjectPtr client) : Quest(questid , quest_templateid,client)
 {
@@ -80,6 +83,24 @@ void Kill_Quest::OnEvent(const QuestEvent& event)
             {
                 //예외처리
             }
+        }
+    }
+
+
+    // 상태가 변하거나 카운트가 올라갔으므로 플레이어 세션으로 패킷 전송
+    Protocol::SC_QUEST_PROGRESS_UPDATE updatePkt;
+    FillQuestInfo(updatePkt.mutable_prossing_quest());
+
+    auto sendBuffer = ServerUtils::MakeSendBuffer(updatePkt, Protocol::PKT_SC_QUEST_PROGRESS_UPDATE);
+
+    // _acquirer (플레이어)의 세션에 다이렉트 송신
+    auto player = std::static_pointer_cast<Player>(GetQuestAcquirer());
+    if (player)
+    {
+        auto session = player->session.lock();
+        if (session && sendBuffer)
+        {
+            session->Send(sendBuffer);
         }
     }
 

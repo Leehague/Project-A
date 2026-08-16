@@ -149,6 +149,7 @@
     <ClCompile Include="JobSerializer.cpp" />
     <ClCompile Include="Kill_Quest.cpp" />
     <ClCompile Include="Listener.cpp" />
+    <ClCompile Include="LoginManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapManager.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="JobSerializer.h" />
     <ClInclude Include="Kill_Quest.h" />
     <ClInclude Include="Listener.h" />
+    <ClInclude Include="LoginManager.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Monster.h" />

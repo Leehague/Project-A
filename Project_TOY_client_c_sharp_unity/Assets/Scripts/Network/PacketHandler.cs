@@ -1,7 +1,7 @@
-using System;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Protocol;
-
+using System;
 using UnityEngine;
 
 public class PacketHandler
@@ -232,5 +232,58 @@ public class PacketHandler
         
         // (선택) UI가 닫혀있을 때를 대비해 Managers.objectManager.MyInventory 등에
         // sc_item_resonse_pkt.Items 데이터를 캐싱(저장)해 두는 구조를 추가하면 더 좋습니다.
+    }
+
+
+    public static void Handle_SC_QUEST_CREATED_RESPONSE(PacketSession session, IMessage packet)
+    {
+        //success 가 true 일때 메모리 업데이트
+        SC_QUEST_CREATED_RESPONSE sc_quest_created_pkt = packet as SC_QUEST_CREATED_RESPONSE;
+        if (sc_quest_created_pkt.Success)
+        {
+            QuestInfo info = sc_quest_created_pkt.ResCreateQuestInfo;
+            
+            Managers.questManager.AddorUpdateQuest(info);
+        }
+    }
+
+    public static void Handle_SC_QUEST_ACCEPT_RESPONSE(PacketSession session, IMessage packet)
+    {
+        //success 가 true 일때 메모리 업데이트
+        SC_QUEST_ACCEPT_RESPONSE sc_quest_accept_pkt = packet as SC_QUEST_ACCEPT_RESPONSE;
+        if (sc_quest_accept_pkt.Success)
+        {
+            QuestInfo info = sc_quest_accept_pkt.ResAcceptQuest;
+            
+            Managers.questManager.AddorUpdateQuest(info);
+        }
+
+    }
+
+    public static void Handle_SC_QUEST_PROGRESS_UPDATE(PacketSession session, IMessage packet)
+    {
+        //메모리 업데이트
+        SC_QUEST_PROGRESS_UPDATE sc_quest_update_pkt = packet as SC_QUEST_PROGRESS_UPDATE;
+
+        QuestInfo info = sc_quest_update_pkt.ProssingQuest;
+        
+        Managers.questManager.AddorUpdateQuest(info);
+
+    }
+
+    public static void Handle_SC_QUEST_LIST_RESPONSE(PacketSession session, IMessage packet)
+    {
+        //메모리 업데이트
+
+        SC_QUEST_LIST_RESPONSE sc_questlist_res_pkt = packet as SC_QUEST_LIST_RESPONSE;
+
+        RepeatedField<QuestInfo> quests =sc_questlist_res_pkt.Quests;
+
+        for (int i = 0; i < quests.Count; i++)
+        {
+            QuestInfo info = quests[i];
+            
+            Managers.questManager.AddorUpdateQuest(info);
+        }
     }
 }

@@ -1684,6 +1684,7 @@ class SC_LOGIN_OK final : public ::google::protobuf::Message
   enum : int {
     kSuccessFieldNumber = 1,
     kPlayerIdFieldNumber = 2,
+    kResultCodeFieldNumber = 3,
   };
   // bool success = 1;
   void clear_success() ;
@@ -1705,11 +1706,21 @@ class SC_LOGIN_OK final : public ::google::protobuf::Message
   void _internal_set_player_id(::int32_t value);
 
   public:
+  // int32 resultCode = 3;
+  void clear_resultcode() ;
+  ::int32_t resultcode() const;
+  void set_resultcode(::int32_t value);
+
+  private:
+  ::int32_t _internal_resultcode() const;
+  void _internal_set_resultcode(::int32_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.SC_LOGIN_OK)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<1, 2,
+  static const ::google::protobuf::internal::TcParseTable<2, 3,
                                    0, 0,
                                    2>
       _table_;
@@ -1733,6 +1744,7 @@ class SC_LOGIN_OK final : public ::google::protobuf::Message
     ::google::protobuf::internal::CachedSize _cached_size_;
     bool success_;
     ::int32_t player_id_;
+    ::int32_t resultcode_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -4140,40 +4152,29 @@ class CS_LOGIN final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kPasswordFieldNumber = 2,
-    kUserIdFieldNumber = 1,
+    kTokenFieldNumber = 1,
   };
-  // string password = 2;
-  void clear_password() ;
-  const ::std::string& password() const;
+  // string token = 1;
+  void clear_token() ;
+  const ::std::string& token() const;
   template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_password(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_password();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_password();
-  void set_allocated_password(::std::string* PROTOBUF_NULLABLE value);
+  void set_token(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_token();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_token();
+  void set_allocated_token(::std::string* PROTOBUF_NULLABLE value);
 
   private:
-  const ::std::string& _internal_password() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_password(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_password();
-
-  public:
-  // int32 user_id = 1;
-  void clear_user_id() ;
-  ::int32_t user_id() const;
-  void set_user_id(::int32_t value);
-
-  private:
-  ::int32_t _internal_user_id() const;
-  void _internal_set_user_id(::int32_t value);
+  const ::std::string& _internal_token() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_token(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_token();
 
   public:
   // @@protoc_insertion_point(class_scope:Protocol.CS_LOGIN)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<1, 2,
-                                   0, 34,
+  static const ::google::protobuf::internal::TcParseTable<0, 1,
+                                   0, 31,
                                    2>
       _table_;
 
@@ -4194,8 +4195,7 @@ class CS_LOGIN final : public ::google::protobuf::Message
         const CS_LOGIN& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
-    ::google::protobuf::internal::ArenaStringPtr password_;
-    ::int32_t user_id_;
+    ::google::protobuf::internal::ArenaStringPtr token_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -7657,94 +7657,69 @@ extern const ::google::protobuf::internal::ClassDataFull SC_MONSTER_SPAWN_class_
 
 // CS_LOGIN
 
-// int32 user_id = 1;
-inline void CS_LOGIN::clear_user_id() {
+// string token = 1;
+inline void CS_LOGIN::clear_token() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.user_id_ = 0;
-  ClearHasBit(_impl_._has_bits_[0],
-                  0x00000002U);
-}
-inline ::int32_t CS_LOGIN::user_id() const {
-  // @@protoc_insertion_point(field_get:Protocol.CS_LOGIN.user_id)
-  return _internal_user_id();
-}
-inline void CS_LOGIN::set_user_id(::int32_t value) {
-  _internal_set_user_id(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
-  // @@protoc_insertion_point(field_set:Protocol.CS_LOGIN.user_id)
-}
-inline ::int32_t CS_LOGIN::_internal_user_id() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.user_id_;
-}
-inline void CS_LOGIN::_internal_set_user_id(::int32_t value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.user_id_ = value;
-}
-
-// string password = 2;
-inline void CS_LOGIN::clear_password() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.password_.ClearToEmpty();
+  _impl_.token_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000001U);
 }
-inline const ::std::string& CS_LOGIN::password() const
+inline const ::std::string& CS_LOGIN::token() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Protocol.CS_LOGIN.password)
-  return _internal_password();
+  // @@protoc_insertion_point(field_get:Protocol.CS_LOGIN.token)
+  return _internal_token();
 }
 template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void CS_LOGIN::set_password(Arg_&& arg, Args_... args) {
+PROTOBUF_ALWAYS_INLINE void CS_LOGIN::set_token(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  _impl_.password_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:Protocol.CS_LOGIN.password)
+  _impl_.token_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:Protocol.CS_LOGIN.token)
 }
-inline ::std::string* PROTOBUF_NONNULL CS_LOGIN::mutable_password()
+inline ::std::string* PROTOBUF_NONNULL CS_LOGIN::mutable_token()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  ::std::string* _s = _internal_mutable_password();
-  // @@protoc_insertion_point(field_mutable:Protocol.CS_LOGIN.password)
+  ::std::string* _s = _internal_mutable_token();
+  // @@protoc_insertion_point(field_mutable:Protocol.CS_LOGIN.token)
   return _s;
 }
-inline const ::std::string& CS_LOGIN::_internal_password() const {
+inline const ::std::string& CS_LOGIN::_internal_token() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.password_.Get();
+  return _impl_.token_.Get();
 }
-inline void CS_LOGIN::_internal_set_password(const ::std::string& value) {
+inline void CS_LOGIN::_internal_set_token(const ::std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.password_.Set(value, GetArena());
+  _impl_.token_.Set(value, GetArena());
 }
-inline ::std::string* PROTOBUF_NONNULL CS_LOGIN::_internal_mutable_password() {
+inline ::std::string* PROTOBUF_NONNULL CS_LOGIN::_internal_mutable_token() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.password_.Mutable( GetArena());
+  return _impl_.token_.Mutable( GetArena());
 }
-inline ::std::string* PROTOBUF_NULLABLE CS_LOGIN::release_password() {
+inline ::std::string* PROTOBUF_NULLABLE CS_LOGIN::release_token() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:Protocol.CS_LOGIN.password)
+  // @@protoc_insertion_point(field_release:Protocol.CS_LOGIN.token)
   if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
     return nullptr;
   }
   ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-  auto* released = _impl_.password_.Release();
+  auto* released = _impl_.token_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
-    _impl_.password_.Set("", GetArena());
+    _impl_.token_.Set("", GetArena());
   }
   return released;
 }
-inline void CS_LOGIN::set_allocated_password(::std::string* PROTOBUF_NULLABLE value) {
+inline void CS_LOGIN::set_allocated_token(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
     SetHasBit(_impl_._has_bits_[0], 0x00000001U);
   } else {
     ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
   }
-  _impl_.password_.SetAllocated(value, GetArena());
-  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.password_.IsDefault()) {
-    _impl_.password_.Set("", GetArena());
+  _impl_.token_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.token_.IsDefault()) {
+    _impl_.token_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:Protocol.CS_LOGIN.password)
+  // @@protoc_insertion_point(field_set_allocated:Protocol.CS_LOGIN.token)
 }
 
 // -------------------------------------------------------------------
@@ -7799,6 +7774,31 @@ inline ::int32_t SC_LOGIN_OK::_internal_player_id() const {
 inline void SC_LOGIN_OK::_internal_set_player_id(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.player_id_ = value;
+}
+
+// int32 resultCode = 3;
+inline void SC_LOGIN_OK::clear_resultcode() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.resultcode_ = 0;
+  ClearHasBit(_impl_._has_bits_[0],
+                  0x00000004U);
+}
+inline ::int32_t SC_LOGIN_OK::resultcode() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_LOGIN_OK.resultCode)
+  return _internal_resultcode();
+}
+inline void SC_LOGIN_OK::set_resultcode(::int32_t value) {
+  _internal_set_resultcode(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:Protocol.SC_LOGIN_OK.resultCode)
+}
+inline ::int32_t SC_LOGIN_OK::_internal_resultcode() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.resultcode_;
+}
+inline void SC_LOGIN_OK::_internal_set_resultcode(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.resultcode_ = value;
 }
 
 // -------------------------------------------------------------------

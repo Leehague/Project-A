@@ -11,6 +11,7 @@
 #include "Room.h"
 #include "FinanceService.h"
 #include "QuestComponent.h"
+#include "LoginManager.h"
 
 // 헤더에 있는 extern 선언과 타입이 정확히 일치해야 합니다.
 PacketHandlerFunc GPacketHandler[65535];
@@ -21,57 +22,83 @@ bool Handle_INVALID(SessionPtr& session, BYTE* buffer, int32 len)
     return false;
 }
 
+//Handle_CS_LOGIN을 위한 헬퍼함수
+bool Send_Login_packet(PlayerPtr player , SessionPtr& session , bool loginsuccess, int32 loginresultcode)
+{
+    // 응답 전송 
+    Protocol::SC_LOGIN_OK resPkt;
+
+    resPkt.set_success(loginsuccess);
+
+    if (player)
+    {
+        resPkt.set_player_id(player->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
+    }
+
+    resPkt.set_resultcode(loginresultcode);
+    //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
+
+    auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
+
+    if (!sendBuffer) { return false; }
+    session->Send(sendBuffer);
+
+    return true;
+}
+
 bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 {
-    std::cout << "Login request ID: " << pkt.user_id() << std::endl;
+    
+    std::string token =pkt.token();
 
-    //TODO 로그인 유효성 검증 로직 추가 (로그인 서버 추가후 로그인 서버와의 통신 필요)
-    //이때 accountId를 받아 와야함
+    LoginResult loginresult=LoginManager::GetInstance().VerifyLoginToken(token);
+    int32 loginresultcode = 200;
+    // 에러코드 정의
+    // 2xx : 정상, 3xx : 에러
+    if (!loginresult.Success)
+    {
+        loginresultcode = 301; //Login Result is false
+        Send_Login_packet(nullptr, session, false, loginresultcode);
+        return false;
+    }
 
-    int32 accountId = 1; int32 characterId; int32 templateId;
-    Core::PosInfo posInfo; // DB에서 위치 정보를 받아올 변수
+    // DB에서 위치 정보를 받아올 변수
+    int32 characterId;
+    int32 templateId;
+    Core::PosInfo posInfo; 
 
     PlayerPtr player;
-    // TODO: 향후 DBManager::GetCharacterInfo가 위치 정보(posInfo)까지 가져오도록 수정 필요합니다.
-    // 현재는 GetCharacterInfo가 false를 반환해도, 위에서 선언한 posInfo가 생성자 덕분에 (0,0,0)으로 안전하게 초기화됩니다.
-    if (DBManager::GetInstance().GetCharacterInfo(accountId, characterId, templateId/*, posInfo*/))
+    // TODO: 향후 DBManager::GetCharacterInfo가 위치 정보(posInfo) 와 MapId까지 가져오도록 수정 필요합니다.
+    
+    if (!DBManager::GetInstance().GetCharacterInfo(loginresult.AccountId, characterId, templateId/*, posInfo*/))
     {
         
-        GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, templateId,nullptr);
-        player = std::static_pointer_cast<Player>(go);
-        
-        // [수정] DB에서 위치를 가져오지 않더라도, 생성자로 (0,0,0)이 된 posInfo로 위치를 명시적으로 설정합니다.
-        // 이렇게 하면 Room::Enter에서 올바른 위치를 사용하게 됩니다.
-        player->Setpos(posInfo);
+        loginresultcode = 302; //캐릭터 정보 로드 실패
+        Send_Login_packet(nullptr, session, false, loginresultcode);
+
+        return false;
 
     }
+    
     //참고 : characterId 는 playerDbId와 동일함 둘다 DB에서의 Id임
-    // player 객체가 성공적으로 생성되었는지 확인 후 인벤토리 로드
-    if (player && DBManager::GetInstance().LoadPlayerInventory(characterId, player))
+    GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, templateId, nullptr);
+    player = std::static_pointer_cast<Player>(go);
+
+    
+    player->Setpos(posInfo);
+    if (!( player && DBManager::GetInstance().LoadPlayerInventory(characterId, player)))
     {
-        // 응답 전송 
-        Protocol::SC_LOGIN_OK resPkt;
+        GObjcetManager.Removeobjcet(player->GetObjectId());
 
-        resPkt.set_success(true);
+        loginresultcode = 303;//인벤토리 로드 실패
+        //여기서 인벤토리 정보 로드 실패시 로그인 시도를 실패로 간주 할지를 결정해야함(실패가 맞긴한것 같은데)
+        Send_Login_packet(player, session, false, loginresultcode);
+        return false;
 
-        resPkt.set_player_id(player->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
-
-        //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
-
-        if (resPkt.success()) { std::cout << "success is true" << std::endl; }
-        else { std::cout << "success is not true" << std::endl; }
-
-        auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
-
-        if (!sendBuffer) { return true; }
-        session->Send(sendBuffer);
-
-
-        return true;
     }
-
-    //여기서 false를 리턴하거나 혹은 true를 리턴하는 대신 에러 대처를 별도로 해야함 일단은 false 리턴
-    return false;
+    
+    Send_Login_packet(player, session, true, loginresultcode);
+    return true;
 }
 
 
@@ -328,7 +355,53 @@ bool Handle_CS_QUEST_ACCEPT_REQUEST(SessionPtr& session, Protocol::CS_QUEST_ACCE
 
 bool Handle_CS_QUEST_LIST_REQUEST(SessionPtr& session, Protocol::CS_QUEST_LIST_REQUEST& pkt)
 {
+    PlayerPtr player = session->GetPlayerPtr();
+    if (player == nullptr)
+    {
+        std::cout << "Handle_CS_QUEST_ACCEPT_REQUEST: player has nullptr" << std::endl;
+        return true;
+    }
 
+    RoomPtr room = GRoomManager.FindRoom(player->GetroomId());
+    if (room == nullptr)
+    {
+        // 로그 오타 수정
+        std::cout << "Handle_CS_QUEST_ACCEPT_REQUEST: room has nullptr" << std::endl;
+        return true;
+    }
+
+
+    
+    room->Push([session, pkt]()
+    {
+        int32 client_objectid = pkt.quest_client_object_id();
+
+        GameObjectPtr client_object = GObjcetManager.Find(client_objectid);
+
+        CreaturePtr client_creature = std::dynamic_pointer_cast<Creature> (client_object);
+
+        std::vector<Protocol::QuestInfo> questinfos = client_creature->GetQuestComponent()->GetQuestInfoListAsClient();
+
+        Protocol::SC_QUEST_LIST_RESPONSE res_pkt;
+
+        // 메모리 예약
+        res_pkt.mutable_quests()->Reserve(questinfos.size());
+        // std::move를 사용하여 소유권을 패킷으로 이전
+        for (auto& questinfo : questinfos) // const &가 아님
+        {
+            *res_pkt.add_quests() = std::move(questinfo);
+        }
+
+
+        // 전송
+        SendBufferPtr sendBuffer = ServerUtils::MakeSendBuffer(res_pkt, Protocol::PKT_SC_QUEST_LIST_RESPONSE);
+        if (sendBuffer)
+        {
+            session->Send(sendBuffer);
+        }
+
+
+    });
 
 
     return true;

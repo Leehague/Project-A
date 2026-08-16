@@ -13,7 +13,6 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
 
     GameObjectPtr go = nullptr;
 
-    
 
     if (type == GameObjectType::Player) {
         PlayerPtr player = std::make_shared<Player>(objcetId, session, coreroomptr);
