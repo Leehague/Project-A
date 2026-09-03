@@ -6,8 +6,8 @@
 class ObjcetManager 
 {
 public:
-	//생성자 호출, 초기화(Init 호출) , _objects에 추가
-	GameObjectPtr Create(GameObjectType type, std::shared_ptr<Session> session, int32 templateId, CoreRoomPtr coreroomptr);
+	//생성자 호출, 초기화(Init 호출) , _objects에 추가 , characterId 와 session 은 Player의 경우에만 필요함
+	GameObjectPtr Create(GameObjectType type, std::shared_ptr<Session> session, int32 templateId, CoreRoomPtr coreroomptr, int32 characterId);
 	
 	GameObjectPtr Find(int32 objectId);
 	void Removeobjcet(int32 objectId);

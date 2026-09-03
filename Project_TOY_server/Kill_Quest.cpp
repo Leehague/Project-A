@@ -70,7 +70,7 @@ void Kill_Quest::OnEvent(const QuestEvent& event)
 
             //아이템 생성 및 발급
             
-            GameObjectPtr item =GObjcetManager.Create(GameObjectType::Item, nullptr, questdata.rewardItemTemplateId, acquirer->GetCoreroomptr());
+            GameObjectPtr item =GObjcetManager.Create(GameObjectType::Item, nullptr, questdata.rewardItemTemplateId, acquirer->GetCoreroomptr(),-1);
 
             ItemPtr itemptr = std::dynamic_pointer_cast<Item>(item);
 

@@ -6,7 +6,8 @@
 
 ObjcetManager GObjcetManager;
 
-GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session> session, int32 templateId, CoreRoomPtr coreroomptr)
+
+GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session> session, int32 templateId, CoreRoomPtr coreroomptr , int32 characterId)
 {
     std::lock_guard<std::mutex> lock(_lock);
     int32 objcetId = ++GameobjcetCounter;
@@ -15,7 +16,7 @@ GameObjectPtr ObjcetManager::Create(GameObjectType type, std::shared_ptr<Session
 
 
     if (type == GameObjectType::Player) {
-        PlayerPtr player = std::make_shared<Player>(objcetId, session, coreroomptr);
+        PlayerPtr player = std::make_shared<Player>(objcetId, session, coreroomptr, characterId);
         player->Init(templateId);
         go = std::static_pointer_cast<GameObject>(player);
     }

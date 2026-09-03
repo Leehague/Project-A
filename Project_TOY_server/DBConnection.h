@@ -31,7 +31,7 @@ public:
     bool Fetch();
     int32 GetInt(const WCHAR* colName);
     std::string GetString(const WCHAR* colName);
-
+    float GetFloat(const WCHAR* colName);
 
     // 구문(Statement) 초기화
     void FreeStmt();
@@ -42,8 +42,11 @@ private:
     SQLHSTMT    _hStmt = SQL_NULL_HSTMT;    // 구문 핸들
 
     // 파라미터 바인딩 생명주기를 위한 메모리 유지
-    std::vector<int32> _boundInts;
-    std::vector<SQLLEN> _boundIndicators;
+    //std::vector<int32> _boundInts;
+    //std::vector<SQLLEN> _boundIndicators;
+
+    int32   _boundInts[20] = {};
+    SQLLEN  _boundIndicators[20] = {};
 
     // Fetch시 컬럼 이름을 인덱스로 매핑
     std::unordered_map<std::wstring, SQLUSMALLINT> _colIndexMap;

@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "id": 1001,
+      "name": "낡은 검",
+      "itemTypeId": 0,
+      "damage": 5,
+      "description": "초보 모험가에게 지급되는 기본적인 검입니다.",
+      "modelPath": "Weapons/Sword_01",
+      "iconPath": "Icons/Items/sword_icon"
+    },
+    {
+      "id": 2001,
+      "name": "하급 체력 물약",
+      "itemTypeId": 1,
+      "value": 50,
+      "effect": "HealHp",
+      "coolTime": 10,
+      "stackable": true,
+      "maxStack": 99,
+      "description": "체력을 약간 회복시켜 줍니다.",
+      "iconPath": "Icons/Items/potion_red_icon"
+    }
+  ],
+  "itemTypes": [
+    {
+      "type": "Equipment",
+      "typeId": 0
+    },
+    {
+      "type": "Consumable",
+      "typeId": 1
+    },
+    {
+      "type": "Etc",
+      "typeId": 2
+    }
+  ]
+}

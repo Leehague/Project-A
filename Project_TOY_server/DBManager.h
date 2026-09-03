@@ -1,13 +1,25 @@
 // DBManager.h
 #pragma once
 #include "DBConnection.h"
-#include "JobQueue.h"
 #include <mutex>
 #include <condition_variable>
 #include <vector>
 #include <queue>
 #include <thread>
 #include "Types.h"
+#include "InfoSturct.h"
+#include "JobQueue.h"
+
+struct PlayerDBData
+{
+    int32 accountId;
+    int32 CharacterId;
+    int32 TemplateId;
+    int32 MapId;
+    Core::PosInfo posInfo;
+};
+
+
 
 class DBManager {
 public:
@@ -31,10 +43,10 @@ public:
     //DB를 호출하는 기능별 함수들
 
     //플레이어 메모리에 DB의 플레이어가 가진 아이템 전부의 정보 가져옴
-    bool LoadPlayerInventory(int32 playerDBId, PlayerPtr player);
+    bool LoadPlayerInventory(int32 characterId, PlayerPtr player);
     
     //해당 계정의 CharacterId와 TemplateId 를 DB에서 가져옴
-    bool GetCharacterInfo(int32 accountId, int32& outCharacterId, int32& outTemplateId);
+    bool GetCharacterInfo(int accountId,int characterId, PlayerDBData& outdata);
 
     //CharacterSkills 테이블에서 캐릭터가 소유한 모든 스킬정보 가져옴
     bool GetCharacterSkillInfo(int32 CharacterId, std::vector<int32>& outSkillIds);

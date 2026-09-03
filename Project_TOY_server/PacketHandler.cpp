@@ -22,82 +22,17 @@ bool Handle_INVALID(SessionPtr& session, BYTE* buffer, int32 len)
     return false;
 }
 
-//Handle_CS_LOGIN을 위한 헬퍼함수
-bool Send_Login_packet(PlayerPtr player , SessionPtr& session , bool loginsuccess, int32 loginresultcode)
-{
-    // 응답 전송 
-    Protocol::SC_LOGIN_OK resPkt;
 
-    resPkt.set_success(loginsuccess);
-
-    if (player)
-    {
-        resPkt.set_player_id(player->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
-    }
-
-    resPkt.set_resultcode(loginresultcode);
-    //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
-
-    auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
-
-    if (!sendBuffer) { return false; }
-    session->Send(sendBuffer);
-
-    return true;
-}
 
 bool Handle_CS_LOGIN(SessionPtr& session, Protocol::CS_LOGIN& pkt)
 {
     
     std::string token =pkt.token();
 
-    LoginResult loginresult=LoginManager::GetInstance().VerifyLoginToken(token);
-    int32 loginresultcode = 200;
-    // 에러코드 정의
-    // 2xx : 정상, 3xx : 에러
-    if (!loginresult.Success)
-    {
-        loginresultcode = 301; //Login Result is false
-        Send_Login_packet(nullptr, session, false, loginresultcode);
-        return false;
-    }
+    int characterid = pkt.characterid();
 
-    // DB에서 위치 정보를 받아올 변수
-    int32 characterId;
-    int32 templateId;
-    Core::PosInfo posInfo; 
+    LoginManager::GetInstance()->TryLogin(token, session, characterid);
 
-    PlayerPtr player;
-    // TODO: 향후 DBManager::GetCharacterInfo가 위치 정보(posInfo) 와 MapId까지 가져오도록 수정 필요합니다.
-    
-    if (!DBManager::GetInstance().GetCharacterInfo(loginresult.AccountId, characterId, templateId/*, posInfo*/))
-    {
-        
-        loginresultcode = 302; //캐릭터 정보 로드 실패
-        Send_Login_packet(nullptr, session, false, loginresultcode);
-
-        return false;
-
-    }
-    
-    //참고 : characterId 는 playerDbId와 동일함 둘다 DB에서의 Id임
-    GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, templateId, nullptr);
-    player = std::static_pointer_cast<Player>(go);
-
-    
-    player->Setpos(posInfo);
-    if (!( player && DBManager::GetInstance().LoadPlayerInventory(characterId, player)))
-    {
-        GObjcetManager.Removeobjcet(player->GetObjectId());
-
-        loginresultcode = 303;//인벤토리 로드 실패
-        //여기서 인벤토리 정보 로드 실패시 로그인 시도를 실패로 간주 할지를 결정해야함(실패가 맞긴한것 같은데)
-        Send_Login_packet(player, session, false, loginresultcode);
-        return false;
-
-    }
-    
-    Send_Login_packet(player, session, true, loginresultcode);
     return true;
 }
 
@@ -179,6 +114,8 @@ bool Handle_CS_MOVING(SessionPtr& session, Protocol::CS_MOVING& pkt)
 
 bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt)
 {
+    
+    
     auto player = session->GetPlayerPtr();
     if (player == nullptr) 
     { 
@@ -186,15 +123,13 @@ bool Handle_CS_ENTER_GAME(SessionPtr& session, Protocol::CS_ENTER_GAME& pkt)
         return true;
     }
 
-    // Temp , TODO: FindLastRoom 은 서버 입장에서 마지막으로 만들어진 Room 을 찾아서 입장 시키는 것, 
-    // 따라서 해당 클라에 알맞는 룸을 찾아서 입장시키는 로직이 필요함 
-    // 이는 기획에 따라 달라질 요소가 있음
+
 
     RoomPtr currentRoom = GRoomManager.FindLastRoom(); //즉 여기서 어떤 룸을 선택할지 다른 방식을 도입해야할 수도 있음
 
     currentRoom->Enter(player); //Enter 로직 속에 전송로직이 포함되어 있으므로 이것으로 충분함
 
-    //수정 : Room ::Enter 에서는 스폰 패킷을 더이상 전송하지 않음.
+    
 
     return true;
 }

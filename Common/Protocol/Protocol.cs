@@ -24,86 +24,86 @@ namespace Protocol {
     static ProtocolReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg5Qcm90b2NvbC5wcm90bxIIUHJvdG9jb2wiGQoIQ1NfTE9HSU4SDQoFdG9r",
-            "ZW4YASABKAkiRQoLU0NfTE9HSU5fT0sSDwoHc3VjY2VzcxgBIAEoCBIRCglw",
-            "bGF5ZXJfaWQYAiABKAUSEgoKcmVzdWx0Q29kZRgDIAEoBSIWCgdDU19DSEFU",
-            "EgsKA21zZxgBIAEoCSIzChFTQ19DSEFUX0JST0FEQ0FTVBIRCglwbGF5ZXJf",
-            "aWQYASABKAUSCwoDbXNnGAIgASgJIjAKClNDX1dISVNQRVISFQoNZnJvbXBs",
-            "YXllcl9pZBgBIAEoBRILCgNtc2cYAiABKAkiMgoKQ1NfV0hJU1BFUhIXCg90",
-            "YXJnZXRwbGF5ZXJfaWQYASABKAUSCwoDbXNnGAIgASgJIlkKB1Bvc0luZm8S",
-            "EQoJb2JqZWN0X2lkGAEgASgFEgkKAXgYAiABKAISCQoBeRgDIAEoAhIJCgF6",
-            "GAQgASgCEgsKA3lhdxgFIAEoAhINCgVzdGF0ZRgGIAEoBSJlCghTdGF0SW5m",
-            "bxIRCglvYmplY3RfaWQYASABKAUSDAoEbmFtZRgCIAEoCRIKCgJocBgDIAEo",
-            "BRIOCgZhdHRhY2sYBCABKAUSDQoFc3BlZWQYBSABKAUSDQoFbGV2ZWwYBiAB",
-            "KAUiMAoJQ1NfTU9WSU5HEiMKCHBvc19pbmZvGAEgASgLMhEuUHJvdG9jb2wu",
-            "UG9zSW5mbyIwCglTQ19NT1ZJTkcSIwoIcG9zX2luZm8YASADKAsyES5Qcm90",
-            "b2NvbC5Qb3NJbmZvIg8KDUNTX0VOVEVSX0dBTUUiVwoNU0NfRU5URVJfR0FN",
-            "RRIjCghwb3NfaW5mbxgBIAEoCzIRLlByb3RvY29sLlBvc0luZm8SEgoKdGVt",
-            "cGxhdGVJZBgCIAEoBRINCgVNYXBJZBgDIAEoBSJCCg9TQ19QTEFZRVJfU1BB",
-            "V04SLwoScGxheWVyc19zcGF3bl9pbmZvGAEgAygLMhMuUHJvdG9jb2wuU3Bh",
-            "d25JbmZvIkgKCVNwYXduSW5mbxInCgxzcGF3bnBvc2luZm8YASABKAsyES5Q",
-            "cm90b2NvbC5Qb3NJbmZvEhIKCnRlbXBsYXRlSWQYAiABKAUiIgoNQ1NfR0FN",
-            "RV9SRUFEWRIRCglwbGF5ZXJfaWQYASABKAUiJgoRU0NfUExBWUVSX0RFU1BB",
-            "V04SEQoJcGxheWVyX2lkGAEgAygFIoUBCghDU19TS0lMTBIQCghza2lsbF9p",
-            "ZBgBIAEoBRIsCgZ0YXJnZXQYAiABKAsyGi5Qcm90b2NvbC5UYXJnZXRvYmpl",
-            "Y3RJbmZvSAASKwoIZGVzdF9wb3MYAyABKAsyFy5Qcm90b2NvbC5UYXJnZXRQ",
-            "b3NJbmZvSABCDAoKZXh0cmFfaW5mbyKYAQoIU0NfU0tJTEwSEQoJb2JqZWN0",
-            "X2lkGAEgASgFEhAKCHNraWxsX2lkGAIgASgFEiwKBnRhcmdldBgDIAEoCzIa",
-            "LlByb3RvY29sLlRhcmdldG9iamVjdEluZm9IABIrCghkZXN0X3BvcxgEIAEo",
-            "CzIXLlByb3RvY29sLlRhcmdldFBvc0luZm9IAEIMCgpleHRyYV9pbmZvIloK",
-            "DFNDX0NIQU5HRV9IUBIRCglvYmplY3RfaWQYASABKAUSEgoKY3VycmVudF9o",
-            "cBgCIAEoBRIOCgZkYW1hZ2UYAyABKAUSEwoLYXR0YWNrZXJfaWQYBCABKAUi",
-            "LAoQVGFyZ2V0b2JqZWN0SW5mbxIYChB0YXJnZXRfb2JqZWN0X2lkGAEgASgF",
-            "IjAKDVRhcmdldFBvc0luZm8SCQoBeBgBIAEoAhIJCgF5GAIgASgCEgkKAXoY",
-            "AyABKAIiNQoMU0NfQ0hBTkdFX01QEhEKCW9iamVjdF9pZBgBIAEoBRISCgpj",
-            "dXJyZW50X21wGAIgASgFIkQKEFNDX01PTlNURVJfU1BBV04SMAoTbW9uc3Rl",
-            "cnNfc3Bhd25faW5mbxgBIAMoCzITLlByb3RvY29sLlNwYXduSW5mbyIuCg9T",
-            "Q19NT05TVEVSX0RFQUQSGwoTZGVhZF9vYmplY3RfaWRfbGlzdBgBIAMoBSIq",
-            "ChVDU19PV05FRF9JVEVNX1JFUVVFU1QSEQoJcGxheWVyX2lkGAEgASgFIjUK",
-            "EFNDX0lURU1fUkVTUE9OU0USIQoFaXRlbXMYASADKAsyEi5Qcm90b2NvbC5J",
-            "dGVtSW5mbyJcCghJdGVtSW5mbxIMCgREYmlkGAEgASgFEhIKClRlbXBsYXRl",
-            "SWQYAiABKAUSDQoFQ291bnQYAyABKAUSDAoEU2xvdBgEIAEoBRIRCglpdGVt",
-            "X21lbW8YBSABKAkisAIKCVF1ZXN0SW5mbxIQCghxdWVzdF9pZBgBIAEoBRIY",
-            "ChBxdWVzdF90ZW1wbGF0ZUlkGAIgASgFEhUKDXF1ZXN0X3R5cGVfaWQYAyAB",
-            "KAUSDQoFc3RhdGUYBCABKAUSGAoQY2xpZW50X29iamVjdF9pZBgFIAEoBRIa",
-            "ChJhY3F1aXJlcl9vYmplY3RfaWQYBiABKAUSGgoSdGFyZ2V0X3RlbXBsYXRl",
-            "X2lkGAcgASgFEhUKDWN1cnJlbnRfY291bnQYCCABKAUSFAoMdGFyZ2V0X2Nv",
-            "dW50GAkgASgFEhYKDnJld2FyZF90eXBlX2lkGAogASgFEhQKDHJld2FyZF92",
-            "YWx1ZRgLIAEoBRIWCg5yZXdhcmRfaXRlbV9pZBgMIAEoBRIMCgRuYW1lGA0g",
-            "ASgJIk4KGENTX1FVRVNUX0NSRUFURURfUkVRVUVTVBIyChVyZXFfY3JlYXRl",
-            "X3F1ZXN0X2luZm8YASABKAsyEy5Qcm90b2NvbC5RdWVzdEluZm8iYAoZU0Nf",
-            "UVVFU1RfQ1JFQVRFRF9SRVNQT05TRRIPCgdzdWNjZXNzGAEgASgIEjIKFXJl",
-            "c19jcmVhdGVfcXVlc3RfaW5mbxgCIAEoCzITLlByb3RvY29sLlF1ZXN0SW5m",
-            "byJLChdDU19RVUVTVF9BQ0NFUFRfUkVRVUVTVBIQCghxdWVzdF9pZBgBIAEo",
-            "BRIeChZxdWVzdF9jbGllbnRfb2JqZWN0X2lkGAIgASgFIloKGFNDX1FVRVNU",
-            "X0FDQ0VQVF9SRVNQT05TRRIPCgdzdWNjZXNzGAEgASgIEi0KEHJlc19hY2Nl",
-            "cHRfcXVlc3QYAiABKAsyEy5Qcm90b2NvbC5RdWVzdEluZm8iRwoYU0NfUVVF",
-            "U1RfUFJPR1JFU1NfVVBEQVRFEisKDnByb3NzaW5nX3F1ZXN0GAEgASgLMhMu",
-            "UHJvdG9jb2wuUXVlc3RJbmZvIjcKFUNTX1FVRVNUX0xJU1RfUkVRVUVTVBIe",
-            "ChZxdWVzdF9jbGllbnRfb2JqZWN0X2lkGAEgASgFIj0KFlNDX1FVRVNUX0xJ",
-            "U1RfUkVTUE9OU0USIwoGcXVlc3RzGAEgAygLMhMuUHJvdG9jb2wuUXVlc3RJ",
-            "bmZvKtcFCghQYWNrZXRJZBIMCghQS1RfTk9ORRAAEhAKDFBLVF9DU19MT0dJ",
-            "ThABEhMKD1BLVF9TQ19MT0dJTl9PSxACEg8KC1BLVF9DU19DSEFUEAMSGQoV",
-            "UEtUX1NDX0NIQVRfQlJPQURDQVNUEAQSEgoOUEtUX1NDX1dISVNQRVIQBRIS",
-            "Cg5QS1RfQ1NfV0hJU1BFUhAGEhEKDVBLVF9DU19NT1ZJTkcQBxIRCg1QS1Rf",
-            "U0NfTU9WSU5HEAgSFQoRUEtUX0NTX0VOVEVSX0dBTUUQCRIVChFQS1RfU0Nf",
-            "RU5URVJfR0FNRRAKEhcKE1BLVF9TQ19QTEFZRVJfU1BBV04QCxIVChFQS1Rf",
-            "Q1NfR0FNRV9SRUFEWRAMEhkKFVBLVF9TQ19QTEFZRVJfREVTUEFXThANEhAK",
-            "DFBLVF9DU19TS0lMTBAOEhAKDFBLVF9TQ19TS0lMTBAPEhQKEFBLVF9TQ19D",
-            "SEFOR0VfSFAQEBIUChBQS1RfU0NfQ0hBTkdFX01QEBESGAoUUEtUX1NDX01P",
-            "TlNURVJfU1BBV04QEhIXChNQS1RfU0NfTU9OU1RFUl9ERUFEEBMSHQoZUEtU",
-            "X0NTX09XTkVEX0lURU1fUkVRVUVTVBAUEhgKFFBLVF9TQ19JVEVNX1JFU1BP",
-            "TlNFEBUSIAocUEtUX0NTX1FVRVNUX0NSRUFURURfUkVRVUVTVBAWEiEKHVBL",
-            "VF9TQ19RVUVTVF9DUkVBVEVEX1JFU1BPTlNFEBcSHwobUEtUX0NTX1FVRVNU",
-            "X0FDQ0VQVF9SRVFVRVNUEBgSIAocUEtUX1NDX1FVRVNUX0FDQ0VQVF9SRVNQ",
-            "T05TRRAZEiAKHFBLVF9TQ19RVUVTVF9QUk9HUkVTU19VUERBVEUQGhIdChlQ",
-            "S1RfQ1NfUVVFU1RfTElTVF9SRVFVRVNUEBsSHgoaUEtUX1NDX1FVRVNUX0xJ",
-            "U1RfUkVTUE9OU0UQHGIGcHJvdG8z"));
+            "Cg5Qcm90b2NvbC5wcm90bxIIUHJvdG9jb2wiLgoIQ1NfTE9HSU4SDQoFdG9r",
+            "ZW4YASABKAkSEwoLY2hhcmFjdGVySWQYAiABKAUiSAoLU0NfTE9HSU5fT0sS",
+            "DwoHc3VjY2VzcxgBIAEoCBIRCglwbGF5ZXJfaWQYAiABKAUSFQoNZXJyb3Jf",
+            "bWVzc2FnZRgDIAEoCSIWCgdDU19DSEFUEgsKA21zZxgBIAEoCSIzChFTQ19D",
+            "SEFUX0JST0FEQ0FTVBIRCglwbGF5ZXJfaWQYASABKAUSCwoDbXNnGAIgASgJ",
+            "IjAKClNDX1dISVNQRVISFQoNZnJvbXBsYXllcl9pZBgBIAEoBRILCgNtc2cY",
+            "AiABKAkiMgoKQ1NfV0hJU1BFUhIXCg90YXJnZXRwbGF5ZXJfaWQYASABKAUS",
+            "CwoDbXNnGAIgASgJIlkKB1Bvc0luZm8SEQoJb2JqZWN0X2lkGAEgASgFEgkK",
+            "AXgYAiABKAISCQoBeRgDIAEoAhIJCgF6GAQgASgCEgsKA3lhdxgFIAEoAhIN",
+            "CgVzdGF0ZRgGIAEoBSJlCghTdGF0SW5mbxIRCglvYmplY3RfaWQYASABKAUS",
+            "DAoEbmFtZRgCIAEoCRIKCgJocBgDIAEoBRIOCgZhdHRhY2sYBCABKAUSDQoF",
+            "c3BlZWQYBSABKAUSDQoFbGV2ZWwYBiABKAUiMAoJQ1NfTU9WSU5HEiMKCHBv",
+            "c19pbmZvGAEgASgLMhEuUHJvdG9jb2wuUG9zSW5mbyIwCglTQ19NT1ZJTkcS",
+            "IwoIcG9zX2luZm8YASADKAsyES5Qcm90b2NvbC5Qb3NJbmZvIg8KDUNTX0VO",
+            "VEVSX0dBTUUiVwoNU0NfRU5URVJfR0FNRRIjCghwb3NfaW5mbxgBIAEoCzIR",
+            "LlByb3RvY29sLlBvc0luZm8SEgoKdGVtcGxhdGVJZBgCIAEoBRINCgVNYXBJ",
+            "ZBgDIAEoBSJCCg9TQ19QTEFZRVJfU1BBV04SLwoScGxheWVyc19zcGF3bl9p",
+            "bmZvGAEgAygLMhMuUHJvdG9jb2wuU3Bhd25JbmZvIkgKCVNwYXduSW5mbxIn",
+            "CgxzcGF3bnBvc2luZm8YASABKAsyES5Qcm90b2NvbC5Qb3NJbmZvEhIKCnRl",
+            "bXBsYXRlSWQYAiABKAUiIgoNQ1NfR0FNRV9SRUFEWRIRCglwbGF5ZXJfaWQY",
+            "ASABKAUiJgoRU0NfUExBWUVSX0RFU1BBV04SEQoJcGxheWVyX2lkGAEgAygF",
+            "IoUBCghDU19TS0lMTBIQCghza2lsbF9pZBgBIAEoBRIsCgZ0YXJnZXQYAiAB",
+            "KAsyGi5Qcm90b2NvbC5UYXJnZXRvYmplY3RJbmZvSAASKwoIZGVzdF9wb3MY",
+            "AyABKAsyFy5Qcm90b2NvbC5UYXJnZXRQb3NJbmZvSABCDAoKZXh0cmFfaW5m",
+            "byKYAQoIU0NfU0tJTEwSEQoJb2JqZWN0X2lkGAEgASgFEhAKCHNraWxsX2lk",
+            "GAIgASgFEiwKBnRhcmdldBgDIAEoCzIaLlByb3RvY29sLlRhcmdldG9iamVj",
+            "dEluZm9IABIrCghkZXN0X3BvcxgEIAEoCzIXLlByb3RvY29sLlRhcmdldFBv",
+            "c0luZm9IAEIMCgpleHRyYV9pbmZvIloKDFNDX0NIQU5HRV9IUBIRCglvYmpl",
+            "Y3RfaWQYASABKAUSEgoKY3VycmVudF9ocBgCIAEoBRIOCgZkYW1hZ2UYAyAB",
+            "KAUSEwoLYXR0YWNrZXJfaWQYBCABKAUiLAoQVGFyZ2V0b2JqZWN0SW5mbxIY",
+            "ChB0YXJnZXRfb2JqZWN0X2lkGAEgASgFIjAKDVRhcmdldFBvc0luZm8SCQoB",
+            "eBgBIAEoAhIJCgF5GAIgASgCEgkKAXoYAyABKAIiNQoMU0NfQ0hBTkdFX01Q",
+            "EhEKCW9iamVjdF9pZBgBIAEoBRISCgpjdXJyZW50X21wGAIgASgFIkQKEFND",
+            "X01PTlNURVJfU1BBV04SMAoTbW9uc3RlcnNfc3Bhd25faW5mbxgBIAMoCzIT",
+            "LlByb3RvY29sLlNwYXduSW5mbyIuCg9TQ19NT05TVEVSX0RFQUQSGwoTZGVh",
+            "ZF9vYmplY3RfaWRfbGlzdBgBIAMoBSIqChVDU19PV05FRF9JVEVNX1JFUVVF",
+            "U1QSEQoJcGxheWVyX2lkGAEgASgFIjUKEFNDX0lURU1fUkVTUE9OU0USIQoF",
+            "aXRlbXMYASADKAsyEi5Qcm90b2NvbC5JdGVtSW5mbyJcCghJdGVtSW5mbxIM",
+            "CgREYmlkGAEgASgFEhIKClRlbXBsYXRlSWQYAiABKAUSDQoFQ291bnQYAyAB",
+            "KAUSDAoEU2xvdBgEIAEoBRIRCglpdGVtX21lbW8YBSABKAkisAIKCVF1ZXN0",
+            "SW5mbxIQCghxdWVzdF9pZBgBIAEoBRIYChBxdWVzdF90ZW1wbGF0ZUlkGAIg",
+            "ASgFEhUKDXF1ZXN0X3R5cGVfaWQYAyABKAUSDQoFc3RhdGUYBCABKAUSGAoQ",
+            "Y2xpZW50X29iamVjdF9pZBgFIAEoBRIaChJhY3F1aXJlcl9vYmplY3RfaWQY",
+            "BiABKAUSGgoSdGFyZ2V0X3RlbXBsYXRlX2lkGAcgASgFEhUKDWN1cnJlbnRf",
+            "Y291bnQYCCABKAUSFAoMdGFyZ2V0X2NvdW50GAkgASgFEhYKDnJld2FyZF90",
+            "eXBlX2lkGAogASgFEhQKDHJld2FyZF92YWx1ZRgLIAEoBRIWCg5yZXdhcmRf",
+            "aXRlbV9pZBgMIAEoBRIMCgRuYW1lGA0gASgJIk4KGENTX1FVRVNUX0NSRUFU",
+            "RURfUkVRVUVTVBIyChVyZXFfY3JlYXRlX3F1ZXN0X2luZm8YASABKAsyEy5Q",
+            "cm90b2NvbC5RdWVzdEluZm8iYAoZU0NfUVVFU1RfQ1JFQVRFRF9SRVNQT05T",
+            "RRIPCgdzdWNjZXNzGAEgASgIEjIKFXJlc19jcmVhdGVfcXVlc3RfaW5mbxgC",
+            "IAEoCzITLlByb3RvY29sLlF1ZXN0SW5mbyJLChdDU19RVUVTVF9BQ0NFUFRf",
+            "UkVRVUVTVBIQCghxdWVzdF9pZBgBIAEoBRIeChZxdWVzdF9jbGllbnRfb2Jq",
+            "ZWN0X2lkGAIgASgFIloKGFNDX1FVRVNUX0FDQ0VQVF9SRVNQT05TRRIPCgdz",
+            "dWNjZXNzGAEgASgIEi0KEHJlc19hY2NlcHRfcXVlc3QYAiABKAsyEy5Qcm90",
+            "b2NvbC5RdWVzdEluZm8iRwoYU0NfUVVFU1RfUFJPR1JFU1NfVVBEQVRFEisK",
+            "DnByb3NzaW5nX3F1ZXN0GAEgASgLMhMuUHJvdG9jb2wuUXVlc3RJbmZvIjcK",
+            "FUNTX1FVRVNUX0xJU1RfUkVRVUVTVBIeChZxdWVzdF9jbGllbnRfb2JqZWN0",
+            "X2lkGAEgASgFIj0KFlNDX1FVRVNUX0xJU1RfUkVTUE9OU0USIwoGcXVlc3Rz",
+            "GAEgAygLMhMuUHJvdG9jb2wuUXVlc3RJbmZvKtcFCghQYWNrZXRJZBIMCghQ",
+            "S1RfTk9ORRAAEhAKDFBLVF9DU19MT0dJThABEhMKD1BLVF9TQ19MT0dJTl9P",
+            "SxACEg8KC1BLVF9DU19DSEFUEAMSGQoVUEtUX1NDX0NIQVRfQlJPQURDQVNU",
+            "EAQSEgoOUEtUX1NDX1dISVNQRVIQBRISCg5QS1RfQ1NfV0hJU1BFUhAGEhEK",
+            "DVBLVF9DU19NT1ZJTkcQBxIRCg1QS1RfU0NfTU9WSU5HEAgSFQoRUEtUX0NT",
+            "X0VOVEVSX0dBTUUQCRIVChFQS1RfU0NfRU5URVJfR0FNRRAKEhcKE1BLVF9T",
+            "Q19QTEFZRVJfU1BBV04QCxIVChFQS1RfQ1NfR0FNRV9SRUFEWRAMEhkKFVBL",
+            "VF9TQ19QTEFZRVJfREVTUEFXThANEhAKDFBLVF9DU19TS0lMTBAOEhAKDFBL",
+            "VF9TQ19TS0lMTBAPEhQKEFBLVF9TQ19DSEFOR0VfSFAQEBIUChBQS1RfU0Nf",
+            "Q0hBTkdFX01QEBESGAoUUEtUX1NDX01PTlNURVJfU1BBV04QEhIXChNQS1Rf",
+            "U0NfTU9OU1RFUl9ERUFEEBMSHQoZUEtUX0NTX09XTkVEX0lURU1fUkVRVUVT",
+            "VBAUEhgKFFBLVF9TQ19JVEVNX1JFU1BPTlNFEBUSIAocUEtUX0NTX1FVRVNU",
+            "X0NSRUFURURfUkVRVUVTVBAWEiEKHVBLVF9TQ19RVUVTVF9DUkVBVEVEX1JF",
+            "U1BPTlNFEBcSHwobUEtUX0NTX1FVRVNUX0FDQ0VQVF9SRVFVRVNUEBgSIAoc",
+            "UEtUX1NDX1FVRVNUX0FDQ0VQVF9SRVNQT05TRRAZEiAKHFBLVF9TQ19RVUVT",
+            "VF9QUk9HUkVTU19VUERBVEUQGhIdChlQS1RfQ1NfUVVFU1RfTElTVF9SRVFV",
+            "RVNUEBsSHgoaUEtUX1NDX1FVRVNUX0xJU1RfUkVTUE9OU0UQHGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Protocol.PacketId), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_LOGIN), global::Protocol.CS_LOGIN.Parser, new[]{ "Token" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_LOGIN_OK), global::Protocol.SC_LOGIN_OK.Parser, new[]{ "Success", "PlayerId", "ResultCode" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_LOGIN), global::Protocol.CS_LOGIN.Parser, new[]{ "Token", "CharacterId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_LOGIN_OK), global::Protocol.SC_LOGIN_OK.Parser, new[]{ "Success", "PlayerId", "ErrorMessage" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.CS_CHAT), global::Protocol.CS_CHAT.Parser, new[]{ "Msg" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_CHAT_BROADCAST), global::Protocol.SC_CHAT_BROADCAST.Parser, new[]{ "PlayerId", "Msg" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.SC_WHISPER), global::Protocol.SC_WHISPER.Parser, new[]{ "FromplayerId", "Msg" }, null, null, null, null),
@@ -214,6 +214,7 @@ namespace Protocol {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public CS_LOGIN(CS_LOGIN other) : this() {
       token_ = other.token_;
+      characterId_ = other.characterId_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -235,6 +236,18 @@ namespace Protocol {
       }
     }
 
+    /// <summary>Field number for the "characterId" field.</summary>
+    public const int CharacterIdFieldNumber = 2;
+    private int characterId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CharacterId {
+      get { return characterId_; }
+      set {
+        characterId_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -251,6 +264,7 @@ namespace Protocol {
         return true;
       }
       if (Token != other.Token) return false;
+      if (CharacterId != other.CharacterId) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -259,6 +273,7 @@ namespace Protocol {
     public override int GetHashCode() {
       int hash = 1;
       if (Token.Length != 0) hash ^= Token.GetHashCode();
+      if (CharacterId != 0) hash ^= CharacterId.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -281,6 +296,10 @@ namespace Protocol {
         output.WriteRawTag(10);
         output.WriteString(Token);
       }
+      if (CharacterId != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(CharacterId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -295,6 +314,10 @@ namespace Protocol {
         output.WriteRawTag(10);
         output.WriteString(Token);
       }
+      if (CharacterId != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(CharacterId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -307,6 +330,9 @@ namespace Protocol {
       int size = 0;
       if (Token.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Token);
+      }
+      if (CharacterId != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(CharacterId);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -322,6 +348,9 @@ namespace Protocol {
       }
       if (other.Token.Length != 0) {
         Token = other.Token;
+      }
+      if (other.CharacterId != 0) {
+        CharacterId = other.CharacterId;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -346,6 +375,10 @@ namespace Protocol {
             Token = input.ReadString();
             break;
           }
+          case 16: {
+            CharacterId = input.ReadInt32();
+            break;
+          }
         }
       }
     #endif
@@ -367,6 +400,10 @@ namespace Protocol {
             break;
           case 10: {
             Token = input.ReadString();
+            break;
+          }
+          case 16: {
+            CharacterId = input.ReadInt32();
             break;
           }
         }
@@ -413,7 +450,7 @@ namespace Protocol {
     public SC_LOGIN_OK(SC_LOGIN_OK other) : this() {
       success_ = other.success_;
       playerId_ = other.playerId_;
-      resultCode_ = other.resultCode_;
+      errorMessage_ = other.errorMessage_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -447,15 +484,15 @@ namespace Protocol {
       }
     }
 
-    /// <summary>Field number for the "resultCode" field.</summary>
-    public const int ResultCodeFieldNumber = 3;
-    private int resultCode_;
+    /// <summary>Field number for the "error_message" field.</summary>
+    public const int ErrorMessageFieldNumber = 3;
+    private string errorMessage_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int ResultCode {
-      get { return resultCode_; }
+    public string ErrorMessage {
+      get { return errorMessage_; }
       set {
-        resultCode_ = value;
+        errorMessage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -476,7 +513,7 @@ namespace Protocol {
       }
       if (Success != other.Success) return false;
       if (PlayerId != other.PlayerId) return false;
-      if (ResultCode != other.ResultCode) return false;
+      if (ErrorMessage != other.ErrorMessage) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -486,7 +523,7 @@ namespace Protocol {
       int hash = 1;
       if (Success != false) hash ^= Success.GetHashCode();
       if (PlayerId != 0) hash ^= PlayerId.GetHashCode();
-      if (ResultCode != 0) hash ^= ResultCode.GetHashCode();
+      if (ErrorMessage.Length != 0) hash ^= ErrorMessage.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -513,9 +550,9 @@ namespace Protocol {
         output.WriteRawTag(16);
         output.WriteInt32(PlayerId);
       }
-      if (ResultCode != 0) {
-        output.WriteRawTag(24);
-        output.WriteInt32(ResultCode);
+      if (ErrorMessage.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(ErrorMessage);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -535,9 +572,9 @@ namespace Protocol {
         output.WriteRawTag(16);
         output.WriteInt32(PlayerId);
       }
-      if (ResultCode != 0) {
-        output.WriteRawTag(24);
-        output.WriteInt32(ResultCode);
+      if (ErrorMessage.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(ErrorMessage);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -555,8 +592,8 @@ namespace Protocol {
       if (PlayerId != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerId);
       }
-      if (ResultCode != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(ResultCode);
+      if (ErrorMessage.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ErrorMessage);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -576,8 +613,8 @@ namespace Protocol {
       if (other.PlayerId != 0) {
         PlayerId = other.PlayerId;
       }
-      if (other.ResultCode != 0) {
-        ResultCode = other.ResultCode;
+      if (other.ErrorMessage.Length != 0) {
+        ErrorMessage = other.ErrorMessage;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -606,8 +643,8 @@ namespace Protocol {
             PlayerId = input.ReadInt32();
             break;
           }
-          case 24: {
-            ResultCode = input.ReadInt32();
+          case 26: {
+            ErrorMessage = input.ReadString();
             break;
           }
         }
@@ -637,8 +674,8 @@ namespace Protocol {
             PlayerId = input.ReadInt32();
             break;
           }
-          case 24: {
-            ResultCode = input.ReadInt32();
+          case 26: {
+            ErrorMessage = input.ReadString();
             break;
           }
         }

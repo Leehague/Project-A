@@ -10,6 +10,7 @@ namespace Project_TOY_Login_Web_server.Data
         }
 
         // Accounts 테이블을 조작할 수 있는 엔티티 셋 등록
-        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Account> Accounts { get; set; } 
+        public DbSet<Character> Characters { get; set; } 
     }
 }

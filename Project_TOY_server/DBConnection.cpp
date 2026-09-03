@@ -65,8 +65,7 @@ void DBConnection::FreeStmt()
         ::SQLFreeHandle(SQL_HANDLE_STMT, _hStmt);
         _hStmt = SQL_NULL_HSTMT;
     }
-    _boundInts.clear();
-    _boundIndicators.clear();
+    
     _colIndexMap.clear();
 }
 
@@ -78,12 +77,7 @@ bool DBConnection::BindParam(int paramIndex, int32 value)
             return false;
     }
 
-    // 인덱스는 1부터 시작하므로 공간 확보
-    if ((size_t)paramIndex > _boundInts.size())
-    {
-        _boundInts.resize(paramIndex, 0);
-        _boundIndicators.resize(paramIndex, 0);
-    }
+    
 
     _boundInts[paramIndex - 1] = value;
     _boundIndicators[paramIndex - 1] = 0;
@@ -176,4 +170,32 @@ std::string DBConnection::GetString(const WCHAR* colName)
     }
 
     return "";
+}
+
+float DBConnection::GetFloat(const WCHAR* colName)
+{
+    // 1. 구문 핸들이 유효하지 않으면 기본값 반환
+    if (_hStmt == SQL_NULL_HSTMT) return 0.0f;
+    // 2. 컬럼 이름으로 인덱스 매핑 검색
+    auto it = _colIndexMap.find(colName);
+    if (it == _colIndexMap.end()) return 0.0f;
+    float value = 0.0f;
+    SQLLEN indicator = 0;
+    // 3. SQLGetData 호출 (float 형식을 위해 SQL_C_FLOAT 타입 지정)
+    SQLRETURN ret = ::SQLGetData(
+        _hStmt,
+        it->second,      // 컬럼 인덱스
+        SQL_C_FLOAT,     // C 데이터 타입 (float)
+        &value,          // 데이터를 저장할 변수의 주소
+        sizeof(value),   // 변수의 크기
+        &indicator       // NULL 여부 및 데이터 크기 수신 지시자
+    );
+    if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
+    {
+        // 4. DB에 저장된 값이 NULL 인 경우 기본값인 0.0f 반환
+        if (indicator == SQL_NULL_DATA) return 0.0f;
+
+        return value;
+    }
+    return 0.0f;
 }

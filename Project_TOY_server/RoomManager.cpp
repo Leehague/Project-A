@@ -11,14 +11,34 @@ int32 RoomManager::Create(int32 mapId)
     room->Init();
     // ... 초기화 로직 ...
     _rooms[roomId] = room;
-    
+
+    _mapid_mapping_rooms[mapId].push_back(room);
+
+
     return roomId;
 }
 
 RoomPtr RoomManager::FindRoom(int32 roomId)
 {
+    std::lock_guard<std::mutex> lock(_lock);
 	return _rooms[roomId];
 }
+
+RoomPtr RoomManager::FindRoom(int32 mapid, int numberOfSameMapidrooms)
+{
+    std::lock_guard<std::mutex> lock(_lock);
+    
+    auto it = _mapid_mapping_rooms.find(mapid);
+    if (it != _mapid_mapping_rooms.end()) {
+        std::vector<RoomPtr> roomvec = it->second;
+
+        return roomvec[numberOfSameMapidrooms];
+    }
+    
+    return nullptr;
+}
+
+
 
 RoomPtr RoomManager::FindLastRoom()
 {

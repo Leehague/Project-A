@@ -142,3 +142,5 @@ struct QuestData
     int32 rewardGold;
 
 };
+
+

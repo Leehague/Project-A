@@ -1,0 +1,22 @@
+{
+  "stats": [
+    {
+      "id": 1,
+      "name": "Knight",
+      "MaxHp": 100,
+      "MaxMp" : 100,
+      "attack": 10,
+      "speed" : 10,
+      "modelPath": "Knight"
+    },
+    {
+      "id": 2,
+      "name": "UnDead",
+      "MaxHp": 80,
+      "MaxMp": 120,
+      "attack": 15,
+      "speed": 10,
+      "modelPath": "UnDead"
+    }
+  ]
+}

@@ -193,9 +193,11 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 inline constexpr SC_LOGIN_OK::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
+        error_message_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
         success_{false},
-        player_id_{0},
-        resultcode_{0} {}
+        player_id_{0} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR SC_LOGIN_OK::SC_LOGIN_OK(::_pbi::ConstantInitialized)
@@ -508,7 +510,8 @@ inline constexpr CS_LOGIN::Impl_::Impl_(
       : _cached_size_{0},
         token_(
             &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()) {}
+            ::_pbi::ConstantInitialized()),
+        characterid_{0} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR CS_LOGIN::CS_LOGIN(::_pbi::ConstantInitialized)
@@ -969,18 +972,20 @@ const ::uint32_t
         protodesc_cold) = {
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_LOGIN, _impl_._has_bits_),
-        4, // hasbit index offset
+        5, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_LOGIN, _impl_.token_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_LOGIN, _impl_.characterid_),
         0,
+        1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_._has_bits_),
         6, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_.success_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_.player_id_),
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_.resultcode_),
-        0,
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_OK, _impl_.error_message_),
         1,
         2,
+        0,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_CHAT, _impl_._has_bits_),
         4, // hasbit index offset
@@ -1243,40 +1248,40 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::Protocol::CS_LOGIN)},
-        {5, sizeof(::Protocol::SC_LOGIN_OK)},
-        {14, sizeof(::Protocol::CS_CHAT)},
-        {19, sizeof(::Protocol::SC_CHAT_BROADCAST)},
-        {26, sizeof(::Protocol::SC_WHISPER)},
-        {33, sizeof(::Protocol::CS_WHISPER)},
-        {40, sizeof(::Protocol::PosInfo)},
-        {55, sizeof(::Protocol::StatInfo)},
-        {70, sizeof(::Protocol::CS_MOVING)},
-        {75, sizeof(::Protocol::SC_MOVING)},
-        {80, sizeof(::Protocol::CS_ENTER_GAME)},
-        {81, sizeof(::Protocol::SC_ENTER_GAME)},
-        {90, sizeof(::Protocol::SC_PLAYER_SPAWN)},
-        {95, sizeof(::Protocol::SpawnInfo)},
-        {102, sizeof(::Protocol::CS_GAME_READY)},
-        {107, sizeof(::Protocol::SC_PLAYER_DESPAWN)},
-        {112, sizeof(::Protocol::CS_SKILL)},
-        {123, sizeof(::Protocol::SC_SKILL)},
-        {136, sizeof(::Protocol::SC_CHANGE_HP)},
-        {147, sizeof(::Protocol::TargetobjectInfo)},
-        {152, sizeof(::Protocol::TargetPosInfo)},
-        {161, sizeof(::Protocol::SC_CHANGE_MP)},
-        {168, sizeof(::Protocol::SC_MONSTER_SPAWN)},
-        {173, sizeof(::Protocol::SC_MONSTER_DEAD)},
-        {178, sizeof(::Protocol::CS_OWNED_ITEM_REQUEST)},
-        {183, sizeof(::Protocol::SC_ITEM_RESPONSE)},
-        {188, sizeof(::Protocol::ItemInfo)},
-        {201, sizeof(::Protocol::QuestInfo)},
-        {230, sizeof(::Protocol::CS_QUEST_CREATED_REQUEST)},
-        {235, sizeof(::Protocol::SC_QUEST_CREATED_RESPONSE)},
-        {242, sizeof(::Protocol::CS_QUEST_ACCEPT_REQUEST)},
-        {249, sizeof(::Protocol::SC_QUEST_ACCEPT_RESPONSE)},
-        {256, sizeof(::Protocol::SC_QUEST_PROGRESS_UPDATE)},
-        {261, sizeof(::Protocol::CS_QUEST_LIST_REQUEST)},
-        {266, sizeof(::Protocol::SC_QUEST_LIST_RESPONSE)},
+        {7, sizeof(::Protocol::SC_LOGIN_OK)},
+        {16, sizeof(::Protocol::CS_CHAT)},
+        {21, sizeof(::Protocol::SC_CHAT_BROADCAST)},
+        {28, sizeof(::Protocol::SC_WHISPER)},
+        {35, sizeof(::Protocol::CS_WHISPER)},
+        {42, sizeof(::Protocol::PosInfo)},
+        {57, sizeof(::Protocol::StatInfo)},
+        {72, sizeof(::Protocol::CS_MOVING)},
+        {77, sizeof(::Protocol::SC_MOVING)},
+        {82, sizeof(::Protocol::CS_ENTER_GAME)},
+        {83, sizeof(::Protocol::SC_ENTER_GAME)},
+        {92, sizeof(::Protocol::SC_PLAYER_SPAWN)},
+        {97, sizeof(::Protocol::SpawnInfo)},
+        {104, sizeof(::Protocol::CS_GAME_READY)},
+        {109, sizeof(::Protocol::SC_PLAYER_DESPAWN)},
+        {114, sizeof(::Protocol::CS_SKILL)},
+        {125, sizeof(::Protocol::SC_SKILL)},
+        {138, sizeof(::Protocol::SC_CHANGE_HP)},
+        {149, sizeof(::Protocol::TargetobjectInfo)},
+        {154, sizeof(::Protocol::TargetPosInfo)},
+        {163, sizeof(::Protocol::SC_CHANGE_MP)},
+        {170, sizeof(::Protocol::SC_MONSTER_SPAWN)},
+        {175, sizeof(::Protocol::SC_MONSTER_DEAD)},
+        {180, sizeof(::Protocol::CS_OWNED_ITEM_REQUEST)},
+        {185, sizeof(::Protocol::SC_ITEM_RESPONSE)},
+        {190, sizeof(::Protocol::ItemInfo)},
+        {203, sizeof(::Protocol::QuestInfo)},
+        {232, sizeof(::Protocol::CS_QUEST_CREATED_REQUEST)},
+        {237, sizeof(::Protocol::SC_QUEST_CREATED_RESPONSE)},
+        {244, sizeof(::Protocol::CS_QUEST_ACCEPT_REQUEST)},
+        {251, sizeof(::Protocol::SC_QUEST_ACCEPT_RESPONSE)},
+        {258, sizeof(::Protocol::SC_QUEST_PROGRESS_UPDATE)},
+        {263, sizeof(::Protocol::CS_QUEST_LIST_REQUEST)},
+        {268, sizeof(::Protocol::SC_QUEST_LIST_RESPONSE)},
 };
 static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_default_instance_._instance,
@@ -1317,96 +1322,97 @@ static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\016Protocol.proto\022\010Protocol\"\031\n\010CS_LOGIN\022\r"
-    "\n\005token\030\001 \001(\t\"E\n\013SC_LOGIN_OK\022\017\n\007success\030"
-    "\001 \001(\010\022\021\n\tplayer_id\030\002 \001(\005\022\022\n\nresultCode\030\003"
-    " \001(\005\"\026\n\007CS_CHAT\022\013\n\003msg\030\001 \001(\t\"3\n\021SC_CHAT_"
-    "BROADCAST\022\021\n\tplayer_id\030\001 \001(\005\022\013\n\003msg\030\002 \001("
-    "\t\"0\n\nSC_WHISPER\022\025\n\rfromplayer_id\030\001 \001(\005\022\013"
-    "\n\003msg\030\002 \001(\t\"2\n\nCS_WHISPER\022\027\n\017targetplaye"
-    "r_id\030\001 \001(\005\022\013\n\003msg\030\002 \001(\t\"Y\n\007PosInfo\022\021\n\tob"
-    "ject_id\030\001 \001(\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z"
-    "\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\022\r\n\005state\030\006 \001(\005\"e\n\010St"
-    "atInfo\022\021\n\tobject_id\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022"
-    "\n\n\002hp\030\003 \001(\005\022\016\n\006attack\030\004 \001(\005\022\r\n\005speed\030\005 \001"
-    "(\005\022\r\n\005level\030\006 \001(\005\"0\n\tCS_MOVING\022#\n\010pos_in"
-    "fo\030\001 \001(\0132\021.Protocol.PosInfo\"0\n\tSC_MOVING"
-    "\022#\n\010pos_info\030\001 \003(\0132\021.Protocol.PosInfo\"\017\n"
-    "\rCS_ENTER_GAME\"W\n\rSC_ENTER_GAME\022#\n\010pos_i"
-    "nfo\030\001 \001(\0132\021.Protocol.PosInfo\022\022\n\ntemplate"
-    "Id\030\002 \001(\005\022\r\n\005MapId\030\003 \001(\005\"B\n\017SC_PLAYER_SPA"
-    "WN\022/\n\022players_spawn_info\030\001 \003(\0132\023.Protoco"
-    "l.SpawnInfo\"H\n\tSpawnInfo\022\'\n\014spawnposinfo"
-    "\030\001 \001(\0132\021.Protocol.PosInfo\022\022\n\ntemplateId\030"
-    "\002 \001(\005\"\"\n\rCS_GAME_READY\022\021\n\tplayer_id\030\001 \001("
-    "\005\"&\n\021SC_PLAYER_DESPAWN\022\021\n\tplayer_id\030\001 \003("
-    "\005\"\205\001\n\010CS_SKILL\022\020\n\010skill_id\030\001 \001(\005\022,\n\006targ"
-    "et\030\002 \001(\0132\032.Protocol.TargetobjectInfoH\000\022+"
-    "\n\010dest_pos\030\003 \001(\0132\027.Protocol.TargetPosInf"
-    "oH\000B\014\n\nextra_info\"\230\001\n\010SC_SKILL\022\021\n\tobject"
-    "_id\030\001 \001(\005\022\020\n\010skill_id\030\002 \001(\005\022,\n\006target\030\003 "
-    "\001(\0132\032.Protocol.TargetobjectInfoH\000\022+\n\010des"
-    "t_pos\030\004 \001(\0132\027.Protocol.TargetPosInfoH\000B\014"
-    "\n\nextra_info\"Z\n\014SC_CHANGE_HP\022\021\n\tobject_i"
-    "d\030\001 \001(\005\022\022\n\ncurrent_hp\030\002 \001(\005\022\016\n\006damage\030\003 "
-    "\001(\005\022\023\n\013attacker_id\030\004 \001(\005\",\n\020Targetobject"
-    "Info\022\030\n\020target_object_id\030\001 \001(\005\"0\n\rTarget"
-    "PosInfo\022\t\n\001x\030\001 \001(\002\022\t\n\001y\030\002 \001(\002\022\t\n\001z\030\003 \001(\002"
-    "\"5\n\014SC_CHANGE_MP\022\021\n\tobject_id\030\001 \001(\005\022\022\n\nc"
-    "urrent_mp\030\002 \001(\005\"D\n\020SC_MONSTER_SPAWN\0220\n\023m"
-    "onsters_spawn_info\030\001 \003(\0132\023.Protocol.Spaw"
-    "nInfo\".\n\017SC_MONSTER_DEAD\022\033\n\023dead_object_"
-    "id_list\030\001 \003(\005\"*\n\025CS_OWNED_ITEM_REQUEST\022\021"
-    "\n\tplayer_id\030\001 \001(\005\"5\n\020SC_ITEM_RESPONSE\022!\n"
-    "\005items\030\001 \003(\0132\022.Protocol.ItemInfo\"\\\n\010Item"
-    "Info\022\014\n\004Dbid\030\001 \001(\005\022\022\n\nTemplateId\030\002 \001(\005\022\r"
-    "\n\005Count\030\003 \001(\005\022\014\n\004Slot\030\004 \001(\005\022\021\n\titem_memo"
-    "\030\005 \001(\t\"\260\002\n\tQuestInfo\022\020\n\010quest_id\030\001 \001(\005\022\030"
-    "\n\020quest_templateId\030\002 \001(\005\022\025\n\rquest_type_i"
-    "d\030\003 \001(\005\022\r\n\005state\030\004 \001(\005\022\030\n\020client_object_"
-    "id\030\005 \001(\005\022\032\n\022acquirer_object_id\030\006 \001(\005\022\032\n\022"
-    "target_template_id\030\007 \001(\005\022\025\n\rcurrent_coun"
-    "t\030\010 \001(\005\022\024\n\014target_count\030\t \001(\005\022\026\n\016reward_"
-    "type_id\030\n \001(\005\022\024\n\014reward_value\030\013 \001(\005\022\026\n\016r"
-    "eward_item_id\030\014 \001(\005\022\014\n\004name\030\r \001(\t\"N\n\030CS_"
-    "QUEST_CREATED_REQUEST\0222\n\025req_create_ques"
-    "t_info\030\001 \001(\0132\023.Protocol.QuestInfo\"`\n\031SC_"
-    "QUEST_CREATED_RESPONSE\022\017\n\007success\030\001 \001(\010\022"
-    "2\n\025res_create_quest_info\030\002 \001(\0132\023.Protoco"
-    "l.QuestInfo\"K\n\027CS_QUEST_ACCEPT_REQUEST\022\020"
-    "\n\010quest_id\030\001 \001(\005\022\036\n\026quest_client_object_"
-    "id\030\002 \001(\005\"Z\n\030SC_QUEST_ACCEPT_RESPONSE\022\017\n\007"
-    "success\030\001 \001(\010\022-\n\020res_accept_quest\030\002 \001(\0132"
-    "\023.Protocol.QuestInfo\"G\n\030SC_QUEST_PROGRES"
-    "S_UPDATE\022+\n\016prossing_quest\030\001 \001(\0132\023.Proto"
-    "col.QuestInfo\"7\n\025CS_QUEST_LIST_REQUEST\022\036"
-    "\n\026quest_client_object_id\030\001 \001(\005\"=\n\026SC_QUE"
-    "ST_LIST_RESPONSE\022#\n\006quests\030\001 \003(\0132\023.Proto"
-    "col.QuestInfo*\327\005\n\010PacketId\022\014\n\010PKT_NONE\020\000"
-    "\022\020\n\014PKT_CS_LOGIN\020\001\022\023\n\017PKT_SC_LOGIN_OK\020\002\022"
-    "\017\n\013PKT_CS_CHAT\020\003\022\031\n\025PKT_SC_CHAT_BROADCAS"
-    "T\020\004\022\022\n\016PKT_SC_WHISPER\020\005\022\022\n\016PKT_CS_WHISPE"
-    "R\020\006\022\021\n\rPKT_CS_MOVING\020\007\022\021\n\rPKT_SC_MOVING\020"
-    "\010\022\025\n\021PKT_CS_ENTER_GAME\020\t\022\025\n\021PKT_SC_ENTER"
-    "_GAME\020\n\022\027\n\023PKT_SC_PLAYER_SPAWN\020\013\022\025\n\021PKT_"
-    "CS_GAME_READY\020\014\022\031\n\025PKT_SC_PLAYER_DESPAWN"
-    "\020\r\022\020\n\014PKT_CS_SKILL\020\016\022\020\n\014PKT_SC_SKILL\020\017\022\024"
-    "\n\020PKT_SC_CHANGE_HP\020\020\022\024\n\020PKT_SC_CHANGE_MP"
-    "\020\021\022\030\n\024PKT_SC_MONSTER_SPAWN\020\022\022\027\n\023PKT_SC_M"
-    "ONSTER_DEAD\020\023\022\035\n\031PKT_CS_OWNED_ITEM_REQUE"
-    "ST\020\024\022\030\n\024PKT_SC_ITEM_RESPONSE\020\025\022 \n\034PKT_CS"
-    "_QUEST_CREATED_REQUEST\020\026\022!\n\035PKT_SC_QUEST"
-    "_CREATED_RESPONSE\020\027\022\037\n\033PKT_CS_QUEST_ACCE"
-    "PT_REQUEST\020\030\022 \n\034PKT_SC_QUEST_ACCEPT_RESP"
-    "ONSE\020\031\022 \n\034PKT_SC_QUEST_PROGRESS_UPDATE\020\032"
-    "\022\035\n\031PKT_CS_QUEST_LIST_REQUEST\020\033\022\036\n\032PKT_S"
-    "C_QUEST_LIST_RESPONSE\020\034b\006proto3"
+    "\n\016Protocol.proto\022\010Protocol\".\n\010CS_LOGIN\022\r"
+    "\n\005token\030\001 \001(\t\022\023\n\013characterId\030\002 \001(\005\"H\n\013SC"
+    "_LOGIN_OK\022\017\n\007success\030\001 \001(\010\022\021\n\tplayer_id\030"
+    "\002 \001(\005\022\025\n\rerror_message\030\003 \001(\t\"\026\n\007CS_CHAT\022"
+    "\013\n\003msg\030\001 \001(\t\"3\n\021SC_CHAT_BROADCAST\022\021\n\tpla"
+    "yer_id\030\001 \001(\005\022\013\n\003msg\030\002 \001(\t\"0\n\nSC_WHISPER\022"
+    "\025\n\rfromplayer_id\030\001 \001(\005\022\013\n\003msg\030\002 \001(\t\"2\n\nC"
+    "S_WHISPER\022\027\n\017targetplayer_id\030\001 \001(\005\022\013\n\003ms"
+    "g\030\002 \001(\t\"Y\n\007PosInfo\022\021\n\tobject_id\030\001 \001(\005\022\t\n"
+    "\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 "
+    "\001(\002\022\r\n\005state\030\006 \001(\005\"e\n\010StatInfo\022\021\n\tobject"
+    "_id\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\n\n\002hp\030\003 \001(\005\022\016\n\006a"
+    "ttack\030\004 \001(\005\022\r\n\005speed\030\005 \001(\005\022\r\n\005level\030\006 \001("
+    "\005\"0\n\tCS_MOVING\022#\n\010pos_info\030\001 \001(\0132\021.Proto"
+    "col.PosInfo\"0\n\tSC_MOVING\022#\n\010pos_info\030\001 \003"
+    "(\0132\021.Protocol.PosInfo\"\017\n\rCS_ENTER_GAME\"W"
+    "\n\rSC_ENTER_GAME\022#\n\010pos_info\030\001 \001(\0132\021.Prot"
+    "ocol.PosInfo\022\022\n\ntemplateId\030\002 \001(\005\022\r\n\005MapI"
+    "d\030\003 \001(\005\"B\n\017SC_PLAYER_SPAWN\022/\n\022players_sp"
+    "awn_info\030\001 \003(\0132\023.Protocol.SpawnInfo\"H\n\tS"
+    "pawnInfo\022\'\n\014spawnposinfo\030\001 \001(\0132\021.Protoco"
+    "l.PosInfo\022\022\n\ntemplateId\030\002 \001(\005\"\"\n\rCS_GAME"
+    "_READY\022\021\n\tplayer_id\030\001 \001(\005\"&\n\021SC_PLAYER_D"
+    "ESPAWN\022\021\n\tplayer_id\030\001 \003(\005\"\205\001\n\010CS_SKILL\022\020"
+    "\n\010skill_id\030\001 \001(\005\022,\n\006target\030\002 \001(\0132\032.Proto"
+    "col.TargetobjectInfoH\000\022+\n\010dest_pos\030\003 \001(\013"
+    "2\027.Protocol.TargetPosInfoH\000B\014\n\nextra_inf"
+    "o\"\230\001\n\010SC_SKILL\022\021\n\tobject_id\030\001 \001(\005\022\020\n\010ski"
+    "ll_id\030\002 \001(\005\022,\n\006target\030\003 \001(\0132\032.Protocol.T"
+    "argetobjectInfoH\000\022+\n\010dest_pos\030\004 \001(\0132\027.Pr"
+    "otocol.TargetPosInfoH\000B\014\n\nextra_info\"Z\n\014"
+    "SC_CHANGE_HP\022\021\n\tobject_id\030\001 \001(\005\022\022\n\ncurre"
+    "nt_hp\030\002 \001(\005\022\016\n\006damage\030\003 \001(\005\022\023\n\013attacker_"
+    "id\030\004 \001(\005\",\n\020TargetobjectInfo\022\030\n\020target_o"
+    "bject_id\030\001 \001(\005\"0\n\rTargetPosInfo\022\t\n\001x\030\001 \001"
+    "(\002\022\t\n\001y\030\002 \001(\002\022\t\n\001z\030\003 \001(\002\"5\n\014SC_CHANGE_MP"
+    "\022\021\n\tobject_id\030\001 \001(\005\022\022\n\ncurrent_mp\030\002 \001(\005\""
+    "D\n\020SC_MONSTER_SPAWN\0220\n\023monsters_spawn_in"
+    "fo\030\001 \003(\0132\023.Protocol.SpawnInfo\".\n\017SC_MONS"
+    "TER_DEAD\022\033\n\023dead_object_id_list\030\001 \003(\005\"*\n"
+    "\025CS_OWNED_ITEM_REQUEST\022\021\n\tplayer_id\030\001 \001("
+    "\005\"5\n\020SC_ITEM_RESPONSE\022!\n\005items\030\001 \003(\0132\022.P"
+    "rotocol.ItemInfo\"\\\n\010ItemInfo\022\014\n\004Dbid\030\001 \001"
+    "(\005\022\022\n\nTemplateId\030\002 \001(\005\022\r\n\005Count\030\003 \001(\005\022\014\n"
+    "\004Slot\030\004 \001(\005\022\021\n\titem_memo\030\005 \001(\t\"\260\002\n\tQuest"
+    "Info\022\020\n\010quest_id\030\001 \001(\005\022\030\n\020quest_template"
+    "Id\030\002 \001(\005\022\025\n\rquest_type_id\030\003 \001(\005\022\r\n\005state"
+    "\030\004 \001(\005\022\030\n\020client_object_id\030\005 \001(\005\022\032\n\022acqu"
+    "irer_object_id\030\006 \001(\005\022\032\n\022target_template_"
+    "id\030\007 \001(\005\022\025\n\rcurrent_count\030\010 \001(\005\022\024\n\014targe"
+    "t_count\030\t \001(\005\022\026\n\016reward_type_id\030\n \001(\005\022\024\n"
+    "\014reward_value\030\013 \001(\005\022\026\n\016reward_item_id\030\014 "
+    "\001(\005\022\014\n\004name\030\r \001(\t\"N\n\030CS_QUEST_CREATED_RE"
+    "QUEST\0222\n\025req_create_quest_info\030\001 \001(\0132\023.P"
+    "rotocol.QuestInfo\"`\n\031SC_QUEST_CREATED_RE"
+    "SPONSE\022\017\n\007success\030\001 \001(\010\0222\n\025res_create_qu"
+    "est_info\030\002 \001(\0132\023.Protocol.QuestInfo\"K\n\027C"
+    "S_QUEST_ACCEPT_REQUEST\022\020\n\010quest_id\030\001 \001(\005"
+    "\022\036\n\026quest_client_object_id\030\002 \001(\005\"Z\n\030SC_Q"
+    "UEST_ACCEPT_RESPONSE\022\017\n\007success\030\001 \001(\010\022-\n"
+    "\020res_accept_quest\030\002 \001(\0132\023.Protocol.Quest"
+    "Info\"G\n\030SC_QUEST_PROGRESS_UPDATE\022+\n\016pros"
+    "sing_quest\030\001 \001(\0132\023.Protocol.QuestInfo\"7\n"
+    "\025CS_QUEST_LIST_REQUEST\022\036\n\026quest_client_o"
+    "bject_id\030\001 \001(\005\"=\n\026SC_QUEST_LIST_RESPONSE"
+    "\022#\n\006quests\030\001 \003(\0132\023.Protocol.QuestInfo*\327\005"
+    "\n\010PacketId\022\014\n\010PKT_NONE\020\000\022\020\n\014PKT_CS_LOGIN"
+    "\020\001\022\023\n\017PKT_SC_LOGIN_OK\020\002\022\017\n\013PKT_CS_CHAT\020\003"
+    "\022\031\n\025PKT_SC_CHAT_BROADCAST\020\004\022\022\n\016PKT_SC_WH"
+    "ISPER\020\005\022\022\n\016PKT_CS_WHISPER\020\006\022\021\n\rPKT_CS_MO"
+    "VING\020\007\022\021\n\rPKT_SC_MOVING\020\010\022\025\n\021PKT_CS_ENTE"
+    "R_GAME\020\t\022\025\n\021PKT_SC_ENTER_GAME\020\n\022\027\n\023PKT_S"
+    "C_PLAYER_SPAWN\020\013\022\025\n\021PKT_CS_GAME_READY\020\014\022"
+    "\031\n\025PKT_SC_PLAYER_DESPAWN\020\r\022\020\n\014PKT_CS_SKI"
+    "LL\020\016\022\020\n\014PKT_SC_SKILL\020\017\022\024\n\020PKT_SC_CHANGE_"
+    "HP\020\020\022\024\n\020PKT_SC_CHANGE_MP\020\021\022\030\n\024PKT_SC_MON"
+    "STER_SPAWN\020\022\022\027\n\023PKT_SC_MONSTER_DEAD\020\023\022\035\n"
+    "\031PKT_CS_OWNED_ITEM_REQUEST\020\024\022\030\n\024PKT_SC_I"
+    "TEM_RESPONSE\020\025\022 \n\034PKT_CS_QUEST_CREATED_R"
+    "EQUEST\020\026\022!\n\035PKT_SC_QUEST_CREATED_RESPONS"
+    "E\020\027\022\037\n\033PKT_CS_QUEST_ACCEPT_REQUEST\020\030\022 \n\034"
+    "PKT_SC_QUEST_ACCEPT_RESPONSE\020\031\022 \n\034PKT_SC"
+    "_QUEST_PROGRESS_UPDATE\020\032\022\035\n\031PKT_CS_QUEST"
+    "_LIST_REQUEST\020\033\022\036\n\032PKT_SC_QUEST_LIST_RES"
+    "PONSE\020\034b\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    3351,
+    3375,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -1466,6 +1472,7 @@ CS_LOGIN::CS_LOGIN(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.characterid_ = from._impl_.characterid_;
 
   // @@protoc_insertion_point(copy_constructor:Protocol.CS_LOGIN)
 }
@@ -1477,6 +1484,7 @@ PROTOBUF_NDEBUG_INLINE CS_LOGIN::Impl_::Impl_(
 
 inline void CS_LOGIN::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.characterid_ = {};
 }
 CS_LOGIN::~CS_LOGIN() {
   // @@protoc_insertion_point(destructor:Protocol.CS_LOGIN)
@@ -1536,16 +1544,16 @@ CS_LOGIN::GetClassData() const {
   return CS_LOGIN_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 31, 2>
+const ::_pbi::TcParseTable<1, 2, 0, 31, 2>
 CS_LOGIN::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(CS_LOGIN, _impl_._has_bits_),
     0, // no _extensions_
-    1, 0,  // max_field_number, fast_idx_mask
+    2, 8,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967294,  // skipmap
+    4294967292,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    1,  // num_field_entries
+    2,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     CS_LOGIN_class_data_.base(),
@@ -1555,6 +1563,10 @@ CS_LOGIN::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::CS_LOGIN>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
+    // int32 characterId = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CS_LOGIN, _impl_.characterid_), 1>(),
+     {16, 1, 0,
+      PROTOBUF_FIELD_OFFSET(CS_LOGIN, _impl_.characterid_)}},
     // string token = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0,
@@ -1564,6 +1576,8 @@ CS_LOGIN::_table_ = {
   }}, {{
     // string token = 1;
     {PROTOBUF_FIELD_OFFSET(CS_LOGIN, _impl_.token_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 characterId = 2;
+    {PROTOBUF_FIELD_OFFSET(CS_LOGIN, _impl_.characterid_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
   }},
   // no aux_entries
   {{
@@ -1583,6 +1597,7 @@ PROTOBUF_NOINLINE void CS_LOGIN::Clear() {
   if (CheckHasBit(cached_has_bits, 0x00000001U)) {
     _impl_.token_.ClearNonDefaultToEmpty();
   }
+  _impl_.characterid_ = 0;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -1616,6 +1631,15 @@ PROTOBUF_NOINLINE void CS_LOGIN::Clear() {
     }
   }
 
+  // int32 characterId = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (this_._internal_characterid() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<2>(
+              stream, this_._internal_characterid(), target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -1639,13 +1663,21 @@ PROTOBUF_NOINLINE void CS_LOGIN::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void)cached_has_bits;
 
-   {
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     // string token = 1;
-    cached_has_bits = this_._impl_._has_bits_[0];
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_token().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_token());
+      }
+    }
+    // int32 characterId = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (this_._internal_characterid() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_characterid());
       }
     }
   }
@@ -1667,12 +1699,19 @@ void CS_LOGIN::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    if (!from._internal_token().empty()) {
-      _this->_internal_set_token(from._internal_token());
-    } else {
-      if (_this->_impl_.token_.IsDefault()) {
-        _this->_internal_set_token("");
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_token().empty()) {
+        _this->_internal_set_token(from._internal_token());
+      } else {
+        if (_this->_impl_.token_.IsDefault()) {
+          _this->_internal_set_token("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (from._internal_characterid() != 0) {
+        _this->_impl_.characterid_ = from._impl_.characterid_;
       }
     }
   }
@@ -1696,6 +1735,7 @@ void CS_LOGIN::InternalSwap(CS_LOGIN* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) 
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.token_, &other->_impl_.token_, arena);
+  swap(_impl_.characterid_, other->_impl_.characterid_);
 }
 
 ::google::protobuf::Metadata CS_LOGIN::GetMetadata() const {
@@ -1720,30 +1760,51 @@ SC_LOGIN_OK::SC_LOGIN_OK(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
   SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:Protocol.SC_LOGIN_OK)
 }
+PROTOBUF_NDEBUG_INLINE SC_LOGIN_OK::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::Protocol::SC_LOGIN_OK& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        error_message_(arena, from.error_message_) {}
+
 SC_LOGIN_OK::SC_LOGIN_OK(
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const SC_LOGIN_OK& from)
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const SC_LOGIN_OK& from)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, SC_LOGIN_OK_class_data_.base()),
+    : ::google::protobuf::Message(arena, SC_LOGIN_OK_class_data_.base()) {
 #else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena),
+    : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
-      _impl_(from._impl_) {
+  SC_LOGIN_OK* const _this = this;
+  (void)_this;
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, success_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, success_),
+           offsetof(Impl_, player_id_) -
+               offsetof(Impl_, success_) +
+               sizeof(Impl_::player_id_));
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.SC_LOGIN_OK)
 }
 PROTOBUF_NDEBUG_INLINE SC_LOGIN_OK::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-      : _cached_size_{0} {}
+      : _cached_size_{0},
+        error_message_(arena) {}
 
 inline void SC_LOGIN_OK::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char*>(&_impl_) +
                offsetof(Impl_, success_),
            0,
-           offsetof(Impl_, resultcode_) -
+           offsetof(Impl_, player_id_) -
                offsetof(Impl_, success_) +
-               sizeof(Impl_::resultcode_));
+               sizeof(Impl_::player_id_));
 }
 SC_LOGIN_OK::~SC_LOGIN_OK() {
   // @@protoc_insertion_point(destructor:Protocol.SC_LOGIN_OK)
@@ -1756,6 +1817,7 @@ inline void SC_LOGIN_OK::SharedDtor(MessageLite& self) {
   }
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.error_message_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -1765,7 +1827,7 @@ inline void* PROTOBUF_NONNULL SC_LOGIN_OK::PlacementNew_(
   return ::new (mem) SC_LOGIN_OK(arena);
 }
 constexpr auto SC_LOGIN_OK::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_LOGIN_OK),
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(SC_LOGIN_OK),
                                             alignof(SC_LOGIN_OK));
 }
 constexpr auto SC_LOGIN_OK::InternalGenerateClassData_() {
@@ -1802,7 +1864,7 @@ SC_LOGIN_OK::GetClassData() const {
   return SC_LOGIN_OK_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 0, 2>
+const ::_pbi::TcParseTable<2, 3, 0, 42, 2>
 SC_LOGIN_OK::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_._has_bits_),
@@ -1823,29 +1885,32 @@ SC_LOGIN_OK::_table_ = {
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
     // bool success = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(SC_LOGIN_OK, _impl_.success_), 0>(),
-     {8, 0, 0,
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(SC_LOGIN_OK, _impl_.success_), 1>(),
+     {8, 1, 0,
       PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.success_)}},
     // int32 player_id = 2;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_LOGIN_OK, _impl_.player_id_), 1>(),
-     {16, 1, 0,
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_LOGIN_OK, _impl_.player_id_), 2>(),
+     {16, 2, 0,
       PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.player_id_)}},
-    // int32 resultCode = 3;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_LOGIN_OK, _impl_.resultcode_), 2>(),
-     {24, 2, 0,
-      PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.resultcode_)}},
+    // string error_message = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 0, 0,
+      PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.error_message_)}},
   }}, {{
     65535, 65535
   }}, {{
     // bool success = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.success_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.success_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     // int32 player_id = 2;
-    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.player_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
-    // int32 resultCode = 3;
-    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.resultcode_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.player_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    // string error_message = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.error_message_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }},
   // no aux_entries
   {{
+    "\24\0\0\15\0\0\0\0"
+    "Protocol.SC_LOGIN_OK"
+    "error_message"
   }},
 };
 PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
@@ -1856,10 +1921,13 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    _impl_.error_message_.ClearNonDefaultToEmpty();
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00000006U)) {
     ::memset(&_impl_.success_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.resultcode_) -
-        reinterpret_cast<char*>(&_impl_.success_)) + sizeof(_impl_.resultcode_));
+        reinterpret_cast<char*>(&_impl_.player_id_) -
+        reinterpret_cast<char*>(&_impl_.success_)) + sizeof(_impl_.player_id_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -1885,7 +1953,7 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // bool success = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
     if (this_._internal_success() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -1894,7 +1962,7 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
   }
 
   // int32 player_id = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
     if (this_._internal_player_id() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<2>(
@@ -1902,12 +1970,13 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
     }
   }
 
-  // int32 resultCode = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
-    if (this_._internal_resultcode() != 0) {
-      target =
-          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
-              stream, this_._internal_resultcode(), target);
+  // string error_message = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_error_message().empty()) {
+      const ::std::string& _s = this_._internal_error_message();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "Protocol.SC_LOGIN_OK.error_message");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
     }
   }
 
@@ -1937,24 +2006,24 @@ PROTOBUF_NOINLINE void SC_LOGIN_OK::Clear() {
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
-    // bool success = 1;
+    // string error_message = 3;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_error_message().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_error_message());
+      }
+    }
+    // bool success = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       if (this_._internal_success() != 0) {
         total_size += 2;
       }
     }
     // int32 player_id = 2;
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (this_._internal_player_id() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_player_id());
-      }
-    }
-    // int32 resultCode = 3;
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
-      if (this_._internal_resultcode() != 0) {
-        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-            this_._internal_resultcode());
       }
     }
   }
@@ -1978,18 +2047,22 @@ void SC_LOGIN_OK::MergeImpl(::google::protobuf::MessageLite& to_msg,
   cached_has_bits = from._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_error_message().empty()) {
+        _this->_internal_set_error_message(from._internal_error_message());
+      } else {
+        if (_this->_impl_.error_message_.IsDefault()) {
+          _this->_internal_set_error_message("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       if (from._internal_success() != 0) {
         _this->_impl_.success_ = from._impl_.success_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (from._internal_player_id() != 0) {
         _this->_impl_.player_id_ = from._impl_.player_id_;
-      }
-    }
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
-      if (from._internal_resultcode() != 0) {
-        _this->_impl_.resultcode_ = from._impl_.resultcode_;
       }
     }
   }
@@ -2008,11 +2081,14 @@ void SC_LOGIN_OK::CopyFrom(const SC_LOGIN_OK& from) {
 
 void SC_LOGIN_OK::InternalSwap(SC_LOGIN_OK* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.error_message_, &other->_impl_.error_message_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.resultcode_)
-      + sizeof(SC_LOGIN_OK::_impl_.resultcode_)
+      PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.player_id_)
+      + sizeof(SC_LOGIN_OK::_impl_.player_id_)
       - PROTOBUF_FIELD_OFFSET(SC_LOGIN_OK, _impl_.success_)>(
           reinterpret_cast<char*>(&_impl_.success_),
           reinterpret_cast<char*>(&other->_impl_.success_));

@@ -41,6 +41,12 @@ xcopy /Y /S /I "%SOURCE_DIR%\*.json" "%CLIENT_DIR%"
 
 xcopy /Y /S /I "%SOURCE_FORCLIENT_DIR%\*.json" "%CLIENT_DIR%"
 
+:: 5. 로그인 서버 데이터 폴더로 복사
+set "LOGIN_SERVER_DIR=.\Project_TOY_Login_Web_server\Data"
+if not exist "%LOGIN_SERVER_DIR%" mkdir "%LOGIN_SERVER_DIR%"
+xcopy /Y /S /I "%SOURCE_DIR%\*.json" "%LOGIN_SERVER_DIR%"
+
+
 
 echo.
 echo [Data Sync Complete!]

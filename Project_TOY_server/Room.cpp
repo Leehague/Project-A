@@ -17,6 +17,8 @@
 #include "CoreRoom.h"
 #include "InfoSturct.h"
 #include "QuestEvent.h"
+#include "LoginManager.h"
+#include "DBManager.h"
 
 
 
@@ -68,12 +70,13 @@ void Room::Init()
         }
     };
 
-    // CoreRoom에서 오브젝트 생성 시 GObjcetManager를 호출하도록 팩토리 연결
+    // CoreRoom에서 오브젝트 생성 시 GObjcetManager를 호출하도록 팩토리 연결 , Create에서의 characterId 는 라이브서버에서만 유효한 인자이므로 -1로 처리
     _coreroom->_objectFactoryCallback = [](GameObjectType type, int32 templateId , CoreRoomPtr _coreroom) -> GameObjectPtr {
-        return GObjcetManager.Create(type, nullptr, templateId, _coreroom);
+        return GObjcetManager.Create(type, nullptr, templateId, _coreroom,-1);
     };
     
 }
+
 
 void Room::Enter(GameObjectPtr go)
 {
@@ -88,6 +91,8 @@ void Room::Enter(GameObjectPtr go)
             //기존에 Room에 들어 있던 객체들이 아니기 때문에 기본값(0 , nullptr )으로 설정되어 있을 Room, CoreRoom 정보 업데이트
             go->SetroomId(self->_Selfroomid);
             go->SetCoreroomptr(self->_coreroom);
+
+            
 
             auto [cellX, cellZ] = self->_coreroom->GetSectorPos(Vector3::PosInfoToVector3(go->Getpos())); // 좌표로 인덱스 추출
             self->_coreroom->_sectors[cellZ][cellX].insert(go);
@@ -729,7 +734,7 @@ void Room::MonsterSpawn(int32 NumOfMonster, int templatedId, bool IsRLControll, 
         for (int i = 0; i < NumOfMonster; i++)
         {
             MonsterPtr monster = std::static_pointer_cast<Monster>(
-                GObjcetManager.Create(GameObjectType::Monster, nullptr, templatedId, self->_coreroom)
+                GObjcetManager.Create(GameObjectType::Monster, nullptr, templatedId, self->_coreroom,-1)
             );
 
             // 좌표 설정 등 로직 수행
@@ -916,3 +921,10 @@ MapPtr Room::GetMapptr()
 {
     return _coreroom->GetMapptr();
 }
+
+int32 Room::GetMapId()
+{
+    return GetMapptr() -> GetMapId();
+}
+
+

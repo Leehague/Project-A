@@ -2,11 +2,12 @@
 #include <functional>
 #include <queue>
 #include <mutex>
+#include "Types.h"
 
 class JobSerializer; // 전방 선언
 //extern JobSerializer GJobSerializer; // 외부 어딘가(main.cpp 등)에 선언된 객체임을 알림
-
 using JobFn = std::function<void()>;
+
 
 class JobQueue : public std::enable_shared_from_this<JobQueue>
 {

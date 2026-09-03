@@ -38,6 +38,7 @@ enum PacketId {
 
 message CS_LOGIN {
     string token = 1;
+    int32 characterId = 2;
 }
 
 
@@ -45,7 +46,7 @@ message CS_LOGIN {
 message SC_LOGIN_OK {
     bool success = 1;
     int32 player_id = 2; 
-    int32 resultCode = 3;
+    string error_message = 3;
 
 }
 

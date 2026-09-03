@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Project_TOY_Login_Web_server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c7e236ffce5b7477ab5d3016082a0d8ec227fac")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f146a332870dfe83e64f1bd2b42d01af849abcf")]
 [assembly: System.Reflection.AssemblyProductAttribute("Project_TOY_Login_Web_server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Project_TOY_Login_Web_server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

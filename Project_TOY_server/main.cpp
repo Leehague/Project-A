@@ -86,8 +86,10 @@ int main()
         return -1; // DB 연결 실패 시 서버 종료
     }
 
+    LoginManager::CreateInstance(&GJobSerializer);
+
     // Redis 매니저 초기화 (로컬 도커 Redis 기본 포트 6379로 연결)
-    if (LoginManager::GetInstance().Init("127.0.0.1", 6379) == false)
+    if (LoginManager::GetInstance()->Init("127.0.0.1", 6379) == false)
     {
         std::cout << "Redis Initialization Failed. Exit Server." << std::endl;
         return 0;

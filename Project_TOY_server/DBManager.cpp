@@ -76,7 +76,7 @@ void DBManager::PushConnection(DBConnection* conn) {
     _freePool.push(conn);
 }
 
-bool DBManager::LoadPlayerInventory(int32 playerDBId, PlayerPtr player)
+bool DBManager::LoadPlayerInventory(int32 characterId, PlayerPtr player)
 {
     
     // 1. DB 커넥션 풀에서 남는 커넥션을 하나 가져옵니다.
@@ -89,7 +89,7 @@ bool DBManager::LoadPlayerInventory(int32 playerDBId, PlayerPtr player)
 
     // 2. 파라미터 바인딩: 쿼리의 '?' 자리에 playerId를 넣습니다.
     // (SQL Injection 해킹을 방지하기 위해 Prepared Statement 방식을 사용해야 합니다)
-    conn->BindParam(1, playerDBId);
+    conn->BindParam(1, characterId); //characterId == OwnerPlayerId (Inventory table 에서)
 
     // 3. 쿼리 실행 (미리 만들어둔 비클러스터형 인덱스 IX_Inventory_PlayerId를 타게 됨)
     const WCHAR* query = L"SELECT ItemDbId, TemplateId, Count, Slot FROM [dbo].[Inventory] WHERE OwnerPlayerId = ?";
@@ -114,7 +114,7 @@ bool DBManager::LoadPlayerInventory(int32 playerDBId, PlayerPtr player)
             {
                 // 6. 플레이어 객체 내부의 인벤토리(메모리)에 아이템 등록
                 CoreRoomPtr playercoreroom = player->GetCoreroomptr();
-                ItemPtr item = std::static_pointer_cast<Item>(GObjcetManager.Create(GameObjectType::Item, player->session.lock(), curuentiteminfo.itemTemplateId, playercoreroom));
+                ItemPtr item = std::static_pointer_cast<Item>(GObjcetManager.Create(GameObjectType::Item, player->session.lock(), curuentiteminfo.itemTemplateId, playercoreroom,-1));
                 item->InitItem(curuentiteminfo);
                 player->GetInventory()->InsertItem(curuentiteminfo.itemDbId, item);
 
@@ -139,27 +139,35 @@ bool DBManager::LoadPlayerInventory(int32 playerDBId, PlayerPtr player)
     
 }
 
-bool DBManager::GetCharacterInfo(int32 accountId, int32& outCharacterId, int32& outTemplateId)
+bool DBManager::GetCharacterInfo(int accountId, int characterId, PlayerDBData& outdata)
 {
     DBConnection* conn = PopConnection();
     if (conn == nullptr) return false;
 
+    outdata.accountId = accountId;
+    outdata.CharacterId = characterId;
+
     // 1. 파라미터 바인딩: '?' 자리에 accountId 삽입
     conn->BindParam(1, accountId);
-
+    conn->BindParam(2, characterId);
     // 2. 쿼리 실행 
-    const WCHAR* query = L"SELECT CharacterId, TemplateId FROM [dbo].[Characters] WHERE AccountId = ?";
+    const WCHAR* query = L"SELECT TemplateId, MapId, PosX, PosY,PosZ ,Yaw FROM [dbo].[Characters] WHERE AccountId = ? AND CharacterId = ?";
     
     bool success = false;
     if (conn->Execute(query))
     {
         // 3. 결과 패치: 해당 계정의 캐릭터가 존재하면 데이터 추출
-        if (conn->Fetch()) 
+        if (conn->Fetch())
         {
-            outCharacterId = conn->GetInt(L"CharacterId");
-            outTemplateId = conn->GetInt(L"TemplateId");
-            success = true;
+            outdata.TemplateId = conn->GetInt(L"TemplateId");
+            outdata.MapId = conn->GetInt(L"MapId");
+            outdata.posInfo.x = conn->GetFloat(L"PosX");
+            outdata.posInfo.y = conn->GetFloat(L"PosY");
+            outdata.posInfo.z = conn->GetFloat(L"PosZ");
+            outdata.posInfo.yaw = conn->GetFloat(L"Yaw");
         }
+
+        success = true;
     }
 
     PushConnection(conn);

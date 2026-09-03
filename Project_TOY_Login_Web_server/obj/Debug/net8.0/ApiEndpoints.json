@@ -1,6 +1,38 @@
 [
   {
     "ContainingType": "Project_TOY_Login_Web_server.Controllers.AccountController",
+    "Method": "GetCharacters",
+    "RelativePath": "api/Account/characters/{accountId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "accountId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Project_TOY_Login_Web_server.Controllers.AccountController",
+    "Method": "CreateCharacter",
+    "RelativePath": "api/Account/createcharacter",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Project_TOY_Login_Web_server.Controllers.CharacterCreateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Project_TOY_Login_Web_server.Controllers.AccountController",
     "Method": "Login",
     "RelativePath": "api/Account/login",
     "HttpMethod": "POST",
@@ -30,26 +62,5 @@
       }
     ],
     "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Project_TOY_Login_Web_server.Controllers.WeatherForecastController",
-    "Method": "Get",
-    "RelativePath": "WeatherForecast",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[Project_TOY_Login_Web_server.WeatherForecast, Project_TOY_Login_Web_server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ],
-    "EndpointName": "GetWeatherForecast"
   }
 ]

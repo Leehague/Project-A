@@ -1,5 +1,18 @@
 #include "LoginManager.h"
 #include <iostream>
+#include "InfoSturct.h"
+#include "DBManager.h"
+#include "ObjectManager.h"
+#include "Player.h"
+#include "Protocol/Protocol.pb.h"
+#include "ServerUtils.h"
+#include "Session.h"
+
+void LoginManager::CreateInstance(JobSerializer* jobSerializer)
+{
+    GetInstance() = std::make_shared<LoginManager>(jobSerializer);
+}
+
 
 bool LoginManager::Init(const std::string& host, int port, int poolSize)
 {
@@ -33,6 +46,80 @@ bool LoginManager::Init(const std::string& host, int port, int poolSize)
     return false;
 }
 
+void LoginManager::TryLogin(const std::string& token, SessionPtr& session, int characterId)
+{
+    std::weak_ptr<LoginManager> weakSelf = std::static_pointer_cast<LoginManager>(shared_from_this());
+    this->Push([weakSelf, token, session, characterId]()
+        {
+            LoginResult loginresult = LoginManager::GetInstance()->VerifyLoginToken(token);
+
+
+            // DB에서 위치 정보를 받아올 변수
+            
+            PlayerPtr player;
+
+            PlayerDBData data;
+
+
+            if (DBManager::GetInstance().GetCharacterInfo(loginresult.AccountId, characterId, data))
+            {
+                //참고 : characterId 는  DB에서의 Id임
+                GameObjectPtr go = GObjcetManager.Create(GameObjectType::Player, session, data.TemplateId, nullptr, characterId);
+                player = std::static_pointer_cast<Player>(go);
+
+
+                player->Setpos(data.posInfo);
+
+                if (DBManager::GetInstance().LoadPlayerInventory(characterId, player))
+                {
+                    loginresult.Success = true;
+                }
+                else
+                {
+                    GObjcetManager.Removeobjcet(go->GetObjectId());
+                    loginresult.Success = false;
+                    player = nullptr;
+                }
+            }
+            else
+            {
+                //TODO: 여기서 새로운씬 (로비)로 유도해야함
+                loginresult.Success = false;
+            }
+
+
+
+            // 응답 전송 
+            Protocol::SC_LOGIN_OK resPkt;
+
+            resPkt.set_success(loginresult.Success);
+
+            if (player)
+            {
+                resPkt.set_player_id(player->GetObjectId()); //반드시 로그인 요청을 한 유저의 playerId(objectId)로 답을 해주어야함
+            }
+
+            resPkt.set_error_message(loginresult.ErrorMessage);
+            //참고 SC_LOGIN_OK 에서의 player Id는 ObjectManager에서 관리하는 objectId와 동일함
+
+            auto sendBuffer = ServerUtils::MakeSendBuffer(resPkt, Protocol::PKT_SC_LOGIN_OK);
+
+            if (sendBuffer)
+            {
+                session->Send(sendBuffer);
+            }
+
+
+
+
+        }
+
+    );
+
+    
+    
+}
+
 LoginResult LoginManager::VerifyLoginToken(const std::string& token)
 {
     LoginResult result;
@@ -59,11 +146,20 @@ LoginResult LoginManager::VerifyLoginToken(const std::string& token)
         // Redis에서 데이터 가져오기
         auto val = _redis->get(redisKey);
 
+        std::string acountidstr = *val;
         if (val)
         {
-            // 성공: 토큰이 유효하며 해당 토큰에 바인딩된 계정명 반환
-            result.Success = true;
-            result.AccountName = *val;
+
+            try {
+                result.Success = true;
+                result.AccountId = std::stoi(acountidstr);
+            }
+            catch (const std::out_of_range& e)
+            {
+                // int 범위를 벗어나는 너무 큰 숫자가 들어왔을 때의 예외 처리
+                result.Success = false;
+                result.ErrorMessage = "AccountId value is out of integer range: " + acountidstr;
+            }
         }
         else
         {
@@ -77,6 +173,7 @@ LoginResult LoginManager::VerifyLoginToken(const std::string& token)
         result.Success = false;
         result.ErrorMessage = std::string("Redis Exception: ") + e.what();
     }
+    
 
     return result;
 }
