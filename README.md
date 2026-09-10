@@ -21,20 +21,33 @@ https://www.youtube.com/watch?v=q9-bs3Hth-8
 
 ```mermaid
 graph TD
-    A[Unity Client] <-->|TCP / Protocol Buffers| B[C++ IOCP Game Server]
-    B <-->|ODBC Thread Pool| C[MS SQL Database]
+    A[Unity Client] -->|HTTP / REST (Login, Register)| F[C# ASP.NET Core Web Server]
+    F <-->|EF Core| C[(MS SQL Database)]
+    F -->|Register Token| G[(Redis)]
+    A <-->|TCP / Protocol Buffers| B[C++ IOCP Game Server]
+    B -->|Verify Token| G
+    B <-->|ODBC Thread Pool| C
+    
     D[Python RL Env] <-->|Pybind11 C++ Binding| E[CoreRoom Simulator]
     B -->|Contains| E
+
 ```
 
 ### 1. C++ Game Server (`Project_TOY_server`)
 * **네트워크 코어:** IOCP(Input/Output Completion Port) 기반의 멀티스레드 네트워크 엔진 탑재.
 
-
-
 * **아키텍처 분리:** 실시간 소켓 통신 및 세션을 관리하는 `Room` 레이어와, 순수 게임 물리 및 충돌 연산을 처리하는 `CoreRoom` 레이어로 분리 설계.
 * **데이터베이스:** ODBC 연결 풀링(Connection Pooling) 기법 기반의 `DBManager` 스레드 풀을 활용한 비동기 DB 처리.
 * **RL 모델 추론:** ONNX Runtime C++ API를 탑재하여 실시간 서비스 환경에서 강화학습 모델 추론 기능 통합.
+
+* **코드 구조**
+
+1. Network
+IocpCore.h / IocpCore.cpp : IOCP 기반 멀티쓰레드 네트워크 구성을 위한 클래스.
+
+
+
+
 
 
 ### 2. Unity Client (`Project_TOY_client_c_sharp_unity`)
@@ -46,6 +59,15 @@ graph TD
 * **Pybind11 엔진 바인딩:** C++ `CoreRoom` 로직을 그대로 컴파일한 `game_core.pyd` 모듈을 임포트하여 고속 C++ 시뮬레이션 구동.
 * **가상 시간(Virtual Time) 제어:** 시뮬레이션 환경에서는 학습시간 단축을 위해 실제 시간대신 가상시간 사용.
 * **Gymnasium 라이브러리:** Gymnasium 표준 인터페이스인 `ToyMonsterEnv` 환경을 제공하여 Stable-Baselines3, Ray RLlib 등의 범용 학습 라이브러리와 호환.
+
+
+### 4. C# asp.core web server('Project_TOY_Login_Web_server')
+* **로그인 시퀀스 (Login_seqeunce):** 클라이언트의 로그인 요청을 받아 로그인 가능 여부를 확인하고 게입 서버에 접속 할 수 있는 토큰생성후 redis에 등록 , 이 토큰과 동일한 토큰을 클라이언트가 게임서버에 접속할때 전달해야만이 게임서버가 접속을 허락함.
+* **회원가입 시퀀스(Register_seqeunce):** 클라이언트의 회원가입 요청을 받아 DB에 회원정보를 등록하고 클라이언트에게 응답을 보냄.
+
+### 5. Redis
+
+* **토큰 보유** 로그인서버에서 발급한 토큰을 클라이언트가 정상적으로 전송하고 있는지 게임서버가 확인하기 위해 Redis 서버에서 로그인서버에서 발급한 토큰을 일정기간 보유함.
 
 ---
 
@@ -89,7 +111,13 @@ SkillData , ItemData, StatData,MapData 등 정적으로 고정되는 데이터�
 
 ### 로그인 시퀀스
 
-클라의 로그인 요청( CS_LOGIN ) -> 서버는 메모리에 플레이어 클래스를 생성하고 응답(SC_LOGIN_OK) -> 클라가 리소드등을 로드 완료하고 서버에 입장 요청(CS_ENTER_GAME) -> 서버가 적절한 룸을 찾고 입장처리 후 패킷 전송(SC_GAME_READY) -> 클라가 자신의 캐릭터 스폰처리 후 준비 완료 패킷 전송 (CS_GAME_READY) -> 서버가 SpawnBroadcast 함수를 통해 해당 클라에 대한 정보를 다른 클라이언트 에게 다른 오브젝트들( 몬스터, 다른 플레이어)의 정보를 해당 클라에게 전송
+클라이언트가 회원가입을 원하면 회원가입을 원하는 정보를 web server 에 보냄 -> web server 는 DB에 회원정보를 등록 -> 회원가입 성공 응답
+
+클라이언트가 로그인을 원하면 로그인 원하는 정보를 web server 에 보냄 -> web server 는 DB에서 회원정보 확인 -> DB에서 찾은 정보와 클라이언트의 정보를 비교해 동일하면 토큰 생성 후 redis에 등록 -> 생성된 토큰과 함께 게임서버 접속 정보 응답
+
+클라이언트가 게임서버에 접속을 원하면 토큰과 함께 게임서버에 접속 -> 게임서버는 redis에 토큰 확인 -> 토큰이 유효하면 게임서버는 메모리에 플레이어 객체 생성 후 응답
+
+
 
 ### 길찾기 알고리즘
 
@@ -122,29 +150,10 @@ json 파일 형태로 미리 저장된 정적인 퀘스트 데이터를 이용�
 각 Creature class들이 소유한 QuestCommponet class 에 의해 관리됨.
 각 퀘스트는 퀘스트 생성자(client) , 퀘스트 수령자 혹은 수행자(acquirer) 가 존재함.
 
-### Redis 및 로그인 웹서버 (작업중)
+### Redis 및 로그인 웹서버 
 
 MsSql기반의 DB 와는 별개의 Redis 도입
 로그인 인증을 위한 웹서버 (C# asp.core) 도입
 
-
-## 사용한 빌드 및 환경 설정 방법
-
-### 1. C++ -> Python Module (.pyd) 컴파일 방법
-파이썬 학습 환경에서 사용되는 물리 시뮬레이터를 빌드하기 위해 아래 명령어를 수행합니다. (Visual Studio 2022 및 vcpkg 설정 필요)
-
-```powershell
-# Project_TOY_server 디렉토리 기준
-cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="[VCPKG_PATH]/scripts/buildsystems/vcpkg.cmake"
-cmake --build build --config Release
-```
-* 빌드 완료 후 생성된 `game_core.pyd` 파일을 `Project_TOY_RL` 폴더로 복사해야 학습이 가능합니다.
-
-### 2. 강화학습 환경 실행 방법
-```bash
-# Project_TOY_RL 디렉토리 기준
-pip install -r requirements.txt
-python train.py
-```
 
 

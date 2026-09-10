@@ -84,10 +84,6 @@ void Session::OnRecv(int bytesTransferred)
         return;
     }
 
-    //loging
-    //std::cout << "--- OnRecv Start (Bytes: " << bytesTransferred << ") ---" << std::endl;
-
-
     while (true)
     {
         int dataSize = _recvBuffer.DataSize();

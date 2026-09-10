@@ -42,7 +42,7 @@ IocpCore::~IocpCore()
 //VALID_HANDLE_VALUE 이면 True 리턴
 bool IocpCore::Register(SessionPtr session)
 {
-    // 2. 소켓과 IOCP 핸들을 연결 (CompletionKey로 세션 주소를 넘김)
+    // 소켓과 IOCP 핸들을 연결 (CompletionKey로 세션 주소를 넘김)
     // 여기서 넘긴 session 주소는 나중에 Dispatch에서 그대로 돌아옴
     // [수정] session.get()을 사용하여 실제 주소(Session*)를 전달합니다.
     HANDLE h = ::CreateIoCompletionPort(
@@ -61,7 +61,7 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
     Session* session = nullptr;
     OverlappedEx* overlappedEx = nullptr;
 
-    // GQCS 호출
+    // GQCS 호출 , os 로부터 비동기 작업중 끝난것이 있는지 정보를 받아옴
     bool ret = ::GetQueuedCompletionStatus(_iocpHandle, &bytesTransferred,
         (ULONG_PTR*)&session, (LPOVERLAPPED*)&overlappedEx, timeoutMs);
 
@@ -70,7 +70,7 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
         int errCode = ::WSAGetLastError();
         if (errCode == WAIT_TIMEOUT) return true; // 타임아웃은 단순 대기 상태이므로 통과
 
-        // [중요] 에러가 발생했더라도 overlappedEx가 있다면 세션 정리 후 계속 진행
+        // 에러가 발생했더라도 overlappedEx가 있다면 세션 정리 후 계속 진행
         if (overlappedEx && overlappedEx->owner)
         {
             PrintErrorCode(errCode);
@@ -97,7 +97,7 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
         return true;
     }
 
-    // [매우 중요] 세션의 소켓이 유효한지 최종 확인 후 콜백 호출
+    // 세션의 소켓이 유효한지 최종 확인 후 콜백 호출
     if (overlappedEx->owner->GetSocket() != INVALID_SOCKET)
     {
         if (overlappedEx->type == IO_TYPE::RECV)

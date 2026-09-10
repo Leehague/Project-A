@@ -58,8 +58,6 @@ void WorkerThread(IocpCore& iocp)
     }
 }
 
-//volatile bool g_showStatus = false;
-
 
 int main()
 {

@@ -18,22 +18,22 @@ bool Listener::StartAccept(int port, SessionFactory factory, IocpCore& iocp)
 {
     _sessionFactory = factory; // 전달받은 람다 보관
     _iocp = &iocp;             // 전달받은 IOCP 객체 주소 보관
-    // 1. 윈속 초기화
+    //윈속 초기화
     WSAData wsaData;
     if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) return false;
 
-    // 2. 리슨 소켓 생성
+    //리슨 소켓 생성
     _listenSocket = ::socket(AF_INET, SOCK_STREAM, 0);
     if (_listenSocket == INVALID_SOCKET) return false;
 
-    // 3. 주소 설정
+    //주소 설정
     SOCKADDR_IN serverAddr;
     ::memset(&serverAddr, 0, sizeof(serverAddr));
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = ::htonl(INADDR_ANY);
-    serverAddr.sin_port = ::htons(port);
+    serverAddr.sin_family = AF_INET; //IPv4 주소 체계 (32비트) 사용
+    serverAddr.sin_addr.s_addr = ::htonl(INADDR_ANY); // long(32비트) 리틀 엔디안 => 빅 엔디안 , 여기서 INADDR_ANY는 값이 0 이라 사용하지 않아도 에러는 없음. 관례상 사용
+    serverAddr.sin_port = ::htons(port); //short (16비트) 리틀 엔디안 => 빅 엔디안
 
-    // 4. 바인드 및 리슨
+    //바인드 및 리슨
     if (::bind(_listenSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) return false;
     if (::listen(_listenSocket, SOMAXCONN) == SOCKET_ERROR) return false;
 
