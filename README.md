@@ -21,16 +21,32 @@ https://www.youtube.com/watch?v=q9-bs3Hth-8
 
 ```mermaid
 graph TD
-    A[Unity Client] -->|HTTP / REST (Login, Register)| F[C# ASP.NET Core Web Server]
-    F <-->|EF Core| C[(MS SQL Database)]
-    F -->|Register Token| G[(Redis)]
-    A <-->|TCP / Protocol Buffers| B[C++ IOCP Game Server]
-    B -->|Verify Token| G
-    B <-->|ODBC Thread Pool| C
-    
-    D[Python RL Env] <-->|Pybind11 C++ Binding| E[CoreRoom Simulator]
-    B -->|Contains| E
-
+    subgraph Client [Client Layer]
+        Unity["Unity Client<br/>(Project_TOY_client_c_sharp_unity)"]
+    end
+    subgraph Auth [Web & Authentication Layer]
+        WebServer["C# ASP.NET Core Web Server<br/>(Project_TOY_Login_Web_server)"]
+    end
+    subgraph GameLayer [Game & Simulation Layer]
+        GameServer["C++ IOCP Game Server<br/>(Project_TOY_server)"]
+        CoreRoom[CoreRoom Simulator]
+        PythonRL["Python RL Env<br/>(Project_TOY_RL)"]
+    end
+    subgraph Storage [Data & Session Layer]
+        MSSQL[(MS SQL Database)]
+        Redis[(Redis Session Cache)]
+    end
+    %% Client Interactions
+    Unity -->|1. HTTP / REST<br/>Login & Register| WebServer
+    WebServer -->|2. Store Session Token| Redis
+    WebServer <-->|EF Core<br/>Account & Character| MSSQL
+    WebServer -.->|Return Token & Server Info| Unity
+    Unity <-->|3. TCP / Protocol Buffers<br/>Auth Token & Gameplay| GameServer
+    %% Game Server Interactions
+    GameServer -->|4. Verify Token| Redis
+    GameServer <-->|ODBC Thread Pool<br/>Game Data & Items| MSSQL
+    GameServer -->|Contains| CoreRoom
+    PythonRL <-->|Pybind11 C++ Binding| CoreRoom
 ```
 
 ### 1. C++ Game Server (`Project_TOY_server`)
